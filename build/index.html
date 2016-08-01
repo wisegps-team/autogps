@@ -1,0 +1,106 @@
+<!--
+	作者：小吴
+	时间：2015-11-17
+	描述：登录注册忘记密码
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+
+		<script src="wslib/WiStorm.js"></script>
+		<script>
+			document.write('<title>'+___.app_name+'</title>');
+		</script>
+		<script src="wslib/api/Wapi.js"></script>
+	</head>
+	<body>
+		<script>
+			var pwd,account;
+			var openId = _g.openid;
+			if(openId){
+				W.setCookie("__login_redirect_uri__","");
+			}	
+			function success(json){
+				var login_url=W.getCookie("__login_redirect_uri__")||"src/home.html";
+				W.setCookie("__login_redirect_uri__","");
+				top.location=login_url;
+			}
+			
+			function loginSuccess(json) {
+				if (json.status_code&&json.status_code!='0'&&json.status_code!=0) {
+					W.loading();
+					if(json.status_code<3){
+						W.alert("账号不存在或密码错误");
+						return;
+					}else
+						W.errorCode(json);
+				} else if(json.cust_id){
+					if(pwd&&account){
+						W.setSetting("pwd",pwd);
+						W.setSetting("account",account);
+					}
+					W.setCookie("access_token", json.access_token,1);
+					Wapi.user.get(function(res) {
+						W.loading();
+						if (res.status_code) {
+							W.alert("错误码："+res.status_code+"；获取用户信息失败");
+							W.loading();
+							return;
+						} else {
+							W._loginSuccess(res);
+							success(res);
+						}
+					}, {
+						cust_id: json.cust_id,
+						access_token: json.access_token
+					});
+				}else{
+					W.loading();
+				}
+			}
+			
+			function bind(json){//微信登录绑定账号返回
+				W.loading();
+				if (json.status_code) {
+					W.errorCode(json);
+					return;
+				} else {
+					W.alert("绑定成功，可以正式使用了", function() {
+						var login_url=W.getCookie("__login_redirect_uri__");
+						top.location=login_url||"src/home.html";
+					});
+				}
+			}
+			//微信登录
+			if (WiStorm.agent.weixin&&_g.intent!="forget"&&_g.intent!="logout") {
+				if (_g.sso_login) {
+					W.loading(true);
+					if (!_g.access_token) {
+						W.loading();
+						if (_g.status_code == 1) {
+							W.alert("您当前是第一次授权，请进行普通登录绑定账号");
+							success=function(data){
+								Wapi.user.update(bind,{"login_id":openId,"_cust_id":data.cust_id,"access_token":W.getCookie("access_token")});
+							}
+						}else{
+							W.alert(_g.err_msg+"第三方登录错误。错误码："+_g.status_code);
+						}
+					} else {
+						if(_g.cust_id)//登录成功
+							loginSuccess(_g);
+					}
+				} else { //微信下跳转授权页面
+					W.wxLogin();	
+				}
+			}
+		</script>
+		<div id='main'></div>
+		<script src="common.js"></script>
+		<script src="src/index.js"></script>
+	</body>
+</html>

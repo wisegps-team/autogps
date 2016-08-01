@@ -1,0 +1,16 @@
+.container{
+    display: flex;
+    text-align: center;
+    padding-left: 256px;
+    padding-top: 50px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+#monitor_map{
+    width: 100%;
+}
+.appbar{
+    position: fixed !important;
+    top: 0 !important;
+    width: 100% !important;
+}
