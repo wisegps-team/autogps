@@ -49,11 +49,11 @@ Temporary Items
 
 /node_modules/*
 /build/common.js
-/build/src/*
 /package.json
 /webpack.config.js
 /.vscode/*
 /npm-debug.log
 
-!*.html
 
+/build/src/*/*.js
+/build/src/*.js
