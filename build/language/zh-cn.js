@@ -65,5 +65,8 @@ window.___={
 	},
 	'reLogin':'登录凭证已失效，点击确定重新登录',
 	'unknown_err':'未知错误',
-	'please_verification':'您当前是第一次登录，请先验证手机'
+	'please_verification':'您当前是第一次登录，请先验证手机',
+	'add_user':'新增用户',
+	'phone_err':'请输入正确的手机号码',
+	'phone_registed':'该号码已注册'
 }
