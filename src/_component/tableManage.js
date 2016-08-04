@@ -5,7 +5,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
 
 import WTable from './table';
-import Wapi from '../_modules/Wapi/WiStormAPI';
+import WiStormAPI from '../_modules/Wapi/WiStormAPI';
 import P from '../_modules/public';
 import AddFrom from './add_from';
 

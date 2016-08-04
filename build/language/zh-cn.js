@@ -4,7 +4,6 @@ window.___={
 	"cancel":"取消",
 	"yes":"是",
 	"no":"否",
-    "title":"卫网科技微信端管理平台",
     "list_name":"用户车辆列表",
 	'signal':'信号',
 	'car_state':'车辆状态',
@@ -73,4 +72,8 @@ window.___={
 	'type':'类型',
 	'person':'联系人',
 	'sex':'性别',
+	'man':'男',
+	'woman':'女',
+	'cust_manage':'客户管理',
+	'user_manage':'用户管理',
 }
