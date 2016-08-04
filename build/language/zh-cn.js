@@ -68,5 +68,9 @@ window.___={
 	'please_verification':'您当前是第一次登录，请先验证手机',
 	'add_user':'新增用户',
 	'phone_err':'请输入正确的手机号码',
-	'phone_registed':'该号码已注册'
+	'phone_registed':'该号码已注册',
+	'area':'地区',
+	'type':'类型',
+	'person':'联系人',
+	'sex':'性别',
 }
