@@ -4,7 +4,6 @@ window.___={
 	"cancel":"取消",
 	"yes":"是",
 	"no":"否",
-    "title":"卫网科技微信端管理平台",
     "list_name":"用户车辆列表",
 	'signal':'信号',
 	'car_state':'车辆状态',
@@ -65,5 +64,9 @@ window.___={
 	},
 	'reLogin':'登录凭证已失效，点击确定重新登录',
 	'unknown_err':'未知错误',
-	'please_verification':'您当前是第一次登录，请先验证手机'
+	'please_verification':'您当前是第一次登录，请先验证手机',
+	'man':'男',
+	'woman':'女',
+	'cust_manage':'客户管理',
+	'user_manage':'用户管理',
 }

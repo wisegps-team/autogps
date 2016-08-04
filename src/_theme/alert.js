@@ -199,16 +199,23 @@ class Alert extends Component {
 }
 
 function ALERT(ThemeProvider){
-    if(!window.W.alert){
-        let view=document.createElement('div');
-        view.id='_k_alert';
-        document.body.appendChild(view);
-        ReactDOM.render(
-            <ThemeProvider>
-                <Alert/>
-            </ThemeProvider>
-            ,view);
+    if(document.body){
+        if(!window.W.alert){
+            let view=document.createElement('div');
+            view.id='_k_alert';
+            document.body.appendChild(view);
+            ReactDOM.render(
+                <ThemeProvider>
+                    <Alert/>
+                </ThemeProvider>
+                ,view);
+        }
+    }else{
+        window.addEventListener('load',function(){
+            ALERT(ThemeProvider);
+        });
     }
+    
 }
 
 
