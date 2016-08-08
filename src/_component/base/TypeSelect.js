@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 
-injectTapEventPlugin();
 
 const _types=["类型1","type2","type3","类型4"];
 

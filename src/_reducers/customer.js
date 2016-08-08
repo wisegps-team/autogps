@@ -2,7 +2,6 @@
  * 管理客户或者用户的state字段
  */
 "use strict";
-import {WAPI} from '../_modules/Wapi';
 
 export const custAct=creatAction('customer');
 export const userAct=creatAction('user');
@@ -41,7 +40,6 @@ export default function customerReducer(customer,action,name) {
             return customer;
     }
 }
-const api=new WAPI('customer',_user.access_token);
 
 function creatAction(name) {
     let acts=['get','getting','geted','add','delete','update'];
@@ -51,7 +49,7 @@ function creatAction(name) {
         get:function (data,op) {//异步获取,所以是返回一个方法而不是一个json
             return function(dispatch) {
                 dispatch(fun.getting());
-                api.list(function(res){
+                Wapi.customer.list(function(res){
                     dispatch(fun.geted(Object.assign({},simulationData)));
                 },data,op)
             }

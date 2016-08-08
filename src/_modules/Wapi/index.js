@@ -1,6 +1,20 @@
 import WiStormAPI from './WiStormAPI.js';
 import config from './config.js';
 
+
+export function WAPI(name,token){
+	WiStormAPI.call(this,name,token,config.app_key,config.app_secret,{devKey:config.dev_key});
+	this.get_op={
+		fields:'objectId,createdAt,updatedAt'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WAPI.prototype=new WiStormAPI();
 /**
  * 用户信息相关api类
  * @constructor
@@ -547,28 +561,18 @@ const Wapi={
     comm:new WCommApi(_user?_user.access_token:null),
 	role:new WRoleApi(_user?_user.access_token:null),
 	page:new WPageApi(_user?_user.access_token:null),
-	feature:new WFeatureApi(_user?_user.access_token:null)
+	feature:new WFeatureApi(_user?_user.access_token:null),
+	//以下为非核心表
+	customer:new WAPI('customer',_user?_user.access_token:null),//客户表
+	area:new WAPI('area',_user?_user.access_token:null),//地区表
+	employee:new WAPI('employee',_user?_user.access_token:null),//员工表
+	vehicle:new WAPI('vehicle',_user?_user.access_token:null),//车辆表
+	device:new WAPI('iotDevice',_user?_user.access_token:null),//终端表
+	gps:new WAPI('iotGpsData',_user?_user.access_token:null),//定位数据表
+	log:new WAPI('iotLog',_user?_user.access_token:null),//日志数据表
+	//字典表
+	department:new WAPI('department',_user?_user.access_token:null),//部门表
+	cust_type:new WAPI('cust_type',_user?_user.access_token:null),//客户类型表
 };
 window.Wapi=Wapi;
 export default Wapi;
-
-export function WAPI(name,token){
-	WiStormAPI.call(this,name,token,config.app_key,config.app_secret,{devKey:config.dev_key});
-	this.get_op={
-		fields:'objectId,createdAt,updatedAt'//默认返回的字段
-	}
-	this.list_op={
-		fields:this.get_op.fields,
-		sorts:"objectId",
-		page:"objectId",
-		limit:"20"
-	}
-}
-WAPI.prototype=new WiStormAPI();
-WAPI.prototype.list=function(callback,data,op){
-	var OP={};	
-	Object.assign(OP,this.list_op,op);
-	OP.method=this.apiName+".list"; //接口名称
-	
-	this.getApi(data,callback,OP);
-}

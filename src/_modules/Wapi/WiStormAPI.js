@@ -11,8 +11,8 @@ function _noop(){};
 function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
-			// value:'http://192.168.3.90:8089/router/rest'
-            value: "http://o.bibibaba.cn/router/rest"
+			value:'http://121.40.42.18:8089/router/rest'
+            // value: "http://o.bibibaba.cn/router/rest"
         },
         "safetyUrl": {
             value: "http://h5.bibibaba.cn/baba/wx/wslib/api/safetyWapi.php"
@@ -50,8 +50,8 @@ function WiStormAPI(name,token,key,secret,opt){
 WiStormAPI.prototype.getApi=function(data,callback,op){
 	var D={
 		format: 'json',   //返回数据格式
-	    v: '1.0',         //接口版本
-	    // v: '2.0',         //接口版本
+	    // v: '1.0',         //接口版本
+	    v: '2.0',         //接口版本
 	    sign_method: 'md5'//签名方式
 	}
 	D.timestamp=W.dateToString(new Date());
@@ -252,7 +252,7 @@ WiStormAPI.prototype.add=function(callback,data,op){
 	Object.assign(OP,op);
 	OP.method=this.apiName+".create"; //接口名称
 	
-	this.getApi(data,callback,OP);
+	this.getApi(data,W.err(callback),OP);
 }
 WiStormAPI.prototype.delete=function(callback,data,op){
 	var OP={
@@ -260,7 +260,10 @@ WiStormAPI.prototype.delete=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".delete"; //接口名称
-	
+	if(OP.err){
+		callback=W.err(callback);
+		delete OP.err;
+	}
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.update=function(callback,data,op){
@@ -269,21 +272,30 @@ WiStormAPI.prototype.update=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".update"; //接口名称
-	
+	if(OP.err){
+		callback=W.err(callback);
+		delete OP.err;
+	}
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.get=function(callback,data,op){
 	var OP={};
 	Object.assign(OP,this.get_op,op);
 	OP.method=this.apiName+".get"; //接口名称
-	
+	if(OP.err){
+		callback=W.err(callback);
+		delete OP.err;
+	}
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.list=function(callback,data,op){
 	var OP={};	
 	Object.assign(OP,this.list_op,op);
-	OP.method=this.apiName+"s.list"; //接口名称
-	
+	OP.method=this.apiName+".list"; //接口名称
+	if(OP.err){
+		callback=W.err(callback);
+		delete OP.err;
+	}
 	this.getApi(data,callback,OP);
 }
 /**

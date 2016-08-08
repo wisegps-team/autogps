@@ -83,4 +83,5 @@ window.___={
 	'details':'详情',
 	'delete':'删除',
 	'save':'保存',
+	'confirm_delete':'确认删除该客户吗？'
 }

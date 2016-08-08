@@ -54,7 +54,7 @@ class App extends Component{
         return (
             <ThemeProvider>
             <div>
-                <Fab onClick={()=>1}/>
+                <Fab onClick={()=>{thisView.goTo('user_add.js')}}/>
                 <UserList {...this.props.customer}/>
             </div>
             </ThemeProvider>

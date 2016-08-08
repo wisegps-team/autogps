@@ -88,13 +88,19 @@ class UserItem extends Component{
     operation(index){
         switch(index){
             case 0:
-                console.log('跳转到表单页编辑',this.context.VIEW);
+                this.context.VIEW.goTo('user_add.js',this.props.data);
                 break;
             case 1:
                 console.log('详情');
                 break;
             case 2:
                 console.log('删除');
+                let that=this;
+                W.confirm(___.confirm_delete,function(b){
+                    if(b)Wapi.customer.delete(res=>STORE.dispatch(that.context.ACT.action.delete),{
+                            objectId:that.props.objectId
+                        });
+                });
                 break;
         }
     }
@@ -157,7 +163,7 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onClick={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
-                <MenuItem onClick={()=>this.props.onClick(1)}>{___.details}</MenuItem>
+                // <MenuItem onClick={()=>this.props.onClick(1)}>{___.details}</MenuItem>
                 <MenuItem onClick={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
             </IconMenu>
         );

@@ -657,6 +657,26 @@ W.errorCode=function(json){
 	}
 }
 
+/**
+ * 简单处理api返回错误信息
+ */
+W.err=function(fun){
+	if(typeof fun!=='function'){
+		return function(res){
+			if (res.status_code) {
+				W.errorCode(res);
+				return;
+			}
+		}
+	}else
+		return function(res){
+			if (res.status_code) {
+				W.errorCode(res);
+				return;
+			}else
+				fun(res);
+		}
+}
 
 W.login=function(){
 	if(_g.sso_login){//已经授权

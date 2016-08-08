@@ -58,16 +58,11 @@ class Login extends Component {
                     return;
                 } 
                 Wapi.user.get(function(result) {
-                    if (result.status_code) {
-                        W.errorCode(result);
-                        return;
-                    } else {
-                        if(!result.data.mobileVerified){
-                            //未通过手机验证
-                        }else{
-                            Object.assign(result,res);
-                            that.props.onSuccess(result);
-                        }
+                    if(!result.data.mobileVerified){
+                        //未通过手机验证
+                    }else{
+                        Object.assign(result,res);
+                        that.props.onSuccess(result);
                     }
                 }, {
                     objectId: res.uid,
