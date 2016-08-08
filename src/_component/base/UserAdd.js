@@ -33,8 +33,8 @@ const styles={
 }
 
 class UserAdd extends React.Component{
-    constructor(props){
-        super(props);
+    constructor(props,context){
+        super(props,context);
         this.state={
             uid:'',
             name:'',
@@ -79,7 +79,7 @@ class UserAdd extends React.Component{
         this.setState({
             province:value.province,
             city:value.city,
-            address:value.area
+            address:value.address
         });
     }
     typeChange(value){
