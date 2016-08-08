@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 
-injectTapEventPlugin();
-
-const _types=["类型1","type2","type3","类型4"];
+const _types=[{id:0,values:'类型1'}]
 
 let sty={
     verticalAlign: 'bottom',
 }
 
-class TypeSelect extends Component {  
-
+class TypeSelect extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -26,7 +22,7 @@ class TypeSelect extends Component {
     this.props.onChange(value);
   }
   componentDidMount(){
-    this.setState({types:_types});
+    this.setState({types:this.context.user_type});
     this.setState({value:Number(this.props.value)})
   }
   componentWillReceiveProps(nextProps){
@@ -35,16 +31,20 @@ class TypeSelect extends Component {
 
   render() {
     let items=[];
-    let len=this.state.types.length;
-    for(let i=0;i<len;i++){
-      items[i]=<MenuItem value={i} key={i} primaryText={this.state.types[i]} />;
-    }
+    this.state.types.map(ele=>{
+      items.push(<MenuItem value={ele.id} key={ele.id} primaryText={ele.values}/>)
+    });
     return (
       <SelectField style={sty} value={this.state.value} onChange={this.handleChange.bind(this)}>
         {items}
       </SelectField>
     );
   }
+}
+
+// 必须指定context的数据类型
+TypeSelect.contextTypes={
+    user_type: React.PropTypes.array
 }
 
 export default TypeSelect;
