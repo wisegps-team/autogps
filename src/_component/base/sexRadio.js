@@ -19,9 +19,9 @@ class SexRadio extends Component {
         this.value=val;
         this.props.onChange(val);
     }
-    render() {
+    render() {        
         return (
-            <RadioButtonGroup {...this.props} name="sex" defaultSelected="1" onChange={this.change}>
+            <RadioButtonGroup {...this.props} name="sex" defaultSelected={this.props.value.toString()||'1'} onChange={this.change}>
                 <RadioButton
                     value='1'
                     label={___.man}
