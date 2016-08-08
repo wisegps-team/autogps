@@ -1,18 +1,19 @@
 import WiStormAPI from './WiStormAPI.js';
+import config from './config.js';
 
 /**
  * 用户信息相关api类
  * @constructor
  */
-export function WUserApi(token){
-    WiStormAPI.call(this,'user',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+function WUserApi(token){
+    WiStormAPI.call(this,'user',token,config.app_key,config.app_secret);
 	this.get_op={
-		fields:'cust_id,login_id,cust_name,cust_type,privilege,saler_id,car_brand,car_series,seller_id,seller_ids,logo,remark,create_time,update_time,photo,address,tel,mobile'//默认返回的字段
+		fields:'objectId,userType,username,mobile,mobileVerified,email,emailVerified,authData'//默认返回的字段
 	}
 	this.list_op={
 		fields:this.get_op.fields,
-		sorts:"cust_id",
-		page:"cust_id",
+		sorts:"objectId",
+		page:"objectId",
 		limit:"20"
 	}
 }
@@ -40,7 +41,7 @@ WUserApi.prototype.login=function(callback,data,op){
  */
 WUserApi.prototype.register=function(callback,data,op){
 	var OP={
-		fields:'cust_id'			//默认返回的字段
+		fields:'uid'			//默认返回的字段
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".register"; 				//接口名称
@@ -256,7 +257,7 @@ WUserApi.prototype.deleteSeller=function(callback,data,op){
  * @constructor
  */
 function WCommApi(token){
-	WiStormAPI.call(this,'comm',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+	WiStormAPI.call(this,'comm',token,config.app_key,config.app_secret);
 }
 WCommApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
 
@@ -285,7 +286,7 @@ WCommApi.prototype.validCode=function(callback,data,op){
 		fields:'valid'			//默认返回的字段
 	};
 	this.jsonConcat(OP,op);
-	OP.method="wicare.user.valid_code";//接口名称
+	OP.method=this.apiName+".validCode";//接口名称
 	this.getApi(data,callback,OP);
 }
 
@@ -344,7 +345,7 @@ WCommApi.prototype.sendWeixin=function(callback,data){
  * @constructor
  */
 function WFileApi(token){
-	WiStormAPI.call(this,'file',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+	WiStormAPI.call(this,'file',token,config.app_key,config.app_secret);
 }
 WFileApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
 
@@ -358,7 +359,7 @@ WFileApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
 WFileApi.prototype.upload=function(callback,file,updateProgress,op){
 	var OP={
 		format: 'json',   //返回数据格式
-	    v: '1.0',         //接口版本
+	    v: '2.0',         //接口版本
 	    sign_method: 'md5',//签名方式
 		fields:'待定'	//默认返回的字段
 	};
@@ -443,8 +444,8 @@ WFileApi.prototype.base64=function(callback,data,updateProgress,op){
 	oReq.send(oData);
 }
 
-export function WDeveloperApi(token){
-    WiStormAPI.call(this,'developer',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+function WDeveloperApi(token){
+    WiStormAPI.call(this,'developer',token,config.app_key,config.app_secret);
 	this.get_op={
 		fields:'dev_id,user_name,email,dev_type,user_id,dev_name,dev_key,dev_secret,access_apis,create_time'//默认返回的字段
 	}
@@ -457,8 +458,8 @@ export function WDeveloperApi(token){
 }
 WDeveloperApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 
-export function WAppApi(token){
-    WiStormAPI.call(this,'app',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+function WAppApi(token){
+    WAPI.call(this,'app',token);
 	this.get_op={
 		fields:'app_id,dev_id,app_name,app_logo,app_key,app_secret,data_privilege,create_time,update_time'//默认返回的字段
 	}
@@ -469,12 +470,12 @@ export function WAppApi(token){
 		limit:"20"
 	}
 }
-WAppApi.prototype=new WiStormAPI();//继承父类WiStormAPI
+WAppApi.prototype=new WAPI();//继承父类WiStormAPI
 
-export function WTableDefineApi(token){
-	WiStormAPI.call(this,'table_define',token,WiStorm.config.app_key,WiStorm.config.app_secret);
+function WTableApi(token){
+	WAPI.call(this,'table',token);
 	this.get_op={
-		fields:'tid,ossid,tab_name,tab_desc,tab_fields,tab_indexs,create_time,update_time'//默认返回的字段
+		fields:'name,desc,type,isApi,isPrivate,isCache,cacheField,fieldDefine,indexDefine'//默认返回的字段
 	}
 	this.list_op={
 		fields:this.get_op.fields,
@@ -483,15 +484,91 @@ export function WTableDefineApi(token){
 		limit:"20"
 	}
 }
-WTableDefineApi.prototype=new WiStormAPI();//继承父类WiStormAPI
+WTableApi.prototype=new WAPI();//继承父类WiStormAPI
+
+/**
+ * 角色表
+ */
+function WRoleApi(token){//角色
+	WiStormAPI.call(this,'role',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'objectId,name,roles,users,createdAt,updatedAt'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WRoleApi.prototype=new WiStormAPI();//继承父类WiStormAPI
+
+/**
+ * 页面表
+ */
+function WPageApi(token){
+	WiStormAPI.call(this,'page',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'objectId,appId,key,name,url,createdAt,updatedAt'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WPageApi.prototype=new WiStormAPI();//继承父类WiStormAPI
+
+
+/**
+ * 功能表
+ */
+function WFeatureApi(token){
+	WiStormAPI.call(this,'feature',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'objectId,pageId,key,name,createdAt,updatedAt'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WFeatureApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 
 const Wapi={
     user:new WUserApi(_user?_user.access_token:null),
     developer:new WDeveloperApi(_user?_user.access_token:null),
     app:new WAppApi(_user?_user.access_token:null),
-    table_define:new WTableDefineApi(_user?_user.access_token:null),
+    table:new WTableApi(_user?_user.access_token:null),
     file:new WFileApi(_user?_user.access_token:null),
-    comm:new WCommApi(_user?_user.access_token:null)
+    comm:new WCommApi(_user?_user.access_token:null),
+	role:new WRoleApi(_user?_user.access_token:null),
+	page:new WPageApi(_user?_user.access_token:null),
+	feature:new WFeatureApi(_user?_user.access_token:null)
 };
 window.Wapi=Wapi;
 export default Wapi;
+
+export function WAPI(name,token){
+	WiStormAPI.call(this,name,token,config.app_key,config.app_secret,{devKey:config.dev_key});
+	this.get_op={
+		fields:'objectId,createdAt,updatedAt'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WAPI.prototype=new WiStormAPI();
+WAPI.prototype.list=function(callback,data,op){
+	var OP={};	
+	Object.assign(OP,this.list_op,op);
+	OP.method=this.apiName+".list"; //接口名称
+	
+	this.getApi(data,callback,OP);
+}

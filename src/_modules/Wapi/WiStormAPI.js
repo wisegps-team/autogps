@@ -11,6 +11,7 @@ function _noop(){};
 function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
+			// value:'http://192.168.3.90:8089/router/rest'
             value: "http://o.bibibaba.cn/router/rest"
         },
         "safetyUrl": {
@@ -21,6 +22,9 @@ function WiStormAPI(name,token,key,secret,opt){
         },
         "appSecret": {
             value: secret
+        },
+		"devKey": {
+            value: (opt?opt.devKey:null)
         },
         "tableName":{
             value: name
@@ -47,6 +51,7 @@ WiStormAPI.prototype.getApi=function(data,callback,op){
 	var D={
 		format: 'json',   //返回数据格式
 	    v: '1.0',         //接口版本
+	    // v: '2.0',         //接口版本
 	    sign_method: 'md5'//签名方式
 	}
 	D.timestamp=W.dateToString(new Date());
@@ -69,7 +74,7 @@ WiStormAPI.prototype.getApi=function(data,callback,op){
 WiStormAPI.prototype.postApi=function(getData,callback,data){
 	var D={
 		format: 'json',   //返回数据格式
-	    v: '1.0',         //接口版本
+	    v: '2.0',         //接口版本
 	    sign_method: 'md5'//签名方式
 	}
 	D.timestamp=W.dateToString(new Date());
@@ -124,6 +129,8 @@ WiStormAPI.prototype.safetyGet=function(data,callback,op){
 WiStormAPI.prototype.makeUrl=function(json){
 	if(!json.access_token&&this.access_token)
 		json.access_token=this.access_token;
+	if(this.devKey)
+		json.dev_key=this.devKey;
 	var sign="";
 	var URL="";
 	var reg=new RegExp("(^\\s*)|(\\s*$)", "g");

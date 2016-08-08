@@ -56,21 +56,23 @@ class Login extends Component {
                     }
                     W.errorCode(res);
                     return;
-                } else if(res.cust_id){
-                    Wapi.user.get(function(result) {
-                        W.loading();
-                        if (result.status_code) {
-                            W.errorCode(result);
-                            return;
-                        } else {
-                            result.access_token=res.access_token;
+                } 
+                Wapi.user.get(function(result) {
+                    if (result.status_code) {
+                        W.errorCode(result);
+                        return;
+                    } else {
+                        if(!result.data.mobileVerified){
+                            //未通过手机验证
+                        }else{
+                            Object.assign(result,res);
                             that.props.onSuccess(result);
                         }
-                    }, {
-                        cust_id: res.cust_id,
-                        access_token: res.access_token
-                    });
-                }
+                    }
+                }, {
+                    objectId: res.uid,
+                    access_token: res.access_token
+                });
             },
             function submit(){
                 this.formData.account=this.formData.account?this.formData.account.trim():null;
@@ -84,8 +86,8 @@ class Login extends Component {
                     this.setState({password_err:___.input_pwd});
                     return;
                 }
+                W.loading();
                 Wapi.user.login(this.loginSuccess,this.formData);
-                console.log(this.formData);
                 if(this.need_remember){
                     W.setSetting("pwd",this.formData.password);
                     W.setSetting("account",this.formData.account);

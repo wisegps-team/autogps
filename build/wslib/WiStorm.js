@@ -749,8 +749,6 @@ window.WiStorm={
 	debug:_d,
 	config:{
 		"description": "WiStorm框架的配置信息",
-		"app_key": "9410bc1cbfa8f44ee5f8a331ba8dd3fc",
-		"app_secret": "21fb644e20c93b72773bf0f8d0905052",
 		"wx_app_id":"wxa5c196f7ec4b5df9",
 		"skin": "default",
 		"default_language": "zh-cn",

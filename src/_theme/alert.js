@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -201,6 +202,7 @@ class Alert extends Component {
 function ALERT(ThemeProvider){
     if(document.body){
         if(!window.W.alert){
+            injectTapEventPlugin();
             let view=document.createElement('div');
             view.id='_k_alert';
             document.body.appendChild(view);

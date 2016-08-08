@@ -7,6 +7,7 @@ import AppBar from 'material-ui/AppBar';
 import {ThemeProvider} from './_theme/default';
 
 import Login from './_component/login';
+import Wapi from './_modules/Wapi';
 
 require('./_sass/index.scss');//包含css
 
