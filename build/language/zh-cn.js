@@ -68,6 +68,7 @@ window.___={
 	'add_user':'新增用户',
 	'phone_err':'请输入正确的手机号码',
 	'phone_registed':'该号码已注册',
+	'phone_empty':'电话号码不能为空',
 	'area':'地区',
 	'type':'类型',
 	'person':'联系人',
@@ -76,4 +77,5 @@ window.___={
 	'woman':'女',
 	'cust_manage':'客户管理',
 	'user_manage':'用户管理',
+	'save':'保存',
 }
