@@ -50,11 +50,11 @@ class App extends Component{
     }
     
     render() {
-        console.log('app渲染了')
+        console.log('app渲染了');
         return (
             <ThemeProvider>
             <div>
-                <Fab onClick={()=>{thisView.goTo('user_add.js')}}/>
+                <Fab onClick={()=>{thisView.goTo('cust_add.js')}}/>
                 <UserList {...this.props.customer}/>
             </div>
             </ThemeProvider>
