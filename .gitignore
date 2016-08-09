@@ -58,5 +58,5 @@ Temporary Items
 /build/src/*/*.js
 /build/src/*.js
 
-/src/test/*
+
 /build/src/test/*
