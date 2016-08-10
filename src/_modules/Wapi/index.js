@@ -299,7 +299,7 @@ WCommApi.prototype.validCode=function(callback,data,op){
 	var OP={
 		fields:'valid'			//默认返回的字段
 	};
-	this.jsonConcat(OP,op);
+	Object.assign(OP,op);
 	OP.method=this.apiName+".validCode";//接口名称
 	this.getApi(data,callback,OP);
 }
@@ -379,7 +379,7 @@ WFileApi.prototype.upload=function(callback,file,updateProgress,op){
 	};
 	OP.timestamp=W.dateToString(new Date());
 	OP.app_key=this.appKey;
-	this.jsonConcat(OP,op);
+	Object.assign(OP,op);
 	OP.method="wicare.file.upload"; 
 	var url=this.makeUrl(OP);//签名并构建路径
 	
