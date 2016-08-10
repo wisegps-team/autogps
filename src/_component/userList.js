@@ -58,10 +58,7 @@ class UserList extends Component {
         STORE.dispatch(ACT.fun.get(data,op));//获取下一页
     }
     render() {
-        console.log('userlist渲染了')
-        let t1=new Date().getTime();
         let items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
-        console.log(new Date().getTime()-t1);
         return (
             <AutoList load={this.load} forLoad={(this.props.data.length!=this.props.total)} loading={this.props.loading}>
                 {items}
@@ -105,13 +102,13 @@ class UserItem extends Component{
         }
     }
     render() {
-        if(!this.props.data.user_type_name){
-            let types=this.context.STORE.getState().user_type;
-            let type=types.find(type=>this.props.data.user_type==type.id);
-            this.props.data.user_type_name=type?type.values:this.props.data.user_type;
+        if(!this.props.data.custType_name){
+            let types=this.context.STORE.getState().custType;
+            let type=types.find(type=>this.props.data.custType==type.id);
+            this.props.data.custType_name=type?type.name:this.props.data.custType;
         }
         let tr=(<div style={sty.tab}>
-                <span style={sty.td}>{this.props.data.user_type_name}</span>
+                <span style={sty.td}>{this.props.data.custType_name}</span>
                 <span style={sty.td}>{this.props.data.contact}</span>
                 <span style={sty.td}>{this.props.data.tel}</span>
             </div>);

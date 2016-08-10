@@ -7,11 +7,11 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 
-import Input from './input';
-import PhoneInput from './PhoneInput';
-import TypeSelect from './TypeSelect';
-import AreaSelect from './areaSelect';
-import SexRadio from './sexRadio';
+import Input from './base/input';
+import PhoneInput from './base/PhoneInput';
+import TypeSelect from './base/TypeSelect';
+import AreaSelect from './base/areaSelect';
+import SexRadio from './base/sexRadio';
 
 const styles={
     content:{

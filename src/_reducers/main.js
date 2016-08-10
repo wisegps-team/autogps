@@ -5,7 +5,7 @@ import customerReducer from './customer';
 import dictionaryReducer from './dictionary';
 
 const initialState = {
-    user_type:[],//用户类型字典
+    custType:[],//用户类型字典
     customer:{
         data:[],    //客户列表
         total:0,    //总客户数
@@ -23,7 +23,7 @@ function main(state = initialState, action) {
     return {
         customer:customerReducer(state.customer,action,'customer'),
         user:customerReducer(state.user,action,'user'),
-        user_type:dictionaryReducer(state.user_type,action,'user_type')
+        custType:dictionaryReducer(state.custType,action,'custType')
     };
 }
 

@@ -5,7 +5,7 @@ import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
 import AppBar from 'material-ui/AppBar';
-import UserAdd from '../_component/base/UserAdd';
+import UserAdd from '../_component/UserAdd';
 import STORE from '../_reducers/main';
 
 
@@ -18,40 +18,33 @@ thisView.addEventListener('load',function(){
         </Provider>,thisView);
 });
 
-const _data={
-            uid:'',
-            name:'javascript',
-            province:'广东省',
-            provinceId:19,
-            city:'广州市',
-            cityId:289,
-            address:'天河区',
-            addressId:3040,
-            type:'3',
-            contact:'Mei',
-            tel:'18576783939',
-            sex:0,
-            treePath:'',
-            parentId:'',
-            creatorId:'',
-            acl:'',
-        }
-
 class AppUserAdd extends React.Component{
     constructor(props,context){
         super(props,context);
+        this.state={
+            cust_data:null
+        }
     }
+    componentDidMount() {
+        let that=this;
+        thisView.addEventListener('show',function(e){
+            //可能会传参数过来
+            console.log(e);
+            if(e.params){
+                that.setState({cust_data:e.params});
+            }
+        })
+    }
+    
     getChildContext(){
-        return {user_type:this.props.user_type};
+        return {custType:this.props.custType};
     }
     render(){
-        console.log('AppUserAdd');
-        console.log(this.props);
         return(
             <ThemeProvider>
                 <div>
                     <AppBar title={___.add_user}/>
-                    <UserAdd data={_data}/>
+                    <UserAdd data={this.state.cust_data}/>
                     
                 </div>
             </ThemeProvider>
@@ -60,11 +53,11 @@ class AppUserAdd extends React.Component{
 }
 
 AppUserAdd.childContextTypes={
-    user_type: React.PropTypes.array
+    custType: React.PropTypes.array
 }
 
 const APP=connect(function select(state) {
     return {
-        user_type:state.user_type
+        custType:state.custType
     };
 })(AppUserAdd);

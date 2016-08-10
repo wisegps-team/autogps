@@ -19,7 +19,7 @@ import {user_type_act} from '../_reducers/dictionary';
 
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
-    STORE.dispatch(user_type_act.get());
+    STORE.dispatch(user_type_act.get({creator:'>0'},{fields:'id,name,appId,useType,userType'}));
 }
 loadDictionary();
 

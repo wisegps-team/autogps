@@ -50,7 +50,6 @@ class App extends Component{
     }
     
     render() {
-        console.log('app渲染了');
         return (
             <ThemeProvider>
             <div>

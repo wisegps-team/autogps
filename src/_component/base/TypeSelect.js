@@ -12,7 +12,7 @@ class TypeSelect extends Component {
     super(props, context);
     this.state = {
       value:0,
-      types:[]
+      types:context.custType
     };
   }
 
@@ -20,18 +20,14 @@ class TypeSelect extends Component {
     this.setState({value:value});
     this.props.onChange(value);
   }
-  componentDidMount(){
-    this.setState({types:this.context.user_type});
-    this.setState({value:Number(this.props.value)})
-  }
   componentWillReceiveProps(nextProps){
-    this.setState({value:Number(nextProps.value)});
+    this.setState({value:parseInt(nextProps.value)});
   }
 
   render() {
     let items=[];
     this.state.types.map(ele=>{
-      items.push(<MenuItem value={ele.id} key={ele.id} primaryText={ele.values}/>)
+      items.push(<MenuItem value={ele.id} key={ele.id} primaryText={ele.name}/>)
     });
     return (
       <SelectField style={sty} value={this.state.value} onChange={this.handleChange.bind(this)}>
@@ -43,7 +39,7 @@ class TypeSelect extends Component {
 
 // 必须指定context的数据类型
 TypeSelect.contextTypes={
-    user_type: React.PropTypes.array
+    custType: React.PropTypes.array
 }
 
 export default TypeSelect;

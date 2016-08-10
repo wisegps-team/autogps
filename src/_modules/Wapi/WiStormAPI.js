@@ -252,10 +252,10 @@ WiStormAPI.prototype.add=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".create"; //接口名称
-	if(OP.err){
+	if(!OP.err){
 		callback=W.err(callback);
-		delete OP.err;
 	}
+	delete OP.err;
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.delete=function(callback,data,op){
@@ -264,10 +264,10 @@ WiStormAPI.prototype.delete=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".delete"; //接口名称
-	if(OP.err){
+	if(!OP.err){
 		callback=W.err(callback);
-		delete OP.err;
 	}
+	delete OP.err;
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.update=function(callback,data,op){
@@ -276,30 +276,30 @@ WiStormAPI.prototype.update=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".update"; //接口名称
-	if(OP.err){
+	if(!OP.err){
 		callback=W.err(callback);
-		delete OP.err;
 	}
+	delete OP.err;
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.get=function(callback,data,op){
 	var OP={};
 	Object.assign(OP,this.get_op,op);
 	OP.method=this.apiName+".get"; //接口名称
-	if(OP.err){
+	if(!OP.err){
 		callback=W.err(callback);
-		delete OP.err;
 	}
+	delete OP.err;
 	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.list=function(callback,data,op){
 	var OP={};	
 	Object.assign(OP,this.list_op,op);
 	OP.method=this.apiName+".list"; //接口名称
-	if(OP.err){
+	if(!OP.err){
 		callback=W.err(callback);
-		delete OP.err;
 	}
+	delete OP.err;
 	this.getApi(data,callback,OP);
 }
 /**

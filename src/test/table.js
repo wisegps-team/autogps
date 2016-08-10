@@ -15,9 +15,10 @@ function addTable(table){
     });
 }
 
+//导入数据
 function addData(name,dataArr){
     let api=new WAPI(name,_user.access_token);
-    let id=setInterval(send,500);
+    let id=setInterval(send,100);
     function send(){
         if(!dataArr.length){
             clearInterval(id);
@@ -30,6 +31,16 @@ function addData(name,dataArr){
             }
         },data,{err:true});
     }
+}
+
+//清除数据
+function clearData(name){
+    let api=new WAPI(name,_user.access_token);
+    api.delete(function(res){
+        console.log('已清空'+name);
+    },{
+        objectId:'>0'
+    })
 }
 
 //更新table
@@ -47,8 +58,13 @@ function changeArea(ele){
     return ele;
 }
 window.addEventListener('load',function(){
-    let data=areaArray.slice(0,10).map(changeArea);
-    addData('area',data);
+    // let data=areaArray.map(changeArea);
+    // addData('area',data);
+    // clearData('area');
+
+    //用户类型
+    addData('custType',DATA.custType);
+    // clearData('custType');
 })
 
 

@@ -564,7 +564,6 @@ const Wapi={
 	feature:new WFeatureApi(_user?_user.access_token:null),
 	//以下为非核心表
 	customer:new WAPI('customer',_user?_user.access_token:null),//客户表
-	area:new WAPI('area',_user?_user.access_token:null),//地区表
 	employee:new WAPI('employee',_user?_user.access_token:null),//员工表
 	vehicle:new WAPI('vehicle',_user?_user.access_token:null),//车辆表
 	device:new WAPI('_iotDevice',_user?_user.access_token:null),//终端表
@@ -572,7 +571,8 @@ const Wapi={
 	log:new WAPI('_iotLog',_user?_user.access_token:null),//日志数据表
 	//字典表
 	department:new WAPI('department',_user?_user.access_token:null),//部门表
-	cust_type:new WAPI('custType',_user?_user.access_token:null),//客户类型表
+	custType:new WAPI('custType',_user?_user.access_token:null),//客户类型表
+	area:new WAPI('area',_user?_user.access_token:null),//地区表
 };
 window.Wapi=Wapi;
 export default Wapi;
