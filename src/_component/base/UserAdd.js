@@ -39,8 +39,11 @@ class UserAdd extends React.Component{
             uid:'',
             name:'',
             province:'',
+            provinceId:0,
             city:'',
+            cityId:0,
             address:'',
+            addressId:0,
             type:0,
             contact:'',
             tel:'',
@@ -59,8 +62,11 @@ class UserAdd extends React.Component{
             this.setState({
                 name:data.name,
                 province:data.province,
+                provinceId:data.provinceId,
                 city:data.city,
+                cityId:data.cityId,
                 address:data.address,
+                addressId:data.addressId,
                 type:data.type,
                 contact:data.contact,
                 tel:data.tel,
@@ -78,8 +84,11 @@ class UserAdd extends React.Component{
         if(!value)return;
         this.setState({
             province:value.province,
+            provinceId:value.provinceId,
             city:value.city,
-            address:value.address
+            cityId:value.cityId,
+            address:value.address,
+            addressId:value.addressId
         });
     }
     typeChange(value){
@@ -89,7 +98,7 @@ class UserAdd extends React.Component{
         this.setState({contact:value});
     }
     sexChange(value){
-        this.setState({sex:value});
+        this.setState({sex:Number(value)});
     }
     telChange(value,warning){
         this.setState({
@@ -103,8 +112,11 @@ class UserAdd extends React.Component{
         let data={
             name:this.state.name,
             province:this.state.province,
+            provinceId:this.state.provinceId,
             city:this.state.city,
+            cityId:this.state.cityId,
             address:this.state.address,
+            addressId:this.state.addressId,
             type:this.state.type,
             contact:this.state.contact,
             sex:this.state.sex,
@@ -122,13 +134,18 @@ class UserAdd extends React.Component{
         if(this.state.tel_warning){
             alert(this.state.tel_warning);
         }
+        // add user;
+        // add cust;
     }
 
     render(){
         let area={
             province:this.state.province,
+            provinceId:this.state.provinceId,
             city:this.state.city,
+            cityId:this.state.cityId,
             address:this.state.address,
+            addressId:this.state.addressId
         }
         return(
             <div style={styles.content}>
