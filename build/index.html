@@ -24,11 +24,6 @@
 			if(openId){
 				W.setCookie("__login_redirect_uri__","");
 			}	
-			function success(json){
-				var login_url=W.getCookie("__login_redirect_uri__")||"src/home.html";
-				W.setCookie("__login_redirect_uri__","");
-				top.location=login_url;
-			}
 			
 			function loginSuccess(json) {
 				if (json.status_code&&json.status_code!='0'&&json.status_code!=0) {

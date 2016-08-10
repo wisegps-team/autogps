@@ -2,25 +2,12 @@ import React, {Component} from 'react';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
-import FlatButton from 'material-ui/FlatButton';
 
 import Input from '../base/input';
 import VerificationCode from '../base/verificationCode';
 import P from '../../_modules/public';
+import sty from './style';
 
-const sty={
-    but:{
-        width:'100%',
-        marginTop:'10px'
-    },
-    ch:{
-        width:'auto',
-        marginTop: '10px'
-    },
-    cl:{
-        width:'auto'
-    }
-}
 
 let pwd=W.getSetting("pwd");
 let account=W.getSetting("account");
@@ -47,21 +34,14 @@ class Login extends Component {
         return[
             function loginSuccess(res){
                 let that=this;
-                if (res.status_code) {
-                    W.loading();
-                    if(res.status_code==444){
-                        this.login_res=res;
-                        W.alert(___.please_verification,()=>this.setState({verification:'block'}));
-                        return;
-                    }
-                    W.errorCode(res);
-                    return;
-                } 
                 Wapi.user.get(function(result) {
                     if(!result.data.mobileVerified){
                         //未通过手机验证
+                        that.login_res=res;
+                        that.login_result=result;
+                        W.alert(___.please_verification,()=>that.setState({verification:'block'}));
                     }else{
-                        Object.assign(result,res);
+                        Object.assign(result.data,res);
                         that.props.onSuccess(result);
                     }
                 }, {
@@ -81,8 +61,7 @@ class Login extends Component {
                     this.setState({password_err:___.input_pwd});
                     return;
                 }
-                W.loading();
-                Wapi.user.login(this.loginSuccess,this.formData);
+                Wapi.user.login(this.loginSuccess,Object.assign({},this.formData));
                 if(this.need_remember){
                     W.setSetting("pwd",this.formData.password);
                     W.setSetting("account",this.formData.account);
@@ -103,7 +82,16 @@ class Login extends Component {
             },
             function verified(val){
                 //验证码输入正确了
-
+                let that=this;
+                Wapi.user.update(function(){
+                    Object.assign(that.login_result.data,this.login_res);
+                    that.login_result.mobileVerified=true;
+                    that.props.onSuccess(that.login_result);
+                },{
+                    access_token:this.login_res.access_token,
+                    mobileVerified:true,
+                    _uid:this.login_res.uid
+                })
             }
         ];
     }

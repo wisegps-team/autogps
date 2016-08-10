@@ -252,8 +252,11 @@ WiStormAPI.prototype.add=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".create"; //接口名称
-	
-	this.getApi(data,W.err(callback),OP);
+	if(OP.err){
+		callback=W.err(callback);
+		delete OP.err;
+	}
+	this.getApi(data,callback,OP);
 }
 WiStormAPI.prototype.delete=function(callback,data,op){
 	var OP={

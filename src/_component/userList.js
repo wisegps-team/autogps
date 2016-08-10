@@ -47,12 +47,12 @@ class UserList extends Component {
         let last=this.props.data[this.props.data.length-1];
         let first=this.props.data[0];
         let data={
-            parentId:_user.cust_id
+            parentId:_user.uid
         };
         let op={
-            max_id:last.id,
-            page:'id',
-            sorts:'id'
+            max_id:last.objectId,
+            page:'objectId',
+            sorts:'objectId'
         }
         let ACT=this.context.ACT,STORE=this.context.STORE;
         STORE.dispatch(ACT.fun.get(data,op));//获取下一页

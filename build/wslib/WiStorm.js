@@ -722,7 +722,6 @@ W.login=function(){
 W._loginSuccess=function(res){
 	W._login = true;//表示已登录
 	_user=res;
-	_user.open_id=res.login_id;
 	W.setSetting("user",res);
 }
 

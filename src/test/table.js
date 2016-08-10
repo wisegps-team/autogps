@@ -16,8 +16,8 @@ function addTable(table){
 }
 
 function addData(name,dataArr){
-    let api=new WAPI(name);
-    let id=setInterval(send,100);
+    let api=new WAPI(name,_user.access_token);
+    let id=setInterval(send,500);
     function send(){
         if(!dataArr.length){
             clearInterval(id);
@@ -36,7 +36,19 @@ function addData(name,dataArr){
 for(let i=0;i<TABLES.length;i++){
     let tab=TABLES[i];
     if(tab.fieldDefine.length){
-        setTimeout(()=>addTable(tab),i*100);
+        setTimeout(()=>addTable(tab),i*1000);
     }
 }
+
+
+function changeArea(ele){
+    ele.name=ele.areaName;
+    delete ele.areaName;
+    return ele;
+}
+window.addEventListener('load',function(){
+    let data=areaArray.slice(0,10).map(changeArea);
+    addData('area',data);
+})
+
 

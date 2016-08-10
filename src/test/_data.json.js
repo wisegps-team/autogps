@@ -50,9 +50,30 @@ let custType=[
     }
 ];
 
-export default DATA=[
+let user=[
     {
-        name:'cust_type',
-        data:custType
+        name:'深圳市卫网科技有限公司',
+        short:'卫网科技',
+        uid:''
     }
-];
+]
+
+let brand=[
+    {
+        company:'深圳市卫网科技有限公司',
+        name:'沃管车'
+    }
+]
+
+let product=[
+    {
+        company:'深圳市卫网科技有限公司',
+        name:'W13智能终端',
+        brand:'沃管车'
+    }
+]
+
+const DATA={
+    custType,user,brand,product
+};
+export default DATA

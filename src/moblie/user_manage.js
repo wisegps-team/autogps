@@ -1,7 +1,7 @@
 /**
  * 08/03
  * 小吴
- * 客户管理页，展示客户列表，添加客户，删除客户
+ * 客户管理页，展示用户列表，添加用户，删除用户
  */
 "use strict";
 
@@ -71,6 +71,6 @@ App.childContextTypes={
 
 const APP=connect(function select(state) {
     return {
-        customer:state.customer
+        user:state.user
     };
 })(App);

@@ -33,7 +33,7 @@ class VerificationCode extends Component {
                 }
                 if(res.valid){
                     that.setState({code_err:null});
-                    that.props.onSuccess(val);
+                    that.props.onSuccess(val,that.props.name);
                 }else{
                     that.setState({code_err:___.code_err});
                 }
@@ -45,6 +45,10 @@ class VerificationCode extends Component {
         }
     }
     getCode(){
+        if(!this.props.account){
+            W.alert(___.phone_empty);
+            return;
+        }
         let that=this;
         that.setState({second:60});
         that._time_id=setInterval(function(){

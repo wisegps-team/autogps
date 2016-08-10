@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=3;//版本号
+let version=8;//版本号
 
 //地区表
 export const area={
@@ -133,7 +133,6 @@ export const customer={
                 required:'名称为必填'
             }
         },
-        ,
         {
             'name': 'treePath',
             'desc': '节点路径树',
@@ -892,7 +891,8 @@ export const iotDevice={
             'display': 'TextBox',
             'query': true,    //可查询字段
             'validations': {
-                required:true
+                required:true,
+                select:[{value:1,name:1},{value:2,name:2}]
             }
         },
         {
@@ -1132,9 +1132,9 @@ export const iotLog={
 }
 
 //日志表
-export const warehouseLog={
-    name: 'warehouseLog',             //表名
-    desc: '出入库日志表',             //表描述
+export const deviceLog={
+    name: 'deviceLog',             //表名
+    desc: '设备出入库日志表',            //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
     isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
@@ -1156,7 +1156,8 @@ export const warehouseLog={
             'type': 'Number',
             'query': true,
             'validations':{
-                digits:true
+                digits:true,
+                select:[{value:1,name:'入库'},{value:0,name:'出库'}]
             }
         }
     ],
@@ -1166,8 +1167,201 @@ export const warehouseLog={
     ]
 }
 
+//仓库统计表
+export const deviceTotal={
+    name: 'deviceTotal',             //表名
+    desc: '仓库统计表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'custId',
+            'desc': '公司id',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            }
+        },
+        {
+            'name': 'type',
+            'desc': '终端型号',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true,
+                required:true
+            }
+        },
+        {
+            'name': 'inNet',
+            'desc': '入网数量',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true
+            }
+        },
+        {
+            'name': 'register',
+            'desc': '注册数量',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true
+            }
+        },
+        {
+            'name': 'onLine',
+            'desc': '在线数量',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true
+            }
+        },
+        {
+            'name': 'woGuanChe',
+            'desc': '沃管车数量',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true
+            }
+        },
+        {
+            'name': 'zhangWoChe',
+            'desc': '掌沃车数量',
+            'type': 'Number',
+            'query': true,
+            'validations':{
+                digits:true
+            }
+        }
+    ],
+    indexDefine: [
+        {custId:1},
+        {type:1}
+    ]
+}
+
+//品牌表
+export const brand={
+    name: 'brand',             //表名
+    desc: '品牌表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'company',
+            'desc': '公司名',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            }
+        },
+        {
+            'name': 'companyId',
+            'desc': '公司id',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            }
+        },
+        {
+            'name': 'name',
+            'desc': '品牌名称',
+            'type': 'String',
+            'query': true,
+            'validations':{
+                required:true
+            }
+        }
+    ],
+    indexDefine: [
+        {companyId:1},
+        {name:1},
+        {company:1}
+    ]
+}
+
+//品牌表
+export const product={
+    name: 'product',             //表名
+    desc: '产品表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'name',
+            'desc': '产品名称',
+            'type': 'String',
+            'query': true,
+            'validations':{
+                required:true
+            }
+        },
+        {
+            'name': 'company',
+            'desc': '公司名',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            }
+        },
+        {
+            'name': 'companyId',
+            'desc': '公司id',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            }
+        },
+        {
+            'name': 'brand',
+            'desc': '品牌名称',
+            'type': 'String',
+            'query': true,
+            'validations':{
+                required:true
+            }
+        },
+        {
+            'name': 'brandId',
+            'desc': '品牌id',
+            'type': 'String',
+            'query': true,
+            'validations':{
+                required:true
+            }
+        }
+    ],
+    indexDefine: [
+        {name:1},
+        {companyId:1},
+        {company:1},
+        {brandId:1},
+        {brand:1}
+    ]
+}
+
+
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
+    ,brand,product,deviceTotal
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
