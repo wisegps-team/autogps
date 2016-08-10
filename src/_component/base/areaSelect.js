@@ -25,110 +25,117 @@ export default class AreaSelect extends Component{
         this.state={
             provinces:[],
             province:'',
-            province_id:-1,
+            provinceId:-1,
 
             cities:[],
             city:'',
-            city_id:-1,
+            cityId:-1,
 
             addresses:[],
             address:'',
-            address_id:-1
+            addressId:-1
         };
     }
     componentDidMount() {
         let _this=this;
         Wapi.area.list(function(res){
+            if(res.status_code!=0||res.data.length==0)return;
             let prs=res.data;
             
             _this.setState({
-                provinces:prs
+                provinces:prs,
             });
-        })
+        },{level:1});
     }
     componentWillReceiveProps(newProps){
         if(newProps.value){
+            let prs=[];
             let pr=newProps.value.province;
+            let pr_id=newProps.value.provinceId;
+
+            let cts=[];
             let ct=newProps.value.city;
+            let ct_id=newProps.value.cityId;
+
+            let ads=[];
             let ad=newProps.value.address;
+            let ad_id=newProps.value.addressId;
 
-            let prs,pr_id,cts,ct_id,ads,ad_id;
-            
-            Wapi.area.list(function(res){
+            Wapi.area.list(res=>{
+                if(res.status_code!=0||res.data.length==0)return;
                 prs=res.data;
-                pr_id=prs.find(elePr=>{elePr.areaName==pr}).id;
+            },{level:1});
 
-                Wapi.area.list(function(res){
-                    cts=res.data;
-                    ct_id=cts.find(eleCt=>eleCt.areaName==ct).id;
-
-                    Wapi.area.list(function(res){
-                        ads=res.data;
-                        if(ads.length!=0){
-                            ad_id=ads.find(eleAr=>eleAr.areaName==ad).id;
-                        }
-                    },{parentId:ct_id});
-                },{parentId:pr_id});
-            });
+            Wapi.area.list(res=>{
+                if(res.status_code!=0||res.data.length==0)return;
+                cts=res.data;
+            },{parentId:pr_id});
+            
+            Wapi.area.list(res=>{
+                if(res.status_code!=0||res.data.length==0)return;
+                ads=res.data;
+            },{parentId:ct_id});
 
             this.setState({
                 province:pr,
-                province_id:pr_id,
+                provinceId:pr_id,
 
                 cities:cts,
                 city:ct,
-                city_id:ct_id,
+                cityId:ct_id,
 
                 addresses:ads,
                 address:ad,
-                address_id:ad_id
+                addressId:ad_id
             });
         }
     }
-    provinceChange(e,value){
-        let index=value;
-        if(index==-1){
+    provinceChange(e,i,value){
+        let areaId=value;
+        if(areaId==-1){
             this.setState({
                 province:'',
-                province_id:-1,
+                provinceId:-1,
 
                 cities:[],
                 city:'',
-                city_id:-1,
+                cityId:-1,
 
                 addresses:[],
                 address:'',
-                address_id:-1
+                addressId:-1
             });
         }else{
             let _this=this;
             Wapi.area.list(function(res){
+                if(res.status_code!=0||res.data.length==0)return;
                 let cts=res.data;
                 _this.setState({
-                    province:_this.state.provinces.find(ele=>ele.id==index).areaName,
-                    province_id:index,
+                    province:_this.state.provinces.find(ele=>ele.id==areaId).areaName,
+                    provinceId:areaId,
                     cities:cts,
-                    city_id:-1,
-                    address_id:-1,
+                    cityId:-1,
+                    addressId:-1,
                     addresses:[]
                 });
-            },{parentId:index});
+            },{parentId:areaId});
         }
     }
-    cityChange(e,value){
-        let index=value;
-        if(index==-1){
+    cityChange(e,i,value){
+        let areaId=value;
+        if(areaId==-1){
             this.setState({
                 city:'',
-                city_id:-1,
+                cityId:-1,
 
                 addresses:[],
                 address:'',
-                address_id:-1
+                addressId:-1
             });
         }else{
             let _this=this;
             Wapi.area.list(function(res){
+                if(res.status_code!=0||res.data.length==0)return;
                 let ads=res.data;
                 if(ads.length==0){
                     let data={
@@ -138,31 +145,31 @@ export default class AreaSelect extends Component{
                     _this.props.onChange(data);
                 }else{
                     _this.setState({
-                        city:_this.state.cities.find(ele=>ele.id==index).areaName,
-                        city_id:index,
+                        city:_this.state.cities.find(ele=>ele.id==areaId).areaName,
+                        cityId:areaId,
                         addresses:ads,
-                        address_id:-1,
+                        addressId:-1,
                     });
                 }
-            },{parentId:index});
+            },{parentId:areaId});
         }
     }
-    addressChange(e,value){
-        let index=value;
-        if(index==-1){
+    addressChange(e,i,value){
+        let areaId=value;
+        if(areaId==-1){
             this.setState({
                 address:'',
-                address_id:-1
+                addressId:-1
             });
         }else{
             this.setState({
-                address:this.state.addresses.find(ele=>ele.id==index).areaName,
-                address_id:index
+                address:this.state.addresses.find(ele=>ele.id==areaId).areaName,
+                addressId:areaId
             });
             let data={
                 province:this.state.province,
                 city:this.state.city,
-                address:this.state.addresses[index]
+                address:this.state.addresses.find(ele=>ele.id==areaId).areaName
             }
             this.props.onChange(data);
         }
@@ -172,19 +179,19 @@ export default class AreaSelect extends Component{
         province_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"省份"} />);
         
         let city_options=[];
-        if(this.state.cities.length)
+        if(this.state.cities.length>0)
             city_options=this.state.cities.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.areaName} />);
         city_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"市"} />);
 
         let address_options=[];
-        if(this.state.addresses.length)
+        if(this.state.addresses.length>0)
             address_options=this.state.addresses.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.areaName} />);
         address_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"区/县"} />);
 
         return(
             <div>
                 <SelectField
-                    value={this.state.province_id}
+                    value={this.state.provinceId}
                     onChange={this.provinceChange.bind(this)}
                     style={styles.select}
                     labelStyle={styles.babel}
@@ -193,7 +200,7 @@ export default class AreaSelect extends Component{
                 </SelectField>
 
                 <SelectField
-                    value={this.state.city_id}
+                    value={this.state.cityId}
                     onChange={this.cityChange.bind(this)}
                     style={styles.select}
                     labelStyle={styles.babel}
@@ -202,7 +209,7 @@ export default class AreaSelect extends Component{
                 </SelectField>
 
                 <SelectField
-                    value={this.state.address_id}
+                    value={this.state.addressId}
                     onChange={this.addressChange.bind(this)}
                     style={styles.select}
                     labelStyle={styles.babel}
