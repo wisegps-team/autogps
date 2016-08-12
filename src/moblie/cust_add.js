@@ -68,6 +68,7 @@ class AppUserAdd extends React.Component{
         return(
             <ThemeProvider>
                 <div>
+
                     <AppBar title={___.add_user}/>
                     <UserAdd data={this.state.cust_data} type={this.state.type}/>
                     
