@@ -395,19 +395,3 @@ class ScanGroup extends React.Component{
         )
     }
 }
-
-
-<<<<<<< HEAD
-const APP=connect(function select(state) {
-    let sta={};
-    Object.assign(sta,state);
-    return sta;
-})(AppDeviceManage);
-=======
-// const APP=connect(function select(state) {
-//     let sta={};
-//     Object.assign(sta,state);
-//     return sta;
-// })(AppDeviceManage);
-
->>>>>>> 5edcbaae2f55fec7efd1d04d2488055b197b4d9b
