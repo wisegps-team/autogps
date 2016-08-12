@@ -133,15 +133,23 @@ class UserAdd extends React.Component{
         };
         if(data.name==''){
             W.alert(___.user_name_empty);
+            return;
         }
         if(data.province==''){
             W.alert(___.area_empty);
+            return;
         }
         if(data.contact==''){
             W.alert(___.contact_empty);
+            return;
         }
         if(this.state.tel_warning){
             W.alert(this.state.tel_warning);
+            return;
+        }
+        if(data.tel.length==0){
+            W.alert(___.phone_empty);
+            return;
         }
         // add user;
         data.parentId=[_user.customer.uid];
