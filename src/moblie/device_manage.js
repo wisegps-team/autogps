@@ -11,26 +11,37 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
 import STORE from '../_reducers/main';
+import BrandSelect from'../_component/base/brandSelect';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
+
+W.native={
+    scanner:{
+        start:function(callback){
+            setTimeout(function(){
+                callback('123456');
+            },100);
+        }
+    }
+}
 let isWxSdk=true;
 // let isWxSdk=false;
-// W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){isWxSdk=true;},function(){alert('can not scan')});
-
+// W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
+// window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
 
 thisView.addEventListener('load',function(){
     ReactDOM.render(
-        <Provider store={STORE}>
-            <APP/>
-        </Provider>,thisView);
+        <AppDeviceManage/>,thisView);
+        // <Provider store={STORE}>
+        //     <APP/>
+        // </Provider>,thisView);
 });
 
 const _brand_list=[{
@@ -188,6 +199,7 @@ class DeviceIn extends React.Component{
             type:'',
             product_ids:[],
         }
+        this.data={}
         this.brandChange=this.brandChange.bind(this);
         this.typeChange=this.typeChange.bind(this);
         this.addId=this.addId.bind(this);
@@ -202,7 +214,8 @@ class DeviceIn extends React.Component{
             type:'ID1',
         });
     }
-    brandChange(e,value){
+    brandChange(value){
+        console.log(value)
         this.setState({brand:value});
     }
     typeChange(e,value){
@@ -219,7 +232,12 @@ class DeviceIn extends React.Component{
         }
     }
     submit(){
-        console.log(this.state.product_ids);
+        let ids=this.state.product_ids;
+        console.log(ids);
+        if(ids.length==0){
+            this.props.toList();
+            return;
+        }
         this.props.toList();
         // let data={
         //     uid:_user.cust.uid,
@@ -237,7 +255,6 @@ class DeviceIn extends React.Component{
         //     })
         //     _this.props.toList();
         // },data);
-        // let ids=this.state.product_ids;
         // for(let i=ids.length-1;i>=0;i--){
         //     Wapi.iotDevice.update(function(res){},{
         //         did:ids[i],
@@ -260,18 +277,10 @@ class DeviceIn extends React.Component{
         let types=this.state.types.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.type}/>);
         return(
             <div style={styles.input_page}>
-                <p>{___.device_in}</p>
-                <div>
-                    <span>{___.brand}</span>
-                    <SelectField value={this.state.brand} onChange={this.brandChange}>
-                        {brands}
-                    </SelectField>
-                </div>
-                <div>
-                    <span>{___.device_type}</span>
-                    <SelectField value={this.state.type} onChange={this.typeChange}>
-                        {types}
-                    </SelectField>
+                <h3>{___.device_in}</h3>
+                <div style={{width:'80%',marginLeft:'10%',textAlign:'left'}}>
+                    <h4>{___.device_type}:</h4>
+                    <BrandSelect onChange={this.brandChange}/>
                 </div>
                 <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
             </div>
@@ -310,7 +319,12 @@ class DeviceOut extends React.Component{
         }
     }
     submit(){
-        console.log(this.state.product_ids);
+        let ids=this.state.product_ids;
+        console.log(ids);
+        if(ids.length==0){
+            this.props.toList();
+            return;
+        }
         this.props.toList();
         // let data={
         //     uid:_user.cust.uid,
@@ -326,7 +340,6 @@ class DeviceOut extends React.Component{
         //     });
         //     _this.props.toList();
         // },data);
-        // let ids=this.state.product_ids;
         // for(let i=ids.length-1;i>=0;i--){
         //     Wapi.iotDevice.update(function(res){},{
         //         did:ids[i],
@@ -387,19 +400,9 @@ class ScanGroup extends React.Component{
 }
 
 
-const APP=connect(function select(state) {
-    let sta={};
-    Object.assign(sta,state);
-    return sta;
-})(AppDeviceManage);
+// const APP=connect(function select(state) {
+//     let sta={};
+//     Object.assign(sta,state);
+//     return sta;
+// })(AppDeviceManage);
 
-
-W.native={
-    scanner:{
-        start:function(callback){
-            setTimeout(function(){
-                callback('123456');
-            },100);
-        }
-    }
-}

@@ -93,7 +93,6 @@ window.___={
 	'delete':'删除',
 	'save':'保存',
 	'confirm_delete':'确认删除该客户吗？',
-	'device_manage':'终端管理',
 	'import':'导入',
 	'distribute':'分配',
 	'cust':'客户',
