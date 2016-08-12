@@ -271,7 +271,7 @@ WUserApi.prototype.deleteSeller=function(callback,data,op){
  * @constructor
  */
 function WCommApi(token){
-	WiStormAPI.call(this,'comm',token,config.app_key,config.app_secret);
+	WiStormAPI.call(this,'comm',token,config.app_key,config.app_secret,{devKey:config.dev_key});
 }
 WCommApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
 
@@ -279,16 +279,19 @@ WCommApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
  * 参数:
  * mobile: 手机号码
  * type: 发送短信类型
+ * 0: 普通短信
  * 1: 普通校验码信息
  * 2: 忘记密码校验信息
+ * content: 短信消息, type为0时需要设置
  * @param {Object} callback
  * @param {Object} mobile
  */
-WCommApi.prototype.sendSMS=function(callback,mobile,type){
+WCommApi.prototype.sendSMS=function(callback,mobile,type,content){
 	var Data={
 		method:this.apiName+".sms.send",
 		mobile:mobile,
-		type:type
+		type:type,
+		'content':content
 	};
 	
 	this.getApi(Data,callback);	
@@ -562,17 +565,43 @@ const Wapi={
 	role:new WRoleApi(_user?_user.access_token:null),
 	page:new WPageApi(_user?_user.access_token:null),
 	feature:new WFeatureApi(_user?_user.access_token:null),
-	//以下为非核心表
+	//以下为非核心功能表
 	customer:new WAPI('customer',_user?_user.access_token:null),//客户表
 	employee:new WAPI('employee',_user?_user.access_token:null),//员工表
 	vehicle:new WAPI('vehicle',_user?_user.access_token:null),//车辆表
 	device:new WAPI('_iotDevice',_user?_user.access_token:null),//终端表
 	gps:new WAPI('_iotGpsData',_user?_user.access_token:null),//定位数据表
 	log:new WAPI('_iotLog',_user?_user.access_token:null),//日志数据表
+	deviceLog:new WAPI('deviceLog',_user?_user.access_token:null),//设备出入库日志表
+	deviceTotal:new WAPI('deviceTotal',_user?_user.access_token:null),//设备统计表
 	//字典表
 	department:new WAPI('department',_user?_user.access_token:null),//部门表
 	custType:new WAPI('custType',_user?_user.access_token:null),//客户类型表
 	area:new WAPI('area',_user?_user.access_token:null),//地区表
+	brand:new WAPI('brand',_user?_user.access_token:null),
+	product:new WAPI('product',_user?_user.access_token:null),
 };
+
+function makeGetOp(name,fields,lop){
+	Wapi[name].get_op={fields};
+	Wapi[name].list_op={
+		fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+	Object.assign(Wapi[name].list_op,lop);
+}
+
+makeGetOp('customer','objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id');
+makeGetOp('deviceLog','did,type');
+makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
+
+makeGetOp('custType','id,name,appId,useType,userType',{limit:-1,sorts:'id',page:'id'});
+makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
+makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
+makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
+
+
 window.Wapi=Wapi;
 export default Wapi;

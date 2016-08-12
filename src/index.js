@@ -30,14 +30,29 @@ class App extends Component {
     loginSuccess(res){
         let min=-Math.floor((W.date(res.data.expire_in).getTime()-new Date().getTime())/60000);
         W.setCookie("access_token", res.data.access_token,min);
-        
-        Wapi.customer.get(function(result){
-            let user=Object.assign({},result.data,res.data);
-            W._loginSuccess(user);
-            top.location="src/moblie/home.html";
-        },{
-            uid:res.data.uid
-        });
+        let user=res.data;
+        if(user.userType==9){
+            //如果是员工
+            Wapi.employee.get(function(res){
+                user.employee=res.data;
+                Wapi.customer.get(function(result){
+                    user.customer=result.data;
+                    W._loginSuccess(user);
+                    top.location="src/moblie/home.html";
+                },{
+                    uid:user.employee.companyId
+                });
+            },{
+                uid:user.uid
+            })
+        }else
+            Wapi.customer.get(function(result){
+                user.customer=result.data;
+                W._loginSuccess(user);
+                top.location="src/moblie/home.html";
+            },{
+                uid:res.data.uid
+            });
     }
     render() {
         return (

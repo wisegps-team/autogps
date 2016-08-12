@@ -36,14 +36,14 @@ class dictionaryAction{
         let acts=['geted','add','delete','update'];
         this.action={};
         this.name=name;
-        this.api=new WAPI(name,_user.access_token);
+        // this.api=new WAPI(name,_user.access_token);
         acts.forEach((ele)=>this.action[ele]=ele+'_'+name);
         dictionary[name]=this;
     }
     get(data,op){
         let that=this;
         return function(dispatch) {
-            that.api.list(function(res){
+            Wapi[that.name].list(function(res){
                 dispatch(that.geted(res.data));
             },data,op)
         }
@@ -81,3 +81,4 @@ class dictionaryAction{
 
 
 export const user_type_act=new dictionaryAction('custType');
+export const brand_act=new dictionaryAction('brand');

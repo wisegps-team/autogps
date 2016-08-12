@@ -76,6 +76,9 @@ window.___={
 	'phone_err':'请输入正确的手机号码',
 	'phone_registed':'该号码已注册',
 	'phone_empty':'电话号码不能为空',
+	'user_name_empty':'用户名称不能为空',
+	'area_empty':'用户地区不能为空',
+	'contact_empty':'联系人不能为空',
 	'area':'地区',
 	'type':'类型',
 	'person':'联系人',
@@ -88,5 +91,13 @@ window.___={
 	'details':'详情',
 	'delete':'删除',
 	'save':'保存',
-	'confirm_delete':'确认删除该客户吗？'
+	'confirm_delete':'确认删除该客户吗？',
+	'create_user_su':'创建用户成功',
+	'sms_sended':'验证码已发送至',
+	'cust_sms_content':'［卫网科技］尊敬的<%name%><%sex%>：卫网科技已为您创建管理平台账号，平台网址为http://yun.autogps.cn，登录账号为<%account%>，默认密码为<%pwd%>。',
+	'sir':'先生',
+	'lady':'小姐',
+	'province':'省份',
+	'city':'城市',
+	'update_su':'更新成功'
 }

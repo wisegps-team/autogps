@@ -43,10 +43,9 @@ class PhoneInput extends Component{
     render(){
         return(
             <Input
-                id={'phone_input'}
+                {...this.props}
                 errorText={this.state.code_err}
                 onChange={this.change.bind(this)}
-                style={this.props.style}
                 value={this.state.value||this.props.value}
             />
         );

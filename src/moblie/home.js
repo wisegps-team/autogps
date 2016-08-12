@@ -15,11 +15,14 @@ import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
 
 import STORE from '../_reducers/main';
-import {user_type_act} from '../_reducers/dictionary';
+import {user_type_act,brand_act} from '../_reducers/dictionary';
+
+import BrandSelect from '../_component/base/brandSelect';
 
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
-    STORE.dispatch(user_type_act.get({creator:'>0'},{fields:'id,name,appId,useType,userType'}));
+    STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));
+    STORE.dispatch(brand_act.get({uid:_user.customer.uid}));
 }
 loadDictionary();
 
@@ -53,6 +56,7 @@ class App extends Component {
                 <img src="http://h5.bibibaba.cn/baba/wx/img/shop.jpg"/>
                 <ModuleCard title={___.cust_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='cust_manage' />
                 <ModuleCard title={___.user_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='user_manage' />
+                <BrandSelect onChange={res=>console.log(res)}/>
             </div>
             </ThemeProvider>
         );

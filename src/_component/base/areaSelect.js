@@ -44,9 +44,11 @@ export default class AreaSelect extends Component{
         Wapi.area.list(function(res){
             if(res.status_code!=0||res.data.length==0)return;
             let prs=res.data;
-            
+            let province_options=res.data.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.name} />);
+            province_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={___.province} />);
+            _this.province_options=province_options;
             _this.setState({
-                provinces:prs,
+                provinces:res.data
             });
         },{level:1},_op);
     }
@@ -60,34 +62,30 @@ export default class AreaSelect extends Component{
             if(e)return;
 
             let that=this;
-            let pr=newProps.value.province;
-            let pr_id=newProps.value.provinceId;
-
-            let ct=newProps.value.city;
-            let ct_id=newProps.value.cityId;
-
-            let ad=newProps.value.area;
-            let ad_id=newProps.value.areaId;
-
-            if(pr_id!=this.state.provinceId)
+            if(newProps.value.provinceId!=this.state.provinceId&&newProps.value.provinceId!=-1){
                 Wapi.area.list(res=>{
                     if(res.status_code!=0||res.data.length==0)return;
                     that.setState({cities:res.data});
-                },{parentId:pr_id},_op);
-
-            if(ct_id!=this.state.cityId)
+                },{parentId:newProps.value.provinceId},_op);
+            }else
+                this.setState({cityId:newProps.value.cityId});
+                
+            if(newProps.value.cityId!=this.state.cityId&&newProps.value.cityId!=-1){
                 Wapi.area.list(res=>{
                     if(res.status_code!=0||res.data.length==0)return;
                     that.setState({areas:res.data});
-                },{parentId:ct_id},_op);
+                },{parentId:newProps.value.cityId},_op);
+            }else
+                this.setState({areaId:newProps.value.areaId});
+                
 
             this.setState({
-                province:pr,
-                provinceId:pr_id,
-                city:ct,
-                cityId:ct_id,
-                area:ad,
-                areaId:ad_id
+                province:newProps.value.province,
+                provinceId:newProps.value.provinceId*1,
+                city:newProps.value.city,
+                cityId:newProps.value.cityId*1,
+                area:newProps.value.area,
+                areaId:newProps.value.areaId*1
             });
         }
     }
@@ -96,7 +94,9 @@ export default class AreaSelect extends Component{
             if(this.state[k]!=nextState[k])
                 return true;
         }
+        return false;
     }
+    
     
     provinceChange(e,i,value){
         let areaId=value;
@@ -185,19 +185,15 @@ export default class AreaSelect extends Component{
         }
     }
     render(){
-        let province_options=this.state.provinces.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.name} />);
-        province_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"省份"} />);
-        
         let city_options=[];
         if(this.state.cities.length>0)
             city_options=this.state.cities.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.name} />);
-        city_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"市"} />);
+        city_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={___.city} />);
 
         let area_options=[];
         if(this.state.areas.length>0)
             area_options=this.state.areas.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.name} />);
-        area_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={"区/县"} />);
-
+        area_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={___.area} />);
         return(
             <div>
                 <SelectField
@@ -206,7 +202,7 @@ export default class AreaSelect extends Component{
                     style={styles.select}
                     labelStyle={styles.babel}
                 >
-                    {province_options}
+                    {this.province_options}
                 </SelectField>
 
                 <SelectField

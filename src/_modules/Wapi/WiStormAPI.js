@@ -64,7 +64,7 @@ WiStormAPI.prototype.getApi=function(data,callback,op){
 		dataType:D.format,//服务器返回json格式数据
 		type:'get',//HTTP请求类型
 		timeout:10000,//超时时间设置为10秒；
-		success:callback,
+		success:callback||function(res){console.log(res)},
 		error:function(xhr,type,errorThrown){//异常处理；
 			throw ("apiError:"+type);
 		}

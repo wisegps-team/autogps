@@ -4,6 +4,12 @@ const config={
     app_secret : "565975d7d7d01462245984408739804d"
 }
 
+// const config={
+//     dev_key : "86e3ddeb8db36cbf68f10a8b7d05e7ac",
+//     app_key : "4fa2ca9bf6921d41c92041f414ec8ab9",
+//     app_secret : "cd0811c91da9399ea77c576869c0c483"
+// }
+
 // let config={
 //     "app_key": "9410bc1cbfa8f44ee5f8a331ba8dd3fc",
 // 	"app_secret": "21fb644e20c93b72773bf0f8d0905052"

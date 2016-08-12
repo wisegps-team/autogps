@@ -7,6 +7,7 @@ import {ThemeProvider} from '../_theme/default';
 import AppBar from 'material-ui/AppBar';
 import UserAdd from '../_component/UserAdd';
 import STORE from '../_reducers/main';
+import {custAct,userAct} from '../_reducers/customer';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -22,29 +23,53 @@ class AppUserAdd extends React.Component{
     constructor(props,context){
         super(props,context);
         this.state={
-            cust_data:null
+            cust_data:null,
+            type:'cust_manage'
         }
     }
     componentDidMount() {
         let that=this;
         thisView.addEventListener('show',function(e){
-            //可能会传参数过来
-            console.log(e);
+            let type='cust_manage';
+            if(e.caller.indexOf('cust_manage')==-1){
+                type='user_manage';
+            }
             if(e.params){
-                that.setState({cust_data:e.params});
+                that.setState({cust_data:e.params,type});
+            }else{
+                that.setState({
+                    cust_data:{
+                        objectId:null,
+                        name:'',
+                        province:'',
+                        provinceId:-1,
+                        city:'',
+                        cityId:-1,
+                        area:'',
+                        areaId:-1,
+                        custTypeId:0,
+                        contact:'',
+                        tel:'',
+                        sex:1
+                    },
+                    type
+            });
             }
         })
     }
     
     getChildContext(){
-        return {custType:this.props.custType};
+        return {
+            ACT:custAct,
+            custType:this.props.custType
+        };
     }
     render(){
         return(
             <ThemeProvider>
                 <div>
                     <AppBar title={___.add_user}/>
-                    <UserAdd data={this.state.cust_data}/>
+                    <UserAdd data={this.state.cust_data} type={this.state.type}/>
                     
                 </div>
             </ThemeProvider>
@@ -53,7 +78,8 @@ class AppUserAdd extends React.Component{
 }
 
 AppUserAdd.childContextTypes={
-    custType: React.PropTypes.array
+    custType: React.PropTypes.array,
+    ACT: React.PropTypes.object
 }
 
 const APP=connect(function select(state) {
