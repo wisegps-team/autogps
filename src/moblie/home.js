@@ -21,7 +21,7 @@ import BrandSelect from '../_component/base/brandSelect';
 
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
-    STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));
+    STORE.dispatch(user_type_act.get({creator:'<>0'}));
     STORE.dispatch(brand_act.get({uid:_user.customer.uid}));
 }
 loadDictionary();

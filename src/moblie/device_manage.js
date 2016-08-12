@@ -16,7 +16,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
-import UserAdd from '../_component/base/UserAdd';
 import STORE from '../_reducers/main';
 
 
@@ -238,6 +237,13 @@ class DeviceIn extends React.Component{
         //     })
         //     _this.props.toList();
         // },data);
+        // let ids=this.state.product_ids;
+        // for(let i=ids.length-1;i>=0;i--){
+        //     Wapi.iotDevice.update(function(res){},{
+        //         did:ids[i],
+        //         uid:_user.uid
+        //     });
+        // }
     }
     cancel(){
         this.setState({
@@ -320,6 +326,13 @@ class DeviceOut extends React.Component{
         //     });
         //     _this.props.toList();
         // },data);
+        // let ids=this.state.product_ids;
+        // for(let i=ids.length-1;i>=0;i--){
+        //     Wapi.iotDevice.update(function(res){},{
+        //         did:ids[i],
+        //         uid:this.state.cust_id
+        //     });
+        // }
     }
     cancel(){
         this.setState({
