@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=14;//版本号
+let version=17;//版本号
 
 //地区表
 export const area={
@@ -18,6 +18,7 @@ export const area={
             'desc': '索引id',
             'type': 'Number',
             'display': 'TextBox',
+            'unique':true,
             'primary': true,  //主键字段
             'query': true,    //可查询字段
             'validations': {
@@ -65,12 +66,14 @@ export const area={
         },{
             'name': 'areaCode',
             'desc': '区号',
+            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'query': true,    //可查询字段
         },{
             'name': 'zipCode',
             'desc': '邮政编码',
+            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'query': true,    //可查询字段
@@ -332,6 +335,7 @@ export const custType={
             'name': 'id',
             'desc': '类别id',
             'type': 'Number',
+            'unique':true,
             'display': 'TextBox',
             'primary': true,  //主键字段
             'query': true,    //可查询字段
@@ -347,6 +351,7 @@ export const custType={
             'desc': '类别名称',
             'type': 'String',
             'display': 'TextBox',
+            'unique':true,
             'query': true,    //可查询字段
             'validations': {
                 required:true
@@ -855,6 +860,7 @@ export const iotDevice={
         {
             'name': 'did',
             'desc': '设备序列号',
+            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'primary': true,  //主键字段
@@ -1150,7 +1156,7 @@ export const iotLog={
     ]
 }
 
-//日志表
+//设备出入库日志表
 export const deviceLog={
     name: 'deviceLog',             //表名
     desc: '设备出入库日志表',            //表描述
@@ -1236,24 +1242,6 @@ export const deviceTotal={
         {
             'name': 'onLine',
             'desc': '在线数量',
-            'type': 'Number',
-            'query': true,
-            'validations':{
-                digits:true
-            }
-        },
-        {
-            'name': 'woGuanChe',
-            'desc': '沃管车数量',
-            'type': 'Number',
-            'query': true,
-            'validations':{
-                digits:true
-            }
-        },
-        {
-            'name': 'zhangWoChe',
-            'desc': '掌沃车数量',
             'type': 'Number',
             'query': true,
             'validations':{

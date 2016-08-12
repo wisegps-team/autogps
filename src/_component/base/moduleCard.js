@@ -4,14 +4,13 @@ import React, {Component} from 'react';
 const sty={
     main:{
         textAlign: 'center',
-        width: '33.333%',
         padding: '2em 0',
         fontSize: '13px',
         color: '#4d4d4d',
         borderBottom: '1px solid #eee',
         borderRight: '1px solid #eee',
         position: 'relative',
-        display: 'inline-block'
+        display: 'table-cell'
     },
     title:{
         display: 'block'

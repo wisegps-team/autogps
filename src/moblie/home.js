@@ -9,6 +9,8 @@ import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
 
 import ActionSupervisorAccount from 'material-ui/svg-icons/action/supervisor-account';
+import ActionPermIdentity from 'material-ui/svg-icons/action/perm-identity';
+import HardwareKeyboard from 'material-ui/svg-icons/hardware/keyboard';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -17,7 +19,6 @@ import ModuleCard from '../_component/base/moduleCard';
 import STORE from '../_reducers/main';
 import {user_type_act,brand_act} from '../_reducers/dictionary';
 
-import BrandSelect from '../_component/base/brandSelect';
 
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
@@ -38,6 +39,13 @@ const sty={
         width: '34px',
         fill:  '#42A5F5'
     },
+    title:{
+        textAlign: 'center',
+        padding:' 2em 0',
+        background: '#2196F3',
+        color: '#fff',
+        textShadow: '3px 2px 3px rgba(0,0,0,.2)'
+    }
 }
 
 class App extends Component {
@@ -53,10 +61,14 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
-                <img src="http://h5.bibibaba.cn/baba/wx/img/shop.jpg"/>
-                <ModuleCard title={___.cust_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='cust_manage' />
-                <ModuleCard title={___.user_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='user_manage' />
-                <BrandSelect onChange={res=>console.log(res)}/>
+                <div style={sty.title}>
+                    <h2>{___.app_name}</h2>
+                </div>
+                <div style={{display:'table',width:'100%'}}>
+                    <ModuleCard title={___.cust_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='cust_manage' />
+                    <ModuleCard title={___.user_manage} icon={<ActionPermIdentity style={sty.icon}/>} href='user_manage' />
+                    <ModuleCard title={___.device_manage} icon={<HardwareKeyboard style={sty.icon}/>} href='device_manage' />
+                </div>
             </div>
             </ThemeProvider>
         );
