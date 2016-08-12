@@ -55,7 +55,7 @@ class BrandSelect extends Component {
         }
     }
     componentDidUpdate(prevProps, prevState) {
-        if(this.state.brandId&&this.state.productId){
+        if(this.state.brandId&&this.state.productId&&this.state.brandId!=prevState.brandId&&this.state.productId!=prevState.productId){
             let br=this.state.brands.find(ele=>(ele.objectId==this.state.brandId));
             let pr=this.state.products.find(ele=>(ele.objectId==this.state.productId));
             let data={
@@ -67,7 +67,6 @@ class BrandSelect extends Component {
             this.props.onChange(data); 
         }
     }
-    
 
     getProducts(brandId){
         let that=this;
@@ -83,17 +82,20 @@ class BrandSelect extends Component {
     
     
     brandChange(e,i,brandId){
+        if(brandId==this.state.brandId)return;
         this.setState({brandId,productId:0});
     }
 
     productChange(e,i,productId){
+        if(productId==this.state.productId)return;
         this.setState({productId});
     }
     
     render() {
         let products=this.state.products.map(ele=>(<MenuItem value={ele.objectId} primaryText={ele.name} key={ele.objectId}/>))
+        var { checked, ...other } = this.props;
         return (
-            <div>
+            <div {...other}>
                 <SelectField
                     value={this.state.brandId}
                     onChange={this.brandChange}

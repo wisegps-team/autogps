@@ -59,7 +59,7 @@ class App extends Component {
             <ThemeProvider>
                 <div>
                     <Login onSuccess={this.loginSuccess} className='login' />
-                    <Register onSuccess={res=>console.log(res)} />
+                    {/*<Register onSuccess={res=>console.log(res)} />*/}
                 </div>
             </ThemeProvider>
         );

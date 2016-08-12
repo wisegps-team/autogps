@@ -749,6 +749,30 @@ W.replace=function(text,data){
 }
 
 
+/**
+ * 5+的Ready事件封装，如果执行此方法时5+的ready事件已经触发过了，则会立即执行；
+ * 其中第一个参数为要执行的方法，第二参数web是一个标志，为true时，则不管是普通浏览器环境下，还是在打包成原生应用的情况下，都会执行；
+ * 如果不传web参数或者传递一个false值，则只会在原生应用下执行
+ * @param {Function} fun
+ * @param {Boolean} web
+ */
+W.plusReady=function(fun,web){
+	if(web){
+		if(window.plus)
+			setTimeout(fun,0);
+		else
+			document.addEvent("plusready",fun,false);
+	}else{
+		if(WiStorm.isWeb)
+			return;//普通浏览器下不执行下面的代码
+		if(window.plus)
+			setTimeout(fun,0);
+		else
+			document.addEvent("plusready",fun,false);
+	}
+}
+
+
 
 ///下面是一些进入应用则需要执行的代码，例如加载配置文件，语言文件等
 //获取跳转参数 即 http://127.0.0.1:8020/baba_wx/src/customer_add.html?a=123&b=asd  问号后面部分
@@ -756,7 +780,7 @@ window._g=W.getSearch();
 
 var	WiStorm_root="http://"+location.host+"/";
 if(location.host=="h5.bibibaba.cn")
-	WiStorm_root="http://h5.bibibaba.cn/baba/wx/";
+	WiStorm_root="http://h5.bibibaba.cn/autogps/";
 var u = navigator.userAgent;
 var _d=true;
 if(_g.debug)_d=true;

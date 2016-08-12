@@ -93,7 +93,6 @@ window.___={
 	'delete':'删除',
 	'save':'保存',
 	'confirm_delete':'确认删除该客户吗？',
-	'device_manage':'终端管理',
 	'import':'导入',
 	'distribute':'分配',
 	'cust':'客户',
@@ -114,5 +113,6 @@ window.___={
 	'lady':'小姐',
 	'province':'省份',
 	'city':'城市',
-	'update_su':'更新成功'
+	'update_su':'更新成功',
+	'user_list_null':'您当前还没有客户，请创建'
 }
