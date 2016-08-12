@@ -50,7 +50,7 @@ class AppUserAdd extends React.Component{
         return(
             <ThemeProvider>
                 <div>
-                    <AppBar title={___.add_user}/>
+                    <AppBar title={___.add_user} iconStyleLeft={{display:'none'}}/>
                     <UserAdd data={_data}/>
                     
                 </div>
