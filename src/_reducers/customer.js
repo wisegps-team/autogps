@@ -24,10 +24,10 @@ export default function customerReducer(customer,action,name) {
             return Object.assign({},customer,action.data);
         case ACT.action.add:
             data=[action.data].concat(customer.data);
-            return Object.assign({},customer,{data});
+            return Object.assign({},customer,{data,total:customer.total+1});
         case ACT.action.delete:
-            data=customer.data.filter(ele=>(ele.id!=action.id));
-            return Object.assign({},customer,{data});
+            data=customer.data.filter(ele=>(ele.objectId!=action.id));
+            return Object.assign({},customer,{data,total:customer.total-1});
         case ACT.action.update:
             data=customer.data.map(function(ele) {
                 if(ele.id==action.data.id)
@@ -50,7 +50,7 @@ function creatAction(name) {
             return function(dispatch) {
                 dispatch(fun.getting());
                 Wapi.customer.list(function(res){
-                    dispatch(fun.geted(Object.assign({},simulationData)));
+                    dispatch(fun.geted(Object.assign({},res)));
                 },data,op)
             }
         },
@@ -94,171 +94,171 @@ function creatAction(name) {
 
 
 
-let simulationData={
-    data:[
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:1,//用户类别ID
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'深圳微车联信息技术有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:2,//用户类别ID（可选多类别）
-                city:"深圳",
-                city_id:11,
-                district:"宝安区",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:3,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:4,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:5,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:1,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:3,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:2,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:4,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            },
-            {
-                id:1,
-                company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
-                user_type:2,//用户类别ID（可选多类别）
-                city:"广州",
-                city_id:11,
-                district:"天河",
-                district_id:111,
-                province:"广东省",
-                province_id:1,
-                admin_id : Number,    // 管理员ID
-                parent_id : Number,	  //上级用户ID
-                dealer_id: Number,    //经销商ID
-                contact:'李先生',
-                tel:'16497682264'
-            }
-        ],
-        total:200
-}
+// let simulationData={
+//     data:[
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:1,//用户类别ID
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'深圳微车联信息技术有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:2,//用户类别ID（可选多类别）
+//                 city:"深圳",
+//                 city_id:11,
+//                 district:"宝安区",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:3,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:4,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:5,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:1,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:3,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:2,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:4,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             },
+//             {
+//                 id:1,
+//                 company:'xxx有限公司',//客户名称／所属地区／类别／联系人／联系电话
+//                 user_type:2,//用户类别ID（可选多类别）
+//                 city:"广州",
+//                 city_id:11,
+//                 district:"天河",
+//                 district_id:111,
+//                 province:"广东省",
+//                 province_id:1,
+//                 admin_id : Number,    // 管理员ID
+//                 parent_id : Number,	  //上级用户ID
+//                 dealer_id: Number,    //经销商ID
+//                 contact:'李先生',
+//                 tel:'16497682264'
+//             }
+//         ],
+//         total:200
+// }
 
 // for(let i=0;i<4;i++){
 //     simulationData.data=simulationData.data.concat(simulationData.data);

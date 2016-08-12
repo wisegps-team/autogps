@@ -46,22 +46,16 @@ class UserList extends Component {
         console.log('加载下一页');
         let last=this.props.data[this.props.data.length-1];
         let first=this.props.data[0];
-        let data={
-            parentId:_user.uid
-        };
         let op={
             max_id:last.objectId,
             page:'objectId',
             sorts:'objectId'
         }
         let ACT=this.context.ACT,STORE=this.context.STORE;
-        STORE.dispatch(ACT.fun.get(data,op));//获取下一页
+        STORE.dispatch(ACT.fun.get(this.context.data,op));//获取下一页
     }
     render() {
-        console.log('userlist渲染了')
-        let t1=new Date().getTime();
         let items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
-        console.log(new Date().getTime()-t1);
         return (
             <AutoList load={this.load} forLoad={(this.props.data.length!=this.props.total)} loading={this.props.loading}>
                 {items}
@@ -72,7 +66,8 @@ class UserList extends Component {
 UserList.contextTypes={
     STORE:React.PropTypes.object,
     VIEW:React.PropTypes.object,
-    ACT:React.PropTypes.object
+    ACT:React.PropTypes.object,
+    data:React.PropTypes.object,
 }
 
 class UserItem extends Component{
@@ -88,7 +83,7 @@ class UserItem extends Component{
     operation(index){
         switch(index){
             case 0:
-                this.context.VIEW.goTo('user_add.js',this.props.data);
+                this.context.VIEW.goTo('cust_add.js',this.props.data);
                 break;
             case 1:
                 console.log('详情');
@@ -97,27 +92,27 @@ class UserItem extends Component{
                 console.log('删除');
                 let that=this;
                 W.confirm(___.confirm_delete,function(b){
-                    if(b)Wapi.customer.delete(res=>STORE.dispatch(that.context.ACT.action.delete),{
-                            objectId:that.props.objectId
+                    if(b)Wapi.customer.delete(res=>STORE.dispatch(that.context.ACT.fun.delete(that.props.data.objectId)),{
+                            objectId:that.props.data.objectId
                         });
                 });
                 break;
         }
     }
     render() {
-        if(!this.props.data.user_type_name){
-            let types=this.context.STORE.getState().user_type;
-            let type=types.find(type=>this.props.data.user_type==type.id);
-            this.props.data.user_type_name=type?type.values:this.props.data.user_type;
+        if(!this.props.data.custType){
+            let types=this.context.STORE.getState().custType;
+            let type=types.find(type=>this.props.data.custTypeId==type.id);
+            this.props.data.custType=type?type.name:this.props.data.custType;
         }
         let tr=(<div style={sty.tab}>
-                <span style={sty.td}>{this.props.data.user_type_name}</span>
+                <span style={sty.td}>{this.props.data.custType}</span>
                 <span style={sty.td}>{this.props.data.contact}</span>
                 <span style={sty.td}>{this.props.data.tel}</span>
             </div>);
         let title=(<span>
-            {this.props.data.company}
-            <small style={sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.district}</small>
+            {this.props.data.name}
+            <small style={sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
         </span>);
         return (
             <ListItem
@@ -131,7 +126,8 @@ class UserItem extends Component{
 }
 UserItem.contextTypes ={
     STORE:React.PropTypes.object,
-    VIEW:React.PropTypes.object
+    VIEW:React.PropTypes.object,
+    ACT:React.PropTypes.object
 }
 
 class RightIconMenu extends Component{
@@ -163,11 +159,12 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onClick={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
-                // <MenuItem onClick={()=>this.props.onClick(1)}>{___.details}</MenuItem>
                 <MenuItem onClick={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
             </IconMenu>
         );
     }
 }
+                /*<MenuItem onClick={()=>this.props.onClick(1)}>{___.details}</MenuItem>*/
+
 
 export default UserList;

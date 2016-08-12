@@ -640,6 +640,7 @@ W.getOpenId=function(needweixin,s){
  * @param {Object} code
  */
 W.errorCode=function(json){
+	if(!json.status_code)return;
 	if(json.status_code==3){
 		W.confirm(___.reLogin,function(b){
 			if(b){
@@ -663,6 +664,7 @@ W.errorCode=function(json){
 W.err=function(fun){
 	if(typeof fun!=='function'){
 		return function(res){
+			console.log(res);
 			if (res.status_code) {
 				W.errorCode(res);
 				return;
@@ -738,17 +740,12 @@ W.toRegister=function(){
 	});
 }
 
-W.replace=function(text,json){
-	json=json||___;
-	if(json)
-		return text.replace(/___\.[a-zA-Z0-9_]+/g,function(w){
-			w=json[w.slice(4)];
-			return ((typeof w!='number')?(w||''):w);
-		});
-	else 
-		return text.replace(/___\.[a-zA-Z0-9_]+/g,function(w){
-			return w.slice(4);
-		});
+W.replace=function(text,data){
+	data=data||___;
+	return text.replace(/(\<|&lt;)\%.*?\%(&gt;|\>)/g,function(word){
+		word=word.replace(/(\<|&lt;|&gt;|\>|%)/g,'');
+		return data[word]||'';
+	});
 }
 
 
@@ -776,7 +773,7 @@ window.WiStorm={
 		"wx_sdk":"http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
 		"wx_login":WiStorm_root+"wslib/toolkit/oauth2.php",
 		"safety_url":WiStorm_root+"wslib/toolkit/Safety.php",
-		languages:['zh-cn']
+		languages:['zh-cn','en-us']
 	},
 	setting:{},//用户设置，由W.getSetting(name)和W.setSetting(key,val)操作
 	included:[],//当前页面使用include(url)来包含的文件名

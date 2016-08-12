@@ -5,8 +5,9 @@ import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
 import AppBar from 'material-ui/AppBar';
-import UserAdd from '../_component/base/UserAdd';
+import UserAdd from '../_component/UserAdd';
 import STORE from '../_reducers/main';
+import {custAct,userAct} from '../_reducers/customer';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -18,40 +19,58 @@ thisView.addEventListener('load',function(){
         </Provider>,thisView);
 });
 
-const _data={
-            uid:'',
-            name:'javascript',
-            province:'广东省',
-            provinceId:19,
-            city:'广州市',
-            cityId:289,
-            address:'天河区',
-            addressId:3040,
-            type:'3',
-            contact:'Mei',
-            tel:'18576783939',
-            sex:0,
-            treePath:'',
-            parentId:'',
-            creatorId:'',
-            acl:'',
-        }
-
 class AppUserAdd extends React.Component{
     constructor(props,context){
         super(props,context);
+        this.state={
+            cust_data:null,
+            type:'cust_manage'
+        }
     }
+    componentDidMount() {
+        let that=this;
+        thisView.addEventListener('show',function(e){
+            let type='cust_manage';
+            if(e.caller.indexOf('cust_manage')==-1){
+                type='user_manage';
+            }
+            if(e.params){
+                that.setState({cust_data:e.params,type});
+            }else{
+                that.setState({
+                    cust_data:{
+                        objectId:null,
+                        name:'',
+                        province:'',
+                        provinceId:-1,
+                        city:'',
+                        cityId:-1,
+                        area:'',
+                        areaId:-1,
+                        custTypeId:0,
+                        contact:'',
+                        tel:'',
+                        sex:1
+                    },
+                    type
+            });
+            }
+        })
+    }
+    
     getChildContext(){
-        return {user_type:this.props.user_type};
+        return {
+            ACT:custAct,
+            custType:this.props.custType
+        };
     }
     render(){
-        console.log('AppUserAdd');
-        console.log(this.props);
         return(
             <ThemeProvider>
                 <div>
-                    <AppBar title={___.add_user} iconStyleLeft={{display:'none'}}/>
-                    <UserAdd data={_data}/>
+
+                    <AppBar title={___.add_user}/>
+                    <UserAdd data={this.state.cust_data} type={this.state.type}/>
                     
                 </div>
             </ThemeProvider>
@@ -60,11 +79,12 @@ class AppUserAdd extends React.Component{
 }
 
 AppUserAdd.childContextTypes={
-    user_type: React.PropTypes.array
+    custType: React.PropTypes.array,
+    ACT: React.PropTypes.object
 }
 
 const APP=connect(function select(state) {
     return {
-        user_type:state.user_type
+        custType:state.custType
     };
 })(AppUserAdd);

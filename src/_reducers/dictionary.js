@@ -36,15 +36,15 @@ class dictionaryAction{
         let acts=['geted','add','delete','update'];
         this.action={};
         this.name=name;
-        this.api=new WAPI(name,_user.access_token);
+        // this.api=new WAPI(name,_user.access_token);
         acts.forEach((ele)=>this.action[ele]=ele+'_'+name);
         dictionary[name]=this;
     }
     get(data,op){
         let that=this;
         return function(dispatch) {
-            that.api.list(function(res){
-                dispatch(that.geted(simulationData.data));
+            Wapi[that.name].list(function(res){
+                dispatch(that.geted(res.data));
             },data,op)
         }
     }
@@ -80,47 +80,5 @@ class dictionaryAction{
 
 
 
-export const user_type_act=new dictionaryAction('user_type');
-
-
-
-
-let simulationData={
-    data:[
-        {
-            id:1,
-            values:'品牌商',
-            type:1,
-            user_type:[1]
-        },
-        {
-            id:2,
-            values:'运营商',
-            type:1,
-            user_type:[2]
-        },
-        {
-            id:3,
-            values:'代理商',
-            type:1,
-            user_type:[2]
-        },
-        {
-            id:4,
-            values:'集团用户',
-            type:2,
-            user_type:[2,3]
-        },
-        {
-            id:5,
-            values:'服务商',
-            user_type:[]
-        },
-        {
-            id:6,
-            values:'个人用户',
-            user_type:[]
-        }
-    ],
-    total:10
-}
+export const user_type_act=new dictionaryAction('custType');
+export const brand_act=new dictionaryAction('brand');

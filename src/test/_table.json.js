@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=8;//版本号
+let version=14;//版本号
 
 //地区表
 export const area={
@@ -138,18 +138,12 @@ export const customer={
             'desc': '节点路径树',
             'type': 'String',
             'display': 'TextBox',
-            'query': true,    //可查询字段
-            'validations': {
-                required:true
-            },
-            'messages': {
-                required:'节点路径树为必填'
-            }
+            'query': true
         },
         {
             'name': 'parentId',
             'desc': '父客户id',
-            'type': 'Number',
+            'type': 'Array',
             'display': 'TextBox',
             'query': true,    //可查询字段
             'validations': {
@@ -171,6 +165,18 @@ export const customer={
             'messages': {
                 required:'联系电话为必填'
             }
+        },
+        {
+            'name': 'custTypeId',
+            'desc': '用户类型',
+            'type': 'Number',
+            'query': true
+        },
+        {
+            'name': 'custType',
+            'desc': '用户类型名称',
+            'type': 'String',
+            'query': true
         },
         {
             'name': 'province',
@@ -482,6 +488,19 @@ export const employee={
             }
         },
         {
+            'name': 'companyId',
+            'desc': '公司id',
+            'type': 'String',
+            'display': 'TextBox',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            },
+            'messages': {
+                required:'公司id为必填'
+            }
+        },
+        {
             'name': 'departId',
             'desc': '部门id',
             'type': 'String',
@@ -496,7 +515,7 @@ export const employee={
         },
         {
             'name': 'type',
-            'desc': '类型',
+            'desc': '类型(管理员/驾驶员/客户经理)',
             'type': 'Number',
             'display': 'TextBox',
             'query': true,    //可查询字段
@@ -1268,7 +1287,7 @@ export const brand={
             }
         },
         {
-            'name': 'companyId',
+            'name': 'uid',
             'desc': '公司id',
             'type': 'String',
             'query': true,    //可查询字段
@@ -1293,7 +1312,7 @@ export const brand={
     ]
 }
 
-//品牌表
+//产品表
 export const product={
     name: 'product',             //表名
     desc: '产品表',             //表描述
@@ -1322,7 +1341,7 @@ export const product={
             }
         },
         {
-            'name': 'companyId',
+            'name': 'uid',
             'desc': '公司id',
             'type': 'String',
             'query': true,    //可查询字段

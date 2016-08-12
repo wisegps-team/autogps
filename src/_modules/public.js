@@ -10,6 +10,16 @@ export var  P={
             com.bind().forEach(function(fn) {
                 com[fn.name]=fn.bind(com);
             }, this);
+    },
+    requal:function(a,b){
+        if(typeof a=='undefined'&&typeof a==typeof b){
+            let e=true;
+            for(let k in b){
+                if(a[k]!=b[k])e=false;
+            }
+            return e;
+        }else
+            return (a==b);
     }
 }
 

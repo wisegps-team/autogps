@@ -15,11 +15,7 @@ import Fab from '../_component/base/fab';
 import UserList from '../_component/userList';
 import Appbar from '../_component/base/appBar';
 
-import {custAct} from '../_reducers/customer';
-
-let unsubscribe = STORE.subscribe(() =>
-    console.log('STORE更新了',STORE.getState())
-)
+import {userAct} from '../_reducers/customer';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -27,35 +23,36 @@ thisView.addEventListener('load',function(){
         <Provider store={STORE}>
             <APP/>
         </Provider>,thisView);
+    thisView.prefetch('cust_add.js',1);
 });
 
 class App extends Component{
     constructor(props, context) {
         super(props, context);
-        
+        this._data={
+            parentId:_user.uid,
+            custTypeId:4
+        };
     }
     getChildContext(){
         return{
             'STORE':STORE,
             'VIEW':thisView,
-            'ACT':custAct
+            'ACT':userAct,
+            'data':this._data
         }
     }
     componentDidMount() {
-        let data={
-            parentId:_user.uid
-        };
         let op={}
-        STORE.dispatch(custAct.fun.get(data,op));//初始化获取数据
+        STORE.dispatch(userAct.fun.get(this._data,op));//初始化获取数据
     }
     
     render() {
-        console.log('app渲染了');
         return (
             <ThemeProvider>
             <div>
                 <Fab onClick={()=>{thisView.goTo('cust_add.js')}}/>
-                <UserList {...this.props.customer}/>
+                <UserList {...this.props.user}/>
             </div>
             </ThemeProvider>
         );
@@ -66,7 +63,8 @@ class App extends Component{
 App.childContextTypes={
     STORE:React.PropTypes.object,
     VIEW:React.PropTypes.object,
-    ACT:React.PropTypes.object
+    ACT:React.PropTypes.object,
+    data:React.PropTypes.object,
 }
 
 const APP=connect(function select(state) {
