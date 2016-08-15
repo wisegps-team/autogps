@@ -22,19 +22,19 @@ import BrandSelect from'../_component/base/brandSelect';
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
 
-W.native={
-    scanner:{
-        start:function(callback){
-            setTimeout(function(){
-                callback('123456');
-            },100);
-        }
-    }
-}
-let isWxSdk=true;
-// let isWxSdk=false;
-// W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
-// window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
+// W.native={
+//     scanner:{
+//         start:function(callback){
+//             setTimeout(function(){
+//                 callback('123456');
+//             },100);
+//         }
+//     }
+// }
+// let isWxSdk=true;
+let isWxSdk=false;
+W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
+window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
 
 thisView.addEventListener('load',function(){
     ReactDOM.render(

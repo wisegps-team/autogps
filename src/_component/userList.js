@@ -43,7 +43,6 @@ class UserList extends Component {
     
     load(){
         console.log(this.context.STORE);
-        console.log('加载下一页');
         let last=this.props.data[this.props.data.length-1];
         let first=this.props.data[0];
         let op={
@@ -55,7 +54,13 @@ class UserList extends Component {
         STORE.dispatch(ACT.fun.get(this.context.data,op));//获取下一页
     }
     render() {
-        let items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
+        let items;
+        if(this.props.data&&this.props.data.length)
+            items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
+        else
+            items=(<div style={{textAlign:'center',color:'#ccc'}}>
+                <h2>{___.user_list_null}</h2>
+            </div>);
         return (
             <AutoList load={this.load} forLoad={(this.props.data.length!=this.props.total)} loading={this.props.loading}>
                 {items}

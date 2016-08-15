@@ -749,6 +749,30 @@ W.replace=function(text,data){
 }
 
 
+/**
+ * 5+的Ready事件封装，如果执行此方法时5+的ready事件已经触发过了，则会立即执行；
+ * 其中第一个参数为要执行的方法，第二参数web是一个标志，为true时，则不管是普通浏览器环境下，还是在打包成原生应用的情况下，都会执行；
+ * 如果不传web参数或者传递一个false值，则只会在原生应用下执行
+ * @param {Function} fun
+ * @param {Boolean} web
+ */
+W.plusReady=function(fun,web){
+	if(web){
+		if(window.plus)
+			setTimeout(fun,0);
+		else
+			document.addEvent("plusready",fun,false);
+	}else{
+		if(WiStorm.isWeb)
+			return;//普通浏览器下不执行下面的代码
+		if(window.plus)
+			setTimeout(fun,0);
+		else
+			document.addEvent("plusready",fun,false);
+	}
+}
+
+
 
 ///下面是一些进入应用则需要执行的代码，例如加载配置文件，语言文件等
 //获取跳转参数 即 http://127.0.0.1:8020/baba_wx/src/customer_add.html?a=123&b=asd  问号后面部分
@@ -756,7 +780,7 @@ window._g=W.getSearch();
 
 var	WiStorm_root="http://"+location.host+"/";
 if(location.host=="h5.bibibaba.cn")
-	WiStorm_root="http://h5.bibibaba.cn/baba/wx/";
+	WiStorm_root="http://h5.bibibaba.cn/autogps/";
 var u = navigator.userAgent;
 var _d=true;
 if(_g.debug)_d=true;
@@ -769,10 +793,9 @@ window.WiStorm={
 		"skin": "default",
 		"default_language": "zh-cn",
 		"update_url": WiStorm_root+"/update/version.json",
-		"wx_ticket_url":WiStorm_root+"wslib/toolkit/WX.TokenAndTicket.php?action=ticket",
+		"wx_ticket_url":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/WX.TokenAndTicket.php?action=ticket",
 		"wx_sdk":"http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
-		"wx_login":WiStorm_root+"wslib/toolkit/oauth2.php",
-		"safety_url":WiStorm_root+"wslib/toolkit/Safety.php",
+		"wx_login":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/oauth2.php",
 		languages:['zh-cn','en-us']
 	},
 	setting:{},//用户设置，由W.getSetting(name)和W.setSetting(key,val)操作
@@ -861,3 +884,65 @@ var url=WiStorm.root+"language/"+l+".js";
 document.write('<script src="'+url+'"></script>');
 l=undefined;
 url=undefined;
+
+
+
+
+
+
+/**
+ * 微信的es6兼容
+ * 因为微信的内核比较旧，所以某些方法还是需要兼容
+ * babel也救不了它……
+ */
+
+if (typeof Object.assign != 'function') {
+	Object.assign = function (target) {
+		if (target == null) {
+			throw new TypeError('Cannot convert undefined or null to object');
+		}
+
+		target = Object(target);
+		for (var index = 1; index < arguments.length; index++) {
+			var source = arguments[index];
+			if (source != null) {
+				for (var key in source) {
+					if (Object.prototype.hasOwnProperty.call(source, key)) {
+						target[key] = source[key];
+					}
+				}
+			}
+		}
+		return target;
+	};
+}
+
+if (!Array.prototype.find) {
+  Object.defineProperty(Array.prototype, 'find', {
+    enumerable: false,
+    configurable: true,
+    writable: true,
+    value: function(predicate) {
+      if (this == null) {
+        throw new TypeError('Array.prototype.find called on null or undefined');
+      }
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+      var list = Object(this);
+      var length = list.length >>> 0;
+      var thisArg = arguments[1];
+      var value;
+
+      for (var i = 0; i < length; i++) {
+        if (i in list) {
+          value = list[i];
+          if (predicate.call(thisArg, value, i, list)) {
+            return value;
+          }
+        }
+      }
+      return undefined;
+    }
+  });
+}
