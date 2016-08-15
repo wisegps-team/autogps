@@ -793,10 +793,9 @@ window.WiStorm={
 		"skin": "default",
 		"default_language": "zh-cn",
 		"update_url": WiStorm_root+"/update/version.json",
-		"wx_ticket_url":WiStorm_root+"wslib/toolkit/WX.TokenAndTicket.php?action=ticket",
+		"wx_ticket_url":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/WX.TokenAndTicket.php?action=ticket",
 		"wx_sdk":"http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
-		"wx_login":WiStorm_root+"wslib/toolkit/oauth2.php",
-		"safety_url":WiStorm_root+"wslib/toolkit/Safety.php",
+		"wx_login":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/oauth2.php",
 		languages:['zh-cn','en-us']
 	},
 	setting:{},//用户设置，由W.getSetting(name)和W.setSetting(key,val)操作
@@ -885,3 +884,65 @@ var url=WiStorm.root+"language/"+l+".js";
 document.write('<script src="'+url+'"></script>');
 l=undefined;
 url=undefined;
+
+
+
+
+
+
+/**
+ * 微信的es6兼容
+ * 因为微信的内核比较旧，所以某些方法还是需要兼容
+ * babel也救不了它……
+ */
+
+if (typeof Object.assign != 'function') {
+	Object.assign = function (target) {
+		if (target == null) {
+			throw new TypeError('Cannot convert undefined or null to object');
+		}
+
+		target = Object(target);
+		for (var index = 1; index < arguments.length; index++) {
+			var source = arguments[index];
+			if (source != null) {
+				for (var key in source) {
+					if (Object.prototype.hasOwnProperty.call(source, key)) {
+						target[key] = source[key];
+					}
+				}
+			}
+		}
+		return target;
+	};
+}
+
+if (!Array.prototype.find) {
+  Object.defineProperty(Array.prototype, 'find', {
+    enumerable: false,
+    configurable: true,
+    writable: true,
+    value: function(predicate) {
+      if (this == null) {
+        throw new TypeError('Array.prototype.find called on null or undefined');
+      }
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+      var list = Object(this);
+      var length = list.length >>> 0;
+      var thisArg = arguments[1];
+      var value;
+
+      for (var i = 0; i < length; i++) {
+        if (i in list) {
+          value = list[i];
+          if (predicate.call(thisArg, value, i, list)) {
+            return value;
+          }
+        }
+      }
+      return undefined;
+    }
+  });
+}

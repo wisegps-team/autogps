@@ -93,9 +93,8 @@ class BrandSelect extends Component {
     
     render() {
         let products=this.state.products.map(ele=>(<MenuItem value={ele.objectId} primaryText={ele.name} key={ele.objectId}/>))
-        var { checked, ...other } = this.props;
         return (
-            <div {...other}>
+            <div {...this.props}>
                 <SelectField
                     value={this.state.brandId}
                     onChange={this.brandChange}

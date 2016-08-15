@@ -226,6 +226,8 @@ class DeviceIn extends React.Component{
                 arr[arr.length]=res;
                 _this.setState({product_ids:arr});
             });
+        }else{
+            W.alert(___.please_wait);
         }
     }
     submit(){
@@ -313,6 +315,8 @@ class DeviceOut extends React.Component{
                 arr[arr.length]=res;
                 _this.setState({product_ids:arr});
             });
+        }else{
+            W.alert(___.please_wait);
         }
     }
     submit(){

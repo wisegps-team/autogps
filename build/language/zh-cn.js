@@ -114,5 +114,6 @@ window.___={
 	'province':'省份',
 	'city':'城市',
 	'update_su':'更新成功',
-	'user_list_null':'您当前还没有客户，请创建'
+	'user_list_null':'您当前还没有客户，请创建',
+	'please_wait':'请稍等片刻'
 }
