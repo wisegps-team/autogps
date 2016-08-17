@@ -44,7 +44,7 @@ class PasswordRepeat extends Component {
         let errorText=this.state.err?___.pwd_input_err:'';
         let pwdErr=this.state.pwdErr?___.two_pwd_err:''
         return (
-            <div {...this.props}>
+            <div {...this.props} onChange={null}>
                 <Input
                     name='password'
                     type='password'

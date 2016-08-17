@@ -23,6 +23,11 @@ class VerificationCode extends Component {
         this.getCode = this.getCode.bind(this);
     }
 
+    componentWillUnmount() {
+        clearInterval(this._time_id);
+    }
+    
+
     change(e,val){
         let that=this;
         if(val.length==(this.props.length||4)){
@@ -50,7 +55,7 @@ class VerificationCode extends Component {
             return;
         }
         let that=this;
-        that.setState({second:60});
+        that.setState({second:10});
         that._time_id=setInterval(function(){
             if(that.state.second>0)
                 that.setState({second:that.state.second-1});

@@ -22,12 +22,17 @@ class PhoneInput extends Component{
 
             let _this=this;
             Wapi.user.checkExists(function(json){
-                if(json.exist){
-                    _this.setState({code_err:___.phone_registed});
-                    _this.props.onChange(value,___.phone_registed);
-                }else{
+                if(!_this.props.needExist==!json.exist){
                     _this.setState({code_err:null});
                     _this.props.onChange(value);
+                }else{
+                    if(json.exist){
+                        _this.setState({code_err:___.phone_registed});
+                        _this.props.onChange(value,___.phone_registed);
+                    }else{
+                        _this.setState({code_err:___.phone_not_registed});
+                        _this.props.onChange(value,___.phone_not_registed);
+                    }
                 }
             },{mobile:value});
         }else{

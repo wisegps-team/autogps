@@ -3,8 +3,10 @@ var app = express();
 
 app.use(express.static('build'));
 
-app.get('/', function (req, res) {
-   res.send('Hello World');
+app.get('/src/*/*', function (req, res) {
+    if(req.url.indexOf('.html')==-1){
+      res.send('<script>top.location="home.html"</script>');
+    }
 })
 
 var server = app.listen(8081, function () {

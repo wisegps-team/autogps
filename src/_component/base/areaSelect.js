@@ -51,42 +51,13 @@ export default class AreaSelect extends Component{
                 provinces:res.data
             });
         },{level:1},_op);
+        if(this.props.value){
+            this.setValue(this.props.value);
+        }
     }
     componentWillReceiveProps(newProps){
         if(newProps.value){
-            let e=true;
-            for(let k in newProps.value){
-                if(this.state[k]!=newProps.value[k])
-                    e=false;
-            }
-            if(e)return;
-
-            let that=this;
-            if(newProps.value.provinceId!=this.state.provinceId&&newProps.value.provinceId!=-1){
-                Wapi.area.list(res=>{
-                    if(res.status_code!=0||res.data.length==0)return;
-                    that.setState({cities:res.data});
-                },{parentId:newProps.value.provinceId},_op);
-            }else
-                this.setState({cityId:newProps.value.cityId});
-                
-            if(newProps.value.cityId!=this.state.cityId&&newProps.value.cityId!=-1){
-                Wapi.area.list(res=>{
-                    if(res.status_code!=0||res.data.length==0)return;
-                    that.setState({areas:res.data});
-                },{parentId:newProps.value.cityId},_op);
-            }else
-                this.setState({areaId:newProps.value.areaId});
-                
-
-            this.setState({
-                province:newProps.value.province,
-                provinceId:newProps.value.provinceId*1,
-                city:newProps.value.city,
-                cityId:newProps.value.cityId*1,
-                area:newProps.value.area,
-                areaId:newProps.value.areaId*1
-            });
+            this.setValue(newProps.value);
         }
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -97,6 +68,41 @@ export default class AreaSelect extends Component{
         return false;
     }
     
+    setValue(value){
+        let e=true;
+        for(let k in value){
+            if(this.state[k]!=value[k])
+                e=false;
+        }
+        if(e)return;
+
+        let that=this;
+        if(value.provinceId!=this.state.provinceId&&value.provinceId!=-1){
+            Wapi.area.list(res=>{
+                if(res.status_code!=0||res.data.length==0)return;
+                that.setState({cities:res.data});
+            },{parentId:value.provinceId},_op);
+        }else
+            this.setState({cityId:value.cityId});
+            
+        if(value.cityId!=this.state.cityId&&value.cityId!=-1){
+            Wapi.area.list(res=>{
+                if(res.status_code!=0||res.data.length==0)return;
+                that.setState({areas:res.data});
+            },{parentId:value.cityId},_op);
+        }else
+            this.setState({areaId:value.areaId});
+            
+
+        this.setState({
+            province:value.province,
+            provinceId:value.provinceId*1,
+            city:value.city,
+            cityId:value.cityId*1,
+            area:value.area,
+            areaId:value.areaId*1
+        });
+    }
     
     provinceChange(e,i,value){
         let areaId=value;
@@ -153,7 +159,7 @@ export default class AreaSelect extends Component{
                         cityId:this.state.cityId,
                         city:this.state.city,
                     }
-                    _this.props.onChange(data);
+                    _this.props.onChange(data,_this.props.name);
                 }else{
                     _this.setState({areas:ads});
                 }
@@ -181,7 +187,7 @@ export default class AreaSelect extends Component{
                 area:name,
                 areaId:areaId
             }
-            this.props.onChange(data);
+            this.props.onChange(data,this.props.name);
         }
     }
     render(){

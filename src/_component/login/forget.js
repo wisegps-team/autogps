@@ -1,8 +1,6 @@
 /**
- * 注册用户组件
+ * 忘记密码
  */
-"use strict";
-
 import React, {Component} from 'react';
 
 import RaisedButton from 'material-ui/RaisedButton';
@@ -12,8 +10,8 @@ import PhoneInput from '../base/PhoneInput';
 import PasswordRepeat from './password';
 import sty from './style';
 
-class Register extends Component {
-    constructor(props, context) {
+class Forget extends Component {
+constructor(props, context) {
         super(props, context);
         this.state={
             account:null
@@ -39,11 +37,20 @@ class Register extends Component {
                 return;
             }
         }
-        Wapi.user.register(this.success,Object.assign({},this.formData));
+        if(this.props.user){
+            let update={
+                access_token:this.props.user.access_token,
+                mobileVerified:true,
+                _uid:this.props.user.uid
+            }
+            let that=this;
+            Wapi.user.resetPassword((res)=>Wapi.user.update(this.success,update),Object.assign({},this.formData));
+        }else
+            Wapi.user.resetPassword(this.success,Object.assign({},this.formData));
     }
     change(val,name){
         if(name){
-            if(name!='password'&&name!='valid_code')
+            if(name=='password'||name=='valid_code')
                 this.formData[name]=val;
         }else{
             this.setState({account:val});
@@ -59,22 +66,22 @@ class Register extends Component {
                     hintText={___.input_account}
                     floatingLabelText={___.account}
                     onChange={this.change}
-                    needExist={false}
+                    needExist={true}
                 />
                 <VerificationCode 
                     name='valid_code'
-                    type={1}
-                    account={this.formData.account} 
+                    type={2}
+                    account={this.state.account} 
                     onSuccess={this.change}
                 />
                 <PasswordRepeat 
                     onChange={this.change}
                     name='password'
                 />
-                <RaisedButton label={___.register} primary={true} style={sty.but} onClick={this.submit}/>
+                <RaisedButton label={___.reset_pwd} primary={true} style={sty.but} onClick={this.submit}/>
             </div>
         );
     }
 }
 
-export default Register;
+export default Forget;
