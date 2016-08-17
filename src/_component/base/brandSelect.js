@@ -46,6 +46,10 @@ class BrandSelect extends Component {
     componentWillUnmount() {
         this.unsubscribe();
     }
+    shouldComponentUpdate(nextProps,nextState){
+        if(nextState.brandId==this.state.brandId&&nextState.productId==this.state.productId)return false;
+        return true;
+    }
     componentWillUpdate(nextProps, nextState) {
         if(nextState.brands!=this.state.brands){
             this.brands=nextState.brands.map(br=>(<MenuItem value={br.objectId} primaryText={br.name} key={br.objectId}/>));
