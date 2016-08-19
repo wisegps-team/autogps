@@ -576,6 +576,18 @@ function WFeatureApi(token){
 }
 WFeatureApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 
+function WCacheApi(){
+	WiStormAPI.call(this,'cache');
+}
+WFeatureApi.prototype=new WiStormAPI();//继承父类WiStormAPI
+WFeatureApi.prototype.get=function(callback,key){
+	var data={
+		'key':key,
+		'method':this.apiName+".getObj"
+	};
+	this.getApi(data,callback);
+}
+
 const Wapi={
     user:new WUserApi(_user?_user.access_token:null,_user?_user.session_token:null),
     developer:new WDeveloperApi(_user?_user.access_token:null),

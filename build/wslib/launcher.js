@@ -114,7 +114,7 @@
 	    var target = STATE.views[url];
 	    if (!target) {
 	        //如果是一个新的模块，创建新的view
-	        target = createView(url, 0, STATE.this_one.data.url);
+	        target = createView(url, 1, STATE.this_one.data.url);
 	    } else if (target == STATE.this_one) {
 	        //如果是当前模块
 	        return false;
@@ -135,7 +135,7 @@
 	    if (!STATE.this_one) {
 	        //首次
 	        window.history.replaceState(url, 'id', Location.href);
-	        t = createView(url);
+	        t = createView(url, 1);
 	    } else t = STATE.views[url];
 	    if (t) {
 	        STATE.last_one = STATE.this_one;
@@ -182,8 +182,12 @@
 
 	/**
 	 * 创建一个模块（页面）
-	 * url 模块的地址，可以是相对路径也可以是绝对路径
-	 * mode 创建模式 0或者无：创建完即显示，并会加载js并渲染组件(正常模式)；1：创建完不显示，但会加载js并渲染组件（预渲染）；2：创建完不显示，会加载js，但不渲染（预加载）
+	 * url 模块的绝对路径
+	 * mode 创建模式 
+	 *              0: 创建一个view，不加载js，不渲染
+	 *              1：创建完不显示，会加载js，但不渲染（预加载）
+	 *              2：创建完不显示，但会加载js并渲染组件（预渲染）；
+	 *              3：创建子view，并不加载外部js，此时传递的url应该是一个id，这个view不会有load事件，但是有其他的事件
 	 * creater 创建者，创建该模块的模块url
 	 */
 	function createView(url, mode, creater) {
@@ -198,7 +202,11 @@
 	/**
 	 * 预加载或者预渲染
 	 * @param {String} url 要加载的模块绝对地址
-	 * @param {Int} mode 加载模式 1：创建完不显示，但会加载js并渲染组件（预渲染）；2：创建完不显示，会加载js，但不渲染（预加载） 如果不传或者为false，则只是创建一个view
+	 * @param {Int} mode 加载模式 
+	 *                  0: 如果不传或者为false，则只是创建一个view
+	 *                  1：创建完不显示，会加载js，但不渲染（预加载）
+	 *                  2：创建完不显示，但会加载js并渲染组件（预渲染）；
+	 *                  3：创建子view，并不加载外部js，此时传递的url应该是一个id，这个view不会有load事件，但是有其他的事件
 	 * @param {any} params 可选，加载时传递的参数
 	 * @param {String} creater 创建者url
 	 */
@@ -208,8 +216,9 @@
 	        if (typeof params !== 'undefined' && (typeof params == 'function' || (typeof params === 'undefined' ? 'undefined' : _typeof(params)) == 'object')) {
 	            params = JSON.parse(JSON.stringify(params));
 	        }
-	        createView(url, mode, creater).params = params;
-	        return true;
+	        var vi = createView(url, mode, creater);
+	        vi.params = params;
+	        return vi.dom;
 	    } else return false;
 	}
 
@@ -251,6 +260,13 @@
 	    } else events.splice(callback, 1);
 	};
 
+	/**
+	 * mode
+	 * 0: 如果不传或者为false，则只是创建一个view
+	 * 1：创建完不显示，会加载js，但不渲染（预加载）
+	 * 2：创建完不显示，但会加载js并渲染组件（预渲染）；
+	 * 3：创建子view，并不加载外部js，此时传递的url应该是一个id，这个view不会有load事件，但是有其他的事件
+	 */
 	function view(dom, url, mode, creater) {
 	    EventEmitter.call(this); //继承属性
 	    this.dom = dom;
@@ -261,8 +277,8 @@
 	    this.creater = creater;
 	    this.state = 0;
 	    this.show_state = 0;
-	    if (mode != 2) {
-	        //默认模式动画结束才加载js
+	    if (mode) {
+	        //模式0动画结束才加载js
 	        this.loadScript();
 	    }
 	    dom.id = view.getViewId(url);
@@ -278,9 +294,9 @@
 
 	//加载自身的js文件
 	view.prototype.loadScript = function () {
-	    if (this.state) return;
+	    if (this.state || this.data.mode == 3) return;
 	    var that = this;
-	    if (this.data.mode == 1) this.on('scriptLoaded', view.loaded);
+	    if (this.data.mode == 2) this.on('scriptLoaded', view.loaded);
 
 	    var script = document.createElement('script');
 	    script.view = this;
@@ -397,7 +413,7 @@
 	            break;
 	        case 1:
 	            //正在加载js，还没加载完，区分加载模式进行处理
-	            if (this.data.mode == 2) this.on('scriptLoaded', view.loaded);
+	            if (this.data.mode == 1) this.on('scriptLoaded', view.loaded);
 	            break;
 	        case 2:
 	            //已经加载完js，还没触发loaded，则触发loaded
@@ -439,22 +455,30 @@
 	        return a.href;
 	    }
 	    if (/https*:\/\/.+/.test(url)) return url;
-	    var com = url.split('/');
 	    var start = '',
 	        end = '';
 	    var en = url.search(/[#?]/);
-	    if (en != -1) end = url.slice(en);
+	    href = href.replace(/\#.*/, ''); //把hash先删除掉
+	    if (en != -1) {
+	        if (en == 0) {
+	            if (url[0] == '?') return href.replace(/\?.*/, '') + url;
+	            if (url[0] == '#') return href + url;
+	        }
+	        end = url.slice(en);
+	        url = url.slice(0, en);
+	    }
+	    var com = url.split('/');
 	    var e = /https*:\/\/[^/]+/;
 	    start = href.match(e)[0];
 	    href = href.replace(e, '');
 
 	    var path = href.split('/');
 	    path.pop();
-	    var res = path.concat([]);
+	    var res = com[0] == '' ? [] : path.concat([]);
 	    for (var i = 0; i < com.length; i++) {
 	        if (com[i] == '..') {
 	            res.pop();
-	        } else if (com[i] != '.' && com[i] != '') {
+	        } else if (com[i] != '.') {
 	            res.push(com[i]);
 	        }
 	    }

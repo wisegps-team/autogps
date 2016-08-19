@@ -42,7 +42,8 @@ class App extends Component {
                     W._loginSuccess(user);
                     top.location="src/moblie/home.html";
                 },{
-                    uid:user.employee.companyId
+                    uid:user.employee.companyId,
+                    access_token: user.access_token
                 });
             },{
                 uid:user.uid
@@ -53,7 +54,8 @@ class App extends Component {
                 W._loginSuccess(user);
                 top.location="src/moblie/home.html";
             },{
-                uid:user.uid
+                uid:user.uid,
+                access_token: user.access_token
             });
     }
     loginSuccess(res){

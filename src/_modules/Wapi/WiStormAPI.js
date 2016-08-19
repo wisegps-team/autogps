@@ -159,7 +159,8 @@ WiStormAPI.prototype.makeUrl=function(json){
 		signText+=key+val;
 		getData+="&"+key+"="+val;
 	}
-	signText=this.appSecret+signText+this.appSecret;
+	if(this.appSecret)
+		signText=this.appSecret+signText+this.appSecret;
 	sign=this.md5(signText).toUpperCase();
 	URL=this.url+"?sign="+sign+getData;
 	console.log(URL);

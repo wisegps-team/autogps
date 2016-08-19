@@ -26,11 +26,13 @@ import Dialog from 'material-ui/Dialog';
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+    let view=thisView.prefetch('#forget',3);
+    ReactDOM.render(<ForgetApp/>,view);
 });
 
 const sty={
     p:{
-        padding: '10px'
+        padding: '10px',
     },
     lo:{
         width: '100%',
@@ -82,12 +84,33 @@ class App extends Component {
     }
 }
 
+class ForgetApp extends Component{
+    resetSuccess(){
+        W.alert(___.resset_success,function(){
+            W.logout();
+        });
+    }
+    render() {
+        return (
+            <ThemeProvider>
+            <div>
+                <AppBar title={___.forget_pwd}/>
+                <div style={sty.p}>
+                    <Paper zDepth={1} style={sty.p}>
+                        <Forget onSuccess={this.resetSuccess}/>
+                    </Paper>
+                </div>
+            </div>
+            </ThemeProvider>
+        );
+    }
+}
+
 
 class ShowBox extends Component{
     constructor(props, context) {
         super(props, context);
         this.state={
-            resetPwd:false,
             userName:false
         }
         this.reset = this.reset.bind(this);
@@ -98,7 +121,8 @@ class ShowBox extends Component{
     }
 
     reset(){
-        this.setState({resetPwd:true});
+        // this.setState({resetPwd:true});
+        thisView.goTo('#forget');
     }
 
     userName(){
@@ -107,8 +131,7 @@ class ShowBox extends Component{
 
     close(){
         this.setState({
-            userName:false,
-            resetPwd:false
+            userName:false
         });
     }
 
@@ -142,6 +165,8 @@ class ShowBox extends Component{
                 onTouchTap={this.saveName}
             />
         ];
+
+        let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
         return (
             <Paper zDepth={1} style={sty.p}>
                 <List>
@@ -160,13 +185,6 @@ class ShowBox extends Component{
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
                     <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={W.logout}/>                    
                 </List>
-                <Dialog
-                    title={<div>{___.reset_pwd}<ContentClear onClick={this.close} style={{float:'right'}}/></div>}
-                    contentStyle={{width: '90%', maxWidth: 'none',}}
-                    open={this.state.resetPwd}
-                >
-                    <Forget onSuccess={res=>alert('成功啦')}/>
-                </Dialog>
                 <Dialog
                     title={___.edit_user_name}
                     open={this.state.userName}

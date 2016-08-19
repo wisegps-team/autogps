@@ -127,5 +127,6 @@ window.___={
 	'edit_user_name':'修改用户名',
 	'logout':'退出登录',
 	'user_name_err':'用户名已存在',
-	'input_user_name':'请输入用户名'
+	'input_user_name':'请输入用户名',
+	'resset_success':'重置密码成功，请重新登陆'
 }
