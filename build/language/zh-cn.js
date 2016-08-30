@@ -128,5 +128,6 @@ window.___={
 	'logout':'退出登录',
 	'user_name_err':'用户名已存在',
 	'input_user_name':'请输入用户名',
-	'resset_success':'重置密码成功，请重新登陆'
+	'resset_success':'重置密码成功，请重新登陆',
+	'home':'主页',
 }

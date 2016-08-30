@@ -15,7 +15,7 @@ import ActionWork from 'material-ui/svg-icons/action/work';
 import ActionPermIdentity from 'material-ui/svg-icons/action/perm-identity';
 import HardwareKeyboard from 'material-ui/svg-icons/hardware/keyboard';
 
-
+import ActionHome from 'material-ui/svg-icons/action/home';
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
@@ -78,6 +78,11 @@ class App extends Component {
                     </div>
                 </div>
                 <Tabs style={sty.tabs}>
+                    <Tab
+                        className='tab'
+                        icon={<ActionHome/>}
+                        label={___.home}
+                    />
                     <Tab
                         className='tab'
                         icon={<ActionWork/>}
