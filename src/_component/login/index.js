@@ -27,7 +27,6 @@ class Login extends Component {
         this.submit = this.submit.bind(this);
         this.change = this.change.bind(this);
         this.remember = this.remember.bind(this);
-        this.verified = this.verified.bind(this);
     }
     componentDidMount() {
         if(this.formData.password&&this.formData.account)
@@ -42,15 +41,8 @@ class Login extends Component {
         
         let that=this;
         Wapi.user.get(function(result) {
-            if(!result.data.mobileVerified){
-                //未通过手机验证
-                that.login_res=res;
-                that.login_result=result;
-                W.alert(___.please_verification,()=>that.setState({verification:'block'}));
-            }else{
-                Object.assign(result.data,res);
-                that.props.onSuccess(result);
-            }
+            Object.assign(result.data,res);
+            that.props.onSuccess(result);
         }, {
             objectId: res.uid,
             access_token: res.access_token
@@ -87,19 +79,6 @@ class Login extends Component {
         this.need_remember=val;
         W.setSetting('remember_pwd',val);
     }
-    verified(val){
-        //验证码输入正确了
-        let that=this;
-        Wapi.user.update(function(){
-            Object.assign(that.login_result.data,this.login_res);
-            that.login_result.mobileVerified=true;
-            that.props.onSuccess(that.login_result);
-        },{
-            access_token:this.login_res.access_token,
-            mobileVerified:true,
-            _uid:this.login_res.uid
-        })
-    }
 
     render() {
         return (
@@ -127,12 +106,6 @@ class Login extends Component {
                     onCheck={this.remember}
                     style={sty.ch}
                     labelStyle={sty.cl}
-                />
-                <VerificationCode 
-                    type={1}
-                    account={this.formData.account} 
-                    onSuccess={this.verified}
-                    style={{display:this.state.verification}}
                 />
                 <RaisedButton label={___.login} primary={true} style={sty.but} onClick={this.submit}/>
             </div>

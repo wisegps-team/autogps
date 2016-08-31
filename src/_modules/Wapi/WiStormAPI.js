@@ -12,7 +12,7 @@ function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
 			value:'http://121.40.42.18:8089/router/rest'
-			// value:'http://192.168.3.90:8089/router/rest'
+			// value:'http://192.168.3.120:8089/router/rest'
             // value: "http://o.bibibaba.cn/router/rest"
         },
         "safetyUrl": {
@@ -159,7 +159,8 @@ WiStormAPI.prototype.makeUrl=function(json){
 		signText+=key+val;
 		getData+="&"+key+"="+val;
 	}
-	signText=this.appSecret+signText+this.appSecret;
+	if(this.appSecret)
+		signText=this.appSecret+signText+this.appSecret;
 	sign=this.md5(signText).toUpperCase();
 	URL=this.url+"?sign="+sign+getData;
 	console.log(URL);

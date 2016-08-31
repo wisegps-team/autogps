@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=17;//版本号
+let version=18;//版本号
 
 //地区表
 export const area={
@@ -835,6 +835,27 @@ export const vehicle={
             'type': 'String',
             'display': 'TextBox',
             'query': true
+        },
+        {
+            'name': 'drivers',
+            'desc': '司机列表',
+            'type': 'Array',
+            'display': 'TextBox',
+            'query': true
+        },
+        {
+            'name': 'managers',
+            'desc': '管理人员列表',
+            'type': 'Array',
+            'display': 'TextBox',
+            'query': true
+        },
+        {
+            'name': 'dispatch',
+            'desc': '是否调度管理',
+            'type': 'Boolean',
+            'display': 'TextBox',
+            'query': true
         }
     ],
     indexDefine: [
@@ -993,6 +1014,12 @@ export const iotDevice={
             'name': 'bindDate',
             'desc': '绑定时间',
             'type': 'Date',
+            'query': true
+        },
+        {
+            'name': 'bindName',
+            'desc': '绑定车辆的车牌号',
+            'type': 'String',
             'query': true
         }
     ],

@@ -23,7 +23,7 @@ thisView.addEventListener('load',function(){
         <Provider store={STORE}>
             <APP/>
         </Provider>,thisView);
-    thisView.prefetch('cust_add.js',1);
+    thisView.prefetch('cust_add.js',2);
 });
 
 class App extends Component{

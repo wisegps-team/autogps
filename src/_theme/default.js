@@ -1,7 +1,7 @@
 import React from 'react';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {deepOrange500,brown500,teal700,grey400,pinkA200,grey100,grey500} from 'material-ui/styles/colors';
+import {orange900,orange200,orange500,blue500,blue100,blue200} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import ALERT from './alert';
@@ -12,12 +12,12 @@ import ALERT from './alert';
 const muiTheme = getMuiTheme({
     fontFamily: '微软雅黑',
     palette: {
-        primary1Color: brown500,
-        primary2Color: teal700,
-        primary3Color: grey400,
-        accent1Color: deepOrange500,
-        accent2Color: grey100,
-        accent3Color: grey500,
+        primary1Color: blue500,
+        primary2Color: blue100,
+        primary3Color: blue200,
+        accent1Color: orange500,
+        accent2Color: orange200,
+        accent3Color: orange900,
     },   
     appBar: {
         height: 50
