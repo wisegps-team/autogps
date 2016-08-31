@@ -118,14 +118,12 @@ window.___={
 	'update_su':'更新成功',
 	'user_list_null':'您当前还没有客户，请创建',
 	'please_wait':'请稍等片刻',
-<<<<<<< HEAD
 	'activedIn':'激活时间',
 	'carNum':'车牌号',
 	'bindDate':'绑定时间',
 	'device_status':'终端状态',
 	'online':'在线',
 	'offline':'离线',
-=======
 	'success':'成功',
 	'my_account':'我的账号',
 	'company_info':'公司信息',
@@ -138,5 +136,4 @@ window.___={
 	'input_user_name':'请输入用户名',
 	'resset_success':'重置密码成功，请重新登陆',
 	'home':'主页',
->>>>>>> af8245dc488f5702e59327600a4cc5f29014c2ee
 }
