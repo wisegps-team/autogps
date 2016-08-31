@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
-import AppBar from 'material-ui/AppBar';
+import AppBar from '../_component/base/appBar';
 import {List,ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -17,6 +17,7 @@ import TextField from 'material-ui/TextField';
 
 import STORE from '../_reducers/main';
 import BrandSelect from'../_component/base/brandSelect';
+import SonPage from '../_component/base/sonPage';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -41,6 +42,28 @@ thisView.addEventListener('load',function(){
         <AppDeviceManage/>,thisView);
 });
 
+const _brand_list=[{
+    id:'ID1',
+    company_id:'012-ID1', 
+    brand_name:'沃管车'
+}];
+const _product=[{
+    id:'ID1',
+    brand_id:'014-ID1',
+    type:'W13智能终端'
+}];
+const _custs=[{
+    uid:1,
+    name:'lalala',
+    provinceId:1,
+    cityId:1,
+    areaId:1,
+    tel:1,
+    treePath:1,
+    parentId:1,
+    dealer_id:1
+}]
+
 const _data={
     type:1,
     inNet:88,
@@ -57,50 +80,75 @@ for(let i=0;i<10;i++){
 }
 
 const styles = {
+    show:{paddingTop:'50px'},
+    hide:{display:'none'},
     scan_input:{color:'#00bbbb',borderBottom:'solid 1px'},
-    device_id:{borderBottom:'solid 1px #999999'},
+    product_id:{borderBottom:'solid 1px #999999'},
     ids_box:{marginTop:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center'},
 };
 
 
+let _device={
+    model:'w13',
+    did:'123456',
+    activedIn:'2016-08-15',
+    carNum:'粤B23333',
+    bindDate:'2016-08-16',
+    status:0,
+}
+let _devices=[];
+for(let i=0;i<20;i++){
+    let device=Object.assign({},_device);
+    device.did+=i;
+    _devices[i]=device;
+}
 class AppDeviceManage extends React.Component{
     constructor(props,context){
         super(props,context);
         this.state={
+            intent:'list',
             data:[],
         }
         this.deviceIn=this.deviceIn.bind(this);
         this.deviceOut=this.deviceOut.bind(this);
+        this.toList=this.toList.bind(this);
     }
 
     componentDidMount(){
-        this.setState({data:this.props.data||_datas});
+        Wapi.device.list(res=>{
+            if(res.data.length>0)
+                this.setState({devices:res.data});
+        },{uid:_user.customer.objectId});
+        // this.setState({data:_datas});
     }
 
     deviceIn(){
         console.log('device in');
-        window.location='device_act.html?intent=in';
+        this.setState({intent:'in'});
     }
 
     deviceOut(){
         console.log('device out');
-        window.location='device_act.html?intent=out';
+        this.setState({intent:'out'});
+    }
+
+    toList(){
+        this.setState({intent:'list'});
     }
 
     render(){
         let isBrandSeller=false;
         if(_user.customer.custTypeId==0||_user.customer.custTypeId==1)isBrandSeller=true;
         console.log(isBrandSeller);
-        let items=this.state.data.map((ele,i)=><ListItem key={i} children={<ItemDevice key={i} data={ele}/>}/>);
+        let items=this.state.data.map((ele,i)=><ListItem key={i}  style={styles.MenuItem} children={<ItemDevice key={i} data={ele}/>}/>);
         return(
             <ThemeProvider>
                 <div>
                     <AppBar 
                         title={___.device_manage} 
                         style={{position:'fixed'}} 
-                        iconStyleLeft={{display:'none'}}
                         iconElementRight={
                             <IconMenu
                                 iconButtonElement={
@@ -114,9 +162,18 @@ class AppDeviceManage extends React.Component{
                             </IconMenu>
                         }
                     />
-                    <List style={{paddingTop:'50px'}}>
-                        {items}
-                    </List>
+                    <div id='list' style={styles.show}>
+                        <List>
+                            {items}
+                        </List>
+                    </div>
+
+                    <SonPage open={this.state.intent=='in'} back={this.toList}>
+                        <DeviceIn toList={this.toList}/>
+                    </SonPage>
+                    <SonPage open={this.state.intent=='out'} back={this.toList}>
+                        <DeviceOut toList={this.toList}/>
+                    </SonPage>
                 </div>
             </ThemeProvider>
         );
@@ -133,7 +190,7 @@ class ItemDevice extends React.Component{
             <div>
                 <table>
                     <thead>
-                        {'W1'+data.type+'智能终端'}
+                        {data.type}
                     </thead>
                     <tbody style={{color:'#999999',fontSize:'0.8em'}}>
                         <tr>
@@ -143,6 +200,234 @@ class ItemDevice extends React.Component{
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        )
+    }
+}
+
+class DeviceIn extends React.Component{
+    constructor(props,context){
+        super(props,context);
+        this.state={
+            brands:[],
+            types:[],
+            brand:'',
+            type:'',
+            product_ids:[],
+        }
+        this.data={}
+        this.brandChange=this.brandChange.bind(this);
+        this.typeChange=this.typeChange.bind(this);
+        this.addId=this.addId.bind(this);
+        this.submit=this.submit.bind(this);
+        this.cancel=this.cancel.bind(this);
+    }
+    componentDidMount(){
+        this.setState({
+            brands:_brand_list,
+            types:_product,
+            brand:'ID1',
+            type:'ID1',
+        });
+    }
+    brandChange(value){
+        console.log(value)
+        this.setState({brand:value});
+    }
+    typeChange(e,value){
+        this.setState({type:value});
+    }
+    addId(){
+        let _this=this;
+        if(isWxSdk){
+            W.native.scanner.start(function(res){
+                let arr=_this.state.product_ids;
+                arr[arr.length]=res;
+                _this.setState({product_ids:arr});
+            });
+        }else{
+            W.alert(___.please_wait);
+        }
+    }
+    submit(){
+        let ids=this.state.product_ids;
+        console.log(ids);
+        if(ids.length==0){
+            this.props.toList();
+            return;
+        }
+        // this.props.toList();
+        let data={
+            uid:_user.cust.uid,
+            did:this.state.product_ids,
+            type:1,
+        }
+        let _this=this;
+        Wapi.deviceLog.add(function(res){
+            _this.setState({
+                brands:[],
+                types:[],
+                brand:'',
+                type:'',
+                product_ids:[],
+            })
+            _this.props.toList();
+        },data);
+        for(let i=ids.length-1;i>=0;i--){
+            Wapi.device.add(function(res){},{
+                did:ids[i],
+                uid:_user.uid,
+                
+                status: 0,
+                commType: 'GPRS',
+                commSign: '',
+                model: 'T11',
+                binded: false,
+            });
+        }
+    }
+    cancel(){
+        this.setState({
+            brands:_brand_list,
+            types:_product,
+            brand:'ID1',
+            type:'ID1',
+            product_ids:[]
+        });
+        this.props.toList();
+    }
+    render(){
+        console.log('render device in')
+        let brands=this.state.brands.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.brand_name}/>);
+        let types=this.state.types.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.type}/>);
+        return(
+            <div style={styles.input_page}>
+                <h3>{___.device_in}</h3>
+                <div style={{width:'80%',marginLeft:'10%',textAlign:'left'}}>
+                    <h4>{___.device_type}:</h4>
+                    <BrandSelect onChange={this.brandChange}/>
+                </div>
+                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
+            </div>
+        )
+    }
+}
+
+class DeviceOut extends React.Component{
+    constructor(props,context){
+        super(props,context);
+        this.state={
+            custs:[],
+            cust_id:0,
+            product_ids:[]
+        }
+        this.custChange=this.custChange.bind(this);
+        this.addId=this.addId.bind(this);
+        this.submit=this.submit.bind(this);
+        this.cancel=this.cancel.bind(this);
+    }
+    componentDidMount(){
+        this.setState({
+            custs:_custs,
+            cust_id:0,
+        })
+    }
+    custChange(){}
+    addId(){
+        let _this=this;
+        if(isWxSdk){
+            W.native.scanner.start(function(res){
+                let arr=_this.state.product_ids;
+                arr[arr.length]=res;
+                _this.setState({product_ids:arr});
+            });
+        }else{
+            W.alert(___.please_wait);
+        }
+    }
+    submit(){
+        let ids=this.state.product_ids;
+        console.log(ids);
+        if(ids.length==0){
+            this.props.toList();
+            return;
+        }
+        // this.props.toList();
+        let data={
+            uid:_user.cust.uid,
+            did:this.state.product_ids,
+            type:1
+        }
+        let _this=this;
+        Wapi.deviceLog.add(function(res){
+            _this.setState({
+                custs:[],
+                cust_id:0,
+                product_ids:[]
+            });
+            _this.props.toList();
+        },data);
+        for(let i=ids.length-1;i>=0;i--){
+            Wapi.device.add(function(res){},{
+                did:ids[i],
+                uid:this.state.cust_id,
+                
+                status: 0,
+                commType: GPRS,
+                commSign: '',
+                model: 'T11',
+                binded: false,
+            });
+        }
+    }
+    cancel(){
+        this.setState({
+            custs:_custs,
+            cust_id:0,
+            product_ids:[]
+        });
+        this.props.toList();
+    }
+    render(){
+        console.log('render device out')
+        let custs=this.state.custs.map(ele=><MenuItem value={ele.uid} key={ele.uid} primaryText={ele.name}/>);
+        return(
+            <div style={styles.input_page}>
+                <h3>{___.device_out}</h3>
+                <div>
+                    <span>{___.cust}</span>
+                    <SelectField value={this.state.custArr} onChange={this.custChange}>
+                        {custs}
+                    </SelectField>
+                </div>
+                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
+            </div>
+        )
+    }
+}
+
+
+class ScanGroup extends React.Component{
+    constructor(props,context){
+        super(props,context);
+    }
+    render(){
+        let productItems=[];
+        let product_ids=this.props.product_ids;
+        let len=product_ids.length;
+        for(let i=0;i<len;i++){
+            productItems.push(
+                <div key={i} style={styles.ids_box}>
+                    {___.device_id} <span style={styles.product_id}>{product_ids[i]}</span>
+                </div>
+            )
+        }
+        return(
+            <div>
+                {productItems}
+                <div style={styles.ids_box}><a onClick={this.props.addId} style={styles.scan_input}>{___.scan_input}</a></div>
+                <RaisedButton onClick={this.props.cancel} label={___.cancel} primary={true} style={styles.btn_cancel}/>
+                <RaisedButton onClick={this.props.submit} label={___.submit} primary={true}/>
             </div>
         )
     }
