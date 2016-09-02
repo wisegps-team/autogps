@@ -22,17 +22,18 @@ import SonPage from '../_component/base/sonPage';
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
-
+// 测试用
 // W.native={
 //     scanner:{
 //         start:function(callback){
 //             setTimeout(function(){
-//                 callback('123456');
+//                 callback('696502000007363');
 //             },100);
 //         }
 //     }
 // }
 // let isWxSdk=true;
+
 let isWxSdk=false;
 W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
 window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
@@ -69,8 +70,6 @@ const _data={
     inNet:88,
     register:77,
     onLine:66,
-    woGuanChe:22,
-    zhangWoChe:33,
 };
 const _datas=[];
 for(let i=0;i<10;i++){
@@ -84,7 +83,7 @@ const styles = {
     hide:{display:'none'},
     scan_input:{color:'#00bbbb',borderBottom:'solid 1px'},
     product_id:{borderBottom:'solid 1px #999999'},
-    ids_box:{marginTop:'1em'},
+    ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center'},
 };
@@ -117,10 +116,10 @@ class AppDeviceManage extends React.Component{
     }
 
     componentDidMount(){
-        Wapi.device.list(res=>{
+        Wapi.deviceTotal.list(res=>{
             if(res.data.length>0)
                 this.setState({devices:res.data});
-        },{uid:_user.customer.objectId});
+        },{custId:_user.customer.uid});
         // this.setState({data:_datas});
     }
 
@@ -240,50 +239,32 @@ class DeviceIn extends React.Component{
     addId(){
         let _this=this;
         if(isWxSdk){
-            W.native.scanner.start(function(res){
+            W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 let arr=_this.state.product_ids;
                 arr[arr.length]=res;
                 _this.setState({product_ids:arr});
+                
+                Wapi.device.add(function(res_device){
+                    Wapi.deviceLog.add(function(res_log){
+                        
+                    },{
+                        uid:_user.customer.uid,
+                        did:res,
+                        type:1,
+                    });
+                },{
+                    did:res,
+                    uid:_user.customer.uid,
+                    
+                    status: 0,
+                    commType: 'GPRS',
+                    commSign: '',
+                    model: 'T11',
+                    binded: false,
+                });
             });
         }else{
             W.alert(___.please_wait);
-        }
-    }
-    submit(){
-        let ids=this.state.product_ids;
-        console.log(ids);
-        if(ids.length==0){
-            this.props.toList();
-            return;
-        }
-        // this.props.toList();
-        let data={
-            uid:_user.cust.uid,
-            did:this.state.product_ids,
-            type:1,
-        }
-        let _this=this;
-        Wapi.deviceLog.add(function(res){
-            _this.setState({
-                brands:[],
-                types:[],
-                brand:'',
-                type:'',
-                product_ids:[],
-            })
-            _this.props.toList();
-        },data);
-        for(let i=ids.length-1;i>=0;i--){
-            Wapi.device.add(function(res){},{
-                did:ids[i],
-                uid:_user.uid,
-                
-                status: 0,
-                commType: 'GPRS',
-                commSign: '',
-                model: 'T11',
-                binded: false,
-            });
         }
     }
     cancel(){
@@ -296,6 +277,16 @@ class DeviceIn extends React.Component{
         });
         this.props.toList();
     }
+    submit(){
+        let ids=this.state.product_ids;
+        console.log(ids);
+        if(ids.length==0){
+            this.props.toList();
+            return;
+        }
+        this.cancel();
+    }
+
     render(){
         console.log('render device in')
         let brands=this.state.brands.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.brand_name}/>);
@@ -327,23 +318,56 @@ class DeviceOut extends React.Component{
         this.cancel=this.cancel.bind(this);
     }
     componentDidMount(){
-        this.setState({
-            custs:_custs,
-            cust_id:0,
-        })
+        Wapi.customer.list(res=>{
+            this.setState({
+                custs:res.data,
+                cust_id:0,
+            })
+        },{
+            parentId:_user.customer.uid,
+        });
     }
-    custChange(){}
+    custChange(e,value,sth){
+        this.setState({cust_id:sth});
+    }
     addId(){
         let _this=this;
         if(isWxSdk){
-            W.native.scanner.start(function(res){
+            W.native.scanner.start(function(res){//扫码，did添加到所选用户
                 let arr=_this.state.product_ids;
                 arr[arr.length]=res;
                 _this.setState({product_ids:arr});
+                
+                Wapi.device.update(function(res_device){
+                    Wapi.deviceLog.add(function(res_log){
+                        
+                    },{
+                        did:res,
+                        uid:_this.state.cust_id,
+                        type:1
+                    });
+                },{
+                    _did:res,
+                    uid:_this.state.cust_id,
+                    
+                    status: 0,
+                    commType: 'GPRS',
+                    commSign: '',
+                    model: 'T11',
+                    binded: false,
+                });
             });
         }else{
             W.alert(___.please_wait);
         }
+    }
+    cancel(){
+        this.setState({
+            custs:[],
+            cust_id:0,
+            product_ids:[]
+        });
+        this.props.toList();
     }
     submit(){
         let ids=this.state.product_ids;
@@ -352,52 +376,19 @@ class DeviceOut extends React.Component{
             this.props.toList();
             return;
         }
-        // this.props.toList();
-        let data={
-            uid:_user.cust.uid,
-            did:this.state.product_ids,
-            type:1
-        }
-        let _this=this;
-        Wapi.deviceLog.add(function(res){
-            _this.setState({
-                custs:[],
-                cust_id:0,
-                product_ids:[]
-            });
-            _this.props.toList();
-        },data);
-        for(let i=ids.length-1;i>=0;i--){
-            Wapi.device.add(function(res){},{
-                did:ids[i],
-                uid:this.state.cust_id,
-                
-                status: 0,
-                commType: GPRS,
-                commSign: '',
-                model: 'T11',
-                binded: false,
-            });
-        }
-    }
-    cancel(){
-        this.setState({
-            custs:_custs,
-            cust_id:0,
-            product_ids:[]
-        });
-        this.props.toList();
+        this.cancel();
     }
     render(){
         console.log('render device out')
-        let custs=this.state.custs.map(ele=><MenuItem value={ele.uid} key={ele.uid} primaryText={ele.name}/>);
+        let custItems=this.state.custs.map(ele=><MenuItem value={ele.objectId} key={ele.objectId} primaryText={ele.name}/>);
+        
         return(
             <div style={styles.input_page}>
                 <h3>{___.device_out}</h3>
                 <div>
                     <span>{___.cust}</span>
-                    <SelectField value={this.state.custArr} onChange={this.custChange}>
-                        {custs}
+                    <SelectField value={this.state.cust_id} onChange={this.custChange}>
+                        {custItems}
                     </SelectField>
                 </div>
                 <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
@@ -425,9 +416,10 @@ class ScanGroup extends React.Component{
         return(
             <div>
                 {productItems}
-                <div style={styles.ids_box}><a onClick={this.props.addId} style={styles.scan_input}>{___.scan_input}</a></div>
-                <RaisedButton onClick={this.props.cancel} label={___.cancel} primary={true} style={styles.btn_cancel}/>
-                <RaisedButton onClick={this.props.submit} label={___.submit} primary={true}/>
+                <div style={styles.ids_box}>
+                    <a onClick={this.props.addId} style={styles.scan_input}>{___.scan_input}</a>
+                </div>
+                <RaisedButton onClick={this.props.submit} label={___.ok} primary={true}/>
             </div>
         )
     }

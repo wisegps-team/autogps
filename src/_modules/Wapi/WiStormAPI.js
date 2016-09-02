@@ -11,7 +11,8 @@ function _noop(){};
 function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
-			value:'http://121.40.42.18:8089/router/rest'
+			// value:'http://121.40.42.18:8089/router/rest'
+			value:'http://123.206.200.143:8089/router/rest'//20160830
 			// value:'http://192.168.3.120:8089/router/rest'
             // value: "http://o.bibibaba.cn/router/rest"
         },

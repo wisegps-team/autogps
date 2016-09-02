@@ -25,6 +25,7 @@ const styles={
     },
     right:{
          paddingBottom:'5px',
+         marginBottom:'1em',
     },
     footer:{
         marginTop:'20px',
@@ -225,6 +226,7 @@ class UserAdd extends React.Component{
                         </tr>
                     </tbody>
                 </table>
+                
                 <footer style={styles.footer}>
                     <RaisedButton label={___.save} primary={true} style={styles.btn} onClick={this.clickSave.bind(this)}/>
                 </footer>

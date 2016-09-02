@@ -4,10 +4,16 @@
 //     app_secret : "565975d7d7d01462245984408739804d"
 // }
 
+// const config={
+//     dev_key : "86e3ddeb8db36cbf68f10a8b7d05e7ac",
+//     app_key : "4fa2ca9bf6921d41c92041f414ec8ab9",
+//     app_secret : "cd0811c91da9399ea77c576869c0c483"
+// }
+
 const config={
     dev_key : "86e3ddeb8db36cbf68f10a8b7d05e7ac",
-    app_key : "4fa2ca9bf6921d41c92041f414ec8ab9",
-    app_secret : "cd0811c91da9399ea77c576869c0c483"
+    app_key : "0642502f628a83433f0ba801d0cae4ef",
+    app_secret : "15fe3ee5197e8ba810512671483d2697"
 }
 
 // let config={
