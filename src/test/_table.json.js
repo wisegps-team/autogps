@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=18;//版本号
+let version=26;//版本号
 
 //地区表
 export const area={
@@ -837,24 +837,26 @@ export const vehicle={
             'query': true
         },
         {
+            'name': 'deviceType',
+            'desc': '绑定设备的型号',
+            'type': 'String',
+            'query': true
+        },
+        {
             'name': 'drivers',
-            'desc': '司机列表',
+            'desc': '驾驶员数组',
             'type': 'Array',
-            'display': 'TextBox',
             'query': true
         },
         {
             'name': 'managers',
-            'desc': '管理人员列表',
+            'desc': '管理人员数组',
             'type': 'Array',
-            'display': 'TextBox',
             'query': true
-        },
-        {
-            'name': 'dispatch',
+        },{
+            'name': 'isDispatch',
             'desc': '是否调度管理',
             'type': 'Boolean',
-            'display': 'TextBox',
             'query': true
         }
     ],
@@ -913,7 +915,7 @@ export const iotDevice={
         {
             'name': 'commType',
             'desc': '通讯方式',
-            'type': 'Number',
+            'type': 'String',
             'display': 'TextBox',
             'query': true,    //可查询字段
             'validations': {
@@ -1017,8 +1019,14 @@ export const iotDevice={
             'query': true
         },
         {
-            'name': 'bindName',
-            'desc': '绑定车辆的车牌号',
+            'name': 'vehicleName',
+            'desc': '绑定车牌号',
+            'type': 'String',
+            'query': true
+        },
+        {
+            'name': 'vehicleId',
+            'desc': '绑定车objectId',
             'type': 'String',
             'query': true
         }
@@ -1136,6 +1144,12 @@ export const iotGpsData={
             'desc': '定位时间',
             'type': 'Date',
             'query': true    //可查询字段
+        },
+        {
+            'name': 'rcvTime',
+            'desc': '接收时间',
+            'type': 'Date',
+            'query': true
         }
     ],
     indexDefine: [
@@ -1395,7 +1409,7 @@ export const product={
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
-    ,brand,product,deviceTotal
+    ,brand,product,deviceTotal,deviceLog
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);

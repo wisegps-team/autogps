@@ -779,8 +779,8 @@ W.plusReady=function(fun,web){
 window._g=W.getSearch();
 
 var	WiStorm_root="http://"+location.host+"/";
-if(location.host=="h5.bibibaba.cn")
-	WiStorm_root="http://h5.bibibaba.cn/autogps/";
+if(location.host.indexOf('localhost')==-1&&!location.host.match(/(192\.|127\.)/))
+	WiStorm_root+="autogps/";
 var u = navigator.userAgent;
 var _d=true;
 if(_g.debug)_d=true;
@@ -889,7 +889,6 @@ url=undefined;
 
 
 
-
 /**
  * 微信的es6兼容
  * 因为微信的内核比较旧，所以某些方法还是需要兼容
@@ -945,4 +944,48 @@ if (!Array.prototype.find) {
       return undefined;
     }
   });
+}
+
+if (!Array.prototype.includes) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
+    'use strict';
+    var O = Object(this);
+    var len = parseInt(O.length) || 0;
+    if (len === 0) {
+      return false;
+    }
+    var n = parseInt(arguments[1]) || 0;
+    var k;
+    if (n >= 0) {
+      k = n;
+    } else {
+      k = len + n;
+      if (k < 0) {k = 0;}
+    }
+    var currentElement;
+    while (k < len) {
+      currentElement = O[k];
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) {
+        return true;
+      }
+      k++;
+    }
+    return false;
+  };
+}
+
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+    'use strict';
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+    
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
 }

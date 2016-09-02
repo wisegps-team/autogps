@@ -41,10 +41,10 @@ constructor(props, context) {
             let update={
                 access_token:this.props.user.access_token,
                 mobileVerified:true,
-                _uid:this.props.user.uid
+                _sessionToken:this.props.user.session_token
             }
             let that=this;
-            Wapi.user.resetPassword((res)=>Wapi.user.update(this.success,update),Object.assign({},this.formData));
+            Wapi.user.resetPassword((res)=>Wapi.user.updateMe(this.success,update),Object.assign({},this.formData));
         }else
             Wapi.user.resetPassword(this.success,Object.assign({},this.formData));
     }
