@@ -793,7 +793,7 @@ window.WiStorm={
 		"skin": "default",
 		"default_language": "zh-cn",
 		"update_url": WiStorm_root+"/update/version.json",
-		"wx_ticket_url":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/WX.TokenAndTicket.php?action=ticket",
+		"wx_ticket_url":"http://h5.bibibaba.cn/WX.TokenAndTicket.php?action=ticket",
 		"wx_sdk":"http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
 		"wx_login":"http://h5.bibibaba.cn/baba/wx/wslib/toolkit/oauth2.php",
 		languages:['zh-cn','en-us']
