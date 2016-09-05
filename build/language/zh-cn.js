@@ -137,4 +137,5 @@ window.___={
 	'input_user_name':'请输入用户名',
 	'resset_success':'重置密码成功，请重新登陆',
 	'home':'主页',
+	'did_error':'非法的设备号'
 }

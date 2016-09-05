@@ -22,7 +22,7 @@ import SonPage from '../_component/base/sonPage';
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
-// 测试用
+//测试用
 // W.native={
 //     scanner:{
 //         start:function(callback){
@@ -35,7 +35,6 @@ var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 // let isWxSdk=true;
 
 let isWxSdk=false;
-// W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
 if(W.native)isWxSdk=true;
 else
     window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
@@ -282,13 +281,14 @@ class DeviceIn extends React.Component{
             type:'ID1',
             product_ids:[]
         });
-        this.props.toList();
+        // this.props.toList();
+        history.back();
     }
     submit(){
         let ids=this.state.product_ids;
         console.log(ids);
         if(ids.length==0){
-            this.props.toList();
+            history.back();
             return;
         }
         this.cancel();
@@ -342,27 +342,17 @@ class DeviceOut extends React.Component{
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到所选用户
                 let arr=_this.state.product_ids;
-                arr[arr.length]=res;
-                _this.setState({product_ids:arr});
-                
-                Wapi.device.update(function(res_device){
-                    Wapi.deviceLog.add(function(res_log){
-                        
-                    },{
-                        did:res,
-                        uid:_this.state.cust_id,
-                        type:1
-                    });
+                let product_ids=arr.concat(res);
+                Wapi.device.get(res=>{
+                    if(res.data)
+                        _this.setState({product_ids});
+                    else
+                        W.alert(___.did_error);
                 },{
-                    _did:res,
-                    uid:_this.state.cust_id,
-                    
-                    status: 0,
-                    commType: 'GPRS',
-                    commSign: '',
-                    model: 'T11',
-                    binded: false,
-                });
+                    did:res,
+                    uid:_user.customer.objectId
+                })
+                
             });
         }else{
             W.alert(___.please_wait);
@@ -370,20 +360,38 @@ class DeviceOut extends React.Component{
     }
     cancel(){
         this.setState({
-            custs:[],
             cust_id:0,
             product_ids:[]
         });
-        this.props.toList();
+        // this.props.toList();
+        history.back();
     }
     submit(){
         let ids=this.state.product_ids;
-        console.log(ids);
         if(ids.length==0){
-            this.props.toList();
+            history.back();
             return;
         }
-        this.cancel();
+        let _this=this;
+        Wapi.device.update(function(res_device){
+            Wapi.deviceLog.add(function(res_log){
+                
+            },{
+                did:ids,
+                uid:_this.state.cust_id,
+                type:1
+            });
+            Wapi.deviceLog.add(function(res_log){
+                _this.cancel();
+            },{
+                did:ids,
+                uid:_user.customer.objectId,
+                type:0//出库
+            });
+        },{
+            _did:ids.join('|'),
+            uid:_this.state.cust_id,
+        });
     }
     render(){
         console.log('render device out')
