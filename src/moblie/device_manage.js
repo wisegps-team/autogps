@@ -35,8 +35,10 @@ var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 // let isWxSdk=true;
 
 let isWxSdk=false;
-W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
-window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
+// W.include(WiStorm.root+'/wslib/toolkit/WxSdk.js',function(){},function(){alert('can not scan')});
+if(W.native)isWxSdk=true;
+else
+    window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
 
 thisView.addEventListener('load',function(){
     ReactDOM.render(
@@ -119,17 +121,19 @@ class AppDeviceManage extends React.Component{
         Wapi.deviceTotal.list(res=>{
             if(res.data.length>0)
                 this.setState({devices:res.data});
-        },{custId:_user.customer.uid});
+        },{custId:_user.customer.objectId});
         // this.setState({data:_datas});
     }
 
     deviceIn(){
         console.log('device in');
+        history.replaceState('home','home','home.html');
         this.setState({intent:'in'});
     }
 
     deviceOut(){
         console.log('device out');
+        history.replaceState('home','home','home.html');
         this.setState({intent:'out'});
     }
 
@@ -212,6 +216,8 @@ class DeviceIn extends React.Component{
             types:[],
             brand:'',
             type:'',
+            brandId:'',
+            typeId:'',
             product_ids:[],
         }
         this.data={}
@@ -231,7 +237,7 @@ class DeviceIn extends React.Component{
     }
     brandChange(value){
         console.log(value)
-        this.setState({brand:value});
+        this.setState({brand:value.brand,brandId:value.brandId,type:value.product,typeId:value.productId});
     }
     typeChange(e,value){
         this.setState({type:value});
@@ -248,18 +254,19 @@ class DeviceIn extends React.Component{
                     Wapi.deviceLog.add(function(res_log){
                         
                     },{
-                        uid:_user.customer.uid,
+                        uid:_user.customer.objectId,
                         did:res,
                         type:1,
                     });
                 },{
                     did:res,
-                    uid:_user.customer.uid,
+                    uid:_user.customer.objectId,
                     
                     status: 0,
                     commType: 'GPRS',
                     commSign: '',
-                    model: 'T11',
+                    model: _this.state.type,
+                    modelId: _this.state.typeId,
                     binded: false,
                 });
             });
@@ -324,7 +331,7 @@ class DeviceOut extends React.Component{
                 cust_id:0,
             })
         },{
-            parentId:_user.customer.uid,
+            parentId:_user.customer.objectId,
         });
     }
     custChange(e,value,sth){

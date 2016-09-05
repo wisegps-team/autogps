@@ -29,7 +29,7 @@ class TypeSelect extends Component {
   handleChange(event, index, value){
     this.setState({value:value});
     console.log(value);
-    this.props.onChange(value);
+    // this.props.onChange(value);
   }
   componentWillReceiveProps(nextProps){
     let types;
@@ -42,6 +42,12 @@ class TypeSelect extends Component {
     value=(!value||isNaN(value))?types[0].id:value;
     this.setState({value,types});
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.value!=this.state.value)
+      this.props.onChange(this.state.value);
+  }
+  
 
   render() {
     let items=[];

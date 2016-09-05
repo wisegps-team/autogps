@@ -30,7 +30,7 @@ class App extends Component{
     constructor(props, context) {
         super(props, context);
         this._data={
-            parentId:_user.uid,
+            parentId:_user.customer.objectId,
             custTypeId:'<>4'
         };
     }

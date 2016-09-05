@@ -153,22 +153,24 @@ class UserAdd extends React.Component{
             return;
         }
         // add user;
-        data.parentId=[_user.customer.uid];
+        data.parentId=[_user.customer.objectId.toString()];
         // data.treePath=parent.treePath?parent.treePath+','+parent.uid:parent.uid;    
         let that=this;
+        let action=this.context.ACT.action;
         if(data._objectId){
             Wapi.customer.update(function(res){
                 W.alert(___.update_su,()=>history.back());
-                STORE.dispatch(that.context.ACT.fun.update(data));
+                STORE.dispatch(action.fun.update(data));
             },data);
         }else{
             delete data._objectId;
+            let sms=this.props.type=='user_manage'?___.user_sms_content:___.cust_sms_content;
             Wapi.user.add(function (res) {
                 data.uid=res.uid;
                 Wapi.customer.add(function(res){
                     W.confirm(___.create_user_su,function(b){if(b)history.back()});
                     data.objectId=res.objectId;
-                    STORE.dispatch(that.context.ACT.fun.add(data));
+                    STORE.dispatch(action.fun.add(data));
                     let tem={
                         name:data.contact,
                         sex:data.sex?___.sir:___.lady,
@@ -177,7 +179,7 @@ class UserAdd extends React.Component{
                     }
                     Wapi.comm.sendSMS(function(res){
                         W.errorCode(res);
-                    },data.tel,0,W.replace(___.cust_sms_content,tem));
+                    },data.tel,0,W.replace(sms,tem));
                 },data);
             },{
                 userType:this._userType,

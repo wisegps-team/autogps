@@ -59,7 +59,7 @@ class BrandSelect extends Component {
         }
     }
     componentDidUpdate(prevProps, prevState) {
-        if(this.state.brandId&&this.state.productId&&this.state.brandId!=prevState.brandId&&this.state.productId!=prevState.productId){
+        if(this.state.brandId&&this.state.productId&&(this.state.brandId!=prevState.brandId||this.state.productId!=prevState.productId)){
             let br=this.state.brands.find(ele=>(ele.objectId==this.state.brandId));
             let pr=this.state.products.find(ele=>(ele.objectId==this.state.productId));
             let data={
@@ -67,7 +67,7 @@ class BrandSelect extends Component {
                 productId:this.state.productId,
                 brand:br?br.name:'',
                 product:pr?pr.name:''
-            }  
+            } 
             this.props.onChange(data); 
         }
     }

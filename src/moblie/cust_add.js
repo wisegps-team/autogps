@@ -26,13 +26,16 @@ class AppUserAdd extends React.Component{
             cust_data:null,
             type:'cust_manage'
         }
+        this.act={};
     }
     componentDidMount() {
         let that=this;
         thisView.addEventListener('show',function(e){
             let type='cust_manage';
+            that.act.action=custAct;
             if(e.caller.indexOf('cust_manage')==-1){
                 type='user_manage';
+                that.act.action=userAct;
             }
             if(e.params){
                 that.setState({cust_data:e.params,type});
@@ -60,7 +63,7 @@ class AppUserAdd extends React.Component{
     
     getChildContext(){
         return {
-            ACT:custAct,
+            ACT:this.act,
             custType:this.props.custType
         };
     }

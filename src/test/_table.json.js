@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，没做一个更改必须更改版本号
  */
-let version=26;//版本号
+let version=27;//版本号
 
 //地区表
 export const area={
@@ -942,6 +942,13 @@ export const iotDevice={
                 required:true,
                 select:[{value:1,name:1},{value:2,name:2}]
             }
+        },
+        {
+            'name': 'modelId',
+            'desc': '设备型号id',
+            'type': 'String',
+            'display': 'TextBox',
+            'query': true,    //可查询字段
         },
         {
             'name': 'hardwareVersion',

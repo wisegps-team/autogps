@@ -29,8 +29,8 @@ class Login extends Component {
         this.remember = this.remember.bind(this);
     }
     componentDidMount() {
-        if(this.formData.password&&this.formData.account)
-            this.submit();
+        // if(this.formData.password&&this.formData.account)
+        //     this.submit();
     }
     
     loginSuccess(res){
