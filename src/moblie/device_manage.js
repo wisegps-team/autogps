@@ -160,8 +160,8 @@ class AppDeviceManage extends React.Component{
                                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
                                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                                 >
-                                <MenuItem style={isBrandSeller?{}:{display:'none'}} primaryText={___.import} onClick={this.deviceIn}/>
-                                <MenuItem primaryText={___.distribute} onClick={this.deviceOut}/>
+                                <MenuItem style={isBrandSeller?{}:{display:'none'}} primaryText={___.import} onTouchTap={this.deviceIn}/>
+                                <MenuItem primaryText={___.distribute} onTouchTap={this.deviceOut}/>
                             </IconMenu>
                         }
                     />

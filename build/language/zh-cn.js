@@ -138,4 +138,7 @@ window.___={
 	'resset_success':'重置密码成功，请重新登陆',
 	'home':'主页',
 	'did_error':'非法的设备号',
+	'loading':'正在加载',
+	'push':'入库',
+	'pop':'入库',
 }

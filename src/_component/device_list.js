@@ -12,6 +12,13 @@ const op={
     sorts:'-createdAt',
 }
 
+const sty={
+    ta:{
+        textAlign:'center',
+        margin:0
+    }
+}
+
 
 class DeviceList extends Component {
     constructor(props, context) {
@@ -54,11 +61,11 @@ class DeviceList extends Component {
 
 class DumbList extends Component{
     shouldComponentUpdate(nextProps, nextState) {
-        return false;
+        return !this.props.data;
     }
 
     render() {
-        let item=this.props.data.map(e=>(<ListItem
+        let item=this.props.data?this.props.data.map(e=>(<ListItem
                 leftAvatar={e.type?(<Avatar 
                         backgroundColor='#BBDEFB'
                         icon={<FileDownload/>}
@@ -67,9 +74,9 @@ class DumbList extends Component{
                         icon={<FileUpload/>}
                     />)}
                 primaryText={e.did.join(',')}
-                secondaryText={(e.type?'入库':'出库')+'，'+W.dateToString(W.date(e.createdAt))}
+                secondaryText={(e.type?___.push:___.pop)+'，'+W.dateToString(W.date(e.createdAt))}
                 key={e.objectId}
-            />));
+            />)):(<h3 style={sty.ta}>{___.loading}</h3>);
         return (
             <List>
                 {item}

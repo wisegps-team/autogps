@@ -176,8 +176,8 @@ class RightIconMenu extends Component{
                     margin: 'auto'
                 }}
             >
-                <MenuItem onClick={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
-                <MenuItem onClick={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
             </IconMenu>
         );
     }

@@ -12,6 +12,7 @@ function AutoList(ShowComponent){
             super(props, context);
             this.state={
                 page:0,//已经加载的页
+                waiting:false
             }
             this.setPage();
             this.scroll = this.scroll.bind(this);
@@ -23,7 +24,8 @@ function AutoList(ShowComponent){
             document.removeEventListener('scroll',this.scroll);
         }
         componentWillReceiveProps(nextProps) {
-            this._waiting = (nextProps.data.length==this.props.data.length);
+            let waiting = this.state.waiting&&(nextProps.data.length==this.props.data.length);
+            this.setState({waiting});
             this.setPage(nextProps);
         }
 
@@ -39,11 +41,11 @@ function AutoList(ShowComponent){
 
         scroll(e){
             let div=this.refs.main;
-            if(div.offsetHeight&&!this._waiting){//有长度，说明是正在显示
+            if(div.offsetHeight&&!this.state.waiting){//有长度，说明是正在显示
                 let se = document.documentElement.clientHeight; //浏览器可见区域高度。
                 let bottom = div.getBoundingClientRect().bottom-se; //元素底端到可见区域底端的距离
                 if (bottom<50) {
-                    this._waiting = true;
+                    this.setState({waiting:true});
                     this.props.next();
                 }
             }
@@ -58,6 +60,11 @@ function AutoList(ShowComponent){
                 pages.push(<ShowComponent 
                     data={this.props.data.slice(i*this.props.limit,(i+1)*this.props.limit)}
                     key={i}
+                />);
+            if(this.state.waiting)
+                pages.push(<ShowComponent 
+                    data={null}
+                    key={pages.length}
                 />);
             return (
                 <div ref={'main'}>
