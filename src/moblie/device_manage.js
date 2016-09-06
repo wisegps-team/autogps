@@ -18,6 +18,7 @@ import TextField from 'material-ui/TextField';
 import STORE from '../_reducers/main';
 import BrandSelect from'../_component/base/brandSelect';
 import SonPage from '../_component/base/sonPage';
+import DeviceList from '../_component/device_list';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -117,10 +118,10 @@ class AppDeviceManage extends React.Component{
     }
 
     componentDidMount(){
-        Wapi.deviceTotal.list(res=>{
-            if(res.data.length>0)
-                this.setState({devices:res.data});
-        },{custId:_user.customer.objectId});
+        // Wapi.deviceTotal.list(res=>{
+        //     if(res.data.length>0)
+        //         this.setState({devices:res.data});
+        // },{uid:_user.customer.objectId});
         // this.setState({data:_datas});
     }
 
@@ -165,9 +166,7 @@ class AppDeviceManage extends React.Component{
                         }
                     />
                     <div id='list' style={styles.show}>
-                        <List>
-                            {items}
-                        </List>
+                        <DeviceList/>
                     </div>
 
                     <SonPage open={this.state.intent=='in'} back={this.toList}>

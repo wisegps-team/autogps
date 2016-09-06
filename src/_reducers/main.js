@@ -9,12 +9,12 @@ const initialState = {
     brand:[],//品牌类型字典
     customer:{
         data:[],    //客户列表
-        total:0,    //总客户数
+        total:-1,    //总客户数
         loading:false
     },//所有的客户
     user:{
         data:[],    //用户列表
-        total:0,    //总用户数
+        total:-1,    //总用户数
         loading:false
     },//所有的用户
     

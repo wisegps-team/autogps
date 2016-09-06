@@ -627,7 +627,7 @@ function makeGetOp(name,fields,lop){
 }
 
 makeGetOp('customer','objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id');
-makeGetOp('deviceLog','did,type');
+makeGetOp('deviceLog','objectId,uid,did,type,createdAt');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('device','did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
 

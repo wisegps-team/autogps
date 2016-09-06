@@ -54,17 +54,13 @@ class UserList extends Component {
         STORE.dispatch(ACT.fun.get(this.context.data,op));//获取下一页
     }
     render() {
-        let items;
-        if(this.props.data&&this.props.data.length)
-            items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
-        else
-            items=(<div style={{textAlign:'center',color:'#ccc'}}>
-                <h2>{___.user_list_null}</h2>
-            </div>);
         return (
-            <AutoList load={this.load} forLoad={(this.props.data.length!=this.props.total)} loading={this.props.loading}>
-                {items}
-            </AutoList>
+            <Alist 
+                max={this.props.total} 
+                limit={20} 
+                data={this.props.data} 
+                next={this.load} 
+            />
         );
     }
 }
@@ -73,6 +69,23 @@ UserList.contextTypes={
     VIEW:React.PropTypes.object,
     ACT:React.PropTypes.object,
     data:React.PropTypes.object,
+}
+
+class Dlist extends Component{
+    render() {
+        let items;
+        if(this.props.data)
+            items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
+        else
+            items=(<div style={{textAlign:'center',color:'#ccc'}}>
+                <h2>{___.user_list_null}</h2>
+            </div>);
+        return (
+            <List>
+                {items}
+            </List>
+        );
+    }
 }
 
 class UserItem extends Component{
@@ -170,6 +183,6 @@ class RightIconMenu extends Component{
     }
 }
                 /*<MenuItem onClick={()=>this.props.onClick(1)}>{___.details}</MenuItem>*/
-
+let Alist=AutoList(Dlist);
 
 export default UserList;
