@@ -53,8 +53,8 @@ constructor(props, context) {
             if(name=='password'||name=='valid_code')
                 this.formData[name]=val;
         }else{
-            this.setState({account:val});
-            this.formData['account']=val;            
+            this.formData['account']=val;   
+            this.setState({account:val});         
         }
     }
 
