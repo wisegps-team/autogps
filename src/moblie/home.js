@@ -14,8 +14,10 @@ import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
 import ActionWork from 'material-ui/svg-icons/action/work';
 import ActionPermIdentity from 'material-ui/svg-icons/action/perm-identity';
 import HardwareKeyboard from 'material-ui/svg-icons/hardware/keyboard';
-
+import ActionRecordVoiceOver from 'material-ui/svg-icons/action/record-voice-over';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import ActionAssignmentInd from 'material-ui/svg-icons/action/assignment-ind';
+import ActionTurnedInNot from 'material-ui/svg-icons/action/turned-in-not';
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
@@ -68,14 +70,13 @@ class App extends Component {
                     <h2>{___.app_name}</h2>
                 </div>
                 <div className='main'>
-                    <div className='tr'>
-                        <ModuleCard title={___.cust_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='cust_manage' />
-                        <ModuleCard title={___.user_manage} icon={<ActionPermIdentity style={sty.icon}/>} href='user_manage' />
-                        <ModuleCard title={___.device_manage} icon={<HardwareKeyboard style={sty.icon}/>} href='device_manage' />
-                    </div>
-                    <div className='tr'>
-                        
-                    </div>
+                    <ModuleCard title={___.brand_trader} icon={<ActionRecordVoiceOver style={sty.icon}/>} href='brand_trader' />
+                    <ModuleCard title={___.agent_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='agent_manage' />
+                    <ModuleCard title={___.user_manage} icon={<ActionPermIdentity style={sty.icon}/>} href='user_manage' />
+
+                    <ModuleCard title={___.device_manage} icon={<HardwareKeyboard style={sty.icon}/>} href='device_manage' />
+                    <ModuleCard title={___.department_manage} icon={<ActionTurnedInNot style={sty.icon}/>} href='department' />
+                    <ModuleCard title={___.employee_manage} icon={<ActionAssignmentInd style={sty.icon}/>} href='employee' />
                 </div>
                 <Tabs style={sty.tabs}>
                     <Tab

@@ -9,11 +9,9 @@
         }
     }
     .main{
-        display: table;
-        width: 100%;
-    }
-    .tr{
-        display: table-row;
+        display: flex;
+        align-items: center;
+        flex-wrap:wrap;
     }
     .title{
         text-align: center;
