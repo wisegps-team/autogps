@@ -141,4 +141,13 @@ window.___={
 	'loading':'正在加载',
 	'push':'入库',
 	'pop':'入库',
+	'brand_trader':'品牌商管理',
+	'agent_manage':'代理商管理',
+	'department_manage':'部门管理',
+	'employee_manage':'人员管理',
+	'customer_null':'未选择要分配的客户',
+	'register_success':'注册成功，请登录。',
+	'account_error':'该手机号已注册为用户，如果您是忘记了密码，可以通过“找回密码”重置密码，是否跳转至找回密码？',
+	'company_name':'公司名称',
+	'user_type_error':'您当前客户类型不正确，无法添加品牌商'
 }
