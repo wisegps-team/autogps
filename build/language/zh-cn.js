@@ -149,5 +149,8 @@ window.___={
 	'register_success':'注册成功，请登录。',
 	'account_error':'该手机号已注册为用户，如果您是忘记了密码，可以通过“找回密码”重置密码，是否跳转至找回密码？',
 	'company_name':'公司名称',
-	'user_type_error':'您当前客户类型不正确，无法添加品牌商'
+	'user_type_error':'您当前客户类型不正确，无法添加品牌商',
+	'finish_register':'完成注册',
+	'add_data':'完善资料',
+	'verification_phone':'手机验证'
 }

@@ -8,9 +8,8 @@ import {ThemeProvider} from './_theme/default';
 import FlatButton from 'material-ui/FlatButton';
 
 import Login from './_component/login';
-import Register from './_component/login/register';
 import Forget from './_component/login/forget';
-import Wapi from './_modules/Wapi';
+import AgentRegisterBox from './_component/login/agent_register';
 
 require('./_sass/index.scss');//包含css
 
@@ -23,10 +22,11 @@ class App extends Component {
     constructor(props, context) {
         super(props, context);
         this.state={
-            active:0//0,登录；1，注册；2，忘记密码
+            active:(_g.register=='true'&&_g.parentId)?1:0 //0,登录；1，注册；2，忘记密码
         }
         this.loginSuccess = this.loginSuccess.bind(this);
         this.forgetSuccess = this.forgetSuccess.bind(this);
+        this.registerCallback = this.registerCallback.bind(this);
     }
 
     componentDidMount(){
@@ -79,13 +79,29 @@ class App extends Component {
         }
         this.setState({active:0});
     }
-    registerSuccess(res){
-        
+    registerCallback(res){
+        if(!res._code){//注册成功
+            W.alert(___.register_success,()=>this.setState({active:0}));
+        }else{
+            switch (res._code) {
+                case 1:
+                    W.confirm(___.account_error,b=>b?this.setState({active:2}):null);
+                    break;
+                case 2:
+                    //已经是客户了，但不是代理商
+                    W.alert(___.user_type_error,()=>this.setState({active:0}));
+                    break;
+                default:
+                    W.alert(___.unknown_err);
+                    break;
+            }
+        }
     }
     render() {
+        let sty=this.state.active==1?{padding:'10px'}:null;
         let actives=[
             <Login onSuccess={this.loginSuccess}/>,
-            <Register onSuccess={this.registerSuccess}/>,
+            <AgentRegisterBox success={this.registerCallback} parentId={_g.parentId}/>,
             <Forget onSuccess={this.forgetSuccess} user={this._user}/>
         ]
         let buttons=[
@@ -94,7 +110,7 @@ class App extends Component {
             <FlatButton label={___.forget_pwd} primary={true} onClick={()=>this.setState({active:2})} key='forget_pwd'/>];
         return (
             <ThemeProvider>
-                <div className='login'>
+                <div className='login' style={sty}>
                     {actives[this.state.active]}
                     <div style={{
                         textAlign: 'right',
