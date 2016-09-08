@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=31;//版本号
+let version=34;//版本号
 
 //地区表
 export const area={
@@ -18,7 +18,6 @@ export const area={
             'desc': '索引id',
             'type': 'Number',
             'display': 'TextBox',
-            'unique':true,
             'primary': true,  //主键字段
             'query': true,    //可查询字段
             'validations': {
@@ -66,14 +65,12 @@ export const area={
         },{
             'name': 'areaCode',
             'desc': '区号',
-            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'query': true,    //可查询字段
         },{
             'name': 'zipCode',
             'desc': '邮政编码',
-            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'query': true,    //可查询字段
@@ -92,7 +89,10 @@ export const area={
         }
     ],
     indexDefine: [
-        {id:1},
+        {
+            id:1,
+            unique:true
+        },
         {name:1},
         {parentId:1},
         {level:1}
@@ -309,7 +309,10 @@ export const customer={
         }
     ],
     indexDefine: [
-        {uid:1},
+        {
+            uid:1,
+            unique:true
+        },
         {name:1},
         {provinceId:1},
         {cityId:1},
@@ -337,7 +340,6 @@ export const custType={
             'type': 'Number',
             'display': 'TextBox',
             'primary': true,  //主键字段
-            'unique':true,
             'query': true,    //可查询字段
             'validations': {
                 required:true
@@ -351,7 +353,6 @@ export const custType={
             'desc': '类别名称',
             'type': 'String',
             'display': 'TextBox',
-            'unique':true,
             'query': true,    //可查询字段
             'validations': {
                 required:true
@@ -383,8 +384,14 @@ export const custType={
         }
     ],
     indexDefine: [
-        {id:1},
-        {name:1},
+        {
+            id:1,
+            unique:true
+        },
+        {
+            name:1,
+            unique:true
+        },
         {appId:1},
         {useType:1}
     ]
@@ -614,7 +621,10 @@ export const employee={
         },
     ],
     indexDefine: [
-        {uid:1},
+        {
+            uid:1,
+            unique:true
+        },
         {departId:1},
         {idcard:1},
         {tel:1},
@@ -863,7 +873,10 @@ export const vehicle={
     indexDefine: [
         {uid:1},
         {departId:1},
-        {name:1},
+        {
+            name:1,
+            unique:true
+        },
         {frameNo:1},
         {engineNo:1},
         {did:1},
@@ -883,7 +896,6 @@ export const iotDevice={
         {
             'name': 'did',
             'desc': '设备序列号',
-            'unique':true,
             'type': 'String',
             'display': 'TextBox',
             'primary': true,  //主键字段
@@ -1039,7 +1051,10 @@ export const iotDevice={
         }
     ],
     indexDefine: [
-        {did:1},
+        {
+            did:1,
+            unique:true
+        },
         {uid:1},
         {statue:1},        
         {commSign:1},
@@ -1241,11 +1256,26 @@ export const deviceLog={
                 digits:true,
                 select:[{value:1,name:'入库'},{value:0,name:'出库'}]
             }
+        },
+        {
+            'name': 'from',
+            'desc': '设备来源',
+            'type': 'String',
+            'query': true
+        },
+        {
+            'name': 'to',
+            'desc': '设备去向',
+            'type': 'String',
+            'query': true
         }
     ],
     indexDefine: [
+        {uid:1},
         {did:1},
-        {type:1}
+        {type:1},
+        {from:1},
+        {to:1}
     ]
 }
 
@@ -1437,9 +1467,7 @@ export const iotStat = {
             'type': 'String',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1451,9 +1479,7 @@ export const iotStat = {
             'type': 'Date',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1465,9 +1491,7 @@ export const iotStat = {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1479,9 +1503,7 @@ export const iotStat = {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1493,9 +1515,7 @@ export const iotStat = {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1507,9 +1527,7 @@ export const iotStat = {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1521,9 +1539,7 @@ export const iotStat = {
             'type': 'Object',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1553,9 +1569,7 @@ export const iotCommand= {
             'type': 'String',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1567,9 +1581,7 @@ export const iotCommand= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1581,9 +1593,7 @@ export const iotCommand= {
             'type': 'Object',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1595,9 +1605,7 @@ export const iotCommand= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1609,9 +1617,7 @@ export const iotCommand= {
             'type': 'String',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1641,9 +1647,7 @@ export const iotAlert= {
             'type': 'String',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1655,9 +1659,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1669,9 +1671,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1683,9 +1683,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1697,9 +1695,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1711,9 +1707,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1725,9 +1719,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1739,9 +1731,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
@@ -1753,9 +1743,7 @@ export const iotAlert= {
             'type': 'Number',
             'default': '',
             'display': '',
-            'primary': false,  //主键字段
             'query': true,    //可查询字段
-            'unique': false,
             'validations': {
             },
             'messages': {
