@@ -70,11 +70,17 @@ class AgentRegisterBox extends Component{
         Wapi.custType.get(type=>{
             cust.custType=type.data.name;
             Wapi.customer.add(function(res){
-                W.loading();
                 cust.objectId=res.objectId;
                 user.customer=cust;
-                user._code=0;
-                that.props.success(user);
+                Wapi.role.update(function(role){
+                    W.loading();
+                    user._code=0;
+                    that.props.success(user);
+                },{
+                    access_token:token,
+                    _objectId:type.roleId,
+                    users:'+"'+cust.objectId+'"'
+                })
             },cust);
             Wapi.user.updateMe(null,{
                 _sessionToken:user.session_token,

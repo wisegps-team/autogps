@@ -10,6 +10,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Login from './_component/login';
 import Forget from './_component/login/forget';
 import AgentRegisterBox from './_component/login/agent_register';
+import CONFIG from './_modules/config';
 
 require('./_sass/index.scss');//包含css
 
@@ -29,35 +30,54 @@ class App extends Component {
         this.registerCallback = this.registerCallback.bind(this);
     }
 
-    componentDidMount(){
-        
-    }
     getUserData(user){
-        if(user.userType==9){
-            //如果是员工
-            Wapi.employee.get(function(res){
+        W.loading(1);
+        if(user.userType==9){//如果是员工
+            let that=this;
+            Wapi.employee.get(res=>{
                 user.employee=res.data;
-                Wapi.customer.get(function(result){
-                    user.customer=result.data;
-                    W._loginSuccess(user);
-                    top.location="src/moblie/home.html";
-                },{
-                    uid:user.employee.companyId,
-                    access_token: user.access_token
-                });
+                this.getCustomer(user);
             },{
                 uid:user.uid
             })
         }else
-            Wapi.customer.get(function(result){
-                user.customer=result.data;
-                W._loginSuccess(user);
-                top.location="src/moblie/home.html";
-            },{
-                uid:user.uid,
-                access_token: user.access_token
-            });
+            this.getCustomer(user);
     }
+    getCustomer(user){
+        let token=user.access_token;
+        let cust_id=user.uid;
+        let role_user;
+        if(user.employee){
+            cust_id=user.employee.companyId;
+            role_user=user.employee.objectId;
+        }
+        Wapi.customer.get(function(cust){
+            user.customer=cust.data;
+            Wapi.role.get(function(role){
+                user.role=role.data;
+                Wapi.page.list(function(page){
+                    if(!page.data||!page.data.length){//没有任何页面的权限，说明不是这个平台的用户
+                        W.loading();
+                        W.alert(___.not_allow_login);
+                    }
+                    user.pages=page.data;
+                    W._loginSuccess(user);
+                    top.location="src/moblie/home.html";
+                },{
+                    access_token:token,
+                    ACL:'role:'+user.role.objectId+'|'+user.uid,
+                    appId:CONFIG.appId
+                });
+            },{
+                users:role_user||cust.data.objectId,
+                access_token: token
+            });
+        },{
+            uid:cust_id,
+            access_token: token
+        });
+    }
+
     loginSuccess(res){
         let min=-Math.floor((W.date(res.data.expire_in).getTime()-new Date().getTime())/60000);
         W.setCookie("access_token", res.data.access_token,min);

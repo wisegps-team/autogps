@@ -53,6 +53,45 @@ const sty={
     }
 }
 
+const _pages=[//所有的页面
+    {
+        href:'brand_trader',
+        name:___.brand_trader,
+        icon:<ActionRecordVoiceOver style={sty.icon}/>
+    },
+    {
+        href:'agent_manage',
+        name:___.agent_manage,
+        icon:<ActionSupervisorAccount style={sty.icon}/>
+    },
+    {
+        href:'user_manage',
+        name:___.user_manage,
+        icon:<ActionPermIdentity style={sty.icon}/>
+    },
+    {
+        href:'device_manage',
+        name:___.device_manage,
+        icon:<HardwareKeyboard style={sty.icon}/>
+    },
+    {
+        href:'department',
+        name:___.department_manage,
+        icon:<ActionTurnedInNot style={sty.icon}/>
+    },
+    {
+        href:'employee',
+        name:___.employee_manage,
+        icon:<ActionAssignmentInd style={sty.icon}/>
+    },
+];
+let pages=[];
+_pages.forEach(e=>{
+    let tem=_user.pages.find(p=>p.url.split('/').pop()==e.href);
+    if(tem)pages.push(e);
+});
+const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
+
 class App extends Component {
     getChildContext() {
         return {
@@ -70,13 +109,7 @@ class App extends Component {
                     <h2>{___.app_name}</h2>
                 </div>
                 <div className='main'>
-                    <ModuleCard title={___.brand_trader} icon={<ActionRecordVoiceOver style={sty.icon}/>} href='brand_trader' />
-                    <ModuleCard title={___.agent_manage} icon={<ActionSupervisorAccount style={sty.icon}/>} href='agent_manage' />
-                    <ModuleCard title={___.user_manage} icon={<ActionPermIdentity style={sty.icon}/>} href='user_manage' />
-
-                    <ModuleCard title={___.device_manage} icon={<HardwareKeyboard style={sty.icon}/>} href='device_manage' />
-                    <ModuleCard title={___.department_manage} icon={<ActionTurnedInNot style={sty.icon}/>} href='department' />
-                    <ModuleCard title={___.employee_manage} icon={<ActionAssignmentInd style={sty.icon}/>} href='employee' />
+                    {cards}
                 </div>
                 <Tabs style={sty.tabs}>
                     <Tab
