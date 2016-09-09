@@ -631,7 +631,7 @@ makeGetOp('deviceLog','objectId,uid,did,type,createdAt');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('device','did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
 
-makeGetOp('custType','id,name,appId,useType,userType',{limit:-1,sorts:'id',page:'id'});
+makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});

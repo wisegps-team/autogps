@@ -28,9 +28,8 @@ class Input extends Component {
         this.change = this.change.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        if(typeof nextProps.value=='string'&&this._value!=nextProps.value){
-            this._value=nextProps.value;
-            this.setState({value:this._value});
+        if(this.state.value!=nextProps.value){
+            this.setState({value:nextProps.value});
         }
     }
     
