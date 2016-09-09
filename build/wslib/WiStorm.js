@@ -641,6 +641,7 @@ W.getOpenId=function(needweixin,s){
  */
 W.errorCode=function(json){
 	if(!json.status_code)return;
+	W.loading?W.loading():null;
 	if(json.status_code==3){
 		W.confirm(___.reLogin,function(b){
 			if(b){

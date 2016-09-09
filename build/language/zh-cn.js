@@ -156,4 +156,7 @@ window.___={
 	'phone':'电话',
 	'allow_login':'允许登录',
 	'quit':'离职',
+	'finish_register':'完成注册',
+	'add_data':'完善资料',
+	'verification_phone':'手机验证'
 }
