@@ -255,6 +255,8 @@ class DeviceIn extends React.Component{
                         uid:_user.customer.objectId,
                         did:res,
                         type:1,
+                        from:'0',
+                        to:_user.customer.objectId
                     });
                 },{
                     did:res,
@@ -338,21 +340,22 @@ class DeviceOut extends React.Component{
     }
     addId(){
         let _this=this;
-        if(isWxSdk){
-            W.native.scanner.start(function(res){//扫码，did添加到所选用户
-                let arr=_this.state.product_ids;
-                let product_ids=arr.concat(res);
-                Wapi.device.get(res=>{
-                    if(res.data)
-                        _this.setState({product_ids});
-                    else
-                        W.alert(___.did_error);
-                },{
-                    did:res,
-                    uid:_user.customer.objectId
-                })
-                
+        function get(res){//扫码，did添加到所选用户
+            let arr=_this.state.product_ids;
+            let product_ids=arr.concat(res);
+            Wapi.device.get(res=>{
+                if(res.data){
+                    _this.setState({product_ids});
+                    W.native.scanner.start(get);
+                }else
+                    W.alert(___.did_error,()=>W.native.scanner.start(get));
+            },{
+                did:res,
+                uid:_user.customer.objectId
             });
+        }
+        if(isWxSdk){
+            W.native.scanner.start(get);
         }else{
             W.alert(___.please_wait);
         }
@@ -371,6 +374,9 @@ class DeviceOut extends React.Component{
             history.back();
             return;
         }
+        if(!this.state.cust_id){
+            W.alert(___.customer_null);
+        }
         let _this=this;
         Wapi.device.update(function(res_device){
             Wapi.deviceLog.add(function(res_log){
@@ -378,14 +384,18 @@ class DeviceOut extends React.Component{
             },{
                 did:ids,
                 uid:_this.state.cust_id,
-                type:1
+                type:1,
+                from:_user.customer.objectId,
+                to:_this.state.cust_id
             });
             Wapi.deviceLog.add(function(res_log){
                 _this.cancel();
             },{
                 did:ids,
                 uid:_user.customer.objectId,
-                type:0//出库
+                type:0,//出库
+                from:_user.customer.objectId,
+                to:_this.state.cust_id
             });
         },{
             _did:ids.join('|'),
