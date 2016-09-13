@@ -88,7 +88,7 @@ const styles = {
     product_id:{borderBottom:'solid 1px #999999'},
     ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
-    input_page:{marginTop:'20px',textAlign:'center'},
+    input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
 };
 
 
@@ -412,12 +412,18 @@ class DeviceOut extends React.Component{
         return(
             <div style={styles.input_page}>
                 <h3>{___.device_out}</h3>
-                <div>
-                    <span>{___.cust}</span>
-                    <SelectField value={this.state.cust_id} onChange={this.custChange}>
-                        {custItems}
-                    </SelectField>
-                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style={{whiteSpace:'nowrap'}}>{___.cust}</td>
+                            <td>
+                                <SelectField value={this.state.cust_id} onChange={this.custChange}>
+                                    {custItems}
+                                </SelectField>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
             </div>
         )
