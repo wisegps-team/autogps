@@ -19,7 +19,8 @@ const sty={
         alignItems: 'center'
     },
     b:{
-        margin: '0 5px'
+        marginRight: '5px',
+        flex: '0 0 24px'
     },
     c:{
         marginRight:'3px'
@@ -66,7 +67,7 @@ export function MakeTreeComponent(TreeComponent){
         }
 
         render() {
-            let children=this.props.data.children?this.props.data.children.map((e,i)=>(<Tree data={e} key={i} check={this.props.check}/>)):null;
+            let children=(this.props.data.children&&this.props.data.children.length)?this.props.data.children.map((e,i)=>(<Tree data={e} key={i} check={this.props.check}/>)):null;
             let styC=Object.assign({},sty.ch);
             let icon=null;
             let self=sty.self;
@@ -78,7 +79,7 @@ export function MakeTreeComponent(TreeComponent){
                 );
             }else{
                 self=Object.assign({},sty.self);
-                self.paddingLeft='24px';
+                self.paddingLeft='29px';
             }
 
             let check=this.props.check?(<Checkbox 

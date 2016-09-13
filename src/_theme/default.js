@@ -28,7 +28,7 @@ export class ThemeProvider  extends React.Component {
     render(){
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
-            <div>
+            <div style={this.props.style}>
                 {this.props.children}
             </div>
             </MuiThemeProvider>
