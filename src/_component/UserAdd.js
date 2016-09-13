@@ -6,6 +6,7 @@ import md5 from 'md5';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 import Input from './base/input';
 import PhoneInput from './base/PhoneInput';
@@ -18,14 +19,18 @@ const styles={
         textAlign:'left',
         width:'90%',
         marginLeft:'5%',
+        marginRight:'5%',
     },
     left:{
-        paddingTop:'15px',
-        width:'100%'
+        // paddingTop:'10px',
+        whiteSpace: 'nowrap',
+        // width: window.innerWidth*1/5 + 'px',
     },
     right:{
-         paddingBottom:'5px',
-         marginBottom:'1em',
+        paddingBottom:'5px',
+        marginBottom:'1em',
+        width:'100%',
+        // width:window.innerWidth*3/5 + 'px',
     },
     footer:{
         marginTop:'20px',
@@ -36,9 +41,11 @@ const styles={
 class UserAdd extends React.Component{
     constructor(props,context){
         super(props,context);
-        
         this.state={
-            objectId:null,
+            tel_warning:null
+        }
+        this.data={
+            _objectId:null,
             name:'',
             province:'',
             provinceId:-1,
@@ -47,13 +54,21 @@ class UserAdd extends React.Component{
             area:'',
             areaId:-1,
             custTypeId:0,
+            custType:'',
             contact:'',
-            tel:'',
             sex:1,
-
-            tel_warning:null
-        }
+            tel:'',
+        };
         Object.assign(this.state,this.getData(props));
+
+        this.nameChange=this.nameChange.bind(this);
+        this.areaChange=this.areaChange.bind(this);
+        this.typeChange=this.typeChange.bind(this);
+        this.contactChange=this.contactChange.bind(this);
+        this.sexChange=this.sexChange.bind(this);
+        this.telChange=this.telChange.bind(this);
+
+        this.clickSave=this.clickSave.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -84,54 +99,45 @@ class UserAdd extends React.Component{
     }
 
     nameChange(e,value){
-        this.setState({name:value});
+        this.data.name=value;
     }
     areaChange(value){
         if(!value)return;
-        this.setState({
-            province:value.province,
-            provinceId:value.provinceId,
-            city:value.city,
-            cityId:value.cityId,
-            area:value.area,
-            areaId:value.areaId
-        });
+       
+        this.data.province=value.province;
+        this.data.provinceId=value.provinceId;
+        this.data.city=value.city;
+        this.data.cityId=value.cityId;
+        this.data.area=value.area;
+        this.data.areaId=value.areaId;
+        
+        this.forceUpdate();
     }
     typeChange(value){
         let custType=this.context.custType;
         let type=custType.find(ele=>(ele.id==value));
         this._userType=type.userType;
-        this.setState({'custTypeId':value,'custType':type.name});
+        this.data.custTypeId=value;
+        this.data.custType=type.name;
+
+        this.forceUpdate();
     }
     contactChange(e,value){
-        this.setState({contact:value});
+        this.data.contact=value;
     }
     sexChange(value){
-        this.setState({sex:Number(value)});
+        this.data.sex=value;
     }
     telChange(value,warning){
         this.setState({
-            tel:value,
             tel_warning:warning
         });
+        this.data.tel=value;
     }
 
     clickSave(){
-        let data={
-            _objectId:this.state.objectId,
-            name:this.state.name,
-            province:this.state.province,
-            provinceId:this.state.provinceId,
-            city:this.state.city,
-            cityId:this.state.cityId,
-            area:this.state.area,
-            areaId:this.state.areaId,
-            custTypeId:this.state.custTypeId,
-            custType:this.state.custType,
-            contact:this.state.contact,
-            sex:this.state.sex,
-            tel:this.state.tel
-        };
+        let data=this.data;
+        console.log(data);
         if(data.name==''){
             W.alert(___.user_name_empty);
             return;
@@ -183,54 +189,54 @@ class UserAdd extends React.Component{
                 },data);
             },{
                 userType:this._userType,
-                mobile:this.state.tel,
-                password:md5(this.state.tel.slice(-6))
+                mobile:this.data.tel,
+                password:md5(this.data.tel.slice(-6))
             });
         }
     }
 
     render(){
         let area={
-            province:this.state.province,
-            provinceId:this.state.provinceId,
-            city:this.state.city,
-            cityId:this.state.cityId,
-            area:this.state.area,
-            areaId:this.state.areaId
+            province:this.data.province,
+            provinceId:this.data.provinceId,
+            city:this.data.city,
+            cityId:this.data.cityId,
+            area:this.data.area,
+            areaId:this.data.areaId
         }
         return(
             <div style={styles.content}>
-                <table>
+                <table style={{width:'100%'}}>
                     <tbody>
                         <tr>
                             <td style={styles.left}>{___.name}</td>
-                            <td><Input value={this.state.name} style={styles.right} name={'name'} onChange={this.nameChange.bind(this)}/></td>
+                            <td><Input value={this.data.name} style={styles.right} name={'name'} onChange={this.nameChange}/></td>
                         </tr>
                         <tr>
-                            <td>{___.area}</td>
-                            <td><AreaSelect value={area} style={styles.right} name={'area'} onChange={this.areaChange.bind(this)}/></td>
+                            <td style={styles.left}>{___.area}</td>
+                            <td><AreaSelect value={area} style={styles.right} name={'area'} onChange={this.areaChange}/></td>
                         </tr>
                         <tr>
-                            <td>{___.type}</td>
-                            <td><TypeSelect type={this.props.type} value={this.state.custTypeId} style={styles.right} name={'type'} onChange={this.typeChange.bind(this)}/></td>
+                            <td style={styles.left}>{___.type}</td>
+                            <td><TypeSelect type={this.props.type} value={this.data.custTypeId} style={styles.right} name={'type'} onChange={this.typeChange}/></td>
                         </tr>
                         <tr>
                             <td style={styles.left}>{___.person}</td>
-                            <td><Input style={styles.right} value={this.state.contact} name={'person'} onChange={this.contactChange.bind(this)}/></td>
+                            <td><Input style={styles.right} value={this.data.contact} name={'person'} onChange={this.contactChange}/></td>
                         </tr>
                         <tr>
                             <td style={{paddingTop:'20px'}}>{___.sex}</td>
-                            <td style={{paddingTop:'20px'}}><SexRadio value={this.state.sex} name={'sex'} onChange={this.sexChange.bind(this)}/></td>
+                            <td style={{paddingTop:'20px'}}><SexRadio value={this.data.sex} name={'sex'} onChange={this.sexChange}/></td>
                         </tr>
                         <tr>
-                            <td style={styles.left}>{___.cellphone}</td>
-                            <td><PhoneInput style={styles.right} value={this.state.tel} old_value={this.props.data?this.props.data.tel:''} name={'phone'} onChange={this.telChange.bind(this)}/></td>
+                            <td style={styles.left}>{___.phone}</td>
+                            <td><PhoneInput style={styles.right} value={this.data.tel} old_value={this.props.data?this.props.data.tel:''} name={'phone'} onChange={this.telChange}/></td>
                         </tr>
                     </tbody>
                 </table>
                 
                 <footer style={styles.footer}>
-                    <RaisedButton label={___.save} primary={true} style={styles.btn} onClick={this.clickSave.bind(this)}/>
+                    <RaisedButton label={___.save} primary={true} style={styles.btn} onClick={this.clickSave}/>
                 </footer>
             </div>
         );
