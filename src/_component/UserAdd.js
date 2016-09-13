@@ -119,7 +119,7 @@ class UserAdd extends React.Component{
         this._userType=type.userType;
         this.data.custTypeId=value;
         this.data.custType=type.name;
-
+        this._roleId=type.roleId;
         this.forceUpdate();
     }
     contactChange(e,value){
@@ -174,18 +174,23 @@ class UserAdd extends React.Component{
             Wapi.user.add(function (res) {
                 data.uid=res.uid;
                 Wapi.customer.add(function(res){
-                    W.confirm(___.create_user_su,function(b){if(b)history.back()});
-                    data.objectId=res.objectId;
-                    STORE.dispatch(action.fun.add(data));
-                    let tem={
-                        name:data.contact,
-                        sex:data.sex?___.sir:___.lady,
-                        account:data.tel,
-                        pwd:data.tel.slice(-6)
-                    }
-                    Wapi.comm.sendSMS(function(res){
-                        W.errorCode(res);
-                    },data.tel,0,W.replace(sms,tem));
+                    Wapi.role.update(function(role){
+                        W.confirm(___.create_user_su,function(b){if(b)history.back()});
+                        data.objectId=res.objectId;
+                        STORE.dispatch(action.fun.add(data));
+                        let tem={
+                            name:data.contact,
+                            sex:data.sex?___.sir:___.lady,
+                            account:data.tel,
+                            pwd:data.tel.slice(-6)
+                        }
+                        Wapi.comm.sendSMS(function(res){
+                            W.errorCode(res);
+                        },data.tel,0,W.replace(sms,tem));
+                    },{
+                        _objectId:that._roleId,
+                        users:'+"'+res.objectId+'"'
+                    })
                 },data);
             },{
                 userType:this._userType,

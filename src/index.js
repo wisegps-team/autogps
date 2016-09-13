@@ -53,23 +53,31 @@ class App extends Component {
         }
         Wapi.customer.get(function(cust){
             user.customer=cust.data;
+            if(!user.customer){
+                W.alert(___.not_allow_login);
+                return;
+            }
             Wapi.role.get(function(role){
                 user.role=role.data;
+                let acl=user.uid;
+                if(user.role)
+                    acl+='|role:'+user.role.objectId;
                 Wapi.page.list(function(page){
                     if(!page.data||!page.data.length){//没有任何页面的权限，说明不是这个平台的用户
                         W.loading();
                         W.alert(___.not_allow_login);
+                        return;
                     }
                     user.pages=page.data;
                     W._loginSuccess(user);
                     top.location="src/moblie/home.html";
                 },{
                     access_token:token,
-                    ACL:'role:'+user.role.objectId+'|'+user.uid,
-                    appId:CONFIG.appId
+                    ACL:acl,
+                    appId:CONFIG.objectId
                 });
             },{
-                users:role_user||cust.data.objectId,
+                users:role_user||user.customer.objectId,
                 access_token: token
             });
         },{

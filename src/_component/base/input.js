@@ -28,7 +28,7 @@ class Input extends Component {
         this.change = this.change.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        if(this.state.value!=nextProps.value){
+        if(typeof nextProps.value!='undefined'&&this.state.value!=nextProps.value){
             this.setState({value:nextProps.value});
         }
     }
