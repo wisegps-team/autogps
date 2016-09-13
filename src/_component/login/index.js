@@ -9,8 +9,8 @@ import P from '../../_modules/public';
 import sty from './style';
 
 
-let pwd=W.getSetting("pwd");
-let account=W.getSetting("account");
+let pwd=W.getSetting("pwd")||'';
+let account=W.getSetting("account")||'';
 let remember_pwd=W.getSetting('remember_pwd');
 class Login extends Component {
     constructor(props, context) {
@@ -22,6 +22,7 @@ class Login extends Component {
             'password':pwd,
             'account':account
         };
+        this.need_remember=remember_pwd;
         
         this.loginSuccess = this.loginSuccess.bind(this);
         this.submit = this.submit.bind(this);
@@ -87,7 +88,7 @@ class Login extends Component {
                     name='account'
                     hintText={___.input_account}
                     floatingLabelText={___.account}
-                    defaultValue={this.formData.account}
+                    value={this.formData.account}
                     errorText={this.state.account_err}
                     onChange={this.change}
                 />
@@ -96,7 +97,7 @@ class Login extends Component {
                     type='password'
                     hintText={___.input_pwd}
                     floatingLabelText={___.pwd}
-                    defaultValue={this.formData.password}
+                    value={this.formData.password}
                     errorText={this.state.password_err}
                     onChange={this.change}
                 />

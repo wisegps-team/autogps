@@ -19,6 +19,7 @@ import STORE from '../_reducers/main';
 import BrandSelect from'../_component/base/brandSelect';
 import SonPage from '../_component/base/sonPage';
 import DeviceList from '../_component/device_list';
+import {reCode} from '../_modules/tool';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -244,6 +245,7 @@ class DeviceIn extends React.Component{
         let _this=this;
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
+                res=reCode(res);
                 let arr=_this.state.product_ids;
                 arr[arr.length]=res;
                 _this.setState({product_ids:arr});
@@ -341,6 +343,7 @@ class DeviceOut extends React.Component{
     addId(){
         let _this=this;
         function get(res){//扫码，did添加到所选用户
+            res=reCode(res);
             let arr=_this.state.product_ids;
             let product_ids=arr.concat(res);
             Wapi.device.get(res=>{
