@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=34;//版本号
+let version=35;//版本号
 
 //地区表
 export const area={
@@ -381,7 +381,19 @@ export const custType={
             'type': 'Number',
             'display': 'TextBox',
             'query': true
-        }
+        },
+        {
+            'name': 'role',
+            'desc': '对应的角色',
+            'type': 'String',
+            'query': true
+        },
+        {
+            'name': 'roleId',
+            'desc': '对应的角色Id',
+            'type': 'String',
+            'query': true
+        },
     ],
     indexDefine: [
         {

@@ -140,7 +140,7 @@ window.___={
 	'did_error':'非法的设备号',
 	'loading':'正在加载',
 	'push':'入库',
-	'pop':'入库',
+	'pop':'出库',
 	'brand_trader':'品牌商管理',
 	'agent_manage':'代理商管理',
 	'department_manage':'部门管理',
@@ -158,5 +158,6 @@ window.___={
 	'quit':'离职',
 	'finish_register':'完成注册',
 	'add_data':'完善资料',
-	'verification_phone':'手机验证'
+	'verification_phone':'手机验证',
+	'not_allow_login':'您当前账户不能登陆本应用',
 }

@@ -15,3 +15,10 @@ export function randomStr(len=32){
 　　}
 　　return pwd;
 }
+
+export function reCode(code){
+    if(code.indexOf(',')!=-1){
+        return code.split(',')[1];
+    }else
+        return code;
+}
