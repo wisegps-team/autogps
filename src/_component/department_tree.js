@@ -6,6 +6,7 @@ import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-ou
 import ContentCreate from 'material-ui/svg-icons/content/create';
 
 import {department_act} from '../_reducers/dictionary';
+import SonPage from './base/sonPage';
 
 const sty={
     d:{
@@ -121,7 +122,7 @@ class Department extends Component{
         });
     }
     click(){
-        if(this.context.mode=='select'&&this.context.select)
+        if(this.context.mode=='select'&&this.context.select&&this.props.data.objectId)
             this.context.select({
                 name:this.props.data.name,
                 id:this.props.data.objectId
@@ -150,6 +151,51 @@ Department.contextTypes={
 }
 
 const DepTree=MakeTreeComponent(Department);
+
+export class DepartmentSelcet extends React.Component{
+    constructor(props,context){
+        super(props,context);
+        this.state={
+            value:___.select_dep,
+            isOpen:false,
+        }
+        this.open=this.open.bind(this);
+        this.onChange=this.onChange.bind(this);
+        this.back=this.back.bind(this);
+    }
+    open(){
+        this.setState({isOpen:true});
+    }
+    onChange(value){
+        this.setState({
+            value:value.name,
+        });
+        this.props.onChange(value);
+        history.back();
+    }
+    back(){
+        this.setState({isOpen:false});
+    }
+    componentWillReceiveProps(nextProps){
+        if(nextProps.value!=0){
+            let arr=STORE.getState().department;
+            let depart=arr.find(ele=>ele.objectId==nextProps.value);
+            if(depart){
+                this.setState({value:depart.name});
+            }
+        }
+    }
+    render(){
+        return(
+            <div>
+                <div onClick={this.open}>{this.state.value}</div>
+                <SonPage open={this.state.isOpen} back={this.back} >
+                    <DepartmentTree mode={'select'} onChange={this.onChange} />
+                </SonPage>
+            </div>
+        );
+    }
+}
 
 function getTreePath(arr){
     let treeArr=arr.map(e=>{

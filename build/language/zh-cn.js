@@ -161,5 +161,6 @@ window.___={
 	'verification_phone':'手机验证',
 	'not_allow_login':'您当前账户不能登陆本应用',
 	'input_dep':'请输入部门名',
-	'edit_dep':'修改部门名称'
+	'edit_dep':'修改部门名称',
+	'select_dep':'请选择部门',
 }

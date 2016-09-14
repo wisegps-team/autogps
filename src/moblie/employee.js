@@ -27,6 +27,7 @@ import SonPage from '../_component/base/sonPage';
 import SexRadio from '../_component/base/sexRadio';
 import TypeSelect from '../_component/base/TypeSelect';
 import Input from '../_component/base/input';
+import {DepartmentTree,DepartmentSelcet} from'../_component/department_tree';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -66,7 +67,7 @@ for(let i=0;i<=4;i++){
 }
 const _sex=[___.woman,___.man];
 const _type=['角色A','角色B','角色C'];
-const _depar=['部门A','部门B','部门C'];
+// const _depar=[{name:'部门A',id:1234},'部门B','部门C'];
 
 class App extends React.Component {
     constructor(props, context) {
@@ -213,7 +214,13 @@ class EmployeeCard extends React.Component{
         this.props.showDetails(this.props.data);
     }
     render(){
+        console.log('render card')
         let ele=this.props.data;
+
+        let departs=STORE.getState().department;
+        let _depart=departs.find(item=>item.objectId==ele.departId);
+        let _departName='';
+        if(_depart)_departName=_depart.name;
         return(
             <Card style={styles.card}>
                 <table >
@@ -228,7 +235,7 @@ class EmployeeCard extends React.Component{
                         </tr>
                         <tr style={styles.table_tr}>
                             <td>{___.department}</td>
-                            <td style={styles.table_td_right}>{_depar[ele.departId]}</td>
+                            <td style={styles.table_td_right}>{_departName}</td>
                         </tr>
                         <tr style={styles.table_tr}>
                             <td>{___.role}</td>
@@ -312,8 +319,10 @@ class EditEmployee extends React.Component{
     sexChange(value){
         this.data.sex=value;
     }
-    deparChange(e,k,value){
-        this.data.departId=value;
+    deparChange(value){
+        console.log(value);
+
+        this.data.departId=value.id;
         this.forceUpdate();
     }
     typeChange(e,k,value){
@@ -335,16 +344,14 @@ class EditEmployee extends React.Component{
             <div style={styles.sonpage_main}>
                 <Input floatingLabelText={___.person_name} value={this.data.name} onChange={this.nameChange} />
                 
+                <p style={{fontSize:'0.75em', color:'rgba(0, 0, 0, 0.498039)',marginBottom:'0px'}}>{___.sex}</p>
                 <SexRadio style={{paddingTop:'10px'}} value={this.data.sex} onChange={this.sexChange}/>
                 
                 <Input floatingLabelText={___.phone} value={this.data.tel} onChange={this.telChange} />
                 
-                <SelectField floatingLabelText={___.department} value={this.data.departId} onChange={this.deparChange} >
-                    <MenuItem key={0} value={0} primaryText={_depar[0]} />
-                    <MenuItem key={1} value={1} primaryText={_depar[1]} />
-                    <MenuItem key={2} value={2} primaryText={_depar[2]} />
-                </SelectField>
-
+                <p style={{fontSize:'0.75em', color:'rgba(0, 0, 0, 0.498039)'}}>{___.department}</p>
+                <DepartmentSelcet value={this.data.departId} onChange={this.deparChange}/>
+              
                 <SelectField floatingLabelText={___.role} value={this.data.type} onChange={this.typeChange} >
                     <MenuItem key={0} value={0} primaryText={_type[0]} />
                     <MenuItem key={1} value={1} primaryText={_type[1]} />
