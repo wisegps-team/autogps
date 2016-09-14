@@ -177,12 +177,12 @@ export class DepartmentSelcet extends React.Component{
         this.setState({isOpen:false});
     }
     componentWillReceiveProps(nextProps){
-        if(nextProps.value!=0){
-            let arr=STORE.getState().department;
-            let depart=arr.find(ele=>ele.objectId==nextProps.value);
-            if(depart){
-                this.setState({value:depart.name});
-            }
+        let arr=STORE.getState().department;
+        let depart=arr.find(ele=>ele.objectId==nextProps.value);
+        if(depart){
+            this.setState({value:depart.name});
+        }else{
+            this.setState({value:___.select_dep});
         }
     }
     render(){
