@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=35;//版本号
+let version=37;//版本号
 
 //地区表
 export const area={
@@ -538,17 +538,34 @@ export const employee={
             }
         },
         {
-            'name': 'type',
-            'desc': '类型(管理员/驾驶员/客户经理)',
-            'type': 'Number',
-            'display': 'TextBox',
-            'query': true,    //可查询字段
-            'validations': {
-                required:true
-            },
-            'messages': {
-                required:'类型为必填'
-            }
+            'name': 'role',
+            'desc': '角色类型(管理员/驾驶员/客户经理)',
+            'type': 'String',
+            'query': true    //可查询字段
+        },
+        {
+            'name': 'roleId',
+            'desc': '角色Id',
+            'type': 'String',
+            'query': true    //可查询字段
+        },
+        {
+            'name': 'isDriver',
+            'desc': '是否驾驶人员',
+            'type': 'Boolean',
+            'query': true    //可查询字段
+        },
+        {
+            'name': 'isQuit',
+            'desc': '是否离职',
+            'type': 'Boolean',
+            'query': true    //可查询字段
+        },
+        {
+            'name': 'quitDate',
+            'desc': '离职时间',
+            'type': 'Date',
+            'query': true    //可查询字段
         },
         {
             'name': 'name',
@@ -601,7 +618,7 @@ export const employee={
         {
             'name': 'licenseType',
             'desc': '准驾车型',
-            'type': 'String',
+            'type': 'Array',
             'display': 'TextBox',
             'query': true    //可查询字段
         },
