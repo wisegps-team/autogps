@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {Provider,connect} from 'react-redux';
 
+import md5 from 'md5';
 import STORE from '../_reducers/main';
 
 import {ThemeProvider} from '../_theme/default';
@@ -18,12 +19,14 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import Checkbox from 'material-ui/Checkbox';
+import DatePicker from 'material-ui/DatePicker';
 
 import AppBar from '../_component/base/appBar';
 import Fab from '../_component/base/fab';
 import SonPage from '../_component/base/sonPage';
 import SexRadio from '../_component/base/sexRadio';
 import TypeSelect from '../_component/base/TypeSelect';
+import Input from '../_component/base/input';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -41,7 +44,7 @@ const styles={
     sonpage_main:{paddingBottom:'20px',marginLeft:(window.innerWidth-256)/2+'px',marginRight:(window.innerWidth-256)/2+'px'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
     table_tr:{height:'30px'},
-    table_td_right:{paddingLeft:'2em'},
+    table_td_right:{paddingLeft:'1em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'2em'},
 }
@@ -62,7 +65,7 @@ for(let i=0;i<=4;i++){
     _employees.push(e);
 }
 const _sex=[___.woman,___.man];
-const _type=['系统管理员','调度员','普通员工'];
+const _type=['角色A','角色B','角色C'];
 const _depar=['部门A','部门B','部门C'];
 
 class App extends React.Component {
@@ -70,9 +73,11 @@ class App extends React.Component {
         super(props, context);
         this.state={
             employees:[],
-            isEditting:false,
             edit_employee:{},
+            show_sonpage:false,
+            intent:'add',
         }
+        this.getEmployees=this.getEmployees.bind(this);
         this.addEmployee=this.addEmployee.bind(this);
         this.showDetails=this.showDetails.bind(this);
         this.editEmployeeCancel=this.editEmployeeCancel.bind(this);
@@ -85,28 +90,75 @@ class App extends React.Component {
         };
     }
 
-    componentDidMount(){
-        this.setState({employees:_employees});
+    componentDidMount(){//初始化时获取人员表
+        this.getEmployees();
+    }
+    getEmployees(){//获取当前人员表数据
+        Wapi.employee.list(res=>{
+            console.log(res);
+            this.setState({employees:res.data});
+        },{
+            companyId:_user.customer.objectId
+        },{
+            fields:'objectId,uid,companyId,name,tel,sex,departId,type'
+        });
+        // this.setState({employees:_employees});
     }
 
     addEmployee(){
         this.setState({
             edit_employee:{},
-            isEditting:true
+            show_sonpage:true,
+            intent:'add',
         });
     }
     showDetails(data){
-        console.log(data);
         this.setState({
             edit_employee:data,
-            isEditting:true
+            show_sonpage:true,
+            intent:'edit',
         });
     }
     editEmployeeCancel(){
-        this.setState({isEditting:false});
+        this.setState({show_sonpage:false});
     }
-    editEmployeeSubmit(){
-        this.setState({isEditting:false});
+    editEmployeeSubmit(data){
+        this.setState({show_sonpage:false});
+        if(this.state.intent=='edit'){
+            Wapi.employee.update(res=>{
+                this.getEmployees();//添加、修改完成后重新获取人员表
+            },{
+                _uid:data.uid,
+                name:data.name,
+                tel:data.tel,
+                sex:data.sex,
+                departId:data.departId,
+                type:data.type,
+            });
+        }else if(this.state.intent=='add'){
+            let par={                
+                userType:9,
+                mobile:data.tel,
+                password:md5(data.tel.slice(-6))
+            };
+            let params={
+                companyId:_user.customer.objectId,
+                name:data.name,
+                tel:data.tel,
+                sex:data.sex,
+                departId:data.departId,
+                type:data.type,
+            };
+            console.log(data);
+            Wapi.user.add(res_u=>{
+                params.uid=res_u.uid;
+                console.log(data);
+                Wapi.employee.add(res_e=>{
+                    this.getEmployees();//添加、修改完成后重新获取人员表
+                },params);
+            },par);
+        }
+        
     }
 
     render() {
@@ -133,7 +185,7 @@ class App extends React.Component {
                         {items}
                     </div>
 
-                    <SonPage open={this.state.isEditting} back={this.editEmployeeCancel}>
+                    <SonPage open={this.state.show_sonpage} back={this.editEmployeeCancel}>
                         <EditEmployee data={this.state.edit_employee} submit={this.editEmployeeSubmit}/>
                     </SonPage>
                 </div>
@@ -171,12 +223,12 @@ class EmployeeCard extends React.Component{
                             <td style={styles.table_td_right}>{ele.name}</td>
                         </tr>
                         <tr style={styles.table_tr}>
-                            <td>{___.department}</td>
-                            <td style={styles.table_td_right}>{_depar[ele.departId]}</td>
-                        </tr>
-                        <tr style={styles.table_tr}>
                             <td>{___.sex}</td>
                             <td style={styles.table_td_right}>{_sex[ele.sex]}</td>
+                        </tr>
+                        <tr style={styles.table_tr}>
+                            <td>{___.department}</td>
+                            <td style={styles.table_td_right}>{_depar[ele.departId]}</td>
                         </tr>
                         <tr style={styles.table_tr}>
                             <td>{___.role}</td>
@@ -201,18 +253,18 @@ class EditEmployee extends React.Component{
     constructor(props,context){
         super(props,context);
         this.state={
-            departId:0,
-            sex:1,
-            type:0,
-            tel:'',
-
             allowLogin:false,
-
+            show_quit:false,
             quit:false,
             quit_time:'',
         }
         this.data={
+            uid:'',
             name:'',
+            tel:'',
+            sex:1,
+            departId:0,
+            type:0,
         }
         this.nameChange=this.nameChange.bind(this);
         this.sexChange=this.sexChange.bind(this);
@@ -220,85 +272,104 @@ class EditEmployee extends React.Component{
         this.deparChange=this.deparChange.bind(this);
         this.typeChange=this.typeChange.bind(this);
         this.allowLogin=this.allowLogin.bind(this);
+        this.quit=this.quit.bind(this);
         this.submit=this.submit.bind(this);
     }
     componentWillReceiveProps(nextProps){
-        console.log('will receive props')
         let data=nextProps.data;
-        if(data.name){
+        if(data.uid){
+            this.data.uid=data.uid;
+            this.data.name=data.name;
+            this.data.tel=data.tel;
+            this.data.departId=data.departId;
+            this.data.sex=data.sex;
+            this.data.type=data.type;
             this.setState({
-                departId:data.departId,
-                sex:data.sex,
-                type:data.type,
-                tel:data.tel,
+                show_quit:true,
                 quit:false,
             });
-            this.data.name=data.name;
         }else{
+            this.data.name='';
+            this.data.tel='';
+            this.data.departId=0;
+            this.data.sex=1;
+            this.data.type=0;
             this.setState({
-                departId:0,
-                sex:1,
-                type:0,
-                tel:'',
+                show_quit:false,
                 allowLogin:false,
             });
-            this.data.name='';
         }
     }
     setParams(data){
-        console.log('setParams')
+        console.log('setParams');
     }
     nameChange(e,value){
-        // this.setState({name:value});
         this.data.name=value;
     }
-    deparChange(e,k,value){
-        this.setState({departId:value});
+    telChange(e,value){
+        this.data.tel=value;
     }
     sexChange(value){
-        this.setState({sex:value});
+        this.data.sex=value;
+    }
+    deparChange(e,k,value){
+        this.data.departId=value;
+        this.forceUpdate();
     }
     typeChange(e,k,value){
-        this.setState({type:value});
-    }
-    telChange(e,value){
-        this.setState({tel:value});
+        this.data.type=value;
+        this.forceUpdate();
     }
     allowLogin(e,value){
         this.setState({allowLogin:value});
     }
     quit(e,value){
-        if(value){
-            sth;
-        }
+        this.setState({quit:value});
     }
     submit(){
-        let data=this.state;
+        let data=this.data;
+        this.props.submit(data);
     }
     render(){
-        console.log(this.state);
-        console.log(this.data);
-        let _name=this.data.name;
         return(
             <div style={styles.sonpage_main}>
-                <TextField floatingLabelText={___.person_name} value={_name} onChange={this.nameChange} />
-                <SexRadio style={{paddingTop:'20px'}} value={this.state.sex} onChange={this.sexChange}/>
-                <TextField floatingLabelText={___.phone} value={this.state.tel} onChange={this.telChange} />
-                <SelectField floatingLabelText={___.department} value={this.state.departId} onChange={this.deparChange} >
+                <Input floatingLabelText={___.person_name} value={this.data.name} onChange={this.nameChange} />
+                
+                <SexRadio style={{paddingTop:'10px'}} value={this.data.sex} onChange={this.sexChange}/>
+                
+                <Input floatingLabelText={___.phone} value={this.data.tel} onChange={this.telChange} />
+                
+                <SelectField floatingLabelText={___.department} value={this.data.departId} onChange={this.deparChange} >
                     <MenuItem key={0} value={0} primaryText={_depar[0]} />
                     <MenuItem key={1} value={1} primaryText={_depar[1]} />
                     <MenuItem key={2} value={2} primaryText={_depar[2]} />
                 </SelectField>
-                <SelectField floatingLabelText={___.role} value={this.state.type} onChange={this.typeChange} >
+
+                <SelectField floatingLabelText={___.role} value={this.data.type} onChange={this.typeChange} >
                     <MenuItem key={0} value={0} primaryText={_type[0]} />
                     <MenuItem key={1} value={1} primaryText={_type[1]} />
                     <MenuItem key={2} value={2} primaryText={_type[2]} />
                 </SelectField>
 
-                <Checkbox style={{paddingTop:'10px'}} label={___.allow_login} onCheck={this.allowLogin } />
+                <Checkbox 
+                    style={{paddingTop:'10px',display:this.state.show_quit?'none':'block'}} 
+                    label={___.allow_login} 
+                    onCheck={this.allowLogin } 
+                />
 
-                <Checkbox style={{paddingTop:'10px'}} label={___.quit} onCheck={this.quit } />
+                <Checkbox 
+                    style={{paddingTop:'10px',display:this.state.show_quit?'block':'none'}} 
+                    label={___.quit} 
+                    onCheck={this.quit } 
+                />
 
+                <DatePicker
+                    style={{display:this.state.quit?'block':'none'}}
+                    floatingLabelText="离职日期"
+                    defaultDate={new Date()}
+                    okLabel={___.ok}
+                    cancelLabel={___.cancel}
+                />
 
                 <div style={styles.bottom_btn_center}>
                     <RaisedButton label={___.ok} primary={true} onClick={this.submit }/>
