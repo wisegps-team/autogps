@@ -23,14 +23,15 @@ import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
 
 import STORE from '../_reducers/main';
-import {user_type_act,brand_act} from '../_reducers/dictionary';
+import {user_type_act,brand_act,department_act} from '../_reducers/dictionary';
 
 require('../_sass/home.scss');
 
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
-    STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));
-    STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));
+    STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
+    STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
+    STORE.dispatch(department_act.get({uid:_user.customer.objectId}));//部门
 }
 loadDictionary();
 
@@ -85,11 +86,17 @@ const _pages=[//所有的页面
         icon:<ActionAssignmentInd style={sty.icon}/>
     },
 ];
-let pages=[];
-_pages.forEach(e=>{
-    let tem=_user.pages.find(p=>p.url.split('/').pop()==e.href);
-    if(tem)pages.push(e);
+let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
+
+/**旧的客户管理 */
+pages.shift();
+pages.unshift({
+    href:'cust_manage',
+    name:___.cust_manage,
+    icon:<ActionSupervisorAccount style={sty.icon}/>
 });
+
+
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
 
 class App extends Component {
