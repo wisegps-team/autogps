@@ -38,7 +38,7 @@ export function MakeTreeComponent(TreeComponent){
                 open:props.data.open,
                 checked:props.data.checked
             };
-
+            this.setChildren(props.data,props.data.checked);
             this.handlOpen = this.handlOpen.bind(this);
             this.check = this.check.bind(this);
         }
@@ -49,9 +49,9 @@ export function MakeTreeComponent(TreeComponent){
             });
         }
         
-        setChildren(state,checked){
-            if(state.children){
-                state.children.forEach(e=>e.checked=checked);
+        setChildren(data,checked){
+            if(data.children){
+                data.children.forEach(e=>e.checked=checked);
             }
         }
         
@@ -61,8 +61,9 @@ export function MakeTreeComponent(TreeComponent){
         check(e,checked){
             this.setState({checked});
             this.setChildren(this.props.data,checked);
-            if(this.props.onSelect){
-                this.props.onSelect(this.props.data);
+            this.props.data.checked=checked;
+            if(this.context.onSelect){
+                this.context.onSelect(this.props.data);
             }
         }
 
@@ -101,6 +102,9 @@ export function MakeTreeComponent(TreeComponent){
                 </div>
             );
         }
+    }
+    Tree.contextTypes={
+        onSelect:React.PropTypes.func,
     }
 
     return Tree;
