@@ -78,7 +78,7 @@ class AgentRegisterBox extends Component{
                     that.props.success(user);
                 },{
                     access_token:token,
-                    _objectId:type.roleId,
+                    _objectId:type.data.roleId,
                     users:'+"'+cust.objectId+'"'
                 })
             },cust);

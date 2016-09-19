@@ -46,12 +46,16 @@ class App extends Component{
         let op={}
         STORE.dispatch(userAct.fun.get(this._data,op));//初始化获取数据
     }
+
+    toAdd(){
+        thisView.goTo('cust_add.js',{custTypeId:4});
+    }
     
     render() {
         return (
             <ThemeProvider>
             <div>
-                <Fab onClick={()=>{thisView.goTo('cust_add.js')}}/>
+                <Fab onClick={this.toAdd}/>
                 <UserList {...this.props.user}/>
             </div>
             </ThemeProvider>

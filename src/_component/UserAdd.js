@@ -59,7 +59,7 @@ class UserAdd extends React.Component{
             sex:1,
             tel:'',
         };
-        Object.assign(this.state,this.getData(props));
+        Object.assign(this.data,this.getData(props));
 
         this.nameChange=this.nameChange.bind(this);
         this.areaChange=this.areaChange.bind(this);
@@ -73,7 +73,8 @@ class UserAdd extends React.Component{
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.data!=this.props.data){
-            this.setState(this.getData(nextProps));
+            Object.assign(this.data,this.getData(nextProps));
+            this.typeChange(nextProps.data.custTypeId);
         }
     }
     
@@ -81,7 +82,7 @@ class UserAdd extends React.Component{
         if(nextProps.data){
             let data=nextProps.data;
             return{
-                objectId:data.objectId,
+                _objectId:data.objectId,
                 name:data.name,
                 province:data.province,
                 provinceId:data.provinceId,
@@ -114,13 +115,22 @@ class UserAdd extends React.Component{
         this.forceUpdate();
     }
     typeChange(value){
-        let custType=this.context.custType;
-        let type=custType.find(ele=>(ele.id==value));
+        let type;
+        if(value){
+            let custType=this.context.custType;
+            type=custType.find(ele=>(ele.id==value));
+        }else{
+            type={
+                userType:0,
+                id:0,
+                name:0,
+                roleId:0
+            };
+        }
         this._userType=type.userType;
         this.data.custTypeId=value;
         this.data.custType=type.name;
         this._roleId=type.roleId;
-        this.forceUpdate();
     }
     contactChange(e,value){
         this.data.contact=value;
@@ -166,7 +176,7 @@ class UserAdd extends React.Component{
         if(data._objectId){
             Wapi.customer.update(function(res){
                 W.alert(___.update_su,()=>history.back());
-                STORE.dispatch(action.fun.update(data));
+                that.props.onSuccess(data);
             },data);
         }else{
             delete data._objectId;
@@ -177,7 +187,7 @@ class UserAdd extends React.Component{
                     Wapi.role.update(function(role){
                         W.confirm(___.create_user_su,function(b){if(b)history.back()});
                         data.objectId=res.objectId;
-                        STORE.dispatch(action.fun.add(data));
+                        that.props.onSuccess(data);
                         let tem={
                             name:data.contact,
                             sex:data.sex?___.sir:___.lady,
@@ -220,10 +230,6 @@ class UserAdd extends React.Component{
                         <tr>
                             <td style={styles.left}>{___.area}</td>
                             <td><AreaSelect value={area} style={styles.right} name={'area'} onChange={this.areaChange}/></td>
-                        </tr>
-                        <tr>
-                            <td style={styles.left}>{___.type}</td>
-                            <td><TypeSelect type={this.props.type} value={this.data.custTypeId} style={styles.right} name={'type'} onChange={this.typeChange}/></td>
                         </tr>
                         <tr>
                             <td style={styles.left}>{___.person}</td>

@@ -77,30 +77,28 @@ export default class AreaSelect extends Component{
         if(e)return;
 
         let that=this;
-        if(value.provinceId!=this.state.provinceId&&value.provinceId!=-1){
+        if(value.provinceId&&value.provinceId!=-1&&value.provinceId!=this.state.provinceId){
             Wapi.area.list(res=>{
                 if(res.status_code!=0||res.data.length==0)return;
                 that.setState({cities:res.data});
             },{parentId:value.provinceId},_op);
-        }else
-            this.setState({cityId:value.cityId});
+        }
             
-        if(value.cityId!=this.state.cityId&&value.cityId!=-1){
+        if(value.cityId&&value.cityId!=-1&&value.cityId!=this.state.cityId){
             Wapi.area.list(res=>{
                 if(res.status_code!=0||res.data.length==0)return;
                 that.setState({areas:res.data});
             },{parentId:value.cityId},_op);
-        }else
-            this.setState({areaId:value.areaId});
+        }
             
 
         this.setState({
             province:value.province,
-            provinceId:value.provinceId*1,
+            provinceId:value.provinceId?value.provinceId*1:-1,
             city:value.city,
-            cityId:value.cityId*1,
+            cityId:value.cityId?value.cityId*1:-1,
             area:value.area,
-            areaId:value.areaId*1
+            areaId:value.areaId?value.areaId*1:-1
         });
     }
     

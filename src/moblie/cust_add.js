@@ -12,7 +12,9 @@ import {custAct,userAct} from '../_reducers/customer';
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
-thisView.addEventListener('load',function(){
+thisView.addEventListener('load',function(e){
+    if(e.params)
+        thisView._params=e.params;
     ReactDOM.render(
         <Provider store={STORE}>
             <APP/>
@@ -26,17 +28,23 @@ class AppUserAdd extends React.Component{
             cust_data:null,
             type:'cust_manage'
         }
-        this.act={};
+        this.act=null;
+        this.success = this.success.bind(this);
     }
     componentDidMount() {
         let that=this;
         thisView.addEventListener('show',function(e){
-            let type='cust_manage';
-            that.act.action=custAct;
-            if(e.caller.indexOf('cust_manage')==-1){
-                type='user_manage';
-                that.act.action=userAct;
+            if(thisView._params){
+                e.params=thisView._params;
+                delete thisView._params;
             }
+            that._caller=e.caller;
+            let type='cust_manage';
+            if(e.caller.indexOf('user_manage')!=-1){
+                type='user_manage';
+                that.act=userAct;
+            }else
+                that.act=null;
             if(e.params){
                 that.setState({cust_data:e.params,type});
             }else{
@@ -58,7 +66,7 @@ class AppUserAdd extends React.Component{
                     type
             });
             }
-        })
+        });
     }
     
     getChildContext(){
@@ -67,12 +75,26 @@ class AppUserAdd extends React.Component{
             custType:this.props.custType
         };
     }
+    success(data){
+        thisView.postMessage(this._caller,data);
+        if(this.act){
+            if(this.state.cust_data.objectId){
+                let oldData=this.state.cust_data;
+                STORE.dispatch(this.act.fun.update(Object.assign({},oldData,data)));
+            }else
+                STORE.dispatch(this.act.fun.add(data));
+        }
+    }
     render(){
         return(
             <ThemeProvider>
                 <div>
                     <AppBar title={___.add_user} iconStyleLeft={{display:'none'}}/>
-                    <UserAdd data={this.state.cust_data} type={this.state.type}/>
+                    <UserAdd 
+                        data={this.state.cust_data} 
+                        type={this.state.type}
+                        onSuccess={this.success}
+                    />
                 </div>
             </ThemeProvider>
         );

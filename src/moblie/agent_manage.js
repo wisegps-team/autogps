@@ -12,8 +12,7 @@ import SocialShare from 'material-ui/svg-icons/social/share';
 import IconButton from 'material-ui/IconButton';
 
 import AppBar from '../_component/base/appBar';
-import Input from '../_component/base/input';
-
+import CustList from '../_component/cust_list';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -24,18 +23,33 @@ thisView.addEventListener('load',function(){
 class App extends Component{
     constructor(props, context) {
         super(props, context);
+        this._data={
+            parentId:_user.customer.objectId,
+            custTypeId:'5'
+        };
+    }
+    getChildContext(){
+        return{
+            'VIEW':thisView
+        }
     }
     render() {
         return (
             <ThemeProvider>
-            <div>
                 <AppBar iconElementRight={<IconButton onClick={getUrl}><SocialShare/></IconButton>}/>
-            </div>
+                <CustList data={this._data}/>
             </ThemeProvider>
         );
     }
 }
+App.childContextTypes={
+    VIEW:React.PropTypes.object,
+}
 
 function getUrl(){
-    W.alert(location.origin+'?intent=logout&register=true&parentId='+_user.customer.objectId);
+    let opt={
+        title:___.invitation_url,
+        text:location.origin+'?intent=logout&register=true&parentId='+_user.customer.objectId
+    }
+    W.alert(opt);
 }
