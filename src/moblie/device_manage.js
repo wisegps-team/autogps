@@ -20,6 +20,7 @@ import BrandSelect from'../_component/base/brandSelect';
 import SonPage from '../_component/base/sonPage';
 import DeviceList from '../_component/device_list';
 import {reCode} from '../_modules/tool';
+import UserSearch from '../_component/user_search';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -89,6 +90,9 @@ const styles = {
     ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
+    w:{
+        width:'100%'
+    }
 };
 
 
@@ -337,8 +341,8 @@ class DeviceOut extends React.Component{
             parentId:_user.customer.objectId,
         });
     }
-    custChange(e,value,sth){
-        this.setState({cust_id:sth});
+    custChange(cust){
+        this.setState({cust_id:cust.objectId});
     }
     addId(){
         let _this=this;
@@ -412,14 +416,12 @@ class DeviceOut extends React.Component{
         return(
             <div style={styles.input_page}>
                 <h3>{___.device_out}</h3>
-                <table>
+                <table style={styles.w}>
                     <tbody>
                         <tr>
                             <td style={{whiteSpace:'nowrap'}}>{___.cust}</td>
                             <td>
-                                <SelectField value={this.state.cust_id} onChange={this.custChange}>
-                                    {custItems}
-                                </SelectField>
+                                <UserSearch onChange={this.custChange} data={{parentId:_user.customer.objectId}}/>
                             </td>
                         </tr>
                     </tbody>

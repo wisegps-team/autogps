@@ -16,6 +16,10 @@ const sty={
     zIndex: '2000'
 }
 
+const con={
+    wordBreak: 'break-all'
+}
+
 class Alert extends Component {
     constructor(props, context) {
         super(props, context);
@@ -154,6 +158,7 @@ class Alert extends Component {
                         onClick={this.handleClose}
                     />}
                     open={this.state.alert_open}
+                    contentStyle={con}
                 >
                     {this.state.alert}
                 </Dialog>
@@ -162,6 +167,7 @@ class Alert extends Component {
                     title={this.state.title}
                     actions={actions}
                     open={this.state.confirm_open}
+                    contentStyle={con}
                 >
                     {this.state.confirm}
                 </Dialog>
@@ -170,6 +176,7 @@ class Alert extends Component {
                     title={this.state.title}
                     actions={actions}
                     open={this.state.prompt_open}
+                    contentStyle={con}
                 >
                     {this.state.prompt}                    
                     <TextField

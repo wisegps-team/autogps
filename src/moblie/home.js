@@ -88,14 +88,6 @@ const _pages=[//所有的页面
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 
-/**旧的客户管理 */
-pages.shift();
-pages.unshift({
-    href:'cust_manage',
-    name:___.cust_manage,
-    icon:<ActionSupervisorAccount style={sty.icon}/>
-});
-
 
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
 
