@@ -163,4 +163,6 @@ window.___={
 	'input_dep':'请输入部门名',
 	'edit_dep':'修改部门名称',
 	'select_dep':'请选择部门',
+	'invitation_url':'邀请链接',
+	'search_user':'搜索客户'
 }
