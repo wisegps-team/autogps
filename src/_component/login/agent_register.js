@@ -123,7 +123,7 @@ class AgentRegisterBox extends Component{
                             },{
                                 access_token:user.access_token,
                                 _uid:user.uid,
-                                parentId:'+'+that.props.parentId
+                                parentId:'+"'+that.props.parentId+'"'
                             });
                         }else{//不是，则提示类型不正确，返回登录
                             W.loading();

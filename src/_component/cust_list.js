@@ -151,8 +151,10 @@ class UserItem extends Component{
     }
 
     message(e){
-        let data=Object({},this.state.data,e.data);
-        this.setState({data});
+        if(e.data.objectId==this.state.data.objectId){
+            let data=Object({},this.state.data,e.data);
+            this.setState({data});
+        }
         this.context.VIEW.removeEventListener('message',this.message);
     }
     
