@@ -22,3 +22,11 @@ export function reCode(code){
     }else
         return code;
 }
+
+export function getDepart(departId){
+    let departs=STORE.getState().department;
+    let _depart=departs.find(item=>item.objectId==departId);
+    let _departName='';
+    if(_depart)_departName=_depart.name;
+    return _departName;
+}
