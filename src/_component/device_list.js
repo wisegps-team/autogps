@@ -20,22 +20,34 @@ const sty={
 }
 
 
-class DeviceList extends Component {
+class DeviceLogList extends Component {
     constructor(props, context) {
         super(props, context);
         this.state={
             data:[],
-            total:-1
+            total:0
         }
         this.page=1;
         this.loadNextPage = this.loadNextPage.bind(this);
+        this.add = this.add.bind(this);
     }
     
     componentDidMount() {//初始化数据
         Wapi.deviceLog.list(res=>this.setState({data:res.data,total:res.total}),{
             uid:_user.customer.objectId
         },Object.assign(op,{page_no:this.page}));
+        window.addEventListener('device_log_add',this.add);
     }
+    add(e){
+        e.data;
+        let data=[e.data].concat(this.state.data);
+        let total=this.state.total+1;
+        this.setState({data,total});
+    }
+    componentWillUnmount() {
+        window.removeEventListener('device_log_add',this.add);
+    }
+    
 
     loadNextPage(){
         //加载下一页的方法
@@ -86,4 +98,4 @@ class DumbList extends Component{
 }
 let Alist=AutoList(DumbList);
 
-export default DeviceList;
+export default DeviceLogList;

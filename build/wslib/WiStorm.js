@@ -626,6 +626,13 @@ W.wxLogin=function(s){
 	}				
 }
 
+W.emit=function(taget,event,params,canBubble,cancelable){
+	var evt = document.createEvent("HTMLEvents");
+	evt.initEvent(event, canBubble, cancelable);
+	evt.params=params;
+	taget.dispatchEvent(evt);
+}
+
 //静默授权获取open_id
 W.getOpenId=function(needweixin,s){
 	if(needweixin||!WiStorm.agent.weixin)return;

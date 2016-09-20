@@ -18,7 +18,7 @@ import TextField from 'material-ui/TextField';
 import STORE from '../_reducers/main';
 import BrandSelect from'../_component/base/brandSelect';
 import SonPage from '../_component/base/sonPage';
-import DeviceList from '../_component/device_list';
+import DeviceLogList from '../_component/device_list';
 import {reCode} from '../_modules/tool';
 import UserSearch from '../_component/user_search';
 
@@ -171,7 +171,7 @@ class AppDeviceManage extends React.Component{
                         }
                     />
                     <div id='list' style={styles.show}>
-                        <DeviceList/>
+                        <DeviceLogList/>
                     </div>
 
                     <SonPage open={this.state.intent=='in'} back={this.toList}>
@@ -255,15 +255,17 @@ class DeviceIn extends React.Component{
                 _this.setState({product_ids:arr});
                 
                 Wapi.device.add(function(res_device){
-                    Wapi.deviceLog.add(function(res_log){
-                        
-                    },{
+                    let log={
                         uid:_user.customer.objectId,
                         did:res,
                         type:1,
                         from:'0',
                         to:_user.customer.objectId
-                    });
+                    };
+                    Wapi.deviceLog.add(function(res){
+                        log.objectId=res.objectId;
+                        W.emit(window,'device_log_add',log);
+                    },log);
                 },{
                     did:res,
                     uid:_user.customer.objectId,
@@ -395,15 +397,18 @@ class DeviceOut extends React.Component{
                 from:_user.customer.objectId,
                 to:_this.state.cust_id
             });
-            Wapi.deviceLog.add(function(res_log){
-                _this.cancel();
-            },{
+            let log={
                 did:ids,
                 uid:_user.customer.objectId,
                 type:0,//出库
                 from:_user.customer.objectId,
                 to:_this.state.cust_id
-            });
+            };
+            Wapi.deviceLog.add(function(res){
+                log.objectId=res.objectId;
+                W.emit(window,'device_log_add',log);
+                W.alert(___.out_success,_this.cancel);
+            },log);
         },{
             _did:ids.join('|'),
             uid:_this.state.cust_id,

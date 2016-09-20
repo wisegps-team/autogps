@@ -164,5 +164,6 @@ window.___={
 	'edit_dep':'修改部门名称',
 	'select_dep':'请选择部门',
 	'invitation_url':'邀请链接',
-	'search_user':'搜索客户'
+	'search_user':'搜索客户',
+	'out_success':'分配成功'
 }

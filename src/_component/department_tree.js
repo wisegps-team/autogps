@@ -210,7 +210,7 @@ export class DepartmentSelcet extends React.Component{
             <div>
                 <div onClick={this.open}>{this.state.value}</div>
                 <SonPage open={this.state.isOpen} back={this.back} >
-                    <DepartmentTree mode={'select'} onChange={this.onChange} />
+                    <DepartmentTree mode={'select'} onChange={this.onChange} open={true}/>
                 </SonPage>
             </div>
         );
