@@ -39,8 +39,7 @@ class DeviceLogList extends Component {
         window.addEventListener('device_log_add',this.add);
     }
     add(e){
-        e.data;
-        let data=[e.data].concat(this.state.data);
+        let data=[e.params].concat(this.state.data);
         let total=this.state.total+1;
         this.setState({data,total});
     }
@@ -72,12 +71,26 @@ class DeviceLogList extends Component {
 }
 
 class DumbList extends Component{
-    shouldComponentUpdate(nextProps, nextState) {
-        return !this.props.data;
-    }
-
     render() {
-        let item=this.props.data?this.props.data.map(e=>(<ListItem
+        let item=this.props.data?this.props.data.map(e=>(<Log data={e} key={e.objectId}/>)):
+                (<h3 style={sty.ta}>{___.loading}</h3>);
+        return (
+            <List>
+                {item}
+            </List>
+        );
+    }
+}
+
+class Log extends Component{
+    shouldComponentUpdate(nextProps, nextState) {
+        return false;
+    }
+    
+    render() {
+        let e=this.props.data;
+        return (
+            <ListItem
                 leftAvatar={e.type?(<Avatar 
                         backgroundColor='#BBDEFB'
                         icon={<FileDownload/>}
@@ -87,12 +100,7 @@ class DumbList extends Component{
                     />)}
                 primaryText={e.did.join(',')}
                 secondaryText={(e.type?___.push:___.pop)+'，'+W.dateToString(W.date(e.createdAt))}
-                key={e.objectId}
-            />)):(<h3 style={sty.ta}>{___.loading}</h3>);
-        return (
-            <List>
-                {item}
-            </List>
+            />
         );
     }
 }

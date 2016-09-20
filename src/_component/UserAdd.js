@@ -172,7 +172,6 @@ class UserAdd extends React.Component{
         data.parentId=[_user.customer.objectId.toString()];
         // data.treePath=parent.treePath?parent.treePath+','+parent.uid:parent.uid;    
         let that=this;
-        let action=this.context.ACT.action;
         if(data._objectId){
             Wapi.customer.update(function(res){
                 W.alert(___.update_su,()=>history.back());
