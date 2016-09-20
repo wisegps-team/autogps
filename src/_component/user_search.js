@@ -34,8 +34,12 @@ class UserSearch extends Component {
         this.open = this.open.bind(this);
         this.onChange = this.onChange.bind(this);
     }
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState!=this.state;
+    }
 
     change(e,val){
+        if(this.state.value==val)return;
         if(val){
             this.setState({value:val});
             let data={
@@ -54,9 +58,10 @@ class UserSearch extends Component {
                 if(b.top>bo){//从上面弹出
                     newState.maxHeight=b.top;
                 }
-                this.setState(newState);
+                this.props.onData?this.props.onData(newState.data):this.setState(newState);
             },Object.assign(data,this.props.data),{limit:10});
         }else{
+            this.props.onData?this.props.onData(null):null;
             this.setState({open:false,value:val});
         }
     }
@@ -67,7 +72,7 @@ class UserSearch extends Component {
         let id=e.currentTarget.dataset.value;
         let t=this.state.data.find(e=>e.objectId==id);
         if(t){
-            this.props.onChange(t);
+            this.props.onChange?this.props.onChange(t):null;
             this.setState({value:t.name});
             setTimeout(()=>this.setState({open:false}),300);
         }

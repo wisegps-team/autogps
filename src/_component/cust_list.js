@@ -7,8 +7,10 @@ import IconButton from 'material-ui/IconButton/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import AutoList from './base/autoList';
+import UserSearch from './user_search';
 
 const sty={
     item:{
@@ -24,85 +26,112 @@ const sty={
     sm:{
         marginTop:'4px',
         display:'block'
+    },
+    s:{
+        padding:'0 10px'
     }
 }
 
-class CustList extends Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            data:[],
-            total:-1
+export const cust_item_sty=sty;
+
+export function CustListHC(Com,isList){
+    class Dlist extends Component{
+        render() {
+            let items;
+            if(this.props.data)
+                items=this.props.data.map((ele,index)=><Com key={ele.objectId} data={ele}/>);
+            else
+                items=(<div style={{textAlign:'center',color:'#ccc'}}>
+                    <h2>{___.user_list_null}</h2>
+                </div>);
+            return (
+                <List>
+                    {items}
+                </List>
+            );
         }
-        this.load = this.load.bind(this);
-        this.deleteOne = this.deleteOne.bind(this);
-        this.op=props.op||{
-            page:'objectId',
-            sorts:'objectId'
+    }
+    let Alist=AutoList(Dlist);
+    class CustList extends Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state={
+                data:[],
+                total:-1
+            }
+            this.load = this.load.bind(this);
+            this.deleteOne = this.deleteOne.bind(this);
+            this.onData = this.onData.bind(this);
+
+            this.op=props.op||{
+                page:'objectId',
+                sorts:'objectId'
+            }
+        }
+        getChildContext(){
+            return {
+                delete:this.deleteOne
+            };
+        }
+        componentDidMount() {
+            Wapi.customer.list(res=>{
+                this.setState(res);
+            },this.props.data,this.op);
+        }
+        shouldComponentUpdate(nextProps, nextState) {
+            return (nextState!=this.state);
+        }
+        deleteOne(id){
+            this.setState({
+                data:this.state.data.filter(e=>e.objectId!=id),
+                total:this.state.total-1
+            });
+        }
+        load(){
+            let last=this.props.data[this.props.data.length-1];
+            let first=this.props.data[0];
+            this.op.max_id=last.objectId,
+            Wapi.customer.list(res=>{
+                this.setState(res);
+            },this.props.data,this.op);
+        }
+        onData(data){
+            if(data&&data.length){
+                this._state=this._state||this.state;
+                console.log(this._state)
+                this.setState({data,total:data.length});
+            }else if(this._state){
+                this.setState(this._state);
+                delete this._state;
+            }
+        }
+        render() {
+            let addBut=this.props.label?<RaisedButton label={this.props.label} fullWidth={true} />:null;
+            return (
+                <div>
+                    {addBut}
+                    <div style={sty.s}>
+                        <UserSearch onData={this.onData} data={this.props.data}/>
+                    </div>
+                    <Alist 
+                        max={this.state.total} 
+                        limit={20} 
+                        data={this.state.data} 
+                        next={this.load} 
+                    />
+                </div>
+            );
         }
     }
-    getChildContext(){
-        return {
-            delete:this.deleteOne
-        };
+    CustList.childContextTypes={
+        delete:React.PropTypes.func,
     }
-    componentDidMount() {
-        Wapi.customer.list(res=>{
-            this.setState(res);
-        },this.props.data,this.op);
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        return (nextState!=this.state);
-    }
-    deleteOne(id){
-        this.setState({
-            data:this.state.data.filter(e=>e.objectId!=id),
-            total:this.state.total-1
-        });
-    }
-    load(){
-        let last=this.props.data[this.props.data.length-1];
-        let first=this.props.data[0];
-        this.op.max_id=last.objectId,
-        Wapi.customer.list(res=>{
-            this.setState(res);
-        },this.props.data,this.op);
-    }
-    render() {
-        let addBut=this.props.label?<RaisedButton label={this.props.label} fullWidth={true} />:null;
-        return (
-            <div>
-                {addBut}
-                <Alist 
-                    max={this.state.total} 
-                    limit={20} 
-                    data={this.state.data} 
-                    next={this.load} 
-                />
-            </div>
-        );
-    }
-}
-CustList.childContextTypes={
-    delete:React.PropTypes.func,
+
+    return CustList;
 }
 
-class Dlist extends Component{
-    render() {
-        let items;
-        if(this.props.data)
-            items=this.props.data.map((ele,index)=><UserItem key={index} data={ele}/>);
-        else
-            items=(<div style={{textAlign:'center',color:'#ccc'}}>
-                <h2>{___.user_list_null}</h2>
-            </div>);
-        return (
-            <List>
-                {items}
-            </List>
-        );
-    }
-}
+
+
 
 class UserItem extends Component{
     constructor(props, context) {
@@ -211,6 +240,7 @@ class RightIconMenu extends Component{
         );
     }
 }
-let Alist=AutoList(Dlist);
+
+let CustList=CustListHC(UserItem);
 
 export default CustList;
