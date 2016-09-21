@@ -4,6 +4,7 @@ import {MakeTreeComponent} from '../_component/base/tree';
 
 import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 import ContentCreate from 'material-ui/svg-icons/content/create';
+import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline';
 
 import {department_act} from '../_reducers/dictionary';
 import SonPage from './base/sonPage';
@@ -89,6 +90,7 @@ class Department extends Component{
         this.add = this.add.bind(this);
         this.edit = this.edit.bind(this);
         this.click = this.click.bind(this);
+        this.remove = this.remove.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         this.setState({name:nextProps.data.name});
@@ -144,14 +146,36 @@ class Department extends Component{
                 id:this.props.data.objectId
             });
     }
+    remove(){
+        let that=this;
+        let ids=getAllChild(this.props.data);
+        Wapi.employee.list(function(res){
+            if(res.data&&res.data.length){
+                W.alert(___.department_can_not_remove)
+            }else{
+                W.confirm(___.confirm_remove_dep,function(b){
+                    if(b)
+                        Wapi.department.delete(function(res){
+                            STORE.dispatch(department_act.delete(that.props.data.objectId));
+                        },{
+                            objectId:ids.join('|')
+                        })
+                });
+            }
+        },{
+            departId:ids.join('|')
+        });
+    }
     
     render() {
         let icons=null;
         if(!this.context.mode){
             icons=[];
-            if(this.props.data.objectId)
-                icons.push(<ContentCreate style={sty.c} onClick={this.edit} key={0}/>);
-            icons.push(<ContentAddCircleOutline style={sty.c} onClick={this.add} key={1}/>);
+            if(this.props.data.objectId){
+                icons.push(<ContentRemoveCircleOutline style={sty.c} onClick={this.remove} key={'remove'}/>);
+                icons.push(<ContentCreate style={sty.c} onClick={this.edit} key={'edit'}/>);
+            }
+            icons.push(<ContentAddCircleOutline style={sty.c} onClick={this.add} key={'add'}/>);
         }
         return (
             <div style={sty.d} onClick={this.click} onTouchStart={touchStart} onTouchEnd={touchEnd}>
@@ -228,6 +252,14 @@ function getTreePath(arr){
     });
     treeArr.forEach(e=>e.children=treeArr.filter(a=>(a.parentId==e.objectId)));
     return treeArr.filter(e=>(e.parentId=='0'));
+}
+
+function getAllChild(data){
+    let ids=[data.objectId];
+    if(data.children){
+        data.children.forEach(e=>ids.concat(getAllChild(e)));
+    }
+    return ids;
 }
 
 function touchStart(e){
