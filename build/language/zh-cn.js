@@ -23,6 +23,7 @@ window.___={
 	'name':'名称',
 	'remark':'备注',
 	'operation':'操作',
+	'close':'关闭',
 	'range':'范围',
 	'admin_wisegps':'车联在线运营管理平台',
 	'add':'添加',
@@ -165,5 +166,15 @@ window.___={
 	'select_dep':'请选择部门',
 	'invitation_url':'邀请链接',
 	'search_user':'搜索客户',
-	'out_success':'分配成功'
+	'out_success':'分配成功',
+	'brand_manage':'品牌管理',
+	'input_brand':'请输入品牌名',
+	'edit_brand':'修改品牌名称',
+	'department_can_not_remove':'该部门无法删除',
+	'confirm_remove_dep':'确认删除该部门吗？',
+	'input_product':'请输入产品名称',
+	'edit_product':'修改产品名称',
+	'confirm_remove':'确认删除“<%name%>”吗？',
+	'brand_can_not_remove':'该品牌存在设备，无法删除',
+	'product_can_not_remove':'该产品存在设备，无法删除'
 }

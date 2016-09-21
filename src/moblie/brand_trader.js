@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
 
 import {List, ListItem} from 'material-ui/List';
+import IconButton from 'material-ui/IconButton';
+import ContentAdd from 'material-ui/svg-icons/content/add'
 
 import AppBar from '../_component/base/appBar';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
@@ -24,6 +26,7 @@ class App extends Component{
             objectId:_user.customer.parentId.join('|'),
             custTypeId:'1'
         };
+        this.ADD=(_user.customer.custTypeId===0)?(<IconButton onClick={()=>thisView.goTo('cust_add.js',{custTypeId:1})}><ContentAdd/></IconButton>):null;
     }
     getChildContext(){
         return{
@@ -33,7 +36,7 @@ class App extends Component{
     render() {
         return (
             <ThemeProvider>
-                <AppBar title={___.brand_trader}/>
+                <AppBar title={___.brand_trader}  iconElementRight={this.ADD}/>
                 <CustList data={this._data}/>
             </ThemeProvider>
         );

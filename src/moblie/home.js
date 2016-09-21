@@ -18,12 +18,13 @@ import ActionRecordVoiceOver from 'material-ui/svg-icons/action/record-voice-ove
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionAssignmentInd from 'material-ui/svg-icons/action/assignment-ind';
 import ActionTurnedInNot from 'material-ui/svg-icons/action/turned-in-not';
+import ActionViewList from 'material-ui/svg-icons/action/view-list';
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
 
 import STORE from '../_reducers/main';
-import {user_type_act,brand_act,department_act} from '../_reducers/dictionary';
+import {user_type_act,brand_act,department_act,product_act} from '../_reducers/dictionary';
 
 require('../_sass/home.scss');
 
@@ -31,6 +32,7 @@ require('../_sass/home.scss');
 function loadDictionary(){
     STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
     STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
+    STORE.dispatch(product_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(department_act.get({uid:_user.customer.objectId}));//部门
 }
 loadDictionary();
@@ -84,6 +86,11 @@ const _pages=[//所有的页面
         href:'employee',
         name:___.employee_manage,
         icon:<ActionAssignmentInd style={sty.icon}/>
+    },
+    {
+        href:'brand_manage',
+        name:___.brand_manage,
+        icon:<ActionViewList style={sty.icon}/>
     },
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));

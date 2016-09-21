@@ -7,6 +7,7 @@ import dictionaryReducer from './dictionary';
 const initialState = {
     custType:[],//用户类型字典
     brand:[],//品牌类型字典
+    product:[],//品牌类型字典
     department:[],
     customer:{
         data:[],    //客户列表
@@ -27,6 +28,7 @@ function main(state = initialState, action) {
         user:customerReducer(state.user,action,'user'),
         custType:dictionaryReducer(state.custType,action,'custType'),
         brand:dictionaryReducer(state.brand,action,'brand'),
+        product:dictionaryReducer(state.product,action,'product'),
         department:dictionaryReducer(state.department,action,'department'),
     };
 }

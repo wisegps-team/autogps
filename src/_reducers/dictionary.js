@@ -18,7 +18,7 @@ export default function dictionaryReducer(state,action,name){
         case ACT.action.add:
             return [action.data].concat(state);
         case ACT.action.delete:
-            return state.filter(ele=>(ele.objectId!=action.objectId));
+            return state.filter(ele=>(ele.objectId!=action.id));
         case ACT.action.update:
             return state.map(function(ele) {
                 if(ele.objectId==action.data.objectId)
@@ -82,4 +82,5 @@ class dictionaryAction{
 
 export const user_type_act=new dictionaryAction('custType');
 export const brand_act=new dictionaryAction('brand');
+export const product_act=new dictionaryAction('product');
 export const department_act=new dictionaryAction('department');
