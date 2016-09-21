@@ -41,6 +41,8 @@ class Alert extends Component {
         this.queue=[];
         this.handleClose = this.handleClose.bind(this);
         this.toastClose = this.toastClose.bind(this);
+        this.ok = this.ok.bind(this);
+        this.cancel = this.cancel.bind(this);
         window.W.alert=this.alert = this.alert.bind(this);
         window.W.confirm=this.confirm = this.confirm.bind(this);
         window.W.prompt=this.prompt = this.prompt.bind(this);
@@ -131,19 +133,26 @@ class Alert extends Component {
     loading(loading_open,loading_text){
         this.setState({loading_open,loading_text});
     }
+
+    ok(){
+        this.handleClose(true);
+    }
+    cancel(){
+        this.handleClose(false);
+    }
     
     render() {
         const actions = [
             <FlatButton
-                label="取消"
+                label={___.cancel}
                 primary={true}
-                onClick={this.handleClose}
+                onClick={this.cancel}
             />,
             <FlatButton
-                label="确定"
+                label={___.ok}
                 primary={true}
                 keyboardFocused={true}
-                onClick={()=>this.handleClose(true)}
+                onClick={this.ok}
             />
         ];
         let divS=Object.assign({display:this.state.loading_open?'block':'none'},sty);
@@ -153,9 +162,9 @@ class Alert extends Component {
                     key='alert'
                     title={this.state.title}
                     actions={<FlatButton
-                        label="确定"
+                        label={___.ok}
                         primary={true}
-                        onClick={this.handleClose}
+                        onClick={this.cancel}
                     />}
                     open={this.state.alert_open}
                     contentStyle={con}
@@ -180,7 +189,7 @@ class Alert extends Component {
                 >
                     {this.state.prompt}                    
                     <TextField
-                        hintText="请输入"
+                        name={'prompt'}
                         defaultValue={this.state.defaultValue}
                         fullWidth={true}
                         onChange={(ae,val)=>this.value=val}
@@ -189,7 +198,7 @@ class Alert extends Component {
                 <Snackbar
                     open={this.state.toast_open}
                     message={this.state.toast}
-                    action="关闭"
+                    action={___.close}
                     autoHideDuration={5000}
                     onRequestClose={this.toastClose}
                 />

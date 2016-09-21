@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=37;//版本号
+let version=38;//版本号
 
 //地区表
 export const area={
@@ -1088,6 +1088,7 @@ export const iotDevice={
         {statue:1},        
         {commSign:1},
         {model:1},
+        {modelId:1},
         {binded:1}
     ]
 }

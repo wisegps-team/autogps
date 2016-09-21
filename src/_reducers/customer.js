@@ -26,7 +26,7 @@ export default function customerReducer(customer,action,name) {
             data=[action.data].concat(customer.data);
             return Object.assign({},customer,{data,total:customer.total+1});
         case ACT.action.delete:
-            data=customer.data.filter(ele=>(ele.objectId!=action.objectId));
+            data=customer.data.filter(ele=>(ele.objectId!=action.id));
             return Object.assign({},customer,{data,total:customer.total-1});
         case ACT.action.update:
             data=customer.data.map(function(ele) {
