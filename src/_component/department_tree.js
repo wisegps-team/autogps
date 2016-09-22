@@ -13,14 +13,17 @@ import {getAllChild} from '../_modules/tool';
 
 const sty={
     d:{
-        height: '24px',
-        width:'100%'
+        width:'100%',
+        wordBreak: 'break-all'
     },
     c:{
         verticalAlign: 'top',
         marginLeft:'1em',
         float: 'right',
     },
+    sp:{
+        cursor:'pointer'
+    }
 }
 
 class DepartmentTree extends Component{
@@ -146,6 +149,8 @@ class Department extends Component{
                 name:this.props.data.name,
                 id:this.props.data.objectId
             });
+        else
+            this.edit();
     }
     remove(){
         let that=this;
@@ -174,13 +179,12 @@ class Department extends Component{
             icons=[];
             if(this.props.data.objectId){
                 icons.push(<ContentRemoveCircleOutline style={sty.c} onClick={this.remove} key={'remove'}/>);
-                icons.push(<ContentCreate style={sty.c} onClick={this.edit} key={'edit'}/>);
             }
             icons.push(<ContentAddCircleOutline style={sty.c} onClick={this.add} key={'add'}/>);
         }
         return (
-            <div style={sty.d} onClick={this.click} onTouchStart={touchStart} onTouchEnd={touchEnd}>
-                {this.state.name}
+            <div style={sty.d} onTouchStart={touchStart} onTouchEnd={touchEnd}>
+                <span onClick={this.click} style={sty.sp}>{this.state.name}</span>
                 {icons}
             </div>
         );
