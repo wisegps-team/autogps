@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=38;//版本号
+let version=40;//版本号
 
 //地区表
 export const area={
@@ -1788,14 +1788,172 @@ export const iotAlert= {
     ]
 };
 
+//预定表
+export const booking={
+    name: 'booking',             //表名
+    desc: '预定表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'mobile',
+            'desc': '预定手机号',
+            'type': 'String',
+            'primary': true,  //主键字段
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            },
+            'messages': {
+                required:'手机号为必填'
+            }
+        },{
+            'name': 'sellerId',
+            'desc': '营销人员id',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            },
+            'messages': {
+                required:'营销人员id为必填'
+            }
+        },{
+            'name': 'uid',
+            'desc': '代理商id',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            },
+            'messages': {
+                required:'代理商id为必填'
+            }
+        },{
+            'name': 'status',
+            'desc': '状态',
+            'type': 'Number',
+            'query': true,    //可查询字段
+            'validations':{
+                required:true,
+                digits:true,
+                select:[
+                    {value:0,name:'预定'},
+                    {value:1,name:'已注册未结算'},
+                    {value:2,name:'已结算未确认'},
+                    {value:3,name:'已确认'}
+                ]
+            }
+        },{
+            'name': 'status0',
+            'desc': '预定状态',
+            'type': 'Number',
+            'query': true,    //可查询字段
+            'validations':{
+                required:true,
+                digits:true,
+                select:[
+                    {value:1,name:'已预定'}
+                ]
+            }
+        },{
+            'name': 'status1',
+            'desc': '注册状态',
+            'type': 'Number',
+            'query': true,    //可查询字段
+            'validations':{
+                required:true,
+                digits:true,
+                select:[
+                    {value:0,name:'未注册'},
+                    {value:1,name:'已注册'}
+                ]
+            }
+        },{
+            'name': 'status2',
+            'desc': '结算状态',
+            'type': 'Number',
+            'query': true,    //可查询字段
+            'validations':{
+                required:true,
+                digits:true,
+                select:[
+                    {value:0,name:'未结算'},                    
+                    {value:1,name:'已结算'}
+                ]
+            }
+        },{
+            'name': 'status3',
+            'desc': '确认状态',
+            'type': 'Number',
+            'query': true,    //可查询字段
+            'validations':{
+                required:true,
+                digits:true,
+                select:[
+                    {value:0,name:'未确认'}, 
+                    {value:1,name:'已确认'}
+                ]
+            }
+        },{
+            'name': 'name',
+            'desc': '客户姓名',
+            'type': 'String',
+            'query': true,    //可查询字段
+            'validations': {
+                required:true
+            },
+            'messages': {
+                required:'客户姓名为必填'
+            }
+        },{
+            'name': 'carType',
+            'desc': '车型对象',
+            'type': 'Object',
+            'query': true,    //可查询字段
+        },{
+            'name': 'resTime',
+            'desc': '注册时间',
+            'type': 'Date',
+            'query': true,
+        },{
+            'name': 'payTime',
+            'desc': '结算时间',
+            'type': 'Date',
+            'query': true,
+        },{
+            'name': 'confirmTime',
+            'desc': '确认时间',
+            'type': 'Date',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {
+            mobile:1,
+            unique:true
+        },
+        {status:1},
+        {sellerId:1},
+        {uid:1}
+    ]
+}
+
 
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
-    ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert
+    ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
+window._fields={};
+TABLES.forEach(t=>{
+    _fields[t.name]=t.fieldDefine.map(f=>f.name).join(',')+',objectId,createdAt,updatedAt,creator';
+});
 if(version==old_vareion){
     TABLES=[];
 }

@@ -804,16 +804,17 @@ const Wapi={
 	device:new WAPI('_iotDevice',_user?_user.access_token:null),//终端表
 	gps:new WGps(_user?_user.access_token:null),//定位数据表
 	log:new WAPI('_iotLog',_user?_user.access_token:null),//日志数据表
-		alert:new WAPI('_iotAlert',_user?_user.access_token:null),//警报数据表
+	alert:new WAPI('_iotAlert',_user?_user.access_token:null),//警报数据表
 	stat:new WAPI('_iotStat',_user?_user.access_token:null),//日统计数据表
 	deviceLog:new WAPI('deviceLog',_user?_user.access_token:null),//设备出入库日志表
 	deviceTotal:new WAPI('deviceTotal',_user?_user.access_token:null),//设备统计表
 	//字典表
 	department:new WAPI('department',_user?_user.access_token:null),//部门表
 	custType:new WAPI('custType',_user?_user.access_token:null),//客户类型表
-	area:new WAPI('area',_user?_user.access_token:null),//地区表
+	area:new WAPI('area'),//地区表
 	brand:new WAPI('brand',_user?_user.access_token:null),
 	product:new WAPI('product',_user?_user.access_token:null),
+	booking:new WAPI('booking'),
 	base:new WBaseApi(_user?_user.access_token:null)
 };
 
@@ -845,6 +846,7 @@ makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sort
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
+makeGetOp('booking','mobile,sellerId,uid,status,status0,status1,status2,status3,name,carType,resTime,payTime,confirmTime,objectId,createdAt,updatedAt');
 
 
 
