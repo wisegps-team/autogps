@@ -100,9 +100,11 @@ class App extends React.Component {
                 total:res.total,
             });
         },{
-            companyId:_user.customer.objectId
+            companyId:_user.customer.objectId,
+            isQuit:false
         },{
-            fields:'objectId,uid,companyId,name,tel,sex,departId,type'
+            fields:'objectId,uid,companyId,name,tel,sex,departId,type',
+            limit:20
         });
 
         //测试用数据
@@ -210,9 +212,11 @@ class App extends React.Component {
         Wapi.employee.list(res=>{
             this.setState({employees:arr.concat(res.data)});
         },{
-            companyId:_user.customer.objectId
+            companyId:_user.customer.objectId,
+            isQuit:false
         },{
             fields:'objectId,uid,companyId,name,tel,sex,departId,type',
+            limit:20,
             page_no:this.page
         });
     }
