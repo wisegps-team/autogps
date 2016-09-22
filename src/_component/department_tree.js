@@ -9,6 +9,7 @@ import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-cir
 import {department_act} from '../_reducers/dictionary';
 import SonPage from './base/sonPage';
 import P from '../_modules/public';
+import {getAllChild} from '../_modules/tool';
 
 const sty={
     d:{
@@ -252,14 +253,6 @@ function getTreePath(arr){
     });
     treeArr.forEach(e=>e.children=treeArr.filter(a=>(a.parentId==e.objectId)));
     return treeArr.filter(e=>(e.parentId=='0'));
-}
-
-function getAllChild(data){
-    let ids=[data.objectId];
-    if(data.children){
-        data.children.forEach(e=>ids.concat(getAllChild(e)));
-    }
-    return ids;
 }
 
 function touchStart(e){

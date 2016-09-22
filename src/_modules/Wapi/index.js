@@ -276,7 +276,7 @@ WUserApi.prototype.updateMe=function(callback,data,op){
 		callback=W.err(callback);
 	}
 	delete OP.err;
-	if(this.sessionToken)
+	if(!data._sessionToken&&this.sessionToken)
 		OP._sessionToken=this.sessionToken;
 	this.getApi(data,callback,OP);
 }
@@ -372,6 +372,19 @@ WCommApi.prototype.sendWeixin=function(callback,data){
 	this.ajax(url,ajaxSetting);
 }
 
+function WServiceApi(token){
+	WiStormAPI.call(this,'service',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'objectId,sid,name,enterUrl,desc,createdAt,updatedAt,ACL'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"20"
+	}
+}
+WServiceApi.prototype=new WiStormAPI();//继承父类WiStormAPI的方法
 
 /**
  * 文件接口api类
@@ -588,6 +601,191 @@ WFeatureApi.prototype.get=function(callback,key){
 	this.getApi(data,callback);
 }
 
+
+function WBaseApi(token){
+	WiStormAPI.call(this,'feature',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'pid,name,show_name,go_id,go_name'//默认返回的字段
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"name",
+		page:"name",
+		limit:"20"
+	}
+}
+WBaseApi.prototype=new WiStormAPI();
+
+//获取车辆品牌列表
+WBaseApi.prototype.carBrand=function(callback){
+	var OP={
+		method:'wicare.carBrand.list',
+		fields:'id,pid,name,url_icon,t_spell',
+		id:">0",
+		sorts:'t_spell',
+		page:'t_spell',
+		limit:-1
+	};
+	this.getApi(OP,callback);
+}
+//获取车系列表
+WBaseApi.prototype.carSerie=function(callback,data){
+	var OP={
+		method:'wicare.carSerie.list',
+		fields:'id,pid,name,show_name,go_id,go_name',
+		sorts:"name",
+		page:"name",
+		limit:-1
+	};
+	Object.assign(OP,data);
+	this.getApi(OP,callback);
+}
+//获取车型列表
+WBaseApi.prototype.carType=function(callback,data){
+	var OP={
+		method:'wicare.carType.list',
+		fields:'id,pid,name,show_name,go_id,go_name',
+		sorts:"name",
+		page:"name",
+		limit:-1
+	};
+	Object.assign(OP,data);
+	this.getApi(OP,callback);
+}
+//经纬度转地址
+WBaseApi.prototype.geocoder=function(callback,data){
+	data.method=this.apiName+'.geocoder';
+	this.safetyGet(data,callback);
+}
+
+function WGps(token){
+	WAPI.call(this,'_iotGpsData',token);
+	this.get_op={
+		fields:'did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId'//默认返回的字段
+	}
+	this.get_op={
+		fields:"did,lon,lat,speed,direct,gpsFlag,mileage,fuel,temp,air,signal,voltage,status,alerts,gpsTime"
+	}
+	this.list_op={
+		fields:this.get_op.fields,
+		sorts:"objectId",
+		page:"objectId",
+		limit:"-1"
+	}
+	this._list=WiStormAPI.prototype.list;
+}
+WGps.prototype=new WAPI();//继承父类WiStormAPI
+
+WGps.prototype.list=function(callback,data,op){
+	// this._list(callback,data,op);
+	let st=W.date(data.gpsTime.split('@')[0]);
+	let et=W.date(data.gpsTime.split('@')[1]);
+	let today=this._clearTime(new Date());
+	let cst=this._clearTime(st);
+	let that=this;
+	if(today.getTime()==cst.getTime())
+		this._list(callback,data,op);
+	else if(st<today&&et>today){
+		let D=Object.assign({},data);
+		D.gpsTime=W.dateToString(st)+'@'+W.dateToString(today);
+		this.getGpsList(function(res){
+			let arr=res.data;
+			let d=Object.assign({},data);
+			d.gpsTime=W.dateToString(today)+'@'+W.dateToString(et);
+			that._list(function(res) {
+				res.data=arr.concat(res.data);
+				callback(res);
+			},d,op);
+		},D);
+	}else
+		this.getGpsList(callback,data);
+}
+/**
+ * 获取历史定位信息
+ */
+WGps.prototype.getGpsList=function(callback,data){
+	let st=W.date(data.gpsTime.split('@')[0]);
+	let et=W.date(data.gpsTime.split('@')[1]);
+	let cst=this._clearTime(st);
+	let day=Math.ceil((et.getTime()-cst.getTime())/24/60/60/1000);//跨了多少天
+	if(day<0){
+		callback({status_code:-2,err_mas:'Invalid Time Range'});
+	}
+
+	// if(day){
+		let i=0;
+		let datas=[];
+		for(let i=0;i<day;i++){
+			this.getGpsListOnday(function(res,j){
+				if(!j&&j==day)
+					res=res.filter(e=>{
+						let t=W.date(e.gpsTime);
+						return(t>=st&&t<=et);
+					});
+				datas.push({'i':j,data:res});
+				if(datas.length>=day){
+					let temData=[];
+					datas.forEach(e=>temData[e.i]=e.data);//排序
+					let data=[];
+					temData.forEach(e=>data=data.concat(e));
+					callback({data});
+				}
+			},data.did,cst,i,data.map);
+			cst.setHours(cst.getHours()+24);
+		}
+	// }else{
+	// 	//范围在同一天的
+	// 	this.getGpsListOnday(function(res){
+	// 		let data=res.filter(e=>{
+	// 			let t=W.date(e.gpsTime);
+	// 			return(t>=st&&t<=et);
+	// 		});
+	// 		callback({data});
+	// 	},data.did,st);
+	// }
+	
+
+	
+}
+WGps.prototype.getGpsListOnday=function(callback,did,date,index,map='BAIDU'){
+	//http://web.file.myqcloud.com/files/v1/2016-09-13/696502000007496_2016-09-13.gz
+	// let base_url='http://gpsdata-10013582.file.myqcloud.com/';
+	let base_url='http://gpsdata-10013582.cos.myqcloud.com/';
+	
+	let today=W.dateToString(date).slice(0,10);
+	let url=base_url+today+'/'+did+'_'+today+'.gz';
+	W.get(url,null,function(res){
+		var arr=res.split('\n');
+		res=undefined;
+		let keys=['gpsTime','rcvTime','lon','lat','speed','direct','gpsFlag','mileage','fuel','temp','status','alerts'];
+
+		let a=arr.map(function(e,i) {
+			let j=e.split('|');
+			let d={};
+			try {
+				keys.forEach((e,i)=>d[e]=(j[i][0]=='['||j[i][0]=='{')?JSON.parse(j[i]):j[i]);
+			} catch (error) {
+				console.log(e,i);
+			}
+			if(map=='GOOGLE'){
+				d.lon=d.g_lon;
+				d.lat=d.g_lat;
+			}
+			return d;
+		}, this);
+		callback(a,index);
+	},'text');
+}
+
+WGps.prototype._clearTime=function(date){
+	let newDate=new Date(date.getTime());
+	newDate.setHours(0);
+	newDate.setMinutes(0);
+	newDate.setSeconds(0);
+	newDate.setMilliseconds(0);
+	return newDate;
+}
+
 const Wapi={
     user:new WUserApi(_user?_user.access_token:null,_user?_user.session_token:null),
     developer:new WDeveloperApi(_user?_user.access_token:null),
@@ -598,13 +796,16 @@ const Wapi={
 	role:new WRoleApi(_user?_user.access_token:null),
 	page:new WPageApi(_user?_user.access_token:null),
 	feature:new WFeatureApi(_user?_user.access_token:null),
+	service:new WServiceApi(_user?_user.access_token:null),
 	//以下为非核心功能表
 	customer:new WAPI('customer',_user?_user.access_token:null),//客户表
 	employee:new WAPI('employee',_user?_user.access_token:null),//员工表
 	vehicle:new WAPI('vehicle',_user?_user.access_token:null),//车辆表
 	device:new WAPI('_iotDevice',_user?_user.access_token:null),//终端表
-	gps:new WAPI('_iotGpsData',_user?_user.access_token:null),//定位数据表
+	gps:new WGps(_user?_user.access_token:null),//定位数据表
 	log:new WAPI('_iotLog',_user?_user.access_token:null),//日志数据表
+		alert:new WAPI('_iotAlert',_user?_user.access_token:null),//警报数据表
+	stat:new WAPI('_iotStat',_user?_user.access_token:null),//日统计数据表
 	deviceLog:new WAPI('deviceLog',_user?_user.access_token:null),//设备出入库日志表
 	deviceTotal:new WAPI('deviceTotal',_user?_user.access_token:null),//设备统计表
 	//字典表
@@ -613,7 +814,11 @@ const Wapi={
 	area:new WAPI('area',_user?_user.access_token:null),//地区表
 	brand:new WAPI('brand',_user?_user.access_token:null),
 	product:new WAPI('product',_user?_user.access_token:null),
+	base:new WBaseApi(_user?_user.access_token:null)
 };
+
+
+
 
 function makeGetOp(name,fields,lop){
 	Wapi[name].get_op={fields};
@@ -629,14 +834,18 @@ function makeGetOp(name,fields,lop){
 makeGetOp('customer','objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id');
 makeGetOp('deviceLog','objectId,uid,did,type,createdAt,from,to');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
+makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
 makeGetOp('device','did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
-makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn');
+makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,mileage,fuel,createdAt');
+makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt');
+makeGetOp('department','objectId,name,uid,parentId,treePath,adminId',{limit:-1,sorts:'objectId',page:'objectId'});
+makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
-makeGetOp('department','objectId,name,uid,parentId,treePath,adminId',{limit:-1,sorts:'objectId',page:'objectId'});
+
 
 
 window.Wapi=Wapi;

@@ -113,12 +113,12 @@ class EditBox extends Component{
         }
         return (
             <Paper zDepth={1} style={sty.p}>
-                <Input defaultValue={cust.name} name='name' onChange={this.change} hintText={___.name}/>
+                <Input value={cust.name} name='name' onChange={this.change} hintText={___.name}/>
                 <p>{___.cust_type+'：'+cust.custType}</p>
-                <Input defaultValue={cust.contact} name='contact' onChange={this.change} hintText={___.person}/>
-                <Input defaultValue={cust.tel} name='tel' onChange={this.change} hintText={___.cellphone}/>                
+                <Input value={cust.contact} name='contact' onChange={this.change} hintText={___.person}/>
+                <Input value={cust.tel} name='tel' onChange={this.change} hintText={___.cellphone}/>                
                 <AreaSelect onChange={this.change} value={area}/>
-                <Input defaultValue={cust.address} name='address' onChange={this.change} hintText={___.address}/>                                
+                <Input value={cust.address} name='address' onChange={this.change} hintText={___.address}/>                                
                 <div style={{textAlign:'right',marginTop:'15px'}}>
                     <FlatButton label={___.cancel} onClick={this.props.back} default={true} />                
                     <FlatButton label={___.save} onClick={this.save} primary={true} />
