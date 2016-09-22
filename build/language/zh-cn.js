@@ -113,6 +113,7 @@ window.___={
 	'sms_sended':'验证码已发送至',
 	'cust_sms_content':'［卫网科技］尊敬的<%name%><%sex%>：已为您创建管理平台账号<%account%>，默认密码为<%pwd%>，请关注微信公众号“卫网科技”并登录管理。',
 	'user_sms_content':'［卫网科技］尊敬的<%name%><%sex%>：已为您创建管理平台账号<%account%>，默认密码为<%pwd%>，请登录http://w.wo365.net或关注微信公众号“沃管车”管理。',
+	'employee_sms_content':'［<%app_name%>］尊敬的<%name%><%sex%>：卫网科技已为您创建管理平台账号，平台网址为http://wx.autogps.cn，登录账号为<%account%>，默认密码为<%pwd%>。',
 	'sir':'先生',
 	'lady':'小姐',
 	'province':'省份',
@@ -176,5 +177,6 @@ window.___={
 	'edit_product':'修改产品名称',
 	'confirm_remove':'确认删除“<%name%>”吗？',
 	'brand_can_not_remove':'该品牌存在设备，无法删除',
-	'product_can_not_remove':'该产品存在设备，无法删除'
+	'product_can_not_remove':'该产品存在设备，无法删除',
+	'partTime_sellers':'营销人员',
 }

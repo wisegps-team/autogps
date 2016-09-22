@@ -100,9 +100,11 @@ class App extends React.Component {
                 total:res.total,
             });
         },{
-            companyId:_user.customer.objectId
+            companyId:_user.customer.objectId,
+            isQuit:false
         },{
-            fields:'objectId,uid,companyId,name,tel,sex,departId,type'
+            fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
+            limit:20
         });
 
         //测试用数据
@@ -125,7 +127,6 @@ class App extends React.Component {
     }
     editEmployeeCancel(){
         this.setState({show_sonpage:false});
-        
     }
     editEmployeeSubmit(data,allowLogin){
         if(this.state.intent=='edit'){//修改人员
@@ -136,6 +137,7 @@ class App extends React.Component {
                 sex:data.sex,
                 departId:data.departId,
                 type:data.type,
+                isQuit:data.isQuit
             };
             Wapi.employee.update(res=>{
                 let arr=this.state.employees;
@@ -146,8 +148,10 @@ class App extends React.Component {
                         ele.sex=params.sex;
                         ele.departId=params.departId;
                         ele.type=params.type;
+                        ele.isQuit=params.isQuit;
                     }
                 });
+                arr=arr.filter(ele=>!ele.isQuit);
                 this.setState({employees:arr});//修改完成后更新该条人员数据
                 history.back();//更新数据后返回
             },params);
@@ -170,18 +174,20 @@ class App extends React.Component {
                     sex:data.sex,
                     departId:data.departId,
                     type:data.type,
+                    isQuit:false,
                 };
                 params.uid=res.uid;
                 Wapi.employee.add(function(res){
                     params.objectId=res.objectId;
                     let arr=that.state.employees;
-                    that.setState({employees:arr.concat(params)});//添加完成后将新增的人员加入人员数组
+                    that.setState({employees:arr.unshift(params)});//添加完成后将新增的人员加入人员数组
                     history.back();//更新数据后返回
 
                     Wapi.role.update(function(role){
                         data.objectId=res.objectId;
-                        let sms=___.cust_sms_content;
+                        let sms=___.employee_sms_content;
                         let tem={
+                            app_name:___.app_name,
                             name:data.name,
                             sex:data.sex?___.sir:___.lady,
                             account:data.tel,
@@ -210,9 +216,11 @@ class App extends React.Component {
         Wapi.employee.list(res=>{
             this.setState({employees:arr.concat(res.data)});
         },{
-            companyId:_user.customer.objectId
+            companyId:_user.customer.objectId,
+            isQuit:false
         },{
-            fields:'objectId,uid,companyId,name,tel,sex,departId,type',
+            fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
+            limit:20,
             page_no:this.page
         });
     }
