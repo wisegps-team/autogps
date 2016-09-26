@@ -6,12 +6,7 @@
 import React,{Component} from 'react';
 import ReactDOM from 'react-dom';
 
-import AppBar from 'material-ui/AppBar';
 import {ThemeProvider} from './_theme/default';
-import FlatButton from 'material-ui/FlatButton';
-
-import AgentRegisterBox from './_component/login/agent_register';
-import CONFIG from './_modules/config';
 
 import Register from './_component/login/register';
 import Input from './_component/base/input';
