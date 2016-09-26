@@ -178,5 +178,10 @@ window.___={
 	'confirm_remove':'确认删除“<%name%>”吗？',
 	'brand_can_not_remove':'该品牌存在设备，无法删除',
 	'product_can_not_remove':'该产品存在设备，无法删除',
-	'partTime_sellers':'营销人员',
+	'partTime_sellers':'微信营销',
+	'book_date':'预定日期',
+	'register_date':'注册日期',
+	'balance_date':'结算日期',
+	'confirm_date':'确认日期',
+	'sell_count':'销售统计',
 }

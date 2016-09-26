@@ -1,9 +1,14 @@
+//微信营销页面 兼职销售人员列表
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../_theme/default';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
+import IconButton from 'material-ui/IconButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
@@ -14,13 +19,15 @@ const styles={
     main:{width:'90%',paddingTop:'50px',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
     table_td_right:{paddingLeft:'1em'},
+    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
 }
 
+//测试用数据
 let _res={
     code:0,
     data:[
         {
-            sellerId:'111',
+            uid:'111',
             name:'小明',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -30,7 +37,7 @@ let _res={
             status3:3,
         },
         {
-            sellerId:'222',
+            uid:'222',
             name:'明明',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -40,7 +47,7 @@ let _res={
             status3:3,
         },
         {
-            sellerId:'333',
+            uid:'333',
             name:'xixi',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -55,7 +62,7 @@ let _res={
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
-    thisView.prefetch('partTime_bills.js',2);
+    thisView.prefetch('partTime_count.js',2);
 });
 
 
@@ -74,28 +81,46 @@ class App extends React.Component {
         };
     }
     settlement(seller){
-        console.log(seller);
-        
-        thisView.postMessage('partTime_bills.js',{
-            title:'sellerId',
-            content:seller.sellerId
-        });
-        // thisView.goTo('partTime_bills.js');
+        // thisView.postMessage('partTime_count.js',{
+        //     title:'sellerId',
+        //     content:seller
+        // });
+        thisView.goTo('partTime_count.js',seller);
     }
     componentDidMount(){
-        this.setState({sellers:_res.data})
+        Wapi.employee.list(res=>{
+            console.log(res);
+            this.setState({
+                sellers:res.data,
+                total:res.total,
+            });
+        },{
+            companyId:_user.customer.objectId,
+            departId:'-1',
+        })
+
+        //测试用数据
+        // this.setState({sellers:_res.data});
+    }
+    getUrl(){
+        let opt={
+            title:___.invitation_url,
+            text:location.origin+'/?location=tempRegister.html&intent=logout&parentId='+_user.customer.objectId
+        }
+        W.alert(opt);
     }
     loadNextPage(){
         let arr=this.state.sellers;
         this.page++;
-        // Wapi.employee.list(res=>{
-        //     this.setState({sellers:arr.concat(res.data)});
-        // },{
-        //     companyId:_user.customer.objectId,
-        // },{
-        //     limit:20,
-        //     page_no:this.page
-        // });
+        Wapi.employee.list(res=>{
+            this.setState({sellers:arr.concat(res.data)});
+        },{
+            companyId:_user.customer.objectId,
+            departId:'-1',
+        },{
+            limit:20,
+            page_no:this.page
+        });
     }
     render(){
         console.log(this.state.sellers)
@@ -105,6 +130,9 @@ class App extends React.Component {
                     <AppBar 
                         title={___.partTime_sellers} 
                         style={styles.appbar}
+                        iconElementRight={
+                            <IconButton onTouchTap={this.getUrl}><ContentAdd/></IconButton>
+                        }
                     />
                     <Alist 
                         max={this.state.total} 
@@ -129,8 +157,8 @@ class DumbList extends React.Component{
     render() {
         console.log(this.props.data);
         let items=this.props.data.map(ele=>
-            <Card style={styles.card} key={ele.sellerId}>
-                <table>
+            <Card style={styles.card} key={ele.uid}>
+                <table style={{whiteSpace:'nowrap'}}>
                     <tbody>
                         <tr>
                             <td>{ele.name}</td>
@@ -138,17 +166,17 @@ class DumbList extends React.Component{
                         </tr>
                     </tbody>
                 </table>
-                <table>
+                <table style={{whiteSpace:'nowrap',fontSize:'0.8em'}}>
                     <tbody>
                         <tr>
-                            <td>预定：{ele.status0}</td>
-                            <td style={styles.table_td_right}>注册：{ele.status1}</td>
-                            <td >
-                                <FlatButton label={'结算'} primary={true} onClick={()=>this.context.settlement(ele)} />
-                            </td>
+                            <td>预定用户：{ele.status0}</td>
+                            <td style={styles.table_td_right}>注册用户：{ele.status1}</td>
                         </tr>
                     </tbody>
                 </table>
+                <div style={styles.bottom_btn_right}>
+                    <FlatButton label={"佣金结算"} primary={true} onClick={()=>this.context.settlement(ele)} />
+                </div>
             </Card>
         );
         return(
