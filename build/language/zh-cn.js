@@ -178,10 +178,17 @@ window.___={
 	'confirm_remove':'确认删除“<%name%>”吗？',
 	'brand_can_not_remove':'该品牌存在设备，无法删除',
 	'product_can_not_remove':'该产品存在设备，无法删除',
-	'partTime_sellers':'微信营销',
 	'book_date':'预定日期',
 	'register_date':'注册日期',
 	'balance_date':'结算日期',
 	'confirm_date':'确认日期',
 	'sell_count':'销售统计',
+	'partTime_sellers':'营销人员',
+	'booking_phone':'预订手机',
+	'submit_booking':'提交预订',
+	'booking':'活动预订',
+	'data_miss':'信息不完整，请检查',
+	'booking_success':'您已预订成功',
+	'activity_agent':'特邀代理',
+	'booked':'该手机号已预订成功，不可重复预订'
 }

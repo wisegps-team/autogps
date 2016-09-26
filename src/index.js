@@ -38,18 +38,23 @@ class App extends Component {
                 user.employee=res.data;
                 this.getCustomer(user);
             },{
-                uid:user.uid
+                uid:user.uid,
+                access_token:user.access_token
             })
         }else
             this.getCustomer(user);
     }
     getCustomer(user){
         let token=user.access_token;
-        let cust_id=user.uid;
+        let cust_data={
+            access_token:token
+        };
         let role_user;
         if(user.employee){
-            cust_id=user.employee.companyId;
+            cust_data.objectId=user.employee.companyId;
             role_user=user.employee.objectId;
+        }else{
+            cust_data.uid=user.uid;
         }
         Wapi.customer.get(function(cust){
             user.customer=cust.data;
@@ -57,11 +62,11 @@ class App extends Component {
                 W.alert(___.not_allow_login);
                 return;
             }
-            Wapi.role.get(function(role){
+            Wapi.role.list(function(role){
                 user.role=role.data;
                 let acl=user.uid;
-                if(user.role)
-                    acl+='|role:'+user.role.objectId;
+                if(user.role&&user.role.length)
+                    acl+='|role:'+user.role.map(r=>r.objectId).join('|role:');
                 Wapi.page.list(function(page){
                     if(!page.data||!page.data.length){//没有任何页面的权限，说明不是这个平台的用户
                         W.loading();
@@ -80,10 +85,7 @@ class App extends Component {
                 users:role_user||user.customer.objectId,
                 access_token: token
             });
-        },{
-            uid:cust_id,
-            access_token: token
-        });
+        },cust_data);
     }
 
     loginSuccess(res){

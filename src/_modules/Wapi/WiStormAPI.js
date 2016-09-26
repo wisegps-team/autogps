@@ -337,5 +337,32 @@ WiStormAPI.prototype.updateJsonArray=function(callback,data,op){
 	this.update(callback,D,op);
 }
 
+/**
+ * 获取计数接口
+ */
+WiStormAPI.prototype.count=function(callback,data,op){
+	var OP={};	
+	Object.assign(OP,op);
+	OP.method=this.apiName+".count"; //接口名称
+	if(!OP.err){
+		callback=W.err(callback);
+	}
+	delete OP.err;
+	this.getApi(data,callback,OP);
+}
+
+/**
+ * 获取统计信息
+ */
+WiStormAPI.prototype.aggr=function(callback,data,op){
+	var OP={};	
+	Object.assign(OP,op);
+	OP.method=this.apiName+".aggr"; //接口名称
+	if(!OP.err){
+		callback=W.err(callback);
+	}
+	delete OP.err;
+	this.getApi(data,callback,OP);
+}
 
 export default WiStormAPI;

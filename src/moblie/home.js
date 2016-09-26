@@ -19,6 +19,8 @@ import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionAssignmentInd from 'material-ui/svg-icons/action/assignment-ind';
 import ActionTurnedInNot from 'material-ui/svg-icons/action/turned-in-not';
 import ActionViewList from 'material-ui/svg-icons/action/view-list';
+import ToggleStar from 'material-ui/svg-icons/toggle/star';
+
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
@@ -92,6 +94,11 @@ const _pages=[//所有的页面
         name:___.brand_manage,
         icon:<ActionViewList style={sty.icon}/>
     },
+    {
+        href:'activity_agent',
+        name:___.activity_agent,
+        icon:<ToggleStar style={sty.icon}/>
+    }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 
