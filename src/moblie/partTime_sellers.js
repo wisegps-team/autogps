@@ -7,8 +7,10 @@ import {ThemeProvider} from '../_theme/default';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
@@ -72,8 +74,13 @@ class App extends React.Component {
         this.state={
             sellers:[],
             total:0,
+            show_event_page:false,
         }
         this.page=1;
+        this.eventUrl='';
+
+        this.getEventUrl=this.getEventUrl.bind(this);
+        this.saveEventUrl=this.saveEventUrl.bind(this);
     }
     getChildContext(){
         return {
@@ -81,33 +88,84 @@ class App extends React.Component {
         };
     }
     settlement(seller){
-        // thisView.postMessage('partTime_count.js',{
-        //     title:'sellerId',
-        //     content:seller
-        // });
         thisView.goTo('partTime_count.js',seller);
     }
     componentDidMount(){
+        let sellers=[];
         Wapi.employee.list(res=>{
-            console.log(res);
-            this.setState({
-                sellers:res.data,
-                total:res.total,
-            });
+            sellers=res.data;
+            let par={
+                "group":{
+                    "_id":{
+                        "sellerId":"$sellerId"
+                    },
+                    "status0":{
+                        "$sum":"$status0"
+                    },
+                    "status1":{
+                        "$sum":"$status1"
+                    },
+                    "status2":{
+                        "$sum":"$status2"
+                    },
+                    "status3":{
+                        "$sum":"$status3"
+                    }
+                },
+                "sorts":"sellerId",
+                "uid":_user.customer.objectId
+            }
+            Wapi.booking.aggr(resAggr=>{
+                let arr=resAggr.data;
+                sellers.map(ele=>{
+                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                })
+                this.setState({
+                    sellers:sellers,
+                    total:res.total,
+                });
+            },par);
         },{
             companyId:_user.customer.objectId,
             departId:'-1',
-        })
+        });
 
         //测试用数据
         // this.setState({sellers:_res.data});
     }
-    getUrl(){
+    getInviteUrl(){
         let opt={
             title:___.invitation_url,
             text:location.origin+'/?location=tempRegister.html&intent=logout&parentId='+_user.customer.objectId
         }
         W.alert(opt);
+    }
+    getEventUrl(){
+        W.prompt("营销页面",'',this.saveEventUrl);
+    }
+    saveEventUrl(value){
+        if(!value)return;
+        console.log(value);
+        // let _other=_user.customer.other;
+        // other.url=value;
+
+        // Wapi.customer.update(res=>{
+            
+        // },{
+        //     _objectId:_user.customer.objectId,
+        //     other:_other,
+        // })
     }
     loadNextPage(){
         let arr=this.state.sellers;
@@ -123,7 +181,7 @@ class App extends React.Component {
         });
     }
     render(){
-        console.log(this.state.sellers)
+        console.log(this.state.sellers);
         return(
             <ThemeProvider>
                 <div>
@@ -131,7 +189,16 @@ class App extends React.Component {
                         title={___.partTime_sellers} 
                         style={styles.appbar}
                         iconElementRight={
-                            <IconButton onTouchTap={this.getUrl}><ContentAdd/></IconButton>
+                            <IconMenu
+                                iconButtonElement={
+                                    <IconButton><MoreVertIcon/></IconButton>
+                                }
+                                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                                >
+                                <MenuItem primaryText={___.invitation_url} onTouchTap={this.getInviteUrl}/>
+                                <MenuItem primaryText={"营销页面"} onTouchTap={this.getEventUrl}/>
+                            </IconMenu>
                         }
                     />
                     <Alist 
@@ -155,9 +222,8 @@ class DumbList extends React.Component{
         super(props,context);
     }
     render() {
-        console.log(this.props.data);
-        let items=this.props.data.map(ele=>
-            <Card style={styles.card} key={ele.uid}>
+        let items=this.props.data.map((ele,index)=>
+            <Card style={styles.card} key={index}>
                 <table style={{whiteSpace:'nowrap'}}>
                     <tbody>
                         <tr>

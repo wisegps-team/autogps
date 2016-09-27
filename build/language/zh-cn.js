@@ -180,7 +180,7 @@ window.___={
 	'product_can_not_remove':'该产品存在设备，无法删除',
 	'book_date':'预定日期',
 	'register_date':'注册日期',
-	'balance_date':'结算日期',
+	'pay_date':'结算日期',
 	'confirm_date':'确认日期',
 	'sell_count':'销售统计',
 	'partTime_sellers':'营销人员',
@@ -190,5 +190,7 @@ window.___={
 	'data_miss':'信息不完整，请检查',
 	'booking_success':'您已预订成功',
 	'activity_agent':'特邀代理',
-	'booked':'该手机号已预订成功，不可重复预订'
+	'booked':'该手机号已预订成功，不可重复预订',
+	'all':'全部',
+	'booking_url':'预定链接',
 }
