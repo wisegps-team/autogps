@@ -187,5 +187,6 @@ window.___={
 	'activity_agent':'特邀代理',
 	'booked':'该手机号已预订成功，不可重复预订',
 	'setting_success':'设置成功',
-	'set_to_agent':'设置为特邀代理'
+	'set_to_agent':'设置为特邀代理',
+	'select_car':'请选择车型'
 }

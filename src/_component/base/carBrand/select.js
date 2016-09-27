@@ -1,18 +1,25 @@
 import React, {Component} from 'react';
-import {List, ListItem} from 'material-ui/List';
-import carBrandAction from './action';
-import Avatar from 'material-ui/Avatar';
-import AppBar from '../appBar';
-import Subheader from 'material-ui/Subheader';
+
 import ActionSearch from 'material-ui/svg-icons/action/search';
-
 import IconInput from '../iconInput';
-
-const act=new carBrandAction();
+import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import IconButton from 'material-ui/IconButton';
+import AppBar from 'material-ui/AppBar';
 
 const sty={
     a:{
-        boxShadow:'rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px'
+        boxShadow:'rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px',
+        width: '40px',
+        height: '40px',
+        borderRadius: '20px',
+        verticalAlign: 'bottom',
+        marginRight: '1em'
+    },
+    item:{
+        padding: '5px 10px',
+        lineHeight: '40px',
+        borderBottom:'1px solid #ccc',
+        cursor:'pointer'
     }
 }
 
@@ -26,6 +33,7 @@ class Select extends Component {
         this.brandChange = this.brandChange.bind(this);
         this.serieChange = this.serieChange.bind(this);
         this.typeChange = this.typeChange.bind(this);
+        this.back = this.back.bind(this);
     }
     shouldComponentUpdate(nextProps, nextState) {
         return(nextState.show!=this.state.show);
@@ -35,6 +43,7 @@ class Select extends Component {
     next(){
         let show=this.state.show+1;
         this.setState({show});
+        history.pushState
     }
 
     brandChange(id,name){
@@ -63,12 +72,21 @@ class Select extends Component {
         setTimeout(()=>this.setState({show:0}),300);
         this.props.onChange(Object.assign({},this.data));
     }
+    back(){
+        if(this.state.show){
+            let show=this.state.show-1;
+            this.setState({show});
+        }else{
+            this.props.onChange();
+        }
+    }
     
     render() {
         let dis=[false,false,false];
         dis[this.state.show]=true;
         return (
             <div>
+                <AppBar iconElementLeft={<IconButton onClick={this.back}><NavigationArrowBack/></IconButton>}/>
                 <Brands onChange={this.brandChange} display={dis[0]}/>
                 <Series onChange={this.serieChange} display={dis[1]} serie={true} parent={this.data.brandId}/>
                 <Series onChange={this.typeChange} display={dis[2]} serie={false} parent={this.data.serieId}/>
@@ -111,17 +129,20 @@ class Brands extends Component {
             let ele=data[i]
             if(t!==ele.t_spell){
                 t=ele.t_spell;
-                brands.push(<Subheader key={t} style={{fontSize:'18px',fontWeight: 700,backgroundColor:this.context.muiTheme.palette.primary3Color}}>{t}</Subheader>)
+                brands.push(<div key={t} style={{paddingLeft:'10px',fontSize:'18px',fontWeight: 700,backgroundColor:this.context.muiTheme.palette.primary3Color}}>{t}</div>)
             }
-            brands.push(<ListItem
-                primaryText={ele.name}
-                leftAvatar={<Avatar src={'http://img.wisegps.cn/logo/'+ele.url_icon} style={sty.a} backgroundColor='#fff'/>}
-                onClick={this.change}
-                data-id={ele.id}
-                data-name={ele.name}
-                key={ele.id}
-                style={{borderBottom:'1px solid #ccc'}}
-            />);
+            brands.push(<div 
+                onClick={this.change} 
+                data-id={ele.id} 
+                data-name={ele.name} 
+                key={ele.id} 
+                style={sty.item}
+                onTouchStart={touchStart} 
+                onTouchEnd={touchEnd}
+            >
+                <img src={'http://img.wisegps.cn/logo/'+ele.url_icon} style={sty.a}/>
+                {ele.name}
+            </div>);
         }
         return brands;
     }
@@ -147,12 +168,12 @@ class Brands extends Component {
         return (
             <div style={{display:dis}}>
                 <IconInput name='brand_search' hintText={___.search_car_brand} icon={ActionSearch} onChange={this.search}/>
-                <List style={{display:_dis}}>
+                <div style={{display:_dis}}>
                     {this.state.brands}
-                </List>
-                <List style={{display:serarch_dis}}>
+                </div>
+                <div style={{display:serarch_dis}}>
                     {this.state.search_brands}
-                </List>
+                </div>
             </div>
         );
     }
@@ -203,18 +224,20 @@ class Series extends Component {
     }
     
     render() {
-        let items=this.state.data.map(ele=>(<ListItem
-            primaryText={ele.name}
+        let items=this.state.data.map(ele=>(<div
             onClick={this.change}
             data-id={ele.id}
             data-name={ele.name}
             key={ele.id}
-        />));
+            style={sty.item}
+            onTouchStart={touchStart} 
+            onTouchEnd={touchEnd}
+        >{ele.name}</div>));
         let dis=this.props.display?'block':'none';
         return (
-            <List style={{display:dis}}>
+            <div style={{display:dis}}>
                 {items}
-            </List>
+            </div>
         );
     }
 }
@@ -222,3 +245,10 @@ class Series extends Component {
 
 
 export default Select;
+
+function touchStart(e){
+    e.target.style.background='#eee';
+}
+function touchEnd(e){
+    e.target.style.background='#fff';
+}
