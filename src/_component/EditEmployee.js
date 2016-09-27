@@ -108,6 +108,18 @@ class EditEmployee extends React.Component{
         this.data.quitDate=W.dateToString(value).slice(0,10);
     }
     submit(){
+        if(this.data.name==''){
+            W.alert(___.person_name+' '+___.not_null);
+            return;
+        }
+        if(this.data.tel==''){
+            W.alert(___.cellphone+' '+___.not_null);
+            return;
+        }
+        if(this.data.departId==0){
+            W.alert(___.department+' '+___.not_null);
+            return;
+        }
         let data=this.data;
         this.props.submit(data,this.state.allowLogin);
         this.data={

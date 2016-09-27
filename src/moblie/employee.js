@@ -101,6 +101,7 @@ class App extends React.Component {
             });
         },{
             companyId:_user.customer.objectId,
+            departId:'>0',
             isQuit:false
         },{
             fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
@@ -180,7 +181,8 @@ class App extends React.Component {
                 Wapi.employee.add(function(res){
                     params.objectId=res.objectId;
                     let arr=that.state.employees;
-                    that.setState({employees:arr.unshift(params)});//添加完成后将新增的人员加入人员数组
+                    arr.unshift(params);
+                    that.setState({employees:arr});//添加完成后将新增的人员加入人员数组
                     history.back();//更新数据后返回
 
                     Wapi.role.update(function(role){
@@ -217,6 +219,7 @@ class App extends React.Component {
             this.setState({employees:arr.concat(res.data)});
         },{
             companyId:_user.customer.objectId,
+            departId:'>0',
             isQuit:false
         },{
             fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
