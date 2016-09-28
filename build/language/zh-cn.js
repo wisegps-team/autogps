@@ -211,5 +211,8 @@ window.___={
 	'set_to_agent':'设置为特邀代理',
 	'select_car':'请选择车型',
 	'pay_money':'结算金额',
-	'input_pay_money':'请输入结算金额(元)',
+	'input_pay_money':'请输入结算金额(￥)',
+	'pay_confirm':'确认结算',
+	'confirm_pay':'已确认结算',
+	'pay_message':'您有新的结算提醒，金额为￥',
 }

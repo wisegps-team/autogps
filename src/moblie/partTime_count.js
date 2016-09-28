@@ -99,12 +99,13 @@ class App extends React.Component {
         this.changeStatus=this.changeStatus.bind(this);
         this.pay=this.pay.bind(this);
         this.confirm=this.confirm.bind(this);
+        this.getUrl=this.getUrl.bind(this);
         this.loadNextPage=this.loadNextPage.bind(this);
     }
     getChildContext(){
         return {
+            sellerId:this.state.sellerId,
             isSeller:this.state.isSeller,
-            status:this.state.status,
             pay:this.pay,
             confirm:this.confirm,
         };
@@ -135,7 +136,7 @@ class App extends React.Component {
             Wapi.booking.list(res=>{
                 _this.setState({
                     isSeller:_isSeller,
-                    sellerId:_sellerId,
+                    sellerId:_sellerId.toString(),
                     seller:_seller,
 
                     books:res.data,
@@ -153,6 +154,8 @@ class App extends React.Component {
         });
     }
     changeStatus(e,k,value){
+        if(value==4)value='0|1|2|3';
+
         Wapi.booking.list(res=>{
             console.log(res);
             this.setState({
@@ -165,20 +168,24 @@ class App extends React.Component {
             sellerId:this.state.sellerId,
             status:value,
         });
-        // this.setState({status:value});
     }
     pay(data){//结算
-        console.log(data);
         W.prompt(___.input_pay_money,'',money=>{
             if(!money)return;
 
             let reg=/^[0-9]+\.?[0-9]*$/;
             if(reg.test(money)){
                 Wapi.booking.update(res=>{
-                    console.log(res);
                     let arr=this.state.books;
                     arr=arr.filter(ele=>ele.objectId!=data.objectId);
                     this.setState({books:arr});
+
+                    //发短信给客户经理
+                    let tel=this.state.seller.tel;
+                    let content=___.pay_message + money;
+                    Wapi.comm.sendSMS(function(res){
+                        W.errorCode(res);
+                    },tel,0,content);
                 },{
                     _objectId:data.objectId,
                     status:2,
@@ -195,7 +202,7 @@ class App extends React.Component {
     confirm(data){//确认
         console.log(data);
         Wapi.booking.update(res=>{
-            console.log(res);
+            W.alert(___.confirm_pay);
             let arr=this.state.books;
             arr=arr.filter(ele=>ele.objectId!=data.objectId);
             this.setState({books:arr});
@@ -209,7 +216,7 @@ class App extends React.Component {
     getUrl(){
         history.replaceState('home','home','home.html');
         if(_user.customer.other&&_user.customer.other.url){
-            location='http://w.wo365.net/wo365/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
+            location='http://w.wo365.net/wo365/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId+'&mobile='+this.state.seller.tel;
         }else{
             W.alert(___.no_event_page);
         }
@@ -255,6 +262,7 @@ class App extends React.Component {
                                     <td style={styles.td_left}>{___.customer_filter}</td>
                                     <td style={styles.td_right}>
                                         <SelectField style={{width:'150px'}} value={this.state.status} onChange={this.changeStatus}>
+                                            <MenuItem value={4} primaryText={___.all} />
                                             <MenuItem value={0} primaryText={___.count_booked} />
                                             <MenuItem value={1} primaryText={___.count_registed} />
                                             <MenuItem value={2} primaryText={___.count_paid} />
@@ -277,8 +285,8 @@ class App extends React.Component {
     }
 }
 App.childContextTypes={
+    sellerId:React.PropTypes.string,
     isSeller:React.PropTypes.bool,
-    status:React.PropTypes.number,
     pay:React.PropTypes.func,
     confirm:React.PropTypes.func,
 }
@@ -289,35 +297,40 @@ class DumbList extends React.Component{
         super(props,context);
     }
     render() {
-        let style_pay_btn={display:'none'};
-        let style_confirm_btn={display:'none'};
-        let style_money={display:'none'};
         let cards=this.props.data.map((ele,index)=>{
-            let str='';
-            let date='';
-            switch(this.context.status){
+            let style_pay_btn={display:'none'};
+            let style_confirm_btn={display:'none'};
+            let str_status='';
+            let color_status='';
+            let style_status=[{display:'none'},{display:'none'},{display:'none'},{display:'none'}];
+
+            switch(ele.status){
                 case 0:{
-                    str=___.book_date;
-                    date=ele.createdAt||'';
+                    style_status[0]={display:'table-row'};
+                    str_status=___.count_booked;
+                    color_status='#8BC34A';
                     break;
                 }case 1:{
-                    str=___.register_date;
-                    date=ele.resTime||'';
-                    if(!this.context.isSeller){
+                    style_status[1]={display:'table-row'};
+                    if(!this.context.isSeller&&this.context.sellerId!='>0'){
                         style_pay_btn={display:'block'};
                     }
+                    str_status=___.count_registed;
+                    color_status='#00BFA5';
                     break;
                 }case 2:{
-                    str=___.pay_date;
-                    date=ele.payTime||'';
+                    style_status[2]={display:'table-row'};
                     if(this.context.isSeller){
                         style_confirm_btn={display:'block'};
                     };
-                    style_money={display:'table-row'};
+                    str_status=___.count_paid;
+                    color_status='#FFC107';
                     break;
                 }case 3:{
-                    str=___.confirm_date;
-                    date=ele.confirmTime||'';
+                    style_status[2]={display:'table-row'};
+                    style_status[3]={display:'table-row'};
+                    str_status=___.count_confirmed;
+                    color_status='#FF9800';
                     break;
                 }default:{
                     break;
@@ -335,16 +348,29 @@ class DumbList extends React.Component{
                     </table>
                     <table>
                         <tbody>
-                            <tr>
-                                <td style={styles.td_left}>{str}</td>
-                                <td style={styles.td_right}>{date.slice(0,10)}</td>
+                            <tr style={style_status[0]}>
+                                <td style={styles.td_left}>{___.book_date}</td>
+                                <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
                             </tr>
-                            <tr style={style_money}>
+                            <tr style={style_status[1]}>
+                                <td style={styles.td_left}>{___.register_date}</td>
+                                <td style={styles.td_right}>{ele.resTime?ele.resTime.slice(0,10):''}</td>
+                            </tr>
+                            <tr style={style_status[2]}>
+                                <td style={styles.td_left}>{___.pay_date}</td>
+                                <td style={styles.td_right}>{ele.payTime?ele.payTime.slice(0,10):''}</td>
+                            </tr>
+                            <tr style={style_status[2]}>
                                 <td style={styles.td_left}>{___.pay_money}</td>
-                                <td style={styles.td_right}>{ele.money||''}</td>
+                                <td style={styles.td_right}>{ele.money?("￥"+ele.money):''}</td>
+                            </tr>
+                            <tr style={style_status[3]}>
+                                <td style={styles.td_left}>{___.confirm_date}</td>
+                                <td style={styles.td_right}>{ele.confirmTime?ele.confirmTime.slice(0,10):''}</td>
                             </tr>
                         </tbody>
                     </table>
+                    <div style={{marginLeft:'2px',color:color_status}}>{str_status}</div>
                     <div style={style_pay_btn}>
                         <div style={styles.bottom_btn_right}>
                             <FlatButton label={___.pay} primary={true} onClick={()=>this.context.pay(ele)} />
@@ -352,7 +378,7 @@ class DumbList extends React.Component{
                     </div>
                     <div style={style_confirm_btn}>
                         <div style={styles.bottom_btn_right}>
-                            <FlatButton label={___.ok} primary={true} onClick={()=>this.context.confirm(ele)} />
+                            <FlatButton label={___.pay_confirm} primary={true} onClick={()=>this.context.confirm(ele)} />
                         </div>
                     </div>
                 </Card>
@@ -366,8 +392,8 @@ class DumbList extends React.Component{
     }
 }
  DumbList.contextTypes={
+    sellerId:React.PropTypes.string,
     isSeller:React.PropTypes.bool,
-    status:React.PropTypes.number,
     pay: React.PropTypes.func,
     confirm: React.PropTypes.func,
 };
