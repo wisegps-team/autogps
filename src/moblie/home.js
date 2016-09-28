@@ -20,6 +20,8 @@ import ActionAssignmentInd from 'material-ui/svg-icons/action/assignment-ind';
 import ActionTurnedInNot from 'material-ui/svg-icons/action/turned-in-not';
 import ActionViewList from 'material-ui/svg-icons/action/view-list';
 import ToggleStar from 'material-ui/svg-icons/toggle/star';
+import CommunicationContacts from 'material-ui/svg-icons/communication/contacts';
+import ContentSort from 'material-ui/svg-icons/content/sort';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -98,9 +100,21 @@ const _pages=[//所有的页面
         href:'activity_agent',
         name:___.activity_agent,
         icon:<ToggleStar style={sty.icon}/>
+    },
+
+    {
+        href:'partTime_sellers',
+        name:___.partTime_sellers,
+        icon:<CommunicationContacts style={sty.icon}/>
+    },
+    {
+        href:'partTime_count',
+        name:___.sell_count,
+        icon:<ContentSort style={sty.icon}/>
     }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
+// let pages=_pages;
 
 
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));

@@ -1,9 +1,16 @@
+//微信营销页面 兼职销售人员列表
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../_theme/default';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
@@ -14,13 +21,15 @@ const styles={
     main:{width:'90%',paddingTop:'50px',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
     table_td_right:{paddingLeft:'1em'},
+    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
 }
 
+//测试用数据
 let _res={
     code:0,
     data:[
         {
-            sellerId:'111',
+            uid:'111',
             name:'小明',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -30,7 +39,7 @@ let _res={
             status3:3,
         },
         {
-            sellerId:'222',
+            uid:'222',
             name:'明明',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -40,7 +49,7 @@ let _res={
             status3:3,
         },
         {
-            sellerId:'333',
+            uid:'333',
             name:'xixi',
             tel:'12345678909',
             //status:0/1/2/3,//预定/注册/结算/确认
@@ -55,7 +64,7 @@ let _res={
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
-    thisView.prefetch('partTime_bills.js',2);
+    thisView.prefetch('partTime_count.js',2);
 });
 
 
@@ -65,8 +74,13 @@ class App extends React.Component {
         this.state={
             sellers:[],
             total:0,
+            show_event_page:false,
         }
         this.page=1;
+        this.eventUrl='';
+
+        this.getEventUrl=this.getEventUrl.bind(this);
+        this.saveEventUrl=this.saveEventUrl.bind(this);
     }
     getChildContext(){
         return {
@@ -74,37 +88,118 @@ class App extends React.Component {
         };
     }
     settlement(seller){
-        console.log(seller);
-        
-        thisView.postMessage('partTime_bills.js',{
-            title:'sellerId',
-            content:seller.sellerId
-        });
-        // thisView.goTo('partTime_bills.js');
+        thisView.goTo('partTime_count.js',seller);
     }
     componentDidMount(){
-        this.setState({sellers:_res.data})
+        let sellers=[];
+        Wapi.employee.list(res=>{
+            sellers=res.data;
+            let par={
+                "group":{
+                    "_id":{
+                        "sellerId":"$sellerId"
+                    },
+                    "status0":{
+                        "$sum":"$status0"
+                    },
+                    "status1":{
+                        "$sum":"$status1"
+                    },
+                    "status2":{
+                        "$sum":"$status2"
+                    },
+                    "status3":{
+                        "$sum":"$status3"
+                    }
+                },
+                "sorts":"sellerId",
+                "uid":_user.customer.objectId
+            }
+            Wapi.booking.aggr(resAggr=>{
+                let arr=resAggr.data;
+                sellers.map(ele=>{
+                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                })
+                this.setState({
+                    sellers:sellers,
+                    total:res.total,
+                });
+            },par);
+        },{
+            companyId:_user.customer.objectId,
+            departId:'-1',
+        });
+
+        //测试用数据
+        // this.setState({sellers:_res.data});
+    }
+    getInviteUrl(){
+        let opt={
+            title:___.invitation_url,
+            text:location.origin+'/?location=tempRegister.html&intent=logout&parentId='+_user.customer.objectId
+        }
+        W.alert(opt);
+    }
+    getEventUrl(){
+        W.prompt("营销页面",'',this.saveEventUrl);
+    }
+    saveEventUrl(value){
+        if(!value)return;
+        console.log(value);
+        // let _other=_user.customer.other;
+        // other.url=value;
+
+        // Wapi.customer.update(res=>{
+            
+        // },{
+        //     _objectId:_user.customer.objectId,
+        //     other:_other,
+        // })
     }
     loadNextPage(){
         let arr=this.state.sellers;
         this.page++;
-        // Wapi.employee.list(res=>{
-        //     this.setState({sellers:arr.concat(res.data)});
-        // },{
-        //     companyId:_user.customer.objectId,
-        // },{
-        //     limit:20,
-        //     page_no:this.page
-        // });
+        Wapi.employee.list(res=>{
+            this.setState({sellers:arr.concat(res.data)});
+        },{
+            companyId:_user.customer.objectId,
+            departId:'-1',
+        },{
+            limit:20,
+            page_no:this.page
+        });
     }
     render(){
-        console.log(this.state.sellers)
+        console.log(this.state.sellers);
         return(
             <ThemeProvider>
                 <div>
                     <AppBar 
                         title={___.partTime_sellers} 
                         style={styles.appbar}
+                        iconElementRight={
+                            <IconMenu
+                                iconButtonElement={
+                                    <IconButton><MoreVertIcon/></IconButton>
+                                }
+                                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                                >
+                                <MenuItem primaryText={___.invitation_url} onTouchTap={this.getInviteUrl}/>
+                                <MenuItem primaryText={"营销页面"} onTouchTap={this.getEventUrl}/>
+                            </IconMenu>
+                        }
                     />
                     <Alist 
                         max={this.state.total} 
@@ -127,10 +222,9 @@ class DumbList extends React.Component{
         super(props,context);
     }
     render() {
-        console.log(this.props.data);
-        let items=this.props.data.map(ele=>
-            <Card style={styles.card} key={ele.sellerId}>
-                <table>
+        let items=this.props.data.map((ele,index)=>
+            <Card style={styles.card} key={index}>
+                <table style={{whiteSpace:'nowrap'}}>
                     <tbody>
                         <tr>
                             <td>{ele.name}</td>
@@ -138,17 +232,17 @@ class DumbList extends React.Component{
                         </tr>
                     </tbody>
                 </table>
-                <table>
+                <table style={{whiteSpace:'nowrap',fontSize:'0.8em'}}>
                     <tbody>
                         <tr>
-                            <td>预定：{ele.status0}</td>
-                            <td style={styles.table_td_right}>注册：{ele.status1}</td>
-                            <td >
-                                <FlatButton label={'结算'} primary={true} onClick={()=>this.context.settlement(ele)} />
-                            </td>
+                            <td>预定用户：{ele.status0}</td>
+                            <td style={styles.table_td_right}>注册用户：{ele.status1}</td>
                         </tr>
                     </tbody>
                 </table>
+                <div style={styles.bottom_btn_right}>
+                    <FlatButton label={"佣金结算"} primary={true} onClick={()=>this.context.settlement(ele)} />
+                </div>
             </Card>
         );
         return(
