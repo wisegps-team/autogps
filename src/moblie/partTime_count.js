@@ -97,6 +97,7 @@ class App extends React.Component {
         }
         this.page=1;
         this.changeStatus=this.changeStatus.bind(this);
+        this.pay = this.pay.bind(this);
     }
     getChildContext(){
         return {

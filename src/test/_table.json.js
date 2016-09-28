@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=43;//版本号
+let version=44;//版本号
 
 //地区表
 export const area={
@@ -1936,6 +1936,11 @@ export const booking={
             'type': 'Date',
             'query': true,
         },{
+            'name': 'money',
+            'desc': '结算金额',
+            'type': 'Number',
+            'query': true,
+        },{
             'name': 'did',
             'desc': '购买的设备(用于防止作假)',
             'type': 'String',
@@ -1950,6 +1955,10 @@ export const booking={
     indexDefine: [
         {
             mobile:1,
+            unique:true
+        },
+        {
+            did:1,
             unique:true
         },
         {status:1},
