@@ -206,7 +206,7 @@ window.___={
 	'customer_registed':'注册用户',
 	'commission_pay':'佣金结算',
 	'input_action_papge':'请输入活动页面',
-	'input_action_title':'请输入活动页面',
+	'input_action_title':'请输入活动标题',
 	'setting_success':'设置成功',
 	'set_to_agent':'设置为特邀代理',
 	'select_car':'请选择车型'
