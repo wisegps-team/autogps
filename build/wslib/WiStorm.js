@@ -633,7 +633,10 @@ W.emit=function(taget,event,params,canBubble,cancelable){
 	taget.dispatchEvent(evt);
 }
 
-//静默授权获取open_id
+/**
+ * 静默授权获取open_id
+ * 如果想限定某页面只能在微信下打开，则可以通过指定needweixin参数为true来实现
+ */
 W.getOpenId=function(needweixin,s){
 	if(needweixin||!WiStorm.agent.weixin)return;
 	s=s||"getOpenId";
@@ -825,6 +828,18 @@ window.WiStorm={
 u=undefined;
 _d=undefined;
 
+//获取cookie中的app信息
+var keys=W.getCookie('_app_config_');
+if(keys){
+	try {
+		keys=JSON.parse(keys);
+		Object.assign(WiStorm.config,keys);
+	} catch (error) {
+		alert('app key error');
+	}
+	keys=undefined;
+}
+	
 
 
 //根据页面路径获取绝对路径
