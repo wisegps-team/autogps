@@ -209,5 +209,7 @@ window.___={
 	'input_action_title':'请输入活动标题',
 	'setting_success':'设置成功',
 	'set_to_agent':'设置为特邀代理',
-	'select_car':'请选择车型'
+	'select_car':'请选择车型',
+	'pay_money':'结算金额',
+	'input_pay_money':'请输入结算金额(元)',
 }

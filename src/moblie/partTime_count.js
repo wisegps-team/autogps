@@ -97,6 +97,9 @@ class App extends React.Component {
         }
         this.page=1;
         this.changeStatus=this.changeStatus.bind(this);
+        this.pay=this.pay.bind(this);
+        this.confirm=this.confirm.bind(this);
+        this.loadNextPage=this.loadNextPage.bind(this);
     }
     getChildContext(){
         return {
@@ -151,6 +154,7 @@ class App extends React.Component {
     }
     changeStatus(e,k,value){
         Wapi.booking.list(res=>{
+            console.log(res);
             this.setState({
                 status:value,
                 books:res.data,
@@ -165,17 +169,28 @@ class App extends React.Component {
     }
     pay(data){//结算
         console.log(data);
-        Wapi.booking.update(res=>{
-            console.log(res);
-            let arr=this.state.books;
-            arr=arr.filter(ele=>ele.objectId!=data.objectId);
-            this.setState({books:arr});
-        },{
-            _objectId:data.objectId,
-            status:2,
-            status2:1,
-            payTime:W.dateToString(new Date()),
-        });
+        W.prompt(___.input_pay_money,'',money=>{
+            if(!money)return;
+
+            let reg=/^[0-9]+\.?[0-9]*$/;
+            if(reg.test(money)){
+                Wapi.booking.update(res=>{
+                    console.log(res);
+                    let arr=this.state.books;
+                    arr=arr.filter(ele=>ele.objectId!=data.objectId);
+                    this.setState({books:arr});
+                },{
+                    _objectId:data.objectId,
+                    status:2,
+                    status2:1,
+                    payTime:W.dateToString(new Date()),
+                    money:money,
+                });
+            }else{
+                W.alert(___.money_wrong);
+            }
+        })
+
     }
     confirm(data){//确认
         console.log(data);
@@ -192,8 +207,9 @@ class App extends React.Component {
         });
     }
     getUrl(){
+        history.replaceState('home','home','home.html');
         if(_user.customer.other&&_user.customer.other.url){
-            location='http://w.wo365.net/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
+            location='http://w.wo365.net/wo365/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
         }else{
             W.alert(___.no_event_page);
         }
@@ -275,6 +291,7 @@ class DumbList extends React.Component{
     render() {
         let style_pay_btn={display:'none'};
         let style_confirm_btn={display:'none'};
+        let style_money={display:'none'};
         let cards=this.props.data.map((ele,index)=>{
             let str='';
             let date='';
@@ -295,7 +312,8 @@ class DumbList extends React.Component{
                     date=ele.payTime||'';
                     if(this.context.isSeller){
                         style_confirm_btn={display:'block'};
-                    }
+                    };
+                    style_money={display:'table-row'};
                     break;
                 }case 3:{
                     str=___.confirm_date;
@@ -313,9 +331,17 @@ class DumbList extends React.Component{
                                 <td style={styles.td_left}>{ele.name}</td>
                                 <td style={styles.td_right}>{ele.mobile}</td>
                             </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <tbody>
                             <tr>
                                 <td style={styles.td_left}>{str}</td>
                                 <td style={styles.td_right}>{date.slice(0,10)}</td>
+                            </tr>
+                            <tr style={style_money}>
+                                <td style={styles.td_left}>{___.pay_money}</td>
+                                <td style={styles.td_right}>{ele.money||''}</td>
                             </tr>
                         </tbody>
                     </table>
