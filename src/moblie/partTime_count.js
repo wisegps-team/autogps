@@ -22,42 +22,6 @@ thisView.addEventListener('load',function(){
 });
 
 
-let _res={
-    code:0,
-    data:[
-        {
-            sellerId:'111',
-            name:'小明',
-            tel:'12345678909',
-            //status:0/1/2/3,//预定/注册/结算/确认
-            status0:10,//包含后面的
-            status1:9,
-            status2:5,
-            status3:3,
-        },
-        {
-            sellerId:'222',
-            name:'明明',
-            tel:'12345678909',
-            //status:0/1/2/3,//预定/注册/结算/确认
-            status0:10,//包含后面的
-            status1:9,
-            status2:5,
-            status3:3,
-        },
-        {
-            sellerId:'333',
-            name:'xixi',
-            tel:'12345678909',
-            //status:0/1/2/3,//预定/注册/结算/确认
-            status0:10,//包含后面的
-            status1:9,
-            status2:5,
-            status3:3,
-        },
-    ]
-}
-
 const styles={
     appbar:{position:'fixed',top:'0px'},
     main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
@@ -67,20 +31,6 @@ const styles={
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
 }
 
-let _books=[];
-let _book={
-    name:'客户',
-    tel:'13245678909',
-    createdAt:'2016-09-21',
-    resTime:'2016-09-22',
-    payTime:'2016-09-23',
-    confirmTime:'2016-09-24',
-};
-for(let i=0;i<5;i++){
-    let c=Object.assign({},_book);
-    c.name+=i;
-    _books.push(c);
-}
 
 class App extends React.Component {
     constructor(props, context) {
@@ -142,9 +92,6 @@ class App extends React.Component {
                     books:res.data,
                     total:res.total,
 
-                    //测试用数据
-                    //books:_books,
-                    //total:_books.length,
                 });
             },{
                 uid:_user.customer.objectId,
@@ -154,8 +101,6 @@ class App extends React.Component {
         });
     }
     changeStatus(e,k,value){
-        if(value==4)value='0|1|2|3';
-
         Wapi.booking.list(res=>{
             console.log(res);
             this.setState({
@@ -262,7 +207,7 @@ class App extends React.Component {
                                     <td style={styles.td_left}>{___.customer_filter}</td>
                                     <td style={styles.td_right}>
                                         <SelectField style={{width:'150px'}} value={this.state.status} onChange={this.changeStatus}>
-                                            <MenuItem value={4} primaryText={___.all} />
+                                            <MenuItem value={'0|1|2|3'} primaryText={___.all} />
                                             <MenuItem value={0} primaryText={___.count_booked} />
                                             <MenuItem value={1} primaryText={___.count_registed} />
                                             <MenuItem value={2} primaryText={___.count_paid} />
