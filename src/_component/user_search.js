@@ -51,10 +51,11 @@ class UserSearch extends Component {
                 let bo=h-b.bottom;
                 let newState={
                     data:res.data,
-                    maxHeight:bo
+                    maxHeight:bo,
+                    open:true
                 }
                 if(!res.data.length)
-                    newState.opne=false;
+                    newState.open=false;
                 if(b.top>bo){//从上面弹出
                     newState.maxHeight=b.top;
                 }

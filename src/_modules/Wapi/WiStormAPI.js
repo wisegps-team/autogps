@@ -11,7 +11,7 @@ function _noop(){};
 function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
-			value:'http://123.206.200.143:8089/router/rest'
+			value:'http://wop-api.chease.cn/router/rest'
 			// value:'http://192.168.3.120:8089/router/rest'
             // value: "http://o.bibibaba.cn/router/rest"
         },
@@ -134,7 +134,6 @@ WiStormAPI.prototype.makeUrl=function(json){
 		json.dev_key=this.devKey;
 	var sign="";
 	var URL="";
-	var reg=new RegExp("(^\\s*)|(\\s*$)", "g");
 	//按key名进行排序
 	var keyArr=[];
 	for(var key in json){
@@ -153,9 +152,7 @@ WiStormAPI.prototype.makeUrl=function(json){
 			val=JSON.stringify(val);			
 		}else
 			val=val.toString();
-		val=val.replace(/\+/g,'%2B');
-		val=val.replace(/\&/g,'%26');
-		val=encodeURI(val.replace(reg,""));
+		val=this.encodeURI(val);
 		signText+=key+val;
 		getData+="&"+key+"="+val;
 	}
@@ -165,6 +162,16 @@ WiStormAPI.prototype.makeUrl=function(json){
 	URL=this.url+"?sign="+sign+getData;
 	console.log(URL);
 	return URL;
+}
+
+//需要特殊处理几个特殊字符
+WiStormAPI.prototype.encodeURI=function(val){
+	var reg=new RegExp("(^\\s*)|(\\s*$)", "g");//去左右空格
+	val=val.replace(/\+/g,'%2B');
+	val=val.replace(/\&/g,'%26');
+	val=val.replace(/\#/g,'%23');
+	val=encodeURI(val.replace(reg,""));
+	return val;
 }
 
 /**
