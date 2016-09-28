@@ -152,20 +152,28 @@ class App extends React.Component {
         W.alert(opt);
     }
     getEventUrl(){
-        W.prompt("营销页面",'',this.saveEventUrl);
+        let _this=this;
+        W.prompt(___.input_action_papge,'',function(url){
+            W.prompt(___.input_action_title,'',function(title){
+                _this.saveEventUrl(url,title);
+            })
+        });
     }
-    saveEventUrl(value){
-        if(!value)return;
-        console.log(value);
-        // let _other=_user.customer.other;
-        // other.url=value;
+    saveEventUrl(url,title){
+        if(!url)return;
 
-        // Wapi.customer.update(res=>{
+        let _title=title||'';
+        url=url+'&title='+_title;
+
+        let _other=_user.customer.other;
+        other.url=url;
+
+        Wapi.customer.update(res=>{
             
-        // },{
-        //     _objectId:_user.customer.objectId,
-        //     other:_other,
-        // })
+        },{
+            _objectId:_user.customer.objectId,
+            other:_other,
+        })
     }
     loadNextPage(){
         let arr=this.state.sellers;
@@ -197,7 +205,7 @@ class App extends React.Component {
                                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                                 >
                                 <MenuItem primaryText={___.invitation_url} onTouchTap={this.getInviteUrl}/>
-                                <MenuItem primaryText={"营销页面"} onTouchTap={this.getEventUrl}/>
+                                <MenuItem primaryText={___.action_papge} onTouchTap={this.getEventUrl}/>
                             </IconMenu>
                         }
                     />
@@ -235,13 +243,13 @@ class DumbList extends React.Component{
                 <table style={{whiteSpace:'nowrap',fontSize:'0.8em'}}>
                     <tbody>
                         <tr>
-                            <td>预定用户：{ele.status0}</td>
-                            <td style={styles.table_td_right}>注册用户：{ele.status1}</td>
+                            <td>{___.customer_booked+" "+ele.status0}</td>
+                            <td style={styles.table_td_right}>{___.customer_registed+" "+ele.status1}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div style={styles.bottom_btn_right}>
-                    <FlatButton label={"佣金结算"} primary={true} onClick={()=>this.context.settlement(ele)} />
+                    <FlatButton label={___.commission_pay} primary={true} onClick={()=>this.context.settlement(ele)} />
                 </div>
             </Card>
         );

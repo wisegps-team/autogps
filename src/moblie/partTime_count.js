@@ -192,12 +192,11 @@ class App extends React.Component {
         });
     }
     getUrl(){
-        let opt={
-            title:___.booking_url,
-            text:location.origin+'/?location=booking.html&intent=logout&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId,
-            // text:location.origin+'/?location=action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId,
+        if(_user.customer.other&&_user.customer.other.url){
+            loacation='http://w.wo365.net/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
+        }else{
+            W.alert(___.no_event_page);
         }
-        W.alert(opt);
     }
     loadNextPage(){
         let arr=this.state.books;
@@ -230,14 +229,14 @@ class App extends React.Component {
                         }
                     />
                     <div style={styles.main}>
-                        <div style={{display:(this.state.sellerId=='0'?'none':'block')}}>{"销售人员："+this.state.seller.name}</div>
+                        <div style={{display:(this.state.sellerId=='0'?'none':'block')}}>{___.seller+":"+this.state.seller.name}</div>
                         <div>
-                            {"客户筛选："}
+                            {___.customer_filter+":"}
                             <SelectField style={{width:'50%'}} value={this.state.status} onChange={this.changeStatus}>
-                                <MenuItem value={0} primaryText="已预定" />
-                                <MenuItem value={1} primaryText="已注册" />
-                                <MenuItem value={2} primaryText="已结算" />
-                                <MenuItem value={3} primaryText="已确认" />
+                                <MenuItem value={0} primaryText={___.count_booked} />
+                                <MenuItem value={1} primaryText={___.count_registed} />
+                                <MenuItem value={2} primaryText={___.count_paid} />
+                                <MenuItem value={3} primaryText={___.count_confirmed} />
                             </SelectField>
                         </div>
                         <Alist 
@@ -313,7 +312,7 @@ class DumbList extends React.Component{
                     </table>
                     <div style={style_pay_btn}>
                         <div style={styles.bottom_btn_right}>
-                            <FlatButton label={"结算"} primary={true} onClick={()=>this.context.pay(ele)} />
+                            <FlatButton label={___.pay} primary={true} onClick={()=>this.context.pay(ele)} />
                         </div>
                     </div>
                     <div style={style_confirm_btn}>
@@ -339,106 +338,3 @@ class DumbList extends React.Component{
 };
 let Alist=AutoList(DumbList);
 
-
-class Booked extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            books:[]
-        }
-    }
-    componentDidMount(){
-        this.setState({books:_books});
-    }
-    render(){
-        let cards=this.state.books.map((ele,index)=>
-            <Card key={index} style={styles.card}>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td style={styles.td_left}>{ele.name}</td>
-                            <td style={styles.td_right}>{ele.tel}</td>
-                        </tr>
-                        <tr>
-                            <td style={styles.td_left}>{"预定日期"}</td>
-                            <td style={styles.td_right}>{ele.bookDate}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </Card>
-        )
-        return(
-            <div>
-                {cards}
-            </div>
-        )
-    }
-}
-class Registed extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            books:[]
-        }
-    }
-    componentDidMount(){
-        this.setState({books:_books});
-    }
-    render(){
-        let cards=this.state.books.map((ele,index)=>
-            <Card key={index} style={styles.card}>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td style={styles.td_left}>{ele.name}</td>
-                            <td style={styles.td_right}>{ele.tel}</td>
-                        </tr>
-                        <tr>
-                            <td style={styles.td_left}>{"注册日期"}</td>
-                            <td style={styles.td_right}>{ele.resTime}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </Card>
-        )
-        return(
-            <div>
-                {cards}
-            </div>
-        )
-    }
-}
-class Paid extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            books:[]
-        }
-    }
-    componentDidMount(){
-        this.setState({books:_books});
-    }
-    render(){
-        let cards=this.state.books.map((ele,index)=>
-            <Card key={index} style={styles.card}>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td style={styles.td_left}>{ele.name}</td>
-                            <td style={styles.td_right}>{ele.tel}</td>
-                        </tr>
-                        <tr>
-                            <td style={styles.td_left}>{"结算日期"}</td>
-                            <td style={styles.td_right}>{ele.payTime}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </Card>
-        )
-        return(
-            <div>
-                {cards}
-            </div>
-        )
-    }
-}
