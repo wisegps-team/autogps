@@ -179,13 +179,6 @@ window.___={
 	'brand_can_not_remove':'该品牌存在设备，无法删除',
 	'product_can_not_remove':'该产品存在设备，无法删除',
 	'partTime_sellers':'营销人员',
-	'booking_phone':'预订手机',
-	'submit_booking':'提交预订',
-	'booking':'活动预订',
-	'data_miss':'信息不完整，请检查',
-	'booking_success':'您已预订成功',
-	'activity_agent':'特邀代理',
-	'booked':'该手机号已预订成功，不可重复预订',
 	'setting_success':'设置成功',
 	'set_to_agent':'设置为特邀代理',
 	'select_car':'请选择车型'
