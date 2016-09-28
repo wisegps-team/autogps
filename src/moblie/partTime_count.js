@@ -10,7 +10,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import SocialShare from 'material-ui/svg-icons/social/share';
 
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
@@ -60,7 +60,7 @@ let _res={
 
 const styles={
     appbar:{position:'fixed',top:'0px'},
-    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'50px',paddingBottom:'20px'},
+    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
     card:{marginTop:'1em',padding:'0.5em'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
@@ -193,7 +193,7 @@ class App extends React.Component {
     }
     getUrl(){
         if(_user.customer.other&&_user.customer.other.url){
-            loacation='http://w.wo365.net/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
+            location='http://w.wo365.net/action.html&action='+_user.customer.other.url+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId;
         }else{
             W.alert(___.no_event_page);
         }
@@ -224,21 +224,30 @@ class App extends React.Component {
                         style={styles.appbar}
                         iconElementRight={
                             <IconButton style={{display:this.state.isSeller?'block':'none'}} onTouchTap={this.getUrl}>
-                                <ContentAdd/>
+                                <SocialShare/>
                             </IconButton>
                         }
                     />
                     <div style={styles.main}>
-                        <div style={{display:(this.state.sellerId=='0'?'none':'block')}}>{___.seller+":"+this.state.seller.name}</div>
-                        <div>
-                            {___.customer_filter+":"}
-                            <SelectField style={{width:'50%'}} value={this.state.status} onChange={this.changeStatus}>
-                                <MenuItem value={0} primaryText={___.count_booked} />
-                                <MenuItem value={1} primaryText={___.count_registed} />
-                                <MenuItem value={2} primaryText={___.count_paid} />
-                                <MenuItem value={3} primaryText={___.count_confirmed} />
-                            </SelectField>
-                        </div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td style={styles.td_left}>{___.seller}</td>
+                                    <td style={styles.td_right}>{this.state.seller.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style={styles.td_left}>{___.customer_filter}</td>
+                                    <td style={styles.td_right}>
+                                        <SelectField style={{width:'150px'}} value={this.state.status} onChange={this.changeStatus}>
+                                            <MenuItem value={0} primaryText={___.count_booked} />
+                                            <MenuItem value={1} primaryText={___.count_registed} />
+                                            <MenuItem value={2} primaryText={___.count_paid} />
+                                            <MenuItem value={3} primaryText={___.count_confirmed} />
+                                        </SelectField>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                         <Alist 
                             max={this.state.total} 
                             limit={20} 

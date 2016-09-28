@@ -154,6 +154,7 @@ class App extends React.Component {
     getEventUrl(){
         let _this=this;
         W.prompt(___.input_action_papge,'',function(url){
+            if(!url)return;
             W.prompt(___.input_action_title,'',function(title){
                 _this.saveEventUrl(url,title);
             })
@@ -165,8 +166,9 @@ class App extends React.Component {
         let _title=title||'';
         url=url+'&title='+_title;
 
-        let _other=_user.customer.other;
-        other.url=url;
+        let _customer=_user.customer;
+        let _other=_user.customer.other||{};
+        _other.url=url;
 
         Wapi.customer.update(res=>{
             
