@@ -164,14 +164,14 @@ class App extends React.Component {
         if(!url)return;
 
         let _title=title||'';
-        url=url+'&title='+_title;
 
         let _customer=_user.customer;
         let _other=_user.customer.other||{};
         _other.url=url;
+        _other.title=_title;
 
         Wapi.customer.update(res=>{
-            
+            _user.customer.other=_other;
         },{
             _objectId:_user.customer.objectId,
             other:_other,
