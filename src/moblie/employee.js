@@ -202,7 +202,7 @@ class App extends React.Component {
                         }
                     },{
                         _objectId:'773344067361837000',
-                        users:'+"'+res.objectId+'"'
+                        users:'+"'+params.uid+'"'
                     })
                 },params);
 

@@ -198,7 +198,7 @@ class UserAdd extends React.Component{
                         },data.tel,0,W.replace(sms,tem));
                     },{
                         _objectId:that._roleId,
-                        users:'+"'+res.objectId+'"'
+                        users:'+"'+data.uid+'"'
                     })
                 },data);
             },{
