@@ -215,4 +215,5 @@ window.___={
 	'pay_confirm':'确认结算',
 	'confirm_pay':'已确认结算',
 	'pay_message':'您有新的结算提醒，金额为￥',
+	'set_action_success':'设置活动页面成功'
 }
