@@ -57,7 +57,7 @@ class App extends Component {
                 W.alert(___.setting_success);
             },{
                 _objectId:'779227173931323400',
-                users:'+"'+this.data.objectId+'"'
+                users:'+"'+this.data.uid+'"'
             });
         }
     }

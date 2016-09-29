@@ -86,7 +86,7 @@ function goTo(url,params){
 function showView(url,back){
     var t;
     if(!STATE.this_one){//首次
-        window.history.replaceState(url,'id',Location.href); 
+        window.history.replaceState(url,'id',location.href); 
         t=createView(url,1);
     }else
         t=STATE.views[url];

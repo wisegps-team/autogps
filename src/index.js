@@ -49,10 +49,8 @@ class App extends Component {
         let cust_data={
             access_token:token
         };
-        let role_user;
         if(user.employee){
             cust_data.objectId=user.employee.companyId;
-            role_user=user.employee.objectId;
         }else{
             cust_data.uid=user.uid;
         }
@@ -82,7 +80,7 @@ class App extends Component {
                     appId:CONFIG.objectId
                 });
             },{
-                users:role_user||user.customer.objectId,
+                users: user.uid,
                 access_token: token
             });
         },cust_data);

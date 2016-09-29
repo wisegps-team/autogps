@@ -79,7 +79,7 @@ class AgentRegisterBox extends Component{
                 },{
                     access_token:token,
                     _objectId:type.data.roleId,
-                    users:'+"'+cust.objectId+'"'
+                    users:'+"'+cust.uid+'"'
                 })
             },cust);
             Wapi.user.updateMe(null,{

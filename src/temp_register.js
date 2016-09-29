@@ -124,7 +124,7 @@ class EmployeeRegisterBox extends Component{
                 },{
                     access_token:token,
                     _objectId:emp.roleId,
-                    users:'+"'+emp.objectId+'"'
+                    users:'+"'+emp.uid+'"'
                 });
             },emp);
             Wapi.user.updateMe(null,{
