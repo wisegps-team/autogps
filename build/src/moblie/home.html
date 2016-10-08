@@ -12,7 +12,6 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 			
-		<title>卫网科技</title>
 		<script>
 			var config={
 				src:'src',    //静态资源根目录
@@ -25,6 +24,10 @@
 		<script src="../../common.js"></script>
 		<script src="../../wslib/launcher.js"></script>
 		<script src="../../wslib/toolkit/WxSdk.js" async="async"></script>
+		<script type="text/javascript">
+			___.app_name=_user.customer.name;
+			document.write('<title>'+___.app_name+'</title>');
+		</script>
 	</head>
 	<body>
 	</body>

@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=44;//版本号
+let version=46;//版本号
 
 //地区表
 export const area={
@@ -1083,14 +1083,23 @@ export const iotDevice={
             'desc': '绑定车objectId',
             'type': 'String',
             'query': true
-        }
+        },
+        {
+			"query" : true,
+			"type" : "Object",
+			"desc" : "位置索引字段",
+			"name" : "loc"
+		}
     ],
     indexDefine: [
         {
             did:1,
             unique:true
         },
-        {uid:1},
+        {
+            uid:1,
+            loc : "2dsphere"
+        },
         {statue:1},        
         {commSign:1},
         {model:1},
