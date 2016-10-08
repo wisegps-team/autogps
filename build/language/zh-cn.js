@@ -216,5 +216,6 @@ window.___={
 	'confirm_pay':'已确认结算',
 	'pay_message':'您有新的结算提醒，金额为￥',
 	'temp_register':'营销账号注册',
-	'index_login':'平台登录'
+	'index_login':'平台登录',
+	'set_action_success':'设置活动页面成功'
 }

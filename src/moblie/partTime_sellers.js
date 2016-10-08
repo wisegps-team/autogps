@@ -157,6 +157,7 @@ class App extends React.Component {
             if(!url)return;
             W.prompt(___.input_action_title,'',function(title){
                 _this.saveEventUrl(url,title);
+                W.alert(___.set_action_success);
             })
         });
     }
