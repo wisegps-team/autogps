@@ -43,7 +43,9 @@ class Register extends Component {
                 return;
             }
         }
-        Wapi.user.register(this.success,Object.assign({},this.formData));
+        let data=Object.assign({},this.formData);
+        if(!this.props.beforRegister||this.props.beforRegister(data))
+            Wapi.user.register(this.success,data);
     }
 
     accountChange(e,val){

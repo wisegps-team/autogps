@@ -26,21 +26,24 @@ class CustomerRegisterBox extends Component{
         this.change = this.change.bind(this);
         this.nameChange = this.nameChange.bind(this);
     }
-    
-    registerSuccess(res){
+
+    beforRegister(data){
         if(!this.data.name){
             W.alert(___.user_name_empty);
-            return;
+            return false;
         }
         if(!this.data.cityId){
             W.alert(___.area_empty);
-            return;
+            return false;
         }
         if(!this.data.contact){
             W.alert(___.contact_empty);
-            return;
+            return false;
         }
-        
+        return true;
+    }
+    
+    registerSuccess(res){
         let user=res;
         let that=this;
         let pid=this.props.parentId;
@@ -118,7 +121,7 @@ class CustomerRegisterBox extends Component{
                     <Input name='contact' floatingLabelText={___.person} onChange={this.nameChange}/>
                     <SexRadio onChange={this.change}/>
                 </form>
-                <Register onSuccess={this.registerSuccess}/>
+                <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
             </div>
         );
     }
