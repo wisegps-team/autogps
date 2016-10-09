@@ -1,0 +1,143 @@
+<!--
+	作者：小吴
+	时间：2016-09-27
+	描述：分享内容页
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
+		<script src='wslib/WiStorm.js'></script>
+		<script>
+			function booking(){
+				location='http://user.autogps.cn/?location=booking.html&intent=logout&needOpenId=true&sellerId='+_g.sellerId+'&uid='+_g.uid+'&mobile='+_g.mobile+'&agent_tel='+_g.agent_tel;
+			}
+			window.onload=function(){
+				new Image().src='http://user.autogps.cn/autogps/src/booking.js';
+			}
+			window.addEventListener('nativeSdkReady',function(){
+				var op={
+					title: _g.title, // 分享标题
+					desc: '点击进入活动详情  分享者：'+_g.mobile.slice(-6), // 分享描述
+					link: location.href, // 分享链接
+					imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+					success: function(){},
+					cancel: function(){}
+				}
+				wx.onMenuShareTimeline(op);
+				wx.onMenuShareAppMessage(op);
+			});
+		</script>
+		
+		<script>
+			document.write('<title>'+_g.title+'</title>')
+		</script>
+		<style type="text/css">
+			body{
+				margin: 0;
+				padding: 0;
+				font-size: 0;
+				background: #000;
+				width: 100vw;
+				height: 100vh;
+			}
+			iframe{
+				width: 100vw;
+				height:100vh;
+				border:none;
+			}
+			#b{
+				border: none;
+			    border-radius: 2px;
+			    position: fixed;
+			    bottom: 5px;
+			    color: #fff;
+			    width: 90vw;
+			    left: 5vw;
+			    line-height: 40px;
+			    background: #03A9F4;
+			    font-family: '微软雅黑';
+			    font-size: 20px;
+			}
+			#arr{
+				position: absolute;
+			    top: -36px;
+			    margin: auto;
+			    left: 0;
+			    right: 0;
+			    -webkit-animation: start 1.5s infinite ease-in-out;
+			    -moz-animation: start 1.5s infinite ease-in-out;
+			    animation: start 1.5s infinite ease-in-out;
+			}
+			
+			@-webkit-keyframes start {
+				0%,30% {
+					opacity: 0;
+					-webkit-transform: translate(0,10px)
+				}
+
+				60% {
+					opacity: 1;
+					-webkit-transform: translate(0,0)
+				}
+
+				100% {
+					opacity: 0;
+					-webkit-transform: translate(0,-8px)
+				}
+			}
+
+			@-moz-keyframes start {
+				0%,30% {
+					opacity: 0;
+					-moz-transform: translate(0,10px)
+				}
+
+				60% {
+					opacity: 1;
+					-moz-transform: translate(0,0)
+				}
+
+				100% {
+					opacity: 0;
+					-moz-transform: translate(0,-8px)
+				}
+			}
+
+			@keyframes start {
+				0%,30% {
+					opacity: 0;
+					transform: translate(0,10px)
+				}
+
+				60% {
+					opacity: 1;
+					transform: translate(0,0)
+				}
+
+				100% {
+					opacity: 0;
+					transform: translate(0,-8px)
+				}
+			}
+		</style>
+		<script src='wslib/toolkit/WxSdk.js' async="async"></script>
+	</head>
+	<body>
+		<script>
+			document.write('<iframe src="'+_g.action+'"></iframe>')
+		</script>
+		<button id="b" onclick="booking()">
+			咨询预订
+			<svg fill="#FFFFFF" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg" id='arr'>
+			    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+			    <path d="M0 0h24v24H0z" fill="none"/>
+			</svg>
+		</button>
+	</body>
+</html>

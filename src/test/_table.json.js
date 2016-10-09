@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=46;//版本号
+let version=48;//版本号
 
 //地区表
 export const area={
