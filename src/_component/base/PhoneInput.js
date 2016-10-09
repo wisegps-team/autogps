@@ -15,10 +15,6 @@ class PhoneInput extends Component{
         let reg=/^[1][3578][0-9]{9}$/;
         if(reg.test(value)){
             this.setState({code_err:null});
-            if(value==this.props.old_value){
-                console.log('phone not change');
-                return;
-            }
 
             let _this=this;
             Wapi.user.checkExists(function(json){
