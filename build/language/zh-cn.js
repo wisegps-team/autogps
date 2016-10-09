@@ -165,7 +165,7 @@ window.___={
 	'input_dep':'请输入部门名',
 	'edit_dep':'修改部门名称',
 	'select_dep':'请选择部门',
-	'invitation_url':'邀请链接',
+	'invitation_url':'注册链接',
 	'search_user':'搜索客户',
 	'out_success':'分配成功',
 	'brand_manage':'品牌管理',
@@ -217,4 +217,9 @@ window.___={
 	'pay_message':'您有新的结算提醒，金额为￥',
 	'set_action_success':'设置活动页面成功',
 	'role_manage':'角色管理',
+	'temp_register':'营销账号注册',
+	'index_login':'平台登录',
+	'booking_sms':'您有新的业务预订信息，联系人：<%name%>，电话：<%mobile%>，请及时联系用户办理副卡或流量卡业务。',
+	'divice_booking':'产品预订',
+	'please_consult':'如需咨询,请联系客户经理。',
 }

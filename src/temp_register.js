@@ -83,17 +83,20 @@ class EmployeeRegisterBox extends Component{
         Object.assign(this.data,props.defaultData);
         this.change = this.change.bind(this);
         this.nameChange = this.nameChange.bind(this);
+        this.beforRegister = this.beforRegister.bind(this);
     }
-    
+    beforRegister(){
+        if(!this.data.name){
+            W.alert(___.user_name_empty);
+            return false;
+        }
+        return true;
+    }
     registerSuccess(res){
         let user=res;
         if(user.status_code){
             //已注册用户，不能再注册了
             W.alert(___.error[user.status_code]);
-            return;
-        }
-        if(!this.data.name){
-            W.alert(___.user_name_empty);
             return;
         }
         W.loading(true);
@@ -151,7 +154,7 @@ class EmployeeRegisterBox extends Component{
                     <Input name='name' floatingLabelText={___.person_name} onChange={this.nameChange}/>
                     <SexRadio onChange={this.change}/>
                 </form>
-                <Register onSuccess={this.registerSuccess}/>
+                <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
             </div>
         );
     }

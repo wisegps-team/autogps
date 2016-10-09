@@ -40,22 +40,23 @@ class AgentRegisterBox extends Component{
         this.handleNext = this.handleNext.bind(this);
         this.registerSuccess = this.registerSuccess.bind(this);
     }
-    
-    registerSuccess(){
+    beforRegister(data){
         if(!this.data.name){
             W.alert(___.user_name_empty);
-            return;
+            return false;
         }
         if(!this.data.cityId){
             W.alert(___.area_empty);
-            return;
+            return false;
         }
         if(!this.data.contact){
             W.alert(___.contact_empty);
-            return;
+            return false;
         }
+        return true;
+    }
+    registerSuccess(){
         W.loading(1);
-
         let user=this._user;
         let that=this;
         let pid=this.props.parentId;
