@@ -140,19 +140,27 @@ class From extends Component{
         }
         let _this=this;
         Wapi.booking.add(function(res){
+            let sms_data={
+                agent_mobile:_g.agent_tel,//代理商电话
+                seller_name:_g.seller_name,//客户经理姓名
+                seller_mobile:_g.mobile,//客户经理电话
+                customer_name:_this.data.name,//客户姓名
+                customer_mobile:_this.data.mobile,//客户电话
+                carNum:_this.data.carType.car_num,//客户车牌
+            }
             Wapi.comm.sendSMS(function(res){//发短信给客户
                 if(res.status_code){
                     W.errorCode(res);
                     return;
                 }
-            },_this.data.mobile,0,"预约成功");
+            },sms_data.customer_mobile,0,W.replace(___.booking_sms_customer,sms_data));
             
             Wapi.comm.sendSMS(function(res){//发短信给代理商
                 if(res.status_code){
                     W.errorCode(res);
                     return;
                 }
-            },_g.agent_tel,0,"您有一个新的预定信息");
+            },sms_data.agent_mobile,0,W.replace(___.booking_sms_agent,sms_data));
             
             Wapi.comm.sendSMS(function(res){//发送短信给客户经理
                 if(res.status_code){
@@ -160,7 +168,7 @@ class From extends Component{
                     return;
                 }
                 W.alert(___.booking_success,()=>history.back());
-            },_g.mobile,0,W.replace(___.booking_sms,submit_data));
+            },sms_data.seller_mobile,0,W.replace(___.booking_sms_seller,sms_data));
 
         },submit_data);
     }

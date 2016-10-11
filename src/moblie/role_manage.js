@@ -59,6 +59,15 @@ class App extends React.Component {
         this.setState({show_sonpage:false});
     }
     addRoleSubmit(data){
+        console.log(data);
+        if(data.name==''){
+            W.alert(___.name+___.not_null);
+            return;
+        }
+        if(data.pages.length==0){
+            W.alert(___.permission+___.not_null);
+            return;
+        }
         Wapi.role.add(res=>{//新建一个角色
             let par={
                 _objectId:data.pages.join('|'),
@@ -93,7 +102,7 @@ class App extends React.Component {
                             <FlatButton label={___.add} primary={true} onClick={this.addRole} />
                         </div>
                     </div>
-                    <SonPage title={"角色添加"} open={this.state.show_sonpage} back={this.addRoleCancel}>
+                    <SonPage title={___.role_add} open={this.state.show_sonpage} back={this.addRoleCancel}>
                         <AddRole submit={this.addRoleSubmit}/>
                     </SonPage>
                 </div>
@@ -136,7 +145,7 @@ class AddRole extends React.Component {
         return(
             <div style={styles.sonpage_main}>
                 <Input floatingLabelText={___.name} onChange={this.nameChange} />
-                <div style={{paddingBottom:'1em'}}>权限</div>
+                <div style={{paddingBottom:'1em'}}>{___.permission}</div>
                 <div>{items}</div>
 
                 <div style={styles.bottom_btn_right}>
