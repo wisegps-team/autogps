@@ -224,6 +224,8 @@ window.___={
 	'please_consult':'如需咨询,请联系客户经理。',
 	'permission':'权限',
 	'role_add':'角色添加',
+	'role_manage':'角色管理',
+	'confirm_delete_role':'确认删除该角色吗？',
 	'booking_sms_agent':'您有新的业务预订信息，客户经理：<%seller_name%>，电话:<%seller_mobile%>，车主：<%customer_name%>，电话：<%customer_mobile%>，车牌号码：<%carNum%>。',
 	'booking_sms_seller':'您有新的业务预订信息，车主：<%customer_name%>，电话：<%customer_mobile%>，车牌号码：<%carNum%>；已通知代理商联系车主安装车载终端。',
 	'booking_sms_customer':'尊敬的用户，产品预订成功，工作人员将联系您安装智能终端及办理流量卡或副卡业务，安装完成后请用预订时的微信号码注册绑定设备以获取更多免费功能和优惠信息，如需咨询，请联系客户经理，电话<%seller_mobile%>。',

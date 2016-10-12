@@ -4,10 +4,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../_theme/default';
+import IconButton from 'material-ui/IconButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import Card from 'material-ui/Card';
 import {List, ListItem} from 'material-ui/List';
-import FlatButton from 'material-ui/FlatButton';
+import Divider from 'material-ui/Divider';
+import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
@@ -27,7 +33,7 @@ const styles={
     card:{marginTop:'1em',padding:'0.5em'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
-    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
+    bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'5px'},
     checkbox: {marginBottom: '16px'},
 }
 
@@ -38,14 +44,20 @@ class App extends React.Component {
         this.state={
             total:0,
             show_sonpage:false,
+            isEdit:false,
         }
+        this.curRole={};
         this.roles=[];
+
         this.addRole=this.addRole.bind(this);
         this.addRoleCancel=this.addRoleCancel.bind(this);
         this.addRoleSubmit=this.addRoleSubmit.bind(this);
+        // this.editRole=this.editRole.bind(this);
+        // this.editRoleCancel=this.editRoleCancel.bind(this);
+        // this.editRoleSubmit=this.editRoleSubmit.bind(this);
     }
     componentDidMount(){
-        Wapi.role.list(res=>{
+        Wapi.role.list(res=>{//获取所有角色
             this.roles=res.data;
             this.setState({
                 total:res.total,
@@ -53,7 +65,10 @@ class App extends React.Component {
         },{objectId:'>0'})
     }
     addRole(){
-        this.setState({show_sonpage:true});
+        this.setState({
+            show_sonpage:true,
+            isEdit:false,
+        });
     }
     addRoleCancel(){
         this.setState({show_sonpage:false});
@@ -75,17 +90,70 @@ class App extends React.Component {
             }
             Wapi.page.update(re=>{
                 //在所选的page的ACL中添加当前角色
-                this.roles.push({name:data.name});
-                this.setState({show_sonpage:false});
+                this.roles.push({name:data.name,objectId:res.objectId});
+                this.setState({
+                    show_sonpage:false,
+                });
             },par)
 
         },{
             name:data.name
         });
     }
+    // editRole(role){
+    //     this.curRole=role;
+    //     this.setState({
+    //         show_sonpage:true,
+    //         isEdit:true,
+    //     });
+    // }
+    // editRoleCancel(){
+    //     this.setState({show_sonpage:false});
+    // }
+    // editRoleSubmit(data){
+    //     console.log(data);
+    //     if(data.name==''){
+    //         W.alert(___.name+___.not_null);
+    //         return;
+    //     }
+    //     if(data.pages.length==0){
+    //         W.alert(___.permission+___.not_null);
+    //         return;
+    //     }
+    //     Wapi.role.update(res=>{//新建一个角色
+    //         let par={
+    //             _objectId:data.pages.join('|'),
+    //             ACL:'+role:'+res.objectId
+    //         }
+    //         Wapi.page.update(re=>{
+    //             //在所选的page的ACL中添加当前角色
+    //             this.roles.push({name:data.name});
+    //             this.setState({
+    //                 show_sonpage:false,
+    //             });
+    //         },par);
+    //     },{
+    //         _objectId:data.objectId,
+    //         name:data.name,
+    //     });
+    // }
+    deleteRole(role){
+        console.log(role);
+        let _this=this;
+        W.confirm(___.confirm_delete_role,function(b){
+            if(b){
+                Wapi.role.delete(res=>{//delete a role
+                    _this.roles=_this.roles.filter(ele=>ele.objectId!=role.objectId);
+                    _this.forceUpdate();
+                },{objectId:role.objectId});
+            }
+        });
+        
+    }
     render(){
         let items=this.roles.map((ele,i)=>
-            <ListItem key={i} primaryText={ele.name}/>
+            [<ListItem key={i} primaryText={ele.name} rightIcon={<RightIconMenu onClick={()=>this.deleteRole(ele)}/>}/>,
+            <Divider />]
         );
         return(
             <ThemeProvider>
@@ -93,17 +161,18 @@ class App extends React.Component {
                     <AppBar 
                         title={___.role_manage} 
                         style={styles.appbar}
+                        iconElementRight={<IconButton onClick={this.addRole}><ContentAdd/></IconButton>}
                     />
                     <div style={styles.main}>
                         <List>
                             {items}
                         </List>
-                        <div style={styles.bottom_btn_right}>
+                        {/*<div style={styles.bottom_btn_right}>
                             <FlatButton label={___.add} primary={true} onClick={this.addRole} />
-                        </div>
+                        </div>*/}
                     </div>
                     <SonPage title={___.role_add} open={this.state.show_sonpage} back={this.addRoleCancel}>
-                        <AddRole submit={this.addRoleSubmit}/>
+                        <AddRole submit={this.addRoleSubmit} isEdit={this.state.isEdit} role={this.curRole}/>
                     </SonPage>
                 </div>
             </ThemeProvider>
@@ -121,6 +190,7 @@ class AddRole extends React.Component {
         this.nameChange=this.nameChange.bind(this);
         this.pageCheck=this.pageCheck.bind(this);
     }
+    
     nameChange(e,val){
         this.data.name=val;
     }
@@ -148,10 +218,41 @@ class AddRole extends React.Component {
                 <div style={{paddingBottom:'1em'}}>{___.permission}</div>
                 <div>{items}</div>
 
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.ok} primary={true} onClick={()=>{this.props.submit(this.data)}} />
+                <div style={styles.bottom_btn_center}>
+                    <RaisedButton label={___.ok} primary={true} onClick={()=>{this.props.submit(this.data)}} />
                 </div>
             </div>
         )
+    }
+}
+
+class RightIconMenu extends React.Component{
+    shouldComponentUpdate(nextProps, nextState) {
+        return false;
+    }
+    
+    render() {
+        return (
+            <IconMenu
+                iconButtonElement={
+                    <IconButton>
+                        <MoreVertIcon/>
+                    </IconButton>
+                }
+                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                style={{
+                    height: '48px',
+                    width: '48px',
+                    position: 'absolute',
+                    right: '0px',
+                    top: '0px',
+                    bottom: '0px',
+                    margin: 'auto'
+                }}
+            >
+                <MenuItem onTouchTap={this.props.onClick}>{___.delete}</MenuItem>
+            </IconMenu>
+        );
     }
 }
