@@ -81,6 +81,7 @@ class App extends React.Component {
 
         this.getEventUrl=this.getEventUrl.bind(this);
         this.saveEventUrl=this.saveEventUrl.bind(this);
+        this.loadNextPage = this.loadNextPage.bind(this);
     }
     getChildContext(){
         return {
