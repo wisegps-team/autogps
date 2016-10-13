@@ -18,10 +18,14 @@ function AutoList(ShowComponent){
             this.scroll = this.scroll.bind(this);
         }
         componentDidMount() {
+            if(this._scrollEvent)return;
             document.addEventListener('scroll',this.scroll);
+            this._scrollEvent=true;
         }
         componentWillUnmount() {
+            if(!this._scrollEvent)return;
             document.removeEventListener('scroll',this.scroll);
+            this._scrollEvent=false;
         }
         componentWillReceiveProps(nextProps) {
             let waiting = this.state.waiting&&(nextProps.data.length==this.props.data.length);
@@ -54,6 +58,8 @@ function AutoList(ShowComponent){
         render() {
             if(this.props.max>=0&&this.props.max<=this.props.data.length){
                 this.componentWillUnmount();
+            }else{
+                this.componentDidMount();
             }
             let pages=[];
             for(let i=0;i<this.state.page;i++)
@@ -62,10 +68,7 @@ function AutoList(ShowComponent){
                     key={i}
                 />);
             if(this.state.waiting)
-                pages.push(<ShowComponent 
-                    data={null}
-                    key={pages.length}
-                />);
+                pages.push(<h4 style={{textAlign:'center'}} key={-1}>{___.loading}</h4>);
             return (
                 <div ref={'main'}>
                     {pages}

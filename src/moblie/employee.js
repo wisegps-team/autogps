@@ -81,6 +81,7 @@ class App extends React.Component {
         this.showDetails=this.showDetails.bind(this);
         this.editEmployeeCancel=this.editEmployeeCancel.bind(this);
         this.editEmployeeSubmit=this.editEmployeeSubmit.bind(this);
+        this.loadNextPage = this.loadNextPage.bind(this);
     }
     getChildContext(){
         return {
