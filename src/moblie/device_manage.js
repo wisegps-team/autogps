@@ -424,7 +424,7 @@ class DeviceOut extends React.Component{
                 <table style={styles.w}>
                     <tbody>
                         <tr>
-                            <td style={{whiteSpace:'nowrap'}}>{___.cust}</td>
+                            <td style={{whiteSpace:'nowrap',paddingTop:'14px'}}>{___.cust}</td>
                             <td>
                                 <UserSearch onChange={this.custChange} data={{parentId:_user.customer.objectId}}/>
                             </td>
