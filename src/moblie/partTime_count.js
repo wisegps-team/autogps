@@ -161,7 +161,7 @@ class App extends React.Component {
     getUrl(){
         history.replaceState('home','home','home.html');
         if(_user.customer.other&&_user.customer.other.url){
-            location=WiStorm.root+'action.html&intent=logout&action='+encodeURIComponent(_user.customer.other.url)+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId+'&mobile='+this.state.seller.tel+'&title='+encodeURIComponent(_user.customer.other.title)+'&agent_tel='+_user.customer.tel+'&seller_name='+_user.employee.name;
+            location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(_user.customer.other.url)+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId+'&mobile='+this.state.seller.tel+'&title='+encodeURIComponent(_user.customer.other.title)+'&agent_tel='+_user.customer.tel+'&seller_name='+_user.employee.name;
         }else{
             W.alert(___.no_event_page);
         }
