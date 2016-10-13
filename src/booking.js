@@ -127,7 +127,7 @@ class From extends Component{
     changeVerifi(val){
         this.valid=true;
     }
-    changeCarName(val){
+    changeCarName(e,val){
         this.data.carType={car_num:val};
     }
     submit(){

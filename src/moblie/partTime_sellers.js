@@ -95,48 +95,10 @@ class App extends React.Component {
         let sellers=[];
         Wapi.employee.list(res=>{
             sellers=res.data;
-            let par={
-                "group":{
-                    "_id":{
-                        "sellerId":"$sellerId"
-                    },
-                    "status0":{
-                        "$sum":"$status0"
-                    },
-                    "status1":{
-                        "$sum":"$status1"
-                    },
-                    "status2":{
-                        "$sum":"$status2"
-                    },
-                    "status3":{
-                        "$sum":"$status3"
-                    }
-                },
-                "sorts":"sellerId",
-                "uid":_user.customer.objectId
-            }
-            Wapi.booking.aggr(resAggr=>{
-                let arr=resAggr.data;
-                sellers.map(ele=>{
-                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
-                    if(booking){
-                        ele.status0=booking.status0;
-                        ele.status1=booking.status1;
-                        ele.status2=booking.status2;
-                        ele.status3=booking.status3;
-                    }else{
-                        ele.status0=0;
-                        ele.status1=0;
-                        ele.status2=0;
-                        ele.status3=0;
-                    }
-                })
-                this.setState({
-                    sellers:sellers,
-                    total:res.total,
-                });
-            },par);
+            this.setState({
+                sellers:sellers,
+                total:res.total,
+            });
         },{
             companyId:_user.customer.objectId,
             departId:'-1',
@@ -180,6 +142,7 @@ class App extends React.Component {
         })
     }
     loadNextPage(){
+        console.log('load next');
         let arr=this.state.sellers;
         this.page++;
         Wapi.employee.list(res=>{
@@ -193,7 +156,7 @@ class App extends React.Component {
         });
     }
     render(){
-        console.log(this.state.sellers);
+        console.log('render app');
         return(
             <ThemeProvider>
                 <div>
@@ -213,12 +176,14 @@ class App extends React.Component {
                             </IconMenu>
                         }
                     />
-                    <Alist 
-                        max={this.state.total} 
-                        limit={20} 
-                        data={this.state.sellers} 
-                        next={this.loadNextPage} 
-                    />
+                    <div style={styles.main}>
+                        <Alist 
+                            max={this.state.total} 
+                            limit={20} 
+                            data={this.state.sellers} 
+                            next={this.loadNextPage} 
+                        />
+                    </div>
                 </div>
             </ThemeProvider>
         )
@@ -232,9 +197,56 @@ App.childContextTypes={
 class DumbList extends React.Component{
     constructor(props,context){
         super(props,context);
+        this.state={
+            sellers:[]
+        }
     }
+    componentWillMount() {
+        let sellers=this.props.data;
+        let par={
+            "group":{
+                "_id":{
+                    "sellerId":"$sellerId"
+                },
+                "status0":{
+                    "$sum":"$status0"
+                },
+                "status1":{
+                    "$sum":"$status1"
+                },
+                "status2":{
+                    "$sum":"$status2"
+                },
+                "status3":{
+                    "$sum":"$status3"
+                }
+            },
+            "sorts":"sellerId",
+            "uid":_user.customer.objectId
+        }
+        Wapi.booking.aggr(resAggr=>{
+            let arr=resAggr.data;
+            sellers.map(ele=>{
+                let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+                if(booking){
+                    ele.status0=booking.status0;
+                    ele.status1=booking.status1;
+                    ele.status2=booking.status2;
+                    ele.status3=booking.status3;
+                }else{
+                    ele.status0=0;
+                    ele.status1=0;
+                    ele.status2=0;
+                    ele.status3=0;
+                }
+            });
+            this.setState({sellers:sellers});
+        },par);
+    }
+    
     render() {
-        let items=this.props.data.map((ele,index)=>
+        console.log('render list');
+        let items=this.state.sellers.map((ele,index)=>
             <Card style={styles.card} key={index}>
                 <table style={{whiteSpace:'nowrap'}}>
                     <tbody>
@@ -258,7 +270,7 @@ class DumbList extends React.Component{
             </Card>
         );
         return(
-            <div style={styles.main}>
+            <div>
                 {items}
             </div>
         )
