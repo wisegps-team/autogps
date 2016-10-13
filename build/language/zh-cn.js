@@ -222,6 +222,7 @@ window.___={
 	'booking_sms':'您有新的业务预订信息，联系人：<%name%>，电话：<%mobile%>，请及时联系用户办理副卡或流量卡业务。',
 	'divice_booking':'产品预订',
 	'please_consult':'如需咨询,请联系客户经理。',
+	'not_allow':'已注册用户不能参与此活动',
 	'permission':'权限',
 	'role_add':'角色添加',
 	'role_manage':'角色管理',
