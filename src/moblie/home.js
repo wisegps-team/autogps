@@ -19,6 +19,7 @@ import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionAssignmentInd from 'material-ui/svg-icons/action/assignment-ind';
 import ActionTurnedInNot from 'material-ui/svg-icons/action/turned-in-not';
 import ActionViewList from 'material-ui/svg-icons/action/view-list';
+import ActionFace from 'material-ui/svg-icons/action/face';
 import ToggleStar from 'material-ui/svg-icons/toggle/star';
 import CommunicationContacts from 'material-ui/svg-icons/communication/contacts';
 import ContentSort from 'material-ui/svg-icons/content/sort';
@@ -111,6 +112,11 @@ const _pages=[//所有的页面
         href:'partTime_count',
         name:___.sell_count,
         icon:<ContentSort style={sty.icon}/>
+    },
+    {   /*角色管理链接 */
+        href:'role_manage',
+        name:___.role_manage,
+        icon:<ActionFace style={sty.icon}/>
     }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
