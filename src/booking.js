@@ -54,7 +54,6 @@ const sty={
         color:'#999999',
         marginTop:'30px',
         marginLeft:'10px',
-        fontSize:'0.6em',
     }
 }
 
@@ -104,7 +103,12 @@ class From extends Component{
         this.mobileChange = this.mobileChange.bind(this);
     }
     
-    mobileChange(val){
+    mobileChange(val,err){
+        if(err){
+            if(err!=___.phone_err&&err!=___.phone_empty)
+                W.alert(___.not_allow);
+            return;
+        }
         let that=this;
         Wapi.booking.get(function(res){
             if(res.data){
@@ -181,7 +185,7 @@ class From extends Component{
                 </div>
                 <div style={sty.r}>
                     <HardwareSmartphone style={sty.i}/>
-                    <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={true}/>
+                    <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={false}/>
                 </div>
                 <div style={sty.r}>
                     <ActionVerifiedUser style={sty.i}/>
@@ -201,7 +205,8 @@ class From extends Component{
                 </div>
 
                 <div style={sty.ex}>
-                    {___.please_consult+___.phone+": "+_g.mobile}
+                    {___.please_consult+___.phone+": "}
+                    <a href={'tel:'+_g.mobile}>{_g.mobile}</a>
                 </div>
             </div>
         );
