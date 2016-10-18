@@ -312,6 +312,16 @@ WCommApi.prototype.sendSMS=function(callback,mobile,type,content){
 	
 	this.getApi(Data,callback);	
 }
+WCommApi.prototype.sendEmail=function(callback,email,type,content){
+	var Data={
+		method:this.apiName+".email.send",
+		email,
+		type,
+		content
+	};
+	
+	this.getApi(Data,callback);	
+}
 
 //验证验证码
 WCommApi.prototype.validCode=function(callback,data,op){
@@ -617,15 +627,15 @@ function WBaseApi(token){
 WBaseApi.prototype=new WiStormAPI();
 
 //获取车辆品牌列表
-WBaseApi.prototype.carBrand=function(callback){
-	var OP={
+WBaseApi.prototype.carBrand=function(callback,op){
+	var OP=Object.assign({
 		method:'wicare.carBrand.list',
 		fields:'id,pid,name,url_icon,t_spell',
 		id:">0",
 		sorts:'t_spell',
 		page:'t_spell',
 		limit:-1
-	};
+	},op);
 	this.getApi(OP,callback);
 }
 //获取车系列表
@@ -650,7 +660,14 @@ WBaseApi.prototype.carType=function(callback,data){
 		limit:-1
 	};
 	Object.assign(OP,data);
-	this.getApi(OP,callback);
+	this.getApi(OP,function(res){
+		if(res.data)
+			res.data.map(e=>{
+				e.name=e.go_name?e.name+' '+e.go_name:e.name;
+				return e;
+			});
+		callback(res);
+	});
 }
 //经纬度转地址
 WBaseApi.prototype.geocoder=function(callback,data){
@@ -668,8 +685,8 @@ function WGps(token){
 	}
 	this.list_op={
 		fields:this.get_op.fields,
-		sorts:"objectId",
-		page:"objectId",
+		sorts:"did,gpsTime",
+		page:"",
 		limit:"-1"
 	}
 	this._list=WiStormAPI.prototype.list;
@@ -717,7 +734,7 @@ WGps.prototype.getGpsList=function(callback,data){
 		let datas=[];
 		for(let i=0;i<day;i++){
 			this.getGpsListOnday(function(res,j){
-				if(!j&&j==day)
+				if(!j||j==(day-1))
 					res=res.filter(e=>{
 						let t=W.date(e.gpsTime);
 						return(t>=st&&t<=et);
@@ -757,7 +774,7 @@ WGps.prototype.getGpsListOnday=function(callback,did,date,index,map='BAIDU'){
 	W.get(url,null,function(res){
 		var arr=res.split('\n');
 		res=undefined;
-		let keys=['gpsTime','rcvTime','lon','lat','speed','direct','gpsFlag','mileage','fuel','temp','status','alerts'];
+		let keys=['gpsTime','rcvTime','lon','lat','speed','direct','gpsFlag','mileage','fuel','temp','status','alerts','g_lon','g_lat','c_lon','c_lat'];
 
 		let a=arr.map(function(e,i) {
 			let j=e.split('|');
@@ -838,7 +855,7 @@ makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe'
 makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
 makeGetOp('device','did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
 makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,mileage,fuel,createdAt');
-makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt');
+makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,day');
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit');
 

@@ -895,7 +895,7 @@ var	WiStorm_root="http://"+location.host+"/";
 if(location.host.indexOf('localhost')==-1&&!location.host.match(/(192\.|127\.)/))
 	WiStorm_root+="autogps/";
 var u = navigator.userAgent;
-var _d=true;
+var _d=false;
 if(_g.debug)_d=true;
 window.WiStorm={
 	test_mode:false,
