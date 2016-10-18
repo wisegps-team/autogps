@@ -772,10 +772,15 @@ WGps.prototype.getGpsListOnday=function(callback,did,date,index,map='BAIDU'){
 	let today=W.dateToString(date).slice(0,10);
 	let url=base_url+today+'/'+did+'_'+today+'.gz';
 	W.get(url,null,function(res){
+		if(!res){
+			callback([],index);
+			return;
+		}
 		var arr=res.split('\n');
+		arr=arr.filter(e=>!!e);
 		res=undefined;
 		let keys=['gpsTime','rcvTime','lon','lat','speed','direct','gpsFlag','mileage','fuel','temp','status','alerts','g_lon','g_lat','c_lon','c_lat'];
-
+		
 		let a=arr.map(function(e,i) {
 			let j=e.split('|');
 			let d={};
