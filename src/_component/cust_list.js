@@ -11,6 +11,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import AutoList from './base/autoList';
 import UserSearch from './user_search';
+import SonPage from '../_component/base/sonPage';
+import ProductLogList,{PushPopCount} from '../_component/productlog_list';
 
 const sty={
     item:{
@@ -57,7 +59,9 @@ export function CustListHC(Com,isList){
             super(props, context);
             this.state={
                 data:[],
-                total:-1
+                total:-1,
+                showCount:false,
+                showCountIntent:'push',
             }
             this.load = this.load.bind(this);
             this.deleteOne = this.deleteOne.bind(this);
@@ -67,10 +71,15 @@ export function CustListHC(Com,isList){
                 page:'objectId',
                 sorts:'objectId'
             }
+
+            this.countParams=null;
+            this.showCount = this.showCount.bind(this);
+            this.showCountBack = this.showCountBack.bind(this);
         }
         getChildContext(){
             return {
-                delete:this.deleteOne
+                delete:this.deleteOne,
+                showCount:this.showCount,
             };
         }
         componentDidMount() {
@@ -86,6 +95,26 @@ export function CustListHC(Com,isList){
                 data:this.state.data.filter(e=>e.objectId!=id),
                 total:this.state.total-1
             });
+        }
+        showCount(cust,intent){
+            if(intent=='pop'){
+                this.countParams={
+                    from:_user.customer.objectId,
+                    to:cust.objectId,
+                }
+            }else{
+                this.countParams={
+                    from:cust.objectId,
+                    to:_user.customer.objectId,
+                }
+            }
+            this.setState({
+                showCount:true,
+                showCountIntent:intent,
+            });
+        }
+        showCountBack(){
+            this.setState({showCount:false});
         }
         load(){
             let last=this.props.data[this.props.data.length-1];
@@ -119,12 +148,16 @@ export function CustListHC(Com,isList){
                         data={this.state.data} 
                         next={this.load} 
                     />
+                    <SonPage title={this.state.showCountIntent=='push'?___.push_record:___.pop_record} open={this.state.showCount} back={this.showCountBack}>
+                        <PushPopCount params={this.countParams} intent={this.state.showCountIntent}/>
+                    </SonPage>
                 </div>
             );
         }
     }
     CustList.childContextTypes={
         delete:React.PropTypes.func,
+        showCount:React.PropTypes.func,
     }
 
     return CustList;

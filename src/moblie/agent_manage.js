@@ -81,6 +81,9 @@ class UserItem extends Component{
                         });
                 });
                 break;
+            case 3://业务统计
+                this.context.showCount(this.props.data,'pop');
+                break;
         }
     }
     render() {
@@ -111,6 +114,7 @@ class UserItem extends Component{
 UserItem.contextTypes ={
     VIEW:React.PropTypes.object,
     delete:React.PropTypes.func,
+    showCount:React.PropTypes.func,
 }
 
 class RightIconMenu extends Component{
@@ -138,6 +142,7 @@ class RightIconMenu extends Component{
                     margin: 'auto'
                 }}
             >
+                <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
                 <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
             </IconMenu>
         );

@@ -151,6 +151,20 @@ class Brand extends Component{
             let that=this;
             Wapi.brand.update(function(){
                 data.name=t;
+                //update product
+                let products=STORE.getState().product;
+                let strProducts=products.map(ele=>ele.objectId).join('|');
+                if(strProducts){
+                    Wapi.product.update(function(){
+                        products.map(ele=>{
+                            STORE.dispatch(product_act.update(ele));
+                        })
+                    },{
+                        _objectId:strProducts,
+                        brand:t
+                    });
+                }
+
                 STORE.dispatch(brand_act.update(data));
             },{
                 _objectId:data.objectId,

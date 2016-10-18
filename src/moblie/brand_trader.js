@@ -12,6 +12,12 @@ import ContentAdd from 'material-ui/svg-icons/content/add'
 import AppBar from '../_component/base/appBar';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
 
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import SonPage from '../_component/base/sonPage';
+import ProductLogList,{PushPopCount} from '../_component/productlog_list';
+
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -30,7 +36,7 @@ class App extends Component{
     }
     getChildContext(){
         return{
-            'VIEW':thisView
+            'VIEW':thisView,
         }
     }
     render() {
@@ -71,9 +77,33 @@ class TraderItem extends Component{
                 primaryText={title}
                 secondaryText={tr}
                 style={cust_item_sty.item}
+                rightIcon={
+                    <IconMenu
+                        iconButtonElement={
+                            <IconButton>
+                                <MoreVertIcon/>
+                            </IconButton>
+                        }
+                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                        style={{
+                            height: '48px',
+                            width: '48px',
+                            position: 'absolute',
+                            right: '0px',
+                            top: '0px',
+                            bottom: '0px',
+                            margin: 'auto'
+                        }}
+                    >
+                        <MenuItem onTouchTap={()=>this.context.showCount(this.props.data,'push')}>{___.business_statistics}</MenuItem>
+                    </IconMenu>}
             />
         );
     }
 }
 
+TraderItem.contextTypes ={
+    showCount:React.PropTypes.func,
+}
 let CustList=CustListHC(TraderItem);

@@ -230,4 +230,11 @@ window.___={
 	'booking_sms_agent':'您有新的业务预订信息，客户经理：<%seller_name%>，电话:<%seller_mobile%>，车主：<%customer_name%>，电话：<%customer_mobile%>，车牌号码：<%carNum%>。',
 	'booking_sms_seller':'您有新的业务预订信息，车主：<%customer_name%>，电话：<%customer_mobile%>，车牌号码：<%carNum%>；已通知代理商联系车主安装车载终端。',
 	'booking_sms_customer':'尊敬的用户，产品预订成功，工作人员将联系您安装智能终端及办理流量卡或副卡业务，安装完成后请用预订时的微信号码注册绑定设备以获取更多免费功能和优惠信息，如需咨询，请联系客户经理，电话<%seller_mobile%>。',
+	'stock_count':'库存',
+	'now_count':'当前数量：',
+	'push_record':'入库记录',
+	'pop_record':'出库记录',
+	'time':'时间',
+	'num':'数量',
+	'business_statistics':'业务统计',
 }
