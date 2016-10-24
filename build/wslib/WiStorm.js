@@ -766,7 +766,20 @@ W.errorCode=function(json){
 			}
 		});
 	}else{
+		var er={
+			'4097':'连接服务器失败',
+			'8193':'查询不到有效节点',
+			'36867':'查询不到有效节点',
+			'36868':'无效签名',
+			'36869':'方法无效',
+			'36870':'无效的Appkey'
+		}
+		var erKey=Object.keys(er);
+		
 		var text=___.error[json.status_code]||___.unknown_err;
+		if(erKey.indexOf(json.status_code.toString())){
+			text=___.error['000'];
+		}
 		W.alert("error_code："+json.status_code+"；error_msg："+text);
 	}
 }
