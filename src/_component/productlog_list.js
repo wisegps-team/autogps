@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 
 import Card from 'material-ui/Card';
-import SonPage from '../_component/base/sonPage';
+import SonPage from './base/sonPage';
 import AutoList from './base/autoList';
 
 
@@ -40,7 +40,7 @@ class ProductLogList extends Component {
     }
     
     getProduct(params){
-        console.log('get product');
+        // console.log('get product');
         let product=this.state.product;
         if(this.props.isBrandSeller){
             this.getStockNum(product,params);
@@ -49,7 +49,7 @@ class ProductLogList extends Component {
             let par={
                 "group":{
                     "_id":{
-                        "model":"$model"
+                        "modelId":"$modelId"
                     }
                 },
                 "sorts":"createdAt",
@@ -59,7 +59,9 @@ class ProductLogList extends Component {
             Wapi.device.aggr(re=>{
                 let l=re.data.length;
                 for(let i=0;i<l;i++){
-                    let p=re.data[i]._id.model;
+                    let p=re.data[i]._id.modelId;
+                    if(!p)continue;
+
                     let _product={};
                     Wapi.product.get(res=>{
                         _product=res.data;
@@ -67,7 +69,7 @@ class ProductLogList extends Component {
                         if(i==l-1){
                             this.getStockNum(product,params);
                         }
-                    },{name:p});
+                    },{objectId:p});
                 }
             },par);
         }
@@ -190,9 +192,12 @@ export class PushPopCount extends Component {
             total:-1,
         }
         this.par={
-            uid:_user.customer.objectId,
-            page:1,
+            uid:_user.customer.objectId
+        }
+        this.op={
+            page_no:1,
             limit:20,
+            sorts:'-createdAt',
         }
 
         this.toDidList = this.toDidList.bind(this);
@@ -205,15 +210,6 @@ export class PushPopCount extends Component {
         };
     }
     componentWillReceiveProps(nextProps) {
-        // let par={
-        //     type:nextProps.intent=='push'?1:0,
-        //     sorts:'-createdAt',
-        //     uid:_user.customer.objectId,
-        //     fields:'createdAt,inCount,outCount,did',
-        //     page:this.page,
-        //     limit:this.limit,
-        // };
-
         this.par.type=nextProps.intent=='push'?1:0;
         if(nextProps.product){
             this.par.modelId=nextProps.product.objectId;
@@ -227,9 +223,7 @@ export class PushPopCount extends Component {
                 data:res.data,
                 total:res.total,
             });
-        },this.par,{
-            sorts:'-createdAt',
-        });
+        },this.par,this.op);
     }
     toDidList(log){
         this.setState({
@@ -244,17 +238,17 @@ export class PushPopCount extends Component {
         });
     }
     nextPage(){
-        this.par.page++;
+        this.op.page_no++;
+        console.log('nextPage');
         Wapi.deviceLog.list(res=>{
             let arr=Object.assign({},this.state.data);
             this.setState({
                 data:res.data.concat(arr)
             });
-        },this.par,{
-            sorts:'-createdAt',
-        });
+        },this.par,this.op);
     }
     render() {
+        if(this.props.intent=='push')console.log('total push:'+this.state.total);
         return (
             <div>
                 <Alist 
@@ -289,7 +283,7 @@ class DidList extends Component {
     }
     
     render() {
-        console.log('didList render');
+        // console.log('didList render');
         let data=this.state.data;
         let items=this.state.data.did.map((ele,i)=><p key={i}>{ele}</p>);
         return (
