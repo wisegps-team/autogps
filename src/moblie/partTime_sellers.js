@@ -20,7 +20,8 @@ const styles={
     appbar:{position:'fixed',top:'0px'},
     main:{width:'90%',paddingTop:'50px',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
-    table_td_right:{paddingLeft:'1em'},
+    td_left:{whiteSpace:'nowrap'},
+    td_right:{paddingLeft:'1em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
 }
 
@@ -251,16 +252,16 @@ class DumbList extends React.Component{
                 <table style={{whiteSpace:'nowrap'}}>
                     <tbody>
                         <tr>
-                            <td>{ele.name}</td>
-                            <td style={styles.table_td_right}>{ele.tel}</td>
+                            <td style={styles.td_left}>{ele.name}</td>
+                            <td style={styles.td_right}>{ele.tel}</td>
                         </tr>
                     </tbody>
                 </table>
                 <table style={{whiteSpace:'nowrap',fontSize:'0.8em'}}>
                     <tbody>
                         <tr>
-                            <td>{___.customer_booked+" "+ele.status0}</td>
-                            <td style={styles.table_td_right}>{___.customer_registed+" "+ele.status1}</td>
+                            <td style={styles.td_left}>{___.customer_booked+" "+ele.status0}</td>
+                            <td style={styles.td_right}>{___.customer_registed+" "+ele.status1}</td>
                         </tr>
                     </tbody>
                 </table>

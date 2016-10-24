@@ -41,7 +41,8 @@ const styles={
     sonpage_main:{paddingBottom:'20px',marginLeft:(window.innerWidth-256)/2+'px',marginRight:(window.innerWidth-256)/2+'px'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
     table_tr:{height:'30px'},
-    table_td_right:{paddingLeft:'1em'},
+    td_left:{whiteSpace:'nowrap'},
+    td_right:{paddingLeft:'1em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'2em'},
 }
@@ -270,24 +271,24 @@ class DumbList extends React.Component{
                 <table >
                     <tbody >
                         <tr style={styles.table_tr}>
-                            <td>{___.person_name}</td>
-                            <td style={styles.table_td_right}>{ele.name}</td>
+                            <td style={styles.td_left}>{___.person_name}</td>
+                            <td style={styles.td_right}>{ele.name}</td>
                         </tr>
                         <tr style={styles.table_tr}>
-                            <td>{___.sex}</td>
-                            <td style={styles.table_td_right}>{_sex[ele.sex]}</td>
+                            <td style={styles.td_left}>{___.sex}</td>
+                            <td style={styles.td_right}>{_sex[ele.sex]}</td>
                         </tr>
                         <tr style={styles.table_tr}>
-                            <td>{___.department}</td>
-                            <td style={styles.table_td_right}>{getDepart(ele.departId)}</td>
+                            <td style={styles.td_left}>{___.department}</td>
+                            <td style={styles.td_right}>{getDepart(ele.departId)}</td>
                         </tr>
                         {/*<tr style={styles.table_tr}>
-                            <td>{___.role}</td>
-                            <td style={styles.table_td_right}>{_type[ele.type]}</td>
+                            <td style={styles.td_left}>{___.role}</td>
+                            <td style={styles.td_right}>{_type[ele.type]}</td>
                         </tr>*/}
                         <tr style={styles.table_tr}>
-                            <td>{___.phone}</td>
-                            <td style={styles.table_td_right}>{ele.tel}</td>
+                            <td style={styles.td_left}>{___.phone}</td>
+                            <td style={styles.td_right}>{ele.tel}</td>
                         </tr>
                     </tbody>
                 </table>
