@@ -73,6 +73,7 @@ class Register extends Component {
                     type={1}
                     account={this.state.account} 
                     onSuccess={this.change}
+                    onChange={this.change}
                 />
                 <PasswordRepeat 
                     onChange={this.change}

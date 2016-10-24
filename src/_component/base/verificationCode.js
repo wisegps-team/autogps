@@ -47,6 +47,9 @@ class VerificationCode extends Component {
    				valid_code:val,
    				mobile:this.props.account
             });
+            if(this.props.onChange){
+                this.props.onChange(val,this.props.name);
+            }
         }
     }
     getCode(){

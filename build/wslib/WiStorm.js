@@ -930,18 +930,7 @@ window.WiStorm={
 u=undefined;
 _d=undefined;
 
-//获取cookie中的app信息
-var keys=W.getCookie('_app_config_');
-if(keys){
-	try {
-		keys=JSON.parse(keys);
-		Object.assign(WiStorm.config,keys);
-		WiStorm.config.wx_app_id=keys.wxAppKey;
-	} catch (error) {
-		alert('app key error');
-	}
-	keys=undefined;
-}
+
 	
 
 
@@ -955,6 +944,19 @@ if(location.protocol=="http:"||location.protocol=="https:"){//浏览器环境
 }
 tem=undefined;
 s=undefined;
+
+//获取cookie中的app信息
+var keys=W.getCookie('_app_config_');
+try {
+	keys=JSON.parse(keys);
+	Object.assign(WiStorm.config,keys);
+	WiStorm.config.wx_app_id=keys.wxAppKey;
+} catch (error) {
+	var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
+	loc=(loc=='index.html')?'':'&location='+loc;
+	location=location.origin+(location.search||'?')+loc;
+}
+keys=undefined;
 
 /**
  * 获取本地用户存储
