@@ -27,32 +27,6 @@ import {reCode} from '../_modules/tool';
 import UserSearch from '../_component/user_search';
 
 
-var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
-//测试用
-// let testNum=10;
-// W.native={
-//     scanner:{
-//         start:function(callback){
-//             setTimeout(function(){
-//                 callback(testNum.toString());
-//                 testNum++;
-//             },100);
-//         }
-//     }
-// }
-// let isWxSdk=true;
-
-let isWxSdk=false;
-if(W.native)isWxSdk=true;
-else
-    window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
-
-thisView.addEventListener('load',function(){
-    ReactDOM.render(
-        <AppDeviceManage/>,thisView);
-});
-
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
     list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
@@ -66,6 +40,34 @@ const styles = {
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     w:{width:'100%'},
 };
+
+
+var thisView=window.LAUNCHER.getView();//第一句必然是获取view
+
+//测试用
+// let testNum=2000;
+// W.native={
+//     scanner:{
+//         start:function(callback){
+//             setTimeout(function(){
+//                 callback(testNum.toString());
+//                 // testNum++;
+//             },100);
+//         }
+//     }
+// }
+// let isWxSdk=true;
+
+//正式用
+let isWxSdk=false;
+if(W.native)isWxSdk=true;
+else
+    window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
+
+
+thisView.addEventListener('load',function(){
+    ReactDOM.render(<AppDeviceManage/>,thisView);
+});
 
 class AppDeviceManage extends Component{
     constructor(props,context){
@@ -169,8 +171,6 @@ class DeviceIn extends Component{
     constructor(props,context){
         super(props,context);
         this.state={
-            // brands:[],
-            // types:[],
             brand:'',
             model:'',
             brandId:'',
@@ -179,18 +179,9 @@ class DeviceIn extends Component{
         }
         this.data={}
         this.brandChange=this.brandChange.bind(this);
-        // this.typeChange=this.typeChange.bind(this);
         this.addId=this.addId.bind(this);
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
-    }
-    componentDidMount(){
-        this.setState({
-            // brands:[],
-            // types:[],
-            brand:'',
-            model:'',
-        });
     }
     brandChange(value){
         this.setState({
@@ -200,32 +191,45 @@ class DeviceIn extends Component{
             modelId:value.productId
         });
     }
-    // typeChange(e,value){
-    //     this.setState({model:value});
-    // }
     addId(){
         let _this=this;
+        let ids=_this.state.product_ids;
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
-                let arr=_this.state.product_ids;
-                arr[arr.length]=res;
-                _this.setState({product_ids:arr});
-                
-                let params={
-                    did:res,
-                    uid:_user.customer.objectId,
-                    
-                    status: 0,
-                    commType: 'GPRS',
-                    commSign: '',
-                    model: _this.state.model,
-                    modelId: _this.state.modelId,
-                    binded: false,
-                };
-                Wapi.device.add(function(res_device){
-                    //添加设备信息完成
-                },params);
+                if(ids.includes(res)){//队列中已有此编号
+                    W.alert(___.device_repeat);
+                    return;
+                }
+                Wapi.device.get(re=>{//检查设备是否存在
+                    if(!re.data){//如果不存在，则完善设备信息（uid设为'0'），并将设备号存入state
+                        let params={
+                            did:res,
+                            uid:'0',
+                            
+                            status: 0,
+                            commType: 'GPRS',
+                            commSign: '',
+                            model: _this.state.model,
+                            modelId: _this.state.modelId,
+                            binded: false,
+                        };
+                        Wapi.device.add(function(res_device){
+                            //添加设备信息完成,（此时设备uid均为'0')
+                        },params);
+
+                        ids[ids.length]=res;
+                        _this.setState({product_ids:ids});
+                    }else if(re.data && re.data.uid=='0'){//data存在且设备不属于其他用户，将设备号存入state
+                        let ids=_this.state.product_ids;
+                        ids[ids.length]=res;
+                        _this.setState({product_ids:ids});
+                    }else if(re.data && re.data.uid==_user.customer.objectId){//data存在且设备已属于当前用户，弹出警告，不存入state
+                        W.alert(___.device_repeat_own);
+                    }else if(re.data && re.data.uid!=_user.customer.objectId){//data存在且设备已属于其他用户，弹出警告，不存入state
+                        W.alert(___.deivce_other_own);
+                    }
+                },{did:res});
             });
         }else{
             W.alert(___.please_wait);
@@ -233,10 +237,6 @@ class DeviceIn extends Component{
     }
     cancel(){
         this.setState({
-            // brands:[],
-            // types:[],
-            brand:'',
-            model:'',
             product_ids:[]
         });
         history.back();
@@ -247,35 +247,36 @@ class DeviceIn extends Component{
             history.back();
             return;
         }else{
-            let pushLog={
-                uid:_user.customer.objectId,
-                did:ids,
-                type:1,
-                from:'0',
-                to:_user.customer.objectId,
-                fromName:'0',
-                toName:_user.customer.name,
-                brand:this.state.brand,
-                brandId:this.state.brandId,
-                model:this.state.model,
-                modelId:this.state.modelId,
-                inCount:ids.length,
-                outCount:0,
-                status:1,//状态为1，表示 已发货待签收，发货流程未完整之前暂定为1
-            };
-            Wapi.deviceLog.add(function(res){
-                pushLog.objectId=res.objectId;
-                W.emit(window,'device_log_add',pushLog);
-            },pushLog);
-
-            this.cancel();
+            Wapi.device.update(res_device=>{//把设备的uid改为当前用户id
+                let pushLog={
+                    uid:_user.customer.objectId,
+                    did:ids,
+                    type:1,
+                    from:'0',
+                    to:_user.customer.objectId,
+                    fromName:'0',
+                    toName:_user.customer.name,
+                    brand:this.state.brand,
+                    brandId:this.state.brandId,
+                    model:this.state.model,
+                    modelId:this.state.modelId,
+                    inCount:ids.length,
+                    outCount:0,
+                    status:1,//状态为1，表示 已发货待签收，发货流程未完整之前暂定为1
+                };
+                Wapi.deviceLog.add(function(res){
+                    pushLog.objectId=res.objectId;
+                    W.emit(window,'device_log_add',pushLog);
+                },pushLog);
+                this.cancel();
+            },{
+                _did:ids.join('|'),
+                uid:_user.customer.objectId
+            });
         }
     }
 
     render(){
-        console.log('render device in');
-        // let brands=this.state.brands.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.brand_name}/>);
-        // let types=this.state.types.map(ele=><MenuItem value={ele.id} key={ele.id} primaryText={ele.type}/>);
         return(
             <div style={styles.input_page}>
                 <h3>{___.device_in}</h3>
@@ -293,7 +294,6 @@ class DeviceOut extends Component{
     constructor(props,context){
         super(props,context);
         this.state={
-            // custs:[],
             cust_id:0,
             cust_name:'',
             product_ids:[],
@@ -307,16 +307,6 @@ class DeviceOut extends Component{
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
     }
-    componentDidMount(){
-        // Wapi.customer.list(res=>{
-        //     this.setState({
-        //         custs:res.data,
-        //         cust_id:0,
-        //     })
-        // },{
-        //     parentId:_user.customer.objectId,
-        // });
-    }
     custChange(cust){
         this.setState({
             cust_id:cust.objectId,
@@ -325,33 +315,59 @@ class DeviceOut extends Component{
     }
     addId(){
         let _this=this;
+        let ids=_this.state.product_ids;
         function get(res){//扫码，did添加到所选用户
             res=reCode(res);
-            let arr=_this.state.product_ids;
-            Wapi.device.get(re=>{
-                if(re.data){
-                    if(_this.state.brand==''){//如果品牌为空，说明是当前第一次扫描，需要查找品牌和产品型号存入state
-                        let products=STORE.getState().product;
-                        let curProduct=products.find(ele=>ele.name==re.data.model);
-                        _this.setState({
-                            brand:curProduct.brand,
-                            brandId:curProduct.brandId,
-                            model:curProduct.name,
-                            modelId:curProduct.objectId,
-                        });
-                    }
+            if(ids.includes(res)){//队列中已有此编号
+                W.alert(___.device_repeat);
+                return;
+            }
 
-                    let product_ids=arr.concat(res);
-                    _this.setState({
-                        product_ids:product_ids,
-                    });
-                    W.native.scanner.start(get);
-                }else
-                    W.alert(___.did_error,()=>W.native.scanner.start(get));
-            },{
+            let par_out={
                 did:res,
-                uid:_user.customer.objectId
-            });
+                uid:_user.customer.objectId,
+                type:0
+            }
+            Wapi.deviceLog.get(res_out=>{//检查设备是否已从当前用户出库
+                if(res_out.data){
+                    W.alert(___.device_repeat_out);
+                }else{
+                    let par_exist={
+                        did:res,
+                        uid:_user.customer.objectId
+                    };
+                    Wapi.device.get(res_exist=>{//检查设备是否且属于当前用户
+                        if(!res_exist.data){//如果data为空，则表明扫描的设备不属于当前用户，不可出库
+                            W.alert(___.deivce_not_own);
+                        }else{
+                            Wapi.device.get(re=>{
+                                if(re.data){
+                                    if(_this.state.brand==''){//如果品牌为空，说明是当前第一次扫描，需要查找品牌和产品型号存入state
+                                        let products=STORE.getState().product;
+                                        let curProduct=products.find(ele=>ele.objectId==re.data.modelId);
+                                        _this.setState({
+                                            brand:curProduct.brand,
+                                            brandId:curProduct.brandId,
+                                            model:curProduct.name,
+                                            modelId:curProduct.objectId,
+                                        });
+                                    }
+
+                                    let product_ids=ids.concat(res);
+                                    _this.setState({
+                                        product_ids:product_ids,
+                                    });
+                                    // W.native.scanner.start(get);
+                                }else
+                                    W.alert(___.did_error,()=>W.native.scanner.start(get));
+                            },{
+                                did:res,
+                                uid:_user.customer.objectId
+                            });
+                        }
+                    },par_exist);
+                }
+            },par_out);
         }
         if(isWxSdk){
             W.native.scanner.start(get);
@@ -365,7 +381,6 @@ class DeviceOut extends Component{
             cust_name:'',
             product_ids:[]
         });
-        // this.props.toList();
         history.back();
     }
     submit(){
@@ -420,14 +435,12 @@ class DeviceOut extends Component{
             Wapi.deviceLog.add(function(res_log){
                 //给下一级添加入库信息
             },pushLog);
-        },{
+        },{//把设备的uid改为分配到的客户的id
             _did:ids.join('|'),
             uid:_this.state.cust_id,
         });
     }
     render(){
-        console.log('render device out');
-        // let custItems=this.state.custs.map(ele=><MenuItem value={ele.objectId} key={ele.objectId} primaryText={ele.name}/>);
         
         return(
             <div style={styles.input_page}>

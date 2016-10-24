@@ -858,7 +858,7 @@ makeGetOp('customer','objectId,uid,name,treePath,parentId,tel,custTypeId,custTyp
 makeGetOp('deviceLog','objectId,uid,did,type,createdAt,from,to,fromName,toName,brand,brandId,model,modelId,outCount,inCount,status');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
-makeGetOp('device','did,uid,status,commType,commSign,model,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
+makeGetOp('device','objectId,did,uid,status,commType,commSign,model,modelId,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
 makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,mileage,fuel,createdAt');
 makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,day');
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId',{limit:-1,sorts:'objectId',page:'objectId'});
