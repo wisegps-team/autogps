@@ -154,7 +154,7 @@ let CustList=CustListHC(UserItem);
 function getUrl(){
     let opt={
         title:___.invitation_url,
-        text:location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId
+        text:location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&name='+encodeURIComponent(_user.customer.name)
     }
     W.alert(opt);
 }
