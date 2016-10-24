@@ -58,6 +58,9 @@ const sty={
         position: 'fixed',
         width: '100vw',
         bottom: '0px'
+    },
+    main:{
+        marginBottom:'50px'
     }
 }
 
@@ -96,6 +99,11 @@ const _pages=[//所有的页面
         href:'brand_manage',
         name:___.brand_manage,
         icon:<ActionViewList style={sty.icon}/>
+    },
+    {
+        href:'brand_trader',
+        name:'代理商',
+        icon:<ToggleStar style={sty.icon}/>
     },
     {
         href:'activity_agent',
@@ -137,7 +145,7 @@ class App extends Component {
     render() {
         return (
             <ThemeProvider>
-            <div>
+            <div style={sty.main}>
                 <div className='title'>
                     <h2>{___.app_name}</h2>
                 </div>

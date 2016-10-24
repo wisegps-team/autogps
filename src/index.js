@@ -9,7 +9,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 import Login from './_component/login';
 import Forget from './_component/login/forget';
-import AgentRegisterBox from './_component/login/agent_register';
+import AgentShowBox from './_component/login/agent_register';
 import CONFIG from './_modules/config';
 
 require('./_sass/index.scss');//包含css
@@ -129,7 +129,7 @@ class App extends Component {
         let sty=this.state.active==1?{padding:'10px'}:null;
         let actives=[
             <Login onSuccess={this.loginSuccess}/>,
-            <AgentRegisterBox success={this.registerCallback} parentId={_g.parentId}/>,
+            <AgentShowBox success={this.registerCallback} parentId={_g.parentId}/>,
             <Forget onSuccess={this.forgetSuccess} user={this._user}/>
         ]
         let buttons=[

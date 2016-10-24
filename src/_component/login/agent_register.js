@@ -7,8 +7,11 @@ import {
   StepContent,
 } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
+import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import IconButton from 'material-ui/IconButton';
 
 import Register from './register';
+import Login from './index';
 import AreaSelect from '../base/areaSelect';
 import Input from '../base/input';
 import SexRadio from '../base/sexRadio';
@@ -113,29 +116,7 @@ class AgentRegisterBox extends Component{
             that._user=user;
 
             if(user.status_code==8){//如果是之前就已经注册过用户则先校验一下有没有添加过客户表
-                Wapi.customer.get(function(cust){
-                    if(cust.data){//如果有，则校验类型
-                        user.customer=cust.data;
-                        if(res.customer.custTypeId==5){//是代理商，则在parentId里添加一个品牌商
-                            Wapi.customer.update(res=>{
-                                W.loading();
-                                user._code=0;
-                                that.props.success(user);
-                            },{
-                                access_token:user.access_token,
-                                _uid:user.uid,
-                                parentId:'+"'+that.props.parentId+'"'
-                            });
-                        }else{//不是，则提示类型不正确，返回登录
-                            W.loading();
-                            user._code=2;
-                            that.props.success(user);
-                        } 
-                    }else{//如果没有，则是完善资料流程
-                        W.loading();
-                        that.setState({stepIndex:1});
-                    }
-                },{uid:user.uid,access_token:user.access_token});
+                customerCheck(user,that);
             }else{
                 W.loading();
                 that.setState({stepIndex:1});
@@ -188,4 +169,93 @@ class AgentRegisterBox extends Component{
     }
 }
 
-export default AgentRegisterBox;
+class AgentShowBox extends Component{
+    constructor(props, context) {
+        super(props, context);
+        this.state={
+            action:0
+        }
+        this.loginSuccess = this.loginSuccess.bind(this);
+        this.back = this.back.bind(this);
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        return (nextState.action!=this.state.action);
+    }
+    
+    componentDidMount() {
+        document.title=_g.name;
+    }
+
+    back(){
+        setTimeout(()=>{
+            if(this.state.action>0)
+                this.setState({action:0});
+        },300);
+    }
+
+    loginSuccess(res){
+        let user=res.data;
+        user.access_token;
+        customerCheck(user,this);
+    }
+    
+    render(){
+        let box=[
+            <h4 key='h4'>{'[ '+_g.name+' ] '+___.invite_desc}</h4>
+        ];
+        if(!this.state.action)
+            box=box.concat([
+                <div style={{marginBottom:'20px'}} key='toLogin'>
+                    {___.have_account}<RaisedButton label={___.join_now} primary={true} onClick={e=>this.setState({action:1})} />
+                </div>,
+                <div key='toRegister'>
+                    {___.no_account}<RaisedButton label={___.sign_now} primary={true} onClick={e=>this.setState({action:2})} />
+                </div>
+            ]);
+        else{
+            box.unshift(<IconButton key='back' onClick={this.back}>
+                <NavigationArrowBack />
+            </IconButton>);
+            if(this.state.action==1){
+                box.push(<Login onSuccess={this.loginSuccess} key='login' />);
+            }else{
+                box.push(<AgentRegisterBox success={this.props.success} parentId={this.props.parentId} key='register' />);
+            }
+        }
+        
+        return(
+                <div>
+                    {box}
+                </div>
+            );
+    }
+}
+
+
+function customerCheck(user,that){
+    Wapi.customer.get(function(cust){
+        if(cust.data){//如果有，则校验类型
+            user.customer=cust.data;
+            if(user.customer.custTypeId==5){//是代理商，则在parentId里添加一个品牌商
+                Wapi.customer.update(res=>{
+                    W.loading();
+                    user._code=0;
+                    that.props.success(user);
+                },{
+                    access_token:user.access_token,
+                    _objectId:user.customer.objectId,
+                    parentId:'+"'+that.props.parentId+'"'
+                });
+            }else{//不是，则提示类型不正确，返回登录
+                W.loading();
+                user._code=2;
+                that.props.success(user);
+            } 
+        }else{//如果没有，则是完善资料流程
+            W.loading();
+            that.setState({stepIndex:1});
+        }
+    },{uid:user.uid,access_token:user.access_token});
+}
+
+export default AgentShowBox;

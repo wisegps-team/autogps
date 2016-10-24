@@ -766,7 +766,20 @@ W.errorCode=function(json){
 			}
 		});
 	}else{
+		var er={
+			'4097':'连接服务器失败',
+			'8193':'查询不到有效节点',
+			'36867':'查询不到有效节点',
+			'36868':'无效签名',
+			'36869':'方法无效',
+			'36870':'无效的Appkey'
+		}
+		var erKey=Object.keys(er);
+		
 		var text=___.error[json.status_code]||___.unknown_err;
+		if(erKey.indexOf(json.status_code.toString())){
+			text=___.error['000'];
+		}
 		W.alert("error_code："+json.status_code+"；error_msg："+text);
 	}
 }
@@ -930,18 +943,7 @@ window.WiStorm={
 u=undefined;
 _d=undefined;
 
-//获取cookie中的app信息
-var keys=W.getCookie('_app_config_');
-if(keys){
-	try {
-		keys=JSON.parse(keys);
-		Object.assign(WiStorm.config,keys);
-		WiStorm.config.wx_app_id=keys.wxAppKey;
-	} catch (error) {
-		alert('app key error');
-	}
-	keys=undefined;
-}
+
 	
 
 
@@ -955,6 +957,19 @@ if(location.protocol=="http:"||location.protocol=="https:"){//浏览器环境
 }
 tem=undefined;
 s=undefined;
+
+//获取cookie中的app信息
+var keys=W.getCookie('_app_config_');
+try {
+	keys=JSON.parse(keys);
+	Object.assign(WiStorm.config,keys);
+	WiStorm.config.wx_app_id=keys.wxAppKey;
+} catch (error) {
+	var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
+	loc=(loc=='index.html')?'':'&location='+loc;
+	location=location.origin+(location.search||'?')+loc;
+}
+keys=undefined;
 
 /**
  * 获取本地用户存储
