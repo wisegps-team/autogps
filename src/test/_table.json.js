@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=49;//版本号
+let version=50;//版本号
 
 //地区表
 export const area={
@@ -1867,6 +1867,12 @@ export const booking={
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
+            'name': 'activityId',
+            'desc': '活动id',
+            'type': 'String',
+            'query': true,    //可查询字段
+        },
+        {
             'name': 'mobile',
             'desc': '预定手机号',
             'type': 'String',
@@ -2024,17 +2030,68 @@ export const booking={
             unique:true
         },
         {status:1},
+        {activityId:1},
         {sellerId:1},
         {uid:1},
         {openId:1}
     ]
 }
 
+//活动表
+export const activity={
+    name: 'activity',             //表名
+    desc: '活动表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'uid',
+            'desc': '用户id',
+            'type': 'String',
+            'query': true,    //可查询字段
+        },{
+            'name': 'type',
+            'desc': '活动类型',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'name',
+            'desc': '活动名称',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'url',
+            'desc': '活动链接',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'status',
+            'desc': '活动状态',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'reward',
+            'desc': '奖励标准',
+            'type': 'Number',
+            'query': true
+        }
+    ],
+    indexDefine: [
+        {status:1},
+        {uid:1},
+        {type:1},
+        {name:1},
+    ]
+}
 
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
-    ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking
+    ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
+
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
