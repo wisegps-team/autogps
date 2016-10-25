@@ -95,6 +95,7 @@ class From extends Component{
             mobile:null,
             carType:null,
             openId:_g.openid,
+            activityId:_g.activityId||'0',
         }
         this.change = this.change.bind(this);
         this.changeVerifi=this.changeVerifi.bind(this);
