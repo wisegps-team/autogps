@@ -69,7 +69,8 @@ window.___={
 		'36870':'无效的Appkey',
 		'36871':'无效的参数',
 		'36872':'无效的验证码',
-		'36873':'无效的参数'
+		'36873':'无效的参数',
+		'000':'系统处理异常，请稍后重试！'
 	},
 	'reLogin':'登录凭证已失效，点击确定重新登录',
 	'unknown_err':'未知错误',
@@ -165,7 +166,7 @@ window.___={
 	'input_dep':'请输入部门名',
 	'edit_dep':'修改部门名称',
 	'select_dep':'请选择部门',
-	'invitation_url':'注册链接',
+	'invitation_url':'邀请注册',
 	'search_user':'搜索客户',
 	'out_success':'分配成功',
 	'brand_manage':'品牌管理',
@@ -248,4 +249,16 @@ window.___={
 	'fromName':'来源',
 	'status':'状态',
 	'reward':'奖励',
+	'invite_desc':'邀请你成为本公司车联网合作伙伴',
+	'have_account':'已有账号，',
+	'no_account':'没有账号，',
+	'join_now':'立即加入',
+	'sign_now':'现在注册',
+	'prompt_share':'点击右上角微信分享即可发送注册链接',
+	'ready_url':'正在准备注册链接……',
+	'cust_type_err':'非法注册类型',
+	'dealer':'经销商',
+	'outing':'正在出库',
+	'ining':'正在入库',
+	'model_error':'当前型号不存在'
 }

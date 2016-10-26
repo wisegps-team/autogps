@@ -82,10 +82,6 @@ class AppDeviceManage extends Component{
     }
 
     componentDidMount(){
-        Wapi.deviceTotal.list(res=>{
-            if(res.data.length>0)
-                this.setState({devices:res.data});
-        },{uid:_user.customer.objectId});
     }
 
     deviceIn(){
@@ -247,6 +243,8 @@ class DeviceIn extends Component{
             history.back();
             return;
         }else{
+            W.loading(true,___.ining);
+            let that=this;
             Wapi.device.update(res_device=>{//把设备的uid改为当前用户id
                 let pushLog={
                     uid:_user.customer.objectId,
@@ -267,8 +265,9 @@ class DeviceIn extends Component{
                 Wapi.deviceLog.add(function(res){
                     pushLog.objectId=res.objectId;
                     W.emit(window,'device_log_add',pushLog);
+                    W.loading();
+                    that.cancel();
                 },pushLog);
-                this.cancel();
             },{
                 _did:ids.join('|'),
                 uid:_user.customer.objectId
@@ -340,30 +339,28 @@ class DeviceOut extends Component{
                         if(!res_exist.data){//如果data为空，则表明扫描的设备不属于当前用户，不可出库
                             W.alert(___.deivce_not_own);
                         }else{
-                            Wapi.device.get(re=>{
-                                if(re.data){
-                                    if(_this.state.brand==''){//如果品牌为空，说明是当前第一次扫描，需要查找品牌和产品型号存入state
-                                        let products=STORE.getState().product;
-                                        let curProduct=products.find(ele=>ele.objectId==re.data.modelId);
+                            if(_this.state.brand==''){//如果品牌为空，说明是当前第一次扫描，需要查找品牌和产品型号存入state
+                                Wapi.product.get(pro=>{
+                                    if(pro.data){
+                                        curProduct=pro.data;
                                         _this.setState({
                                             brand:curProduct.brand,
                                             brandId:curProduct.brandId,
                                             model:curProduct.name,
                                             modelId:curProduct.objectId,
                                         });
-                                    }
+                                    }else
+                                        W.alert(___.model_error);
+                                },{
+                                    objectId:res_exist.data.modelId
+                                })
+                            }
 
-                                    let product_ids=ids.concat(res);
-                                    _this.setState({
-                                        product_ids:product_ids,
-                                    });
-                                    // W.native.scanner.start(get);
-                                }else
-                                    W.alert(___.did_error,()=>W.native.scanner.start(get));
-                            },{
-                                did:res,
-                                uid:_user.customer.objectId
+                            let product_ids=ids.concat(res);
+                            _this.setState({
+                                product_ids:product_ids,
                             });
+                            W.native.scanner.start(get);
                         }
                     },par_exist);
                 }
@@ -377,8 +374,10 @@ class DeviceOut extends Component{
     }
     cancel(){
         this.setState({
-            cust_id:0,
-            cust_name:'',
+            brand:'',
+            brandId:'',
+            model:'',
+            modelId:'',
             product_ids:[]
         });
         history.back();
@@ -389,10 +388,16 @@ class DeviceOut extends Component{
             history.back();
             return;
         }
+        if(this.state.modelId){
+            W.alert(___.model_error);
+            return;
+        }
         if(!this.state.cust_id){
             W.alert(___.customer_null);
+            return;
         }
         let _this=this;
+        W.loading(true,___.outing);
         Wapi.device.update(function(res_device){
             let popLog={
                 uid:_user.customer.objectId,
@@ -413,6 +418,7 @@ class DeviceOut extends Component{
             Wapi.deviceLog.add(function(res){//给上一级添加出库信息
                 popLog.objectId=res.objectId;
                 W.emit(window,'device_log_add',popLog);
+                W.loading();
                 W.alert(___.out_success,_this.cancel);
             },popLog);
             
@@ -441,7 +447,6 @@ class DeviceOut extends Component{
         });
     }
     render(){
-        
         return(
             <div style={styles.input_page}>
                 <h3>{___.device_out}</h3>

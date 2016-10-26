@@ -63,7 +63,11 @@ class AgentRegisterBox extends Component{
         let user=this._user;
         let that=this;
         let pid=this.props.parentId;
-        let tid=5;
+        let tid=getCustType();
+        if(!tid){
+            W.alert(___.cust_type_err);
+            return;
+        }
         let cust=Object.assign({},this.data,{tel:user.mobile,custTypeId:tid});
         cust.parentId=[pid];
 
@@ -116,7 +120,10 @@ class AgentRegisterBox extends Component{
             that._user=user;
 
             if(user.status_code==8){//如果是之前就已经注册过用户则先校验一下有没有添加过客户表
-                customerCheck(user,that);
+                customerCheck(user,that,function(){
+                    W.loading();
+                    that.setState({stepIndex:1});
+                });
             }else{
                 W.loading();
                 that.setState({stepIndex:1});
@@ -232,11 +239,11 @@ class AgentShowBox extends Component{
 }
 
 
-function customerCheck(user,that){
+function customerCheck(user,that,nullCallback){
     Wapi.customer.get(function(cust){
         if(cust.data){//如果有，则校验类型
             user.customer=cust.data;
-            if(user.customer.custTypeId==5){//是代理商，则在parentId里添加一个品牌商
+            if(user.customer.custTypeId==getCustType()){//判断类型
                 Wapi.customer.update(res=>{
                     W.loading();
                     user._code=0;
@@ -252,10 +259,18 @@ function customerCheck(user,that){
                 that.props.success(user);
             } 
         }else{//如果没有，则是完善资料流程
-            W.loading();
-            that.setState({stepIndex:1});
+            nullCallback?nullCallback():null;
         }
     },{uid:user.uid,access_token:user.access_token});
+}
+
+function getCustType(){
+    let t=parseInt(_g.custType);
+    let type=[5,8];
+    if(type.includes(t))
+        return t;
+    else
+        return;
 }
 
 export default AgentShowBox;
