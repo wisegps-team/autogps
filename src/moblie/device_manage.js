@@ -33,7 +33,15 @@ const styles = {
     card:{margin:'1em',padding:'0.5em'},
     show:{paddingTop:'50px'},
     hide:{display:'none'},
-    a:{color:'#00bbbb',borderBottom:'solid 1px'},
+    a:{
+        position: 'absolute',
+        width:'100%',
+        bottom:'10px'
+    },
+    box:{
+        position:'relative',
+        paddingBottom:'60px'
+    },
     product_id:{borderBottom:'solid 1px #999999'},
     ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
@@ -46,8 +54,8 @@ const styles = {
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
-//测试用
-// let testNum=2000;
+// 测试用
+// let testNum=10;
 // W.native={
 //     scanner:{
 //         start:function(callback){
@@ -322,50 +330,11 @@ class DeviceOut extends Component{
                 W.alert(___.device_repeat);
                 return;
             }
-
-            let par_out={
-                did:res,
-                uid:_user.customer.objectId,
-                type:0
-            }
-            Wapi.deviceLog.get(res_out=>{//检查设备是否已从当前用户出库
-                if(res_out.data){
-                    W.alert(___.device_repeat_out);
-                }else{
-                    let par_exist={
-                        did:res,
-                        uid:_user.customer.objectId
-                    };
-                    Wapi.device.get(res_exist=>{//检查设备是否且属于当前用户
-                        if(!res_exist.data){//如果data为空，则表明扫描的设备不属于当前用户，不可出库
-                            W.alert(___.deivce_not_own);
-                        }else{
-                            if(_this.state.brand==''){//如果品牌为空，说明是当前第一次扫描，需要查找品牌和产品型号存入state
-                                Wapi.product.get(pro=>{
-                                    if(pro.data){
-                                        curProduct=pro.data;
-                                        _this.setState({
-                                            brand:curProduct.brand,
-                                            brandId:curProduct.brandId,
-                                            model:curProduct.name,
-                                            modelId:curProduct.objectId,
-                                        });
-                                    }else
-                                        W.alert(___.model_error);
-                                },{
-                                    objectId:res_exist.data.modelId
-                                })
-                            }
-
-                            let product_ids=ids.concat(res);
-                            _this.setState({
-                                product_ids:product_ids,
-                            });
-                            W.native.scanner.start(get);
-                        }
-                    },par_exist);
-                }
-            },par_out);
+            ids=ids.concat(res);
+            _this.setState({
+                product_ids:ids,
+            });
+            W.native.scanner.start(get);
         }
         if(isWxSdk){
             W.native.scanner.start(get);
@@ -389,18 +358,75 @@ class DeviceOut extends Component{
             history.back();
             return;
         }
-        if(this.state.modelId){
-            W.alert(___.model_error);
-            return;
-        }
+        // if(!this.state.modelId){
+        //     W.alert(___.model_error);
+        //     return;
+        // }
         if(!this.state.cust_id){
             W.alert(___.customer_null);
             return;
         }
+        let dids=ids.join('|');
         let _this=this;
         W.loading(true,___.outing);
+
+        //检查设备id
+        Wapi.deviceLog.list(function(log){//检查是否有已经被出库的设备
+            if(log.data&&log.data.length){
+                let logs=log.data;
+                let _ids=[];
+                logs.forEach(l=>{
+                    ids=ids.filter(id=>!l.did.includes(id));
+                    _ids=ids.filter(id=>l.did.includes(id));
+                });
+                _this.setState({product_ids:ids});
+                W.loading();
+                W.alert(_ids.join('/')+___.device_repeat_out);
+                return;
+            }
+            Wapi.device.list(function(devs){//检查是否都是当前用户的设备
+                if(!devs.data||devs.data.length!=ids.length){//都不是你的设备
+                    let devices=devs.data;
+                    let _ids=[];
+                    _ids=ids.filter(id=>!devices.find(d=>(d.did==id)));
+                    ids=devices.map(d=>d.did);
+                    _this.setState({product_ids:ids});
+                    W.loading();
+                    W.alert(_ids.join('/')+___.deivce_not_own);
+                    return;
+                }
+                let dev=devs.data[0];
+                Wapi.product.get(pro=>{
+                    if(!pro.data){
+                        W.loading();
+                        W.alert(___.model_error);
+                        return;
+                    }
+                    let MODEL={
+                        brand:pro.data.brand,
+                        brandId:pro.data.brandId,
+                        model:pro.data.name,
+                        modelId:pro.data.objectId,
+                    };
+                    _this.save(ids,MODEL);
+                },{
+                    objectId:dev.modelId
+                });
+            },{
+                did:dids,
+                uid:_user.customer.objectId,
+            });
+        },{
+            did:dids,
+            uid:_user.customer.objectId,
+            type:0
+        });
+    }
+
+    save(ids,MODEL){//真正执行出库
+        let _this=this;
         Wapi.device.update(function(res_device){
-            let popLog={
+            let popLog={//出库
                 uid:_user.customer.objectId,
                 did:ids,
                 type:0,
@@ -408,22 +434,11 @@ class DeviceOut extends Component{
                 fromName:_user.customer.name,
                 to:_this.state.cust_id,
                 toName:_this.state.cust_name,
-                brand:_this.state.brand,
-                brandId:_this.state.brandId,
-                model:_this.state.model,
-                modelId:_this.state.modelId,
                 inCount:0,
                 outCount:ids.length,
                 status:1,//状态为1，表示 已发货待签收，发货流程未完整之前暂定为1
             };
-            Wapi.deviceLog.add(function(res){//给上一级添加出库信息
-                popLog.objectId=res.objectId;
-                W.emit(window,'device_log_add',popLog);
-                W.loading();
-                W.alert(___.out_success,_this.cancel);
-            },popLog);
-            
-            let pushLog={
+            let pushLog={//下级的入库
                 uid:_this.state.cust_id,
                 did:ids,
                 type:1,
@@ -431,22 +446,26 @@ class DeviceOut extends Component{
                 fromName:_user.customer.name,
                 to:_this.state.cust_id,
                 toName:_this.state.cust_name,
-                brand:_this.state.brand,
-                brandId:_this.state.brandId,
-                model:_this.state.model,
-                modelId:_this.state.modelId,
                 inCount:ids.length,
                 outCount:0,
                 status:1,//状态为1，表示 已发货待签收，发货流程未完整之前暂定为1
             };
-            Wapi.deviceLog.add(function(res_log){
-                //给下一级添加入库信息
-            },pushLog);
+            Object.assign(popLog,MODEL);
+            Object.assign(pushLog,MODEL);
+            Wapi.deviceLog.add(function(res){//给上一级添加出库信息
+                Wapi.deviceLog.add(function(res_log){//给下一级添加入库信息
+                    popLog.objectId=res.objectId;
+                    W.emit(window,'device_log_add',popLog);
+                    W.loading();
+                    W.alert(___.out_success,_this.cancel);
+                },pushLog);
+            },popLog);
         },{//把设备的uid改为分配到的客户的id
             _did:ids.join('|'),
-            uid:_this.state.cust_id,
+            uid:this.state.cust_id,
         });
     }
+
     render(){
         return(
             <div style={styles.input_page}>
@@ -484,13 +503,12 @@ class ScanGroup extends Component{
             )
         }
         return(
-            <div>
+            <div style={styles.box}>
                 {productItems}
-                <div style={styles.ids_box}>
-                    <div>{___.now_count+productItems.length}</div>
-                    <a onClick={this.props.addId} style={styles.a}>{___.scan_input}</a>
+                <div style={styles.a}>
+                    <RaisedButton onClick={this.props.submit} label={___.ok} secondary={true}/>
+                    <RaisedButton onClick={this.props.addId} label={___.scan_input} primary={true}/>
                 </div>
-                <RaisedButton onClick={this.props.submit} label={___.ok} primary={true}/>
             </div>
         )
     }
