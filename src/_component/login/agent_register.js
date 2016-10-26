@@ -244,15 +244,21 @@ function customerCheck(user,that,nullCallback){
         if(cust.data){//如果有，则校验类型
             user.customer=cust.data;
             if(user.customer.custTypeId==getCustType()){//判断类型
-                Wapi.customer.update(res=>{
+                if(!user.customer.parentId||!user.customer.parentId.includes(that.props.parentId.toString())){
+                    Wapi.customer.update(res=>{
+                        W.loading();
+                        user._code=0;
+                        that.props.success(user);
+                    },{
+                        access_token:user.access_token,
+                        _objectId:user.customer.objectId,
+                        parentId:'+"'+that.props.parentId+'"'
+                    });
+                }else{
                     W.loading();
                     user._code=0;
                     that.props.success(user);
-                },{
-                    access_token:user.access_token,
-                    _objectId:user.customer.objectId,
-                    parentId:'+"'+that.props.parentId+'"'
-                });
+                }
             }else{//不是，则提示类型不正确，返回登录
                 W.loading();
                 user._code=2;
