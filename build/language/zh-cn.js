@@ -252,6 +252,7 @@ window.___={
 	'ready_url':'正在准备注册链接……',
 	'cust_type_err':'非法注册类型',
 	'dealer':'经销商',
+	'agent':'代理商',
 	'outing':'正在出库',
 	'ining':'正在入库',
 	'model_error':'当前型号不存在'

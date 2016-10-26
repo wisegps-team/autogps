@@ -23,6 +23,7 @@ import ActionFace from 'material-ui/svg-icons/action/face';
 import ToggleStar from 'material-ui/svg-icons/toggle/star';
 import CommunicationContacts from 'material-ui/svg-icons/communication/contacts';
 import ContentSort from 'material-ui/svg-icons/content/sort';
+import ActionPermContactCalendar from 'material-ui/svg-icons/action/perm-contact-calendar';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -76,6 +77,16 @@ const _pages=[//所有的页面
         icon:<ActionSupervisorAccount style={sty.icon}/>
     },
     {
+        href:'dealer_agent',
+        name:___.agent,
+        icon:<ActionSupervisorAccount style={sty.icon}/>
+    },
+    {
+        href:'dealer_manage',
+        name:___.dealer,
+        icon:<ActionPermContactCalendar style={sty.icon}/>
+    },
+    {
         href:'user_manage',
         name:___.user_manage,
         icon:<ActionPermIdentity style={sty.icon}/>
@@ -99,11 +110,6 @@ const _pages=[//所有的页面
         href:'brand_manage',
         name:___.brand_manage,
         icon:<ActionViewList style={sty.icon}/>
-    },
-    {
-        href:'brand_trader',
-        name:'代理商',
-        icon:<ToggleStar style={sty.icon}/>
     },
     {
         href:'activity_agent',

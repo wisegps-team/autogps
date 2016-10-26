@@ -39,6 +39,8 @@ const styles = {
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     w:{width:'100%'},
+    to:{horizontal: 'right', vertical: 'top'},
+    c:{color:'#fff'}
 };
 
 
@@ -100,8 +102,18 @@ class AppDeviceManage extends Component{
     }
 
     render(){
-        let isBrandSeller=false;
-        if(_user.customer.custTypeId==0||_user.customer.custTypeId==1)isBrandSeller=true;
+        let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
+        let rightIcon=isBrandSeller?
+            (<IconMenu
+                iconButtonElement={
+                    <IconButton><MoreVertIcon/></IconButton>
+                }
+                targetOrigin={styles.to}
+                anchorOrigin={styles.to}
+                >
+                <MenuItem primaryText={___.push} onTouchTap={this.deviceIn}/>
+                <MenuItem primaryText={___.pop} onTouchTap={this.deviceOut}/>
+            </IconMenu>):(<MenuItem primaryText={___.pop} style={styles.c} onTouchTap={this.deviceOut}/>);
         let items=this.state.data.map((ele,i)=><ListItem key={i}  style={styles.MenuItem} children={<ItemDevice key={i} data={ele}/>}/>);
         return(
             <ThemeProvider>
@@ -109,18 +121,7 @@ class AppDeviceManage extends Component{
                     <AppBar 
                         title={___.device_manage} 
                         style={{position:'fixed'}} 
-                        iconElementRight={
-                            <IconMenu
-                                iconButtonElement={
-                                    <IconButton><MoreVertIcon/></IconButton>
-                                }
-                                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                                >
-                                <MenuItem style={isBrandSeller?{}:{display:'none'}} primaryText={___.push} onTouchTap={this.deviceIn}/>
-                                <MenuItem primaryText={___.pop} onTouchTap={this.deviceOut}/>
-                            </IconMenu>
-                        }
+                        iconElementRight={rightIcon}
                     />
                     <div name='list' style={styles.main}>
                         <ProductLogList ref={'list'} isBrandSeller={isBrandSeller}/>
