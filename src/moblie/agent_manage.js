@@ -8,7 +8,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
 
-import SocialShare from 'material-ui/svg-icons/social/share';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import IconButton from 'material-ui/IconButton';
 import {List, ListItem} from 'material-ui/List';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -37,10 +37,26 @@ class App extends Component{
             'VIEW':thisView
         }
     }
+    tip(){
+        if(W.native)
+            W.alert({
+                title:___.invitation_url,
+                text:___.prompt_share
+            });
+        else{
+            W.toast(___.ready_url);
+            window.addEventListener('nativeSdkReady',function(){
+                W.alert({
+                    title:___.invitation_url,
+                    text:___.prompt_share
+                });
+            });
+        }
+    }
     render() {
         return (
             <ThemeProvider>
-                <AppBar iconElementRight={<IconButton onClick={getUrl}><SocialShare/></IconButton>}/>
+                <AppBar iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>
                 <CustList data={this._data}/>
             </ThemeProvider>
         );
@@ -151,10 +167,22 @@ class RightIconMenu extends Component{
 
 let CustList=CustListHC(UserItem);
 
-function getUrl(){
-    let opt={
-        title:___.invitation_url,
-        text:location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&name='+encodeURIComponent(_user.customer.name)
+
+function setShare(){
+    var op={
+        title: ___.invitation_url, // 分享标题
+        desc: _user.customer.name, // 分享描述
+        link: location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType=5&name='+encodeURIComponent(_user.customer.name), // 分享链接
+        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+        success: function(){},
+        cancel: function(){}
     }
-    W.alert(opt);
+    wx.onMenuShareTimeline(op);
+    wx.onMenuShareAppMessage(op);
+    setShare=null;
 }
+
+if(W.native)
+    setShare()
+else
+    window.addEventListener('nativeSdkReady',setShare);

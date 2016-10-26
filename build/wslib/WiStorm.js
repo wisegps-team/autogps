@@ -777,7 +777,7 @@ W.errorCode=function(json){
 		var erKey=Object.keys(er);
 		
 		var text=___.error[json.status_code]||___.unknown_err;
-		if(erKey.indexOf(json.status_code.toString())){
+		if(erKey.indexOf(json.status_code.toString())!=-1){
 			text=___.error['000'];
 		}
 		W.alert("error_code："+json.status_code+"；error_msg："+text);
