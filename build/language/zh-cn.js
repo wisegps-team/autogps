@@ -149,7 +149,7 @@ window.___={
 	'department_manage':'部门管理',
 	'employee_manage':'人员管理',
 	'customer_null':'未选择要分配的客户',
-	'register_success':'注册成功，请登录。',
+	'register_success':'加盟成功，请登录。',
 	'account_error':'手机号已注册且登录密码错误，如果希望继续，请输入正确的登录密码',
 	'company_name':'公司名称',
 	'user_type_error':'您当前客户类型不正确，无法添加品牌商',
