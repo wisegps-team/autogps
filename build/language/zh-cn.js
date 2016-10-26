@@ -242,4 +242,10 @@ window.___={
 	'device_repeat_out':'该设备已从当前用户出库，请勿重复添加出库信息',
 	'deivce_not_own':'该设备不属于本用户，请确认后重新输入',
 	'deivce_other_own':'该设备已属于其他用户，请确认后重新输入',
+	'register_info':'注册信息',
+	'carOwner_seller':'车主营销',
+	'toName':'发往',
+	'fromName':'来源',
+	'status':'状态',
+	'reward':'奖励',
 }
