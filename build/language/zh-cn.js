@@ -240,8 +240,8 @@ window.___={
 	'business_statistics':'业务统计',
 	'device_repeat':'该设备已在当前队列中，请勿重复添加',
 	'device_repeat_own':'该设备已属于当前用户，请勿重复添加入库信息',
-	'device_repeat_out':'，以上设备重复出库，已为您剔除，请重新确认后提交',
-	'deivce_not_own':'，以上设备不属于本用户，已为您剔除，请重新确认后提交',
+	'device_repeat_out':'部分设备重复出库，已为您剔除，请重新确认后提交',
+	'deivce_not_own':'部分设备不属于本用户，已为您剔除，请重新确认后提交',
 	'deivce_other_own':'该设备已属于其他用户，请确认后重新输入',
 	'invite_desc':'邀请你成为本公司车联网合作伙伴',
 	'have_account':'已有账号，',
@@ -255,5 +255,6 @@ window.___={
 	'agent':'代理商',
 	'outing':'正在出库',
 	'ining':'正在入库',
-	'model_error':'当前型号不存在'
+	'model_error':'当前型号不存在',
+	'check_out_ok':'已检查完毕，本次出库%d台，请点击确定进行出库。'
 }
