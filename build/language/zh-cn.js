@@ -256,5 +256,9 @@ window.___={
 	'outing':'正在出库',
 	'ining':'正在入库',
 	'model_error':'当前型号不存在',
-	'check_out_ok':'已检查完毕，本次出库%d台，请点击确定进行出库。'
+	'check_out_ok':'已检查完毕，本次出库%d台，请点击确定进行出库。',
+	'config_wx':'配置公众号',
+	'appid_null':'AppID为必填',
+	'appSecret_null':'AppSecret为必填',
+	'find_appid':'请登录微信公众号，左边菜单栏》开发》基本配置中查看AppID和AppSecret'
 }

@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=50;//版本号
+let version=51;//版本号
 
 //地区表
 export const area={
@@ -312,7 +312,19 @@ export const customer={
             'desc': '其他信息',
             'type': 'Object',
             'query': true,    //可查询字段
-        }
+        },
+        {
+            'name': 'wxAppKey',
+            'desc': '微信公众号app key',
+            'type': 'String',
+            'query': true
+        },
+        {
+            'name': 'wxAppSecret',
+            'desc': '微信app secret',
+            'type': 'String',
+            'query': true,
+        },
     ],
     indexDefine: [
         {
