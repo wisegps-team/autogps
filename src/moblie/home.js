@@ -23,6 +23,8 @@ import ActionFace from 'material-ui/svg-icons/action/face';
 import ToggleStar from 'material-ui/svg-icons/toggle/star';
 import CommunicationContacts from 'material-ui/svg-icons/communication/contacts';
 import ContentSort from 'material-ui/svg-icons/content/sort';
+import AvFeaturedPlayList from 'material-ui/svg-icons/av/featured-play-list';
+import AvRecentActors from 'material-ui/svg-icons/av/recent-actors';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -125,6 +127,16 @@ const _pages=[//所有的页面
         href:'role_manage',
         name:___.role_manage,
         icon:<ActionFace style={sty.icon}/>
+    },
+    {   /*注册信息链接 */
+        href:'register_info',
+        name:___.register_info,
+        icon:<AvFeaturedPlayList style={sty.icon}/>
+    },
+    {   /*车主营销链接 */
+        href:'carowner_seller',
+        name:___.carowner_seller,
+        icon:<AvRecentActors style={sty.icon}/>
     }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
