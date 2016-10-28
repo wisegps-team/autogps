@@ -12,6 +12,7 @@ const styles = {
     list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
     card:{margin:'1em',padding:'0.5em'},
     a:{color:'#00bbbb',borderBottom:'solid 1px'},
+    hide:{display:'none'},
     line:{marginTop:'0.5em'},
     bold:{fontWeight:'bold'},
 };
@@ -144,14 +145,24 @@ class ProductLogList extends Component {
                 </div>
             </div>);
 
+        let paramsPush={
+            type:1
+        }
+        let paramsPop={
+            type:0
+        }
+        if(this.state.selectProduct){
+            paramsPush.modelId=this.state.selectProduct.objectId;
+            paramsPop.modelId=this.state.selectProduct.objectId;
+        }
         return (
             <div style={styles.main}>
                 {items}
                 <SonPage title={___.push_record} open={this.state.push} back={this.pushPageBack}>
-                    <PushPopCount product={this.state.selectProduct} intent={'push'}/>
+                    <PushPopCount params={paramsPush}/>
                 </SonPage>
                 <SonPage title={___.pop_record} open={this.state.pop} back={this.popPageback}>
-                    <PushPopCount product={this.state.selectProduct} intent={'pop'}/>
+                    <PushPopCount params={paramsPop}/>
                 </SonPage>
             </div>
         );
@@ -167,6 +178,9 @@ class Dlist extends Component{
         let items=this.props.data.map((ele,i)=>
             <Card key={i} style={styles.card}>
                 <div>{ele.brand+' '+ele.model}</div>
+                <div style={ele.fromName=='0' ? styles.hide : styles.line}>
+                    {ele.type==1 ? ___.fromName+' '+ele.fromName : ___.toName+' '+ele.toName}
+                </div>
                 <div style={styles.line}>{___.time+' '+W.dateToString(W.date(ele.createdAt))}</div>
                 <div style={styles.line}>{___.num+' '+ele.did.length}</div>
                 <div style={styles.line}><a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a></div>
@@ -180,6 +194,7 @@ class Dlist extends Component{
 }
 Dlist.contextTypes ={
     toDidList:React.PropTypes.func,
+    logType:React.PropTypes.number,
 }
 let Alist=AutoList(Dlist);
 export class PushPopCount extends Component {
@@ -190,6 +205,7 @@ export class PushPopCount extends Component {
             showDid:false,
             data:[],
             total:-1,
+            logType:1,
         }
         this.par={
             uid:_user.customer.objectId
@@ -207,16 +223,13 @@ export class PushPopCount extends Component {
     getChildContext(){
         return {
             toDidList:this.toDidList,
+            logType:this.state.logType,
         };
     }
     componentWillReceiveProps(nextProps) {
-        this.par.type=nextProps.intent=='push'?1:0;
-        if(nextProps.product){
-            this.par.modelId=nextProps.product.objectId;
-            // par=Object.assign(par,{modelId:nextProps.product.objectId});
-        }
+        this.par=Object.assign(this.par,nextProps.params);
         if(nextProps.params){
-            this.par=Object.assign(this.par,nextProps.params);
+            this.state.logType=nextProps.params.type;
         }
         Wapi.deviceLog.list(res=>{
             this.setState({
@@ -248,7 +261,6 @@ export class PushPopCount extends Component {
         },this.par,this.op);
     }
     render() {
-        if(this.props.intent=='push')console.log('total push:'+this.state.total);
         return (
             <div>
                 <Alist 
@@ -257,7 +269,7 @@ export class PushPopCount extends Component {
                     data={this.state.data} 
                     next={this.nextPage} 
                 />
-                <SonPage title={this.props.intent=='push'?___.push_record:___.pop_record} open={this.state.showDid} back={this.showDidBack}>
+                <SonPage title={this.state.logType==1?___.push_record:___.pop_record} open={this.state.showDid} back={this.showDidBack}>
                     <DidList data={this.state.curLog}/>
                 </SonPage>
             </div>
@@ -266,6 +278,7 @@ export class PushPopCount extends Component {
 }
 PushPopCount.childContextTypes={
     toDidList:React.PropTypes.func,
+    logType:React.PropTypes.number,
 }
 
 

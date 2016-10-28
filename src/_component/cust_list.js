@@ -101,11 +101,13 @@ export function CustListHC(Com,isList){
                 this.countParams={
                     from:_user.customer.objectId,
                     to:cust.objectId,
+                    type:0,
                 }
             }else{
                 this.countParams={
                     from:cust.objectId,
                     to:_user.customer.objectId,
+                    type:1,
                 }
             }
             this.setState({
@@ -149,7 +151,7 @@ export function CustListHC(Com,isList){
                         next={this.load} 
                     />
                     <SonPage title={this.state.showCountIntent=='push'?___.push_record:___.pop_record} open={this.state.showCount} back={this.showCountBack}>
-                        <PushPopCount params={this.countParams} intent={this.state.showCountIntent}/>
+                        <PushPopCount params={this.countParams}/>
                     </SonPage>
                 </div>
             );
