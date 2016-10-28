@@ -58,7 +58,7 @@ const _carOwner={
     tel:'13566669999',
     model:'W20',
     did:'123456',
-    register_date:'2016-10-25'
+    createdAt:'2016-10-25'
 }
 const _carOwners=[];
 for(let i=0;i<10;i++){
@@ -70,7 +70,7 @@ for(let i=0;i<10;i++){
 class App extends Component {
     constructor(props,context){
         super(props,context);
-        this.limit=3;
+        this.limit=20;
         this.total=-1;
         this.page_no=1;
         this.carOwners=[];
@@ -87,9 +87,40 @@ class App extends Component {
     }
     getData(){
         console.log(this.page_no);
-        this.total=_carOwners.length;
-        this.carOwners=_carOwners.slice(0,this.page_no*this.limit+this.limit);
-        this.forceUpdate();
+        // this.total=_carOwners.length;
+        // this.carOwners=_carOwners.slice(0,this.page_no*this.limit+this.limit);
+        // this.forceUpdate();
+
+        Wapi.customer.list(res=>{//获取当前用户名下的车主
+            this.total=res.total;
+            // this.carOwners=res.data;
+            let carOwners=res.data;
+            
+            let arrCarOwnersId=carOwners.map(ele=>ele.objectId);//车主的objectId数组
+            let strCarOwnersId=arrCarOwnersId.join('|');
+
+            Wapi.device.list(re=>{//根据车主id数组查找车主的设备
+                let data=re.data;
+
+                carOwners.forEach(ele=>{
+                    data.find(item=>{
+                        if(item.uid==ele.objectId){
+                            ele.model=item.model;
+                            ele.did=item.did;
+                        }
+                    });
+                });
+
+                this.carOwners=this.carOwners.concat(carOwners);
+                this.forceUpdate();
+            },{uid:strCarOwnersId});
+
+        },{
+            parentId:_user.customer.objectId
+        },{
+            limit:this.limit,
+            page_no:this.page_no,
+        });
     }
     
     render() {
@@ -141,7 +172,7 @@ class DList extends Component{
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.register_date}</td>
-                            <td style={styles.td_right}>{ele.register_date}</td>
+                            <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
                         </tr>
                     </tbody>
                 </table>

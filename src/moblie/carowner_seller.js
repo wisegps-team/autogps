@@ -19,6 +19,7 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import Card from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import Toggle from 'material-ui/Toggle';
 
 import STORE from '../_reducers/main';
 import BrandSelect from'../_component/base/brandSelect';
@@ -57,16 +58,18 @@ thisView.addEventListener('load',function(){
 const activity={
     name:'一个活动',
     url:'http://wx.autogps.cn',
-    status:0,
+    status:1,
     reward:50,
-    bookNum:10,
-    registerNum:5,
-    countNum:3,
+    status0:10,
+    status1:5,
+    status2:3,
+    objectId:100,
 }
 const _activities=[];
 for(let i=0;i<10;i++){
     let a=Object.assign({},activity);
     a.name=a.name+i;
+    a.objectId+=i;
     _activities.push(a);
 }
 
@@ -78,7 +81,7 @@ class App extends Component {
             curActivity:null,
             activityName:'',
         }
-        this.limit=3;
+        this.limit=20;
         this.page_no=1;
         this.total=-1;
         this.activities=[];
@@ -103,21 +106,53 @@ class App extends Component {
         this.getData();
     }
     getData(){
-        console.log(this.page_no);
-        this.total=_activities.length;
-        this.activities=_activities.slice(0,this.page_no*this.limit+this.limit);
-        this.forceUpdate();
+        //测试用
+        // this.total=_activities.length;
+        // this.activities=_activities.slice(0,this.page_no*this.limit+this.limit);
+        // this.forceUpdate();
 
-        // Wapi.activity.list(res=>{
-        //     this.total=res.total;
-        //     this.activities=res.data.concat(this.activities);
-        //     this.forceUpdate();
-        // },{
-        //     uid:_user.customer.objectId
-        // },{
-        //     limit:this.limit,
-        //     page_no:this.page_no,
-        // });
+        Wapi.activity.list(res=>{
+            this.total=res.total;
+            let activities=res.data;
+
+            let par={
+                "group":{
+                    "_id":{"activityId":"$activityId"},
+                    "status0":{"$sum":"$status0"},
+                    "status1":{"$sum":"$status1"},
+                    "status2":{"$sum":"$status2"},
+                    "status3":{"$sum":"$status3"}
+                },
+                "sorts":"sellerId",
+                "uid":_user.customer.objectId
+            }
+            Wapi.booking.aggr(resAggr=>{
+                let arr=resAggr.data;
+                activities.map(ele=>{
+                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                });
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            },par);
+
+        },{
+            uid:_user.customer.objectId
+        },{
+            limit:this.limit,
+            page_no:this.page_no,
+            sorts:'-createdAt',
+        });
     }
     add(){
         this.setState({
@@ -129,7 +164,6 @@ class App extends Component {
     addSubmit(activity){
         console.log(activity);
         this.activities.unshift(activity);
-        this.forceUpdate();
         history.back();
     }
     edit(activity){
@@ -144,6 +178,12 @@ class App extends Component {
     }
     editSubmit(activity){
         console.log(activity);
+        for(let i=this.activities.length-1;i>=0;i--){
+            if(this.activities[i].objectId==activity.objectId){
+                this.activities[i]=activity;
+            }
+        }
+        this.forceUpdate();
         history.back();
     }
     render() {
@@ -181,6 +221,7 @@ App.childContextTypes={
     edit:React.PropTypes.func
 }
 
+let strStatus=['已终止','进行中'];
 class DList extends Component{
     constructor(props,context){
         super(props,context);
@@ -190,12 +231,12 @@ class DList extends Component{
         let items=data.map((ele,i)=>
             <Card key={i} style={styles.card}>
                 <div>{___.name +' '+ ele.name}</div>
-                <div style={styles.line}>{___.status +' '+ ele.status}</div>
-                <div style={styles.line}>{___.reward +' '+ ele.reward}</div>
+                <div style={styles.line}>{___.status +' '+ strStatus[ele.status]}</div>
+                <div style={styles.line}>{___.reward +' ￥'+ ele.reward}</div>
                 <div style={styles.line}>
-                    <span style={{marginRight:'1em'}}>{___.count_booked +' '+ ele.bookNum}</span>
-                    <span style={{marginRight:'1em'}}>{___.count_registed +' '+ ele.registerNum}</span>
-                    <span>{___.count_paid +' '+ ele.countNum}</span>
+                    <span style={{marginRight:'1em'}}>{___.count_booked +' '+ ele.status0||0}</span>
+                    <span style={{marginRight:'1em'}}>{___.count_registed +' '+ ele.status1||0}</span>
+                    <span>{___.count_paid +' '+ ele.status2||0}</span>
                 </div>
                 <div style={styles.bottom_btn_right}>
                     <FlatButton label={___.edit} primary={true} onClick={()=>this.context.edit(ele)} />
@@ -221,18 +262,20 @@ class EditActivity extends Component {
             name:'',
             url:'',
             reward:'',
+            status:1,
         }
         this.intent='add';
 
         this.nameChange = this.nameChange.bind(this);
         this.urlChange = this.urlChange.bind(this);
         this.rewardChange = this.rewardChange.bind(this);
+        this.statusChange = this.statusChange.bind(this);
         this.submit = this.submit.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.data){
             this.intent='edit';
-            this.data=nextProps.data;
+            this.data=Object.assign({},nextProps.data);
             this.forceUpdate();
         }else{
             this.intent='add';
@@ -240,6 +283,7 @@ class EditActivity extends Component {
                 name:'',
                 url:'',
                 reward:'',
+                status:1
             };
             this.forceUpdate();
         }
@@ -253,6 +297,10 @@ class EditActivity extends Component {
     }
     rewardChange(e,value){
         this.data.reward=value;
+    }
+    statusChange(e,value){
+        this.data.status=Number(value);
+        this.forceUpdate();
     }
     submit(){
         let data=this.data;
@@ -270,33 +318,41 @@ class EditActivity extends Component {
         }
 
         if(this.intent=='edit'){
-            this.props.editSubmit(data);
-            // Wapi.activity.update(res=>{
-            //     let sth;
-            // },{
-            //     name:data.name,
-            //     url:data.url,
-            //     reward:data.reward,
-            // });
+            Wapi.activity.update(res=>{
+                this.props.editSubmit(data);
+            },{
+                _objectId:data.objectId,
+                name:data.name,
+                url:data.url,
+                reward:data.reward,
+                status:data.status,
+            });
         }else{
-            this.props.addSubmit(data);
-            // Wapi.activity.add(res=>{
-            //     let sth;
-            // },{
-            //     uid:_user.customer.objectId,
-            //     name:data.name,
-            //     url:data.url,
-            //     reward:data.reward,
-            //     status:0,
-            // });
+            Wapi.activity.add(res=>{
+                data.status0=0;
+                data.status1=0;
+                data.status2=0;
+                data.objectId=res.objectId;
+                this.props.addSubmit(data);
+            },{
+                uid:_user.customer.objectId,
+                name:data.name,
+                url:data.url,
+                reward:data.reward,
+                status:1,
+            });
         }
     }
     render() {
         return (
             <div style={styles.input_page}>
-                <Input floatingLabelText={'活动名称'} value={this.data.name} onChange={this.nameChange} />
-                <Input floatingLabelText={'活动链接'} value={this.data.url} onChange={this.urlChange} />
-                <Input floatingLabelText={'活动奖励'} value={this.data.reward} onChange={this.rewardChange} />
+                <Input floatingLabelText={___.activity_name} value={this.data.name} onChange={this.nameChange} />
+                <Input floatingLabelText={___.activity_url} value={this.data.url} onChange={this.urlChange} />
+                <Input floatingLabelText={___.activity_reward} value={this.data.reward} onChange={this.rewardChange} />
+                <div style={{textAlign:'left'}}>
+                    <span style={{fontSize:'0.7em',color:'#999999'}}>{___.status}</span>
+                    <Toggle label={strStatus[this.data.status]} labelPosition="right" toggled={Boolean(this.data.status)} onToggle={this.statusChange}/>
+                </div>
                 <RaisedButton style={styles.line} label={___.submit} primary={true} onClick={this.submit} />
             </div>
         );
