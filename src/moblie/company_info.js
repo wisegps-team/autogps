@@ -161,7 +161,14 @@ class Wxbox extends Component{
         }
         let cust={_objectId:_user.customer.objectId};
         Object.assign(cust,this.fromData);
-        Wapi.customer.update(res=>this.setState({action:!this.state.action}),cust);
+        Wapi.customer.update(res=>{
+            if(_user.customer.custTypeId==8)//经销商
+                W.alert({
+                    title:___.your_register,
+                    text:'http://w.wo365.net/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+cust.wxAppKey
+                });
+            this.setState({action:!this.state.action});
+        },cust);
     }
     config(){
         setTimeout(e=>this.setState({action:!this.state.action}),300);

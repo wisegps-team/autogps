@@ -963,7 +963,7 @@ var keys=W.getCookie('_app_config_');
 try {
 	keys=JSON.parse(keys);
 	Object.assign(WiStorm.config,keys);
-	WiStorm.config.wx_app_id=keys.wxAppKey;
+	WiStorm.config.wx_app_id=_g.wx_app_id||keys.wxAppKey;
 } catch (error) {
 	var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
 	loc=(loc=='index.html')?'':'&location='+loc;

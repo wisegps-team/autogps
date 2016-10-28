@@ -266,5 +266,6 @@ window.___={
 	'config_wx':'配置公众号',
 	'appid_null':'AppID为必填',
 	'appSecret_null':'AppSecret为必填',
-	'find_appid':'请登录微信公众号，左边菜单栏》开发》基本配置中查看AppID和AppSecret'
+	'find_appid':'请登录微信公众号，左边菜单栏》开发》基本配置中查看AppID和AppSecret',
+	'your_register':'您的用户注册链接'
 }
