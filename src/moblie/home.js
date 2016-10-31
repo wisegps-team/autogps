@@ -26,6 +26,7 @@ import ContentSort from 'material-ui/svg-icons/content/sort';
 import AvFeaturedPlayList from 'material-ui/svg-icons/av/featured-play-list';
 import AvRecentActors from 'material-ui/svg-icons/av/recent-actors';
 import ActionPermContactCalendar from 'material-ui/svg-icons/action/perm-contact-calendar';
+import ImageHdrStrong from 'material-ui/svg-icons/image/hdr-strong';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -143,7 +144,12 @@ const _pages=[//所有的页面
         href:'carowner_seller',
         name:___.carowner_seller,
         icon:<AvRecentActors style={sty.icon}/>
-    }
+    },
+    // {   /*公众号配置 */
+    //     href:'wx_config',
+    //     name:___.config_wx,
+    //     icon:<ImageHdrStrong style={sty.icon}/>
+    // }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;

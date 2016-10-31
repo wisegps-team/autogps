@@ -37,7 +37,7 @@ window.onerror=function(msg,url,l){
 		}
 		var errorJson={"bug_report":text,"account":account};
 		if(typeof Wapi=="object"){//如果已经加载了api文件，则直接发送错误
-			Wapi.user.createCrash(errorJson,function(res){});
+			Wapi.crash.add(function(res){},errorJson);
 		}else{//否则存在本地，等Wapi加载完会自动发送
 			var errorLog=localStorage.getItem("errorList");
 			var errorList;
@@ -964,6 +964,8 @@ try {
 	keys=JSON.parse(keys);
 	Object.assign(WiStorm.config,keys);
 	WiStorm.config.wx_app_id=_g.wx_app_id||keys.wxAppKey;
+	if(_g.wx_app_id)
+			WiStorm.config.wx_login=WiStorm.config.wx_login+'?wx_app_id='+WiStorm.config.wx_app_id;
 } catch (error) {
 	var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
 	loc=(loc=='index.html')?'':'&location='+loc;

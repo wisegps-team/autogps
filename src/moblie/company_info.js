@@ -46,7 +46,6 @@ class App extends Component {
                 <AppBar title={___.company_info}/>
                 <div style={sty.p}>
                     {box}
-                    <Wxbox/>
                 </div>
             </div>
             </ThemeProvider>
@@ -130,65 +129,4 @@ class EditBox extends Component{
         );
     }
     
-}
-
-
-class Wxbox extends Component{
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            action:false
-        }
-        this.fromData={};
-        this.config = this.config.bind(this);
-        this.change = this.change.bind(this);
-        this.save = this.save.bind(this);
-
-    }
-    
-    change(e,val){
-        let name=e.currentTarget.name;
-        this.fromData[name]=val;
-    }
-    save(){
-        if(!this.fromData.wxAppKey){
-            W.alert(___.appid_null);
-            return;
-        }
-        if(!this.fromData.wxAppSecret){
-            W.alert(___.appSecret_null);
-            return;
-        }
-        let cust={_objectId:_user.customer.objectId};
-        Object.assign(cust,this.fromData);
-        Wapi.customer.update(res=>{
-            if(_user.customer.custTypeId==8)//经销商
-                W.alert({
-                    title:___.your_register,
-                    text:'http://w.wo365.net/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+cust.wxAppKey
-                });
-            this.setState({action:!this.state.action});
-        },cust);
-    }
-    config(){
-        setTimeout(e=>this.setState({action:!this.state.action}),300);
-    }
-    render(){
-        let show=[];
-        if(!this.state.action)
-            show.push(<FlatButton label={___.config_wx} onClick={this.config} primary={true} key='b'/>);
-        else
-            show=[
-                <h4 style={sty.h4} key='h4'>{___.find_appid}</h4>,
-                <Input name='wxAppKey' onChange={this.change} hintText={'AppID'} key='0'/>,
-                <Input name='wxAppSecret' onChange={this.change} hintText={'AppSecret'} key='1'/>,
-                <FlatButton label={___.cancel} onClick={this.config} primary={true}  key='2'/>,
-                <FlatButton label={___.save} onClick={this.save} primary={true}  key='3'/>,
-            ];
-        return (
-            <div style={sty.wxbox}>
-                {show}
-            </div>
-        );
-    }
 }
