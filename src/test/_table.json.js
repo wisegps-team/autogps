@@ -2082,7 +2082,7 @@ export const activity={
         },{
             'name': 'status',
             'desc': '活动状态',
-            'type': 'Number',
+            'type': 'Number',//0已终止 1进行中
             'query': true
         },{
             'name': 'reward',

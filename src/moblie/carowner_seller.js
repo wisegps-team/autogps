@@ -34,18 +34,18 @@ import AutoList from '../_component/base/autoList';
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
     card:{margin:'1em',padding:'0.5em'},
-    show:{paddingTop:'50px'},
-    hide:{display:'none'},
-    a:{color:'#00bbbb',borderBottom:'solid 1px'},
-    product_id:{borderBottom:'solid 1px #999999'},
-    ids_box:{marginTop:'1em',marginBottom:'1em'},
-    btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
-    w:{width:'100%'},
     line:{marginTop:'0.5em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
+    // list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
+    // show:{paddingTop:'50px'},
+    // hide:{display:'none'},
+    // a:{color:'#00bbbb',borderBottom:'solid 1px'},
+    // product_id:{borderBottom:'solid 1px #999999'},
+    // ids_box:{marginTop:'1em',marginBottom:'1em'},
+    // btn_cancel:{marginTop:'30px',marginRight:'20px'},
+    // w:{width:'100%'},
 };
 
 
@@ -55,23 +55,24 @@ thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
 
-const activity={
-    name:'一个活动',
-    url:'http://wx.autogps.cn',
-    status:1,
-    reward:50,
-    status0:10,
-    status1:5,
-    status2:3,
-    objectId:100,
-}
-const _activities=[];
-for(let i=0;i<10;i++){
-    let a=Object.assign({},activity);
-    a.name=a.name+i;
-    a.objectId+=i;
-    _activities.push(a);
-}
+//测试用
+// const activity={
+//     name:'一个活动',
+//     url:'http://wx.autogps.cn',
+//     status:1,
+//     reward:50,
+//     status0:10,
+//     status1:5,
+//     status2:3,
+//     objectId:100,
+// }
+// const _activities=[];
+// for(let i=0;i<10;i++){
+//     let a=Object.assign({},activity);
+//     a.name=a.name+i;
+//     a.objectId+=i;
+//     _activities.push(a);
+// }
 
 class App extends Component {
     constructor(props,context){
