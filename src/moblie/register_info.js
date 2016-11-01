@@ -31,19 +31,9 @@ import AutoList from '../_component/base/autoList';
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
     card:{margin:'1em',padding:'0.5em'},
-    card_left:{display:'table-cell',width:'75px',whiteSpace:'nowrap'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
-    show:{paddingTop:'50px'},
-    hide:{display:'none'},
-    a:{color:'#00bbbb',borderBottom:'solid 1px'},
-    product_id:{borderBottom:'solid 1px #999999'},
-    ids_box:{marginTop:'1em',marginBottom:'1em'},
-    btn_cancel:{marginTop:'30px',marginRight:'20px'},
-    input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
-    w:{width:'100%'},
     line:{marginTop:'1em'},
 };
 
@@ -54,18 +44,6 @@ thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
 
-const _carOwner={
-    tel:'13566669999',
-    model:'W20',
-    did:'123456',
-    createdAt:'2016-10-25'
-}
-const _carOwners=[];
-for(let i=0;i<10;i++){
-    let owner=Object.assign({},_carOwner);
-    owner.did=owner.did+i;
-    _carOwners.push(owner);
-}
 
 class App extends Component {
     constructor(props,context){

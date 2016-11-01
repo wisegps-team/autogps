@@ -277,6 +277,7 @@ window.___={
 	'wx_file_name':'凭证文件名',
 	'wx_file_name_null':'请填入文件名',
 	'your_register':'您的用户注册链接',
+	'install_shop':'安装网点',
 	'superior':'供应商管理',
 	'subordinate':'渠道管理',
 	'group_marketing':'集团营销',

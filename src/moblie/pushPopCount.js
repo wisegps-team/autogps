@@ -32,20 +32,7 @@ class Dlist extends Component{
     constructor(props,context){
         super(props,context);
     }
-    componentWillReceiveProps(nextProps) {
-        if(this.props.data[0].did 
-            &&(this.props.data[0].did!=nextProps.data[0].did||this.props.data[0].type!=nextProps.data[0].type)){
-
-            // console.log('Dlist receive nextProps');
-            // console.log(ReactDOM.findDOMNode(this.refs.list).scrollTop);
-            // console.log(ReactDOM.findDOMNode(this.refs.card0).scrollTop);
-            // console.log(this.refs.list.getBoundingClientRect().top);
-            // console.log(this.refs.list.getBoundingClientRect().bottom);
-            
-            // this.refs.list.getBoundingClientRect().top=65;
-        }
-    }
-    
+        
     render() {
         let items=this.props.data.map((ele,i)=>
             <Card key={i} style={styles.card} ref={'card'+i}>
@@ -96,34 +83,26 @@ class PushPopCount extends Component {
             toDidList:this.toDidList,
         };
     }
-    // componentDidMount() {
-    //     thisView.addEventListener('message',function (e) {
-    //         console.log('收到"'+e.from+'"post过来的信息'+JSON.stringify(e.data));
-    //     })
-    // }
-    
-    // componentWillReceiveProps(nextProps) {
-    //     if(nextProps.params){
-    //         this.par=Object.assign(this.par,nextProps.params);
-    //     }
-    // }
     componentDidMount() {
         thisView.addEventListener('message',(e)=>{
-            console.log('收到"'+e.from+'"post过来的信息'+JSON.stringify(e.data));
+            // console.log('收到"'+e.from+'"post过来的信息'+JSON.stringify(e.data));
             if(e.data){
-                if((this.par.modelId && (e.data.modelId!=this.par.modelId || e.data.type!=this.par.type))
-                    ||(this.par.from && (this.par.from!=e.data.from || this.par.to!=e.data.to))){
-                        
-                    this.op.page_no=1;
-                    this.state.data=[];
-                    // window.scrollTo(0,0);
-                    // this.refs.list.scrollTop=0;
-                    // console.log(ReactDOM.findDOMNode(this.refs.list).scrollTop);
-                    // console.log(this.refs.list.getBoundingClientRect().top);
-                    // ReactDOM.findDOMNode(this.refs.list).scrollTop=0;
-                    // this.refs.list.getDOMNode().scrollTop=0;
-                    this.refs.list.toTop();
+                this.par={
+                    uid:_user.customer.objectId,
                 }
+                this.op={
+                    page_no:1,
+                    limit:20,
+                    sorts:'-createdAt',
+                }
+                
+                this.state.data=[];
+
+                // if((this.par.modelId && (e.data.modelId!=this.par.modelId || e.data.type!=this.par.type))
+                //     ||(this.par.from && (this.par.from!=e.data.from || this.par.to!=e.data.to))){
+                //     this.op.page_no=1;
+                //     this.state.data=[];
+                // }
                 
                 this.par=Object.assign(this.par,e.data);
             }
@@ -158,7 +137,7 @@ class PushPopCount extends Component {
     }
     nextPage(){
         this.op.page_no++;
-        console.log('nextPage');
+        // console.log('nextPage');
         Wapi.deviceLog.list(res=>{
             this.setState({
                 data:this.state.data.concat(res.data)

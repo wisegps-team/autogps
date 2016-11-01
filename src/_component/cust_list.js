@@ -12,7 +12,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AutoList from './base/autoList';
 import UserSearch from './user_search';
 import SonPage from '../_component/base/sonPage';
-import ProductLogList,{PushPopCount} from '../_component/productlog_list';
 
 const sty={
     item:{
@@ -60,8 +59,6 @@ export function CustListHC(Com,isList){
             this.state={
                 data:[],
                 total:-1,
-                showCount:false,
-                showCountIntent:'push',
             }
             this.load = this.load.bind(this);
             this.deleteOne = this.deleteOne.bind(this);
@@ -71,10 +68,11 @@ export function CustListHC(Com,isList){
                 page:'objectId',
                 sorts:'objectId'
             }
+            
+            this.openedPushPopPage=false;
 
             this.countParams=null;
             this.showCount = this.showCount.bind(this);
-            this.showCountBack = this.showCountBack.bind(this);
         }
         getChildContext(){
             return {
@@ -84,6 +82,8 @@ export function CustListHC(Com,isList){
         }
         componentDidMount() {
             Wapi.customer.list(res=>{
+                // console.log(this.props.data);
+                // console.log(res);
                 this.setState(res);
             },this.props.data,this.op);
         }
@@ -98,25 +98,32 @@ export function CustListHC(Com,isList){
         }
         showCount(cust,intent){
             if(intent=='pop'){
-                this.countParams={
+                let paramsPop={
                     from:_user.customer.objectId,
                     to:cust.objectId,
                     type:0,
                 }
+                if(this.openedPushPopPage){
+                    this.context.VIEW.postMessage('pushPopCount.js',paramsPop);
+                    this.context.VIEW.goTo('pushPopCount.js',paramsPop);
+                }else{
+                    this.openedPushPopPage=true;
+                    this.context.VIEW.goTo('pushPopCount.js',paramsPop);
+                }
             }else{
-                this.countParams={
+                let paramsPush={
                     from:cust.objectId,
                     to:_user.customer.objectId,
                     type:1,
                 }
+                if(this.openedPushPopPage){
+                    this.context.VIEW.postMessage('pushPopCount.js',paramsPush);
+                    this.context.VIEW.goTo('pushPopCount.js',paramsPush);
+                }else{
+                    this.openedPushPopPage=true;
+                    this.context.VIEW.goTo('pushPopCount.js',paramsPush);
+                }
             }
-            this.setState({
-                showCount:true,
-                showCountIntent:intent,
-            });
-        }
-        showCountBack(){
-            this.setState({showCount:false});
         }
         load(){
             let last=this.props.data[this.props.data.length-1];
@@ -150,9 +157,6 @@ export function CustListHC(Com,isList){
                         data={this.state.data} 
                         next={this.load} 
                     />
-                    <SonPage title={this.state.showCountIntent=='push'?___.push_record:___.pop_record} open={this.state.showCount} back={this.showCountBack}>
-                        <PushPopCount params={this.countParams}/>
-                    </SonPage>
                 </div>
             );
         }
@@ -160,6 +164,9 @@ export function CustListHC(Com,isList){
     CustList.childContextTypes={
         delete:React.PropTypes.func,
         showCount:React.PropTypes.func,
+    }
+    CustList.contextTypes ={
+        VIEW:React.PropTypes.object,
     }
 
     return CustList;

@@ -132,7 +132,7 @@ class AppDeviceManage extends Component{
                         iconElementRight={rightIcon}
                     />
                     <div name='list' style={styles.main}>
-                        <ProductLogList ref={'list'} isBrandSeller={isBrandSeller}/>
+                        <ProductLogList ref={'list'} isBrandSeller={isBrandSeller} thisView={thisView}/>
                     </div>
 
                     <SonPage title={___.push} open={this.state.intent=='in'} back={this.toList}>
