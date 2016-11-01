@@ -56,6 +56,7 @@ class App extends Component{
 
     toAdd(){
         thisView.goTo('cust_add.js',{custTypeId:4});
+        //thisView.goTo('cust_add.js',{custTypeId:1})//添加品牌商
     }
 
     onData(data){
