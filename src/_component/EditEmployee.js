@@ -8,6 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 
 import Input from './base/input';
+// import Checkbox from './base/Checkbox';
 import PhoneInput from './base/PhoneInput';
 import SexRadio from './base/sexRadio';
 import {DepartmentTree,DepartmentSelcet} from'./department_tree';
@@ -174,6 +175,7 @@ class EditEmployee extends React.Component{
                         style={{paddingTop:'10px'}}
                         label={___.allow_login}
                         onCheck={this.allowLogin }
+                        checked={this.state.allowLogin }
                     />
                     {/*<Checkbox //是否驾驶员选择框
                         style={{paddingTop:'10px'}}
