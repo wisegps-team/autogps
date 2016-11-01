@@ -276,5 +276,6 @@ window.___={
 	'save_wx_data':'4、确认信息无误后点击下面保存按钮，保存成功后把“网页授权域名”也设置为“user.autogps.cn”（必须先保存本页信息之后才能设置“网页授权域名”）。',
 	'wx_file_name':'凭证文件名',
 	'wx_file_name_null':'请填入文件名',
-	'your_register':'您的用户注册链接'
+	'your_register':'您的用户注册链接',
+	'install_shop':'安装网点',
 }

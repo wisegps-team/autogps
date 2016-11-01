@@ -28,6 +28,8 @@ class ProductLogList extends Component {
             pop:false,
             selectProduct:null,
         }
+        this.openedPushPopPage=false;
+        
         this.toPushPage = this.toPushPage.bind(this);
         this.pushPageBack = this.pushPageBack.bind(this);
         this.toPopPage = this.toPopPage.bind(this);
@@ -113,20 +115,34 @@ class ProductLogList extends Component {
         },par);
     }
     
-    toPushPage(product){
-        this.setState({
-            push:true,
-            selectProduct:product,
-        });
+    toPushPage(product){        
+        let paramsPush={
+            type:1,
+            modelId:product.objectId
+        }
+        if(this.openedPushPopPage){
+            this.props.thisView.postMessage('pushPopCount.js',paramsPush);
+            this.props.thisView.goTo('pushPopCount.js',paramsPush);
+        }else{
+            this.openedPushPopPage=true;
+            this.props.thisView.goTo('pushPopCount.js',paramsPush);
+        }
     }
     pushPageBack(){
         this.setState({push:false});
     }
     toPopPage(product){
-        this.setState({
-            pop:true,
-            selectProduct:product,
-        });
+        let paramsPop={
+            type:0,
+            modelId:product.objectId
+        }
+        if(this.openedPushPopPage){
+            this.props.thisView.postMessage('pushPopCount.js',paramsPop);
+            this.props.thisView.goTo('pushPopCount.js',paramsPop);
+        }else{
+            this.openedPushPopPage=true;
+            this.props.thisView.goTo('pushPopCount.js',paramsPop);
+        }
     }
     popPageback(){
         this.setState({pop:false});
@@ -145,169 +161,13 @@ class ProductLogList extends Component {
                 </div>
             </div>);
 
-        let paramsPush={
-            type:1
-        }
-        let paramsPop={
-            type:0
-        }
-        if(this.state.selectProduct){
-            paramsPush.modelId=this.state.selectProduct.objectId;
-            paramsPop.modelId=this.state.selectProduct.objectId;
-        }
         return (
             <div style={styles.main}>
                 {items}
-                <SonPage title={___.push_record} open={this.state.push} back={this.pushPageBack}>
-                    <PushPopCount params={paramsPush}/>
-                </SonPage>
-                <SonPage title={___.pop_record} open={this.state.pop} back={this.popPageback}>
-                    <PushPopCount params={paramsPop}/>
-                </SonPage>
             </div>
         );
     }
 }
 
-
-class Dlist extends Component{
-    constructor(props,context){
-        super(props,context);
-    }
-    render() {
-        let items=this.props.data.map((ele,i)=>
-            <Card key={i} style={styles.card}>
-                <div>{ele.brand+' '+ele.model}</div>
-                <div style={ele.fromName=='0' ? styles.hide : styles.line}>
-                    {ele.type==1 ? ___.fromName+' '+ele.fromName : ___.toName+' '+ele.toName}
-                </div>
-                <div style={styles.line}>{___.time+' '+W.dateToString(W.date(ele.createdAt))}</div>
-                <div style={styles.line}>{___.num+' '+ele.did.length}</div>
-                <div style={styles.line}><a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a></div>
-            </Card>);
-        return(
-            <div>
-                {items}
-            </div>
-        )
-    }
-}
-Dlist.contextTypes ={
-    toDidList:React.PropTypes.func,
-    logType:React.PropTypes.number,
-}
-let Alist=AutoList(Dlist);
-export class PushPopCount extends Component {
-    constructor(props,context){
-        super(props,context);
-        this.state={
-            curLog:null,
-            showDid:false,
-            data:[],
-            total:-1,
-            logType:1,
-        }
-        this.par={
-            uid:_user.customer.objectId
-        }
-        this.op={
-            page_no:1,
-            limit:20,
-            sorts:'-createdAt',
-        }
-
-        this.toDidList = this.toDidList.bind(this);
-        this.showDidBack = this.showDidBack.bind(this);
-        this.nextPage = this.nextPage.bind(this);
-    }
-    getChildContext(){
-        return {
-            toDidList:this.toDidList,
-            logType:this.state.logType,
-        };
-    }
-    componentWillReceiveProps(nextProps) {
-        this.par=Object.assign(this.par,nextProps.params);
-        if(nextProps.params){
-            this.state.logType=nextProps.params.type;
-        }
-        Wapi.deviceLog.list(res=>{
-            this.setState({
-                data:res.data,
-                total:res.total,
-            });
-        },this.par,this.op);
-    }
-    toDidList(log){
-        this.setState({
-            curLog:log,
-            showDid:true
-        });
-    }
-    showDidBack(){
-        this.setState({
-            curLog:null,
-            showDid:false
-        });
-    }
-    nextPage(){
-        this.op.page_no++;
-        console.log('nextPage');
-        Wapi.deviceLog.list(res=>{
-            let arr=Object.assign({},this.state.data);
-            this.setState({
-                data:res.data.concat(arr)
-            });
-        },this.par,this.op);
-    }
-    render() {
-        return (
-            <div>
-                <Alist 
-                    max={this.state.total} 
-                    limit={20} 
-                    data={this.state.data} 
-                    next={this.nextPage} 
-                />
-                <SonPage title={this.state.logType==1?___.push_record:___.pop_record} open={this.state.showDid} back={this.showDidBack}>
-                    <DidList data={this.state.curLog}/>
-                </SonPage>
-            </div>
-        );
-    }
-}
-PushPopCount.childContextTypes={
-    toDidList:React.PropTypes.func,
-    logType:React.PropTypes.number,
-}
-
-
-class DidList extends Component {
-    constructor(props,context){
-        super(props,context);
-        this.state={
-            data:{createdAt:'0',did:[]},
-        }
-    }
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.data){
-            this.setState({data:nextProps.data});
-        }
-    }
-    
-    render() {
-        // console.log('didList render');
-        let data=this.state.data;
-        let items=this.state.data.did.map((ele,i)=><p key={i}>{ele}</p>);
-        return (
-            <div style={styles.card}>
-                <div><span style={styles.bold}>{___.time}</span>{' '+W.dateToString(W.date(data.createdAt))}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.num}</span>{' '+data.did.length}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.device_id}</span></div>
-                <div style={{textAlign:'center'}}>{items}</div>
-            </div>
-        );
-    }
-}
 
 export default ProductLogList;
