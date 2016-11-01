@@ -1,6 +1,6 @@
 /**
- * 2016-09-26
- * 用户预定页,因为是活动页，所以需要优化加载速度，所以不能和common.js一起用了
+ * 2016-11-01
+ * 顶级用户使用的增值业务
  */
 "use strict";
 import React,{Component} from 'react';
@@ -31,6 +31,13 @@ const sty={
     }
 }
 
+const p=[
+    //公众号管理         营销统计            注册管理           活动管理            安装网点
+    '792915075680833500|779223776712855600|793341452628398100|793341505392742400|793341563228000300',//'集团营销'
+    '792915075680833500|779223776712855600',//渠道分销
+    '773357884716224500'//政企业务
+];
+
 
 class App extends Component {
     constructor(props, context) {
@@ -40,6 +47,7 @@ class App extends Component {
         this._data={
             custTypeId:5
         }
+        // this.setRole = this.setRole.bind(this);
     }
     
     getChildContext(){
@@ -62,6 +70,27 @@ class App extends Component {
         }
     }
 
+    setRole(i){
+        let rid=p[i];
+        let uid=this.data.uid;
+        Wapi.page.list(function(res){
+            let pages=res.data;
+            let ids=pages.filter(e=>!e.ACL.includes(uid.toString())).map(e=>e.objectId).join('|');
+            if(ids==''){
+                W.alert(___.setting_success);
+                return;
+            }
+            Wapi.page.update(function(res){
+                W.alert(___.setting_success);
+            },{
+                _objectId:ids,
+                ACL:'+"'+uid+'"'
+            });
+        },{
+            objectId:rid
+        },{fields:'objectId,ACL,name'});
+    }
+
     render() {
         return (
             <ThemeProvider>
@@ -69,6 +98,9 @@ class App extends Component {
                 <div style={sty.p}>
                     <UserSearch onChange={this.setCust} data={this._data}/>
                     <RaisedButton label={___.set_to_agent} style={sty.w} onClick={this.set}/>
+                    <RaisedButton label={___.group_marketing} style={sty.w} onClick={e=>this.setRole(0)} />
+                    <RaisedButton label={___.distribution} style={sty.w} onClick={e=>this.setRole(1)} />
+                    <RaisedButton label={___.enterprises} style={sty.w} onClick={e=>this.setRole(2)} />
                 </div>
             </ThemeProvider>
         );

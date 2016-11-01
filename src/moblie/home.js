@@ -69,24 +69,24 @@ const sty={
 }
 
 const _pages=[//所有的页面
+    // {
+    //     href:'brand_trader',
+    //     name:___.brand_trader,
+    //     icon:<ActionRecordVoiceOver style={sty.icon}/>
+    // },
     {
-        href:'brand_trader',
-        name:___.brand_trader,
-        icon:<ActionRecordVoiceOver style={sty.icon}/>
-    },
-    {
-        href:'agent_manage',
-        name:___.agent_manage,
+        href:'superior',
+        name:___.superior,
         icon:<ActionSupervisorAccount style={sty.icon}/>
     },
+    // {
+    //     href:'dealer_agent',
+    //     name:___.agent,
+    //     icon:<ActionSupervisorAccount style={sty.icon}/>
+    // },
     {
-        href:'dealer_agent',
-        name:___.agent,
-        icon:<ActionSupervisorAccount style={sty.icon}/>
-    },
-    {
-        href:'dealer_manage',
-        name:___.dealer,
+        href:'subordinate',
+        name:___.subordinate,
         icon:<ActionPermContactCalendar style={sty.icon}/>
     },
     {
@@ -145,11 +145,11 @@ const _pages=[//所有的页面
         name:___.carowner_seller,
         icon:<AvRecentActors style={sty.icon}/>
     },
-    // {   /*公众号配置 */
-    //     href:'wx_config',
-    //     name:___.config_wx,
-    //     icon:<ImageHdrStrong style={sty.icon}/>
-    // }
+    {   /*公众号配置 */
+        href:'wx_config',
+        name:___.config_wx,
+        icon:<ImageHdrStrong style={sty.icon}/>
+    }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
