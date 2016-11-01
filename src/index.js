@@ -62,7 +62,7 @@ class App extends Component {
             }
             Wapi.role.list(function(role){
                 user.role=role.data;
-                let acl=user.uid;
+                let acl=cust.uid;//暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
                 if(user.role&&user.role.length)
                     acl+='|role:'+user.role.map(r=>r.objectId).join('|role:');
                 Wapi.page.list(function(page){
@@ -80,7 +80,7 @@ class App extends Component {
                     appId:CONFIG.objectId
                 });
             },{
-                users: user.uid,
+                users: cust.uid, //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
                 access_token: token
             });
         },cust_data);

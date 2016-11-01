@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=51;//版本号
+let version=53;//版本号
 
 //地区表
 export const area={
@@ -323,6 +323,12 @@ export const customer={
             'name': 'wxAppSecret',
             'desc': '微信app secret',
             'type': 'String',
+            'query': true,
+        },
+        {
+            'name': 'isInstall',
+            'desc': '是否安装网点',
+            'type': 'Number',
             'query': true,
         },
     ],
@@ -1101,6 +1107,12 @@ export const iotDevice={
             "type" : "Object",
             "desc" : "位置索引字段",
             "name" : "loc"
+        },
+        {
+            "query" : true,
+            "type" : "String",
+            "desc" : "服务商id",
+            "name" : "serverId"
         }
     ],
     indexDefine: [

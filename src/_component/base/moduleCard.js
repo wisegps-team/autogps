@@ -10,7 +10,7 @@ const sty={
         borderBottom: '1px solid #eee',
         borderRight: '1px solid #eee',
         position: 'relative',
-        flex:'1 0 33%'
+        flex:'0 0 33%'
     },
     title:{
         display: 'block'
