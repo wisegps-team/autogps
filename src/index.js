@@ -80,7 +80,7 @@ class App extends Component {
                     appId:CONFIG.objectId
                 });
             },{
-                users: cust.uid, //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
+                users: user.customer.uid, //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
                 access_token: token
             });
         },cust_data);

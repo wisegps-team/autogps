@@ -91,10 +91,11 @@ class App extends Component {
 
                 this.carOwners=this.carOwners.concat(carOwners);
                 this.forceUpdate();
-            },{uid:strCarOwnersId});
+            },{uid:strCarOwnersId},{limit:-1});
 
         },{
-            parentId:_user.customer.objectId
+            parentId:_user.customer.objectId,
+            custTypeId:7
         },{
             limit:this.limit,
             page_no:this.page_no,

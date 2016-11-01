@@ -45,7 +45,7 @@ class App extends Component {
         this.setCust = this.setCust.bind(this);
         this.set = this.set.bind(this);
         this._data={
-            custTypeId:5
+            custTypeId:'1|5|8'
         }
         // this.setRole = this.setRole.bind(this);
     }
