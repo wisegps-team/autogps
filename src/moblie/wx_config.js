@@ -54,7 +54,7 @@ class App extends Component {
     }
     componentDidMount() {
         Wapi.weixin.list(res=>{
-            let data=[res.data.find(e=>e.type==1),res.data.find(e=>e.type==0)]
+            let data=[res.data.find(e=>e.type==0),res.data.find(e=>e.type==1)];
             this.setState({data});
         },{
             uid:_user.customer.objectId
@@ -76,7 +76,9 @@ class App extends Component {
 
     configSuccess(wx){
         //配置成功
+        let data=this.state.data.concat();
         if(this.state.type==1){
+            data[1]=wx;
             Wapi.customer.update(res=>{
                 Wapi.device.update(res=>{//把现有的设备都改serverId
                     _user.customer.wxAppKey=wx.wxAppKey;
@@ -91,15 +93,28 @@ class App extends Component {
                 wxAppKey:wx.wxAppKey,
                 wxAppSecret:wx.wxAppSecret
             });
+        }else{
+            data[0]=wx;
         }
+        this.setState({data});
     }
 
     getUrl(type){
         let wxAppKey='';
         if(type<2){//营销号
-            wxAppKey=this.state.data[0].wxAppKey;
+            if(this.state.data[0])
+                wxAppKey=this.state.data[0].wxAppKey;
+            else{
+                W.alert(___.wx_seller_null);
+                return;
+            }
         }else{//服务号
-            wxAppKey=this.state.data[1].wxAppKey;            
+            if(this.state.data[1])
+                wxAppKey=this.state.data[1].wxAppKey;
+            else{
+                W.alert(___.wx_server_null);
+                return;
+            }
         }
         let text='';
         switch (type) {
@@ -130,19 +145,31 @@ class App extends Component {
     }
 
     render() {
-        let name1,name2;
-        name1=name2=___.loading;
+        let name1,name0;
+        name1=name0=___.loading;
         if(this.state.data){
-            name1=name2=___.unconfig;
+            name1=name0=___.unconfig;
             if(this.state.data.length){
-                name1=this.state.data[0]?this.state.data[0].name:___.unconfig;
-                name2=this.state.data[1]?this.state.data[1].name:___.unconfig;
+                name1=this.state.data[1]?this.state.data[1].name:___.unconfig;
+                name0=this.state.data[0]?this.state.data[0].name:___.unconfig;
             }
         }
         return (
             <ThemeProvider>
                 <AppBar title={___.config_wx}/>
                 <div style={sty.pp}>
+                    <div style={sty.p}>
+                        <h3>{___.wx_server+"："}
+                            <small>{name0}</small>
+                            <FlatButton label={___.config} onClick={e=>this.showWxBox(0)} primary={true}/>
+                        </h3>
+                        <div style={sty.box}>
+                            <FlatButton style={sty.b} label={___.your_register} onClick={e=>this.getUrl(2)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(3)} primary={true}/>
+                            {/*<FlatButton style={sty.b} label={___.recommend_url} onClick={e=>this.getUrl(4)} primary={true}/>*/}
+                            <FlatButton style={sty.b} label={___.car_server_url} onClick={e=>this.getUrl(5)} primary={true}/>
+                        </div>
+                    </div>
                     <div style={sty.p}>
                         <h3>{___.wx_seller+"："}
                             <small>{name1}</small>
@@ -151,19 +178,6 @@ class App extends Component {
                         <div style={sty.box}>
                             <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(0)} primary={true}/>
                             <FlatButton style={sty.b} label={___.seller_url} onClick={e=>this.getUrl(1)} primary={true}/>
-                        </div>
-                    </div>
-                    
-                    <div style={sty.p}>
-                        <h3>{___.wx_server+"："}
-                            <small>{name2}</small>
-                            <FlatButton label={___.config} onClick={e=>this.showWxBox(0)} primary={true}/>
-                        </h3>
-                        <div style={sty.box}>
-                            <FlatButton style={sty.b} label={___.your_register} onClick={e=>this.getUrl(2)} primary={true}/>
-                            <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(3)} primary={true}/>
-                            {/*<FlatButton style={sty.b} label={___.recommend_url} onClick={e=>this.getUrl(4)} primary={true}/>*/}
-                            <FlatButton style={sty.b} label={___.car_server_url} onClick={e=>this.getUrl(5)} primary={true}/>
                         </div>
                     </div>
                 </div>

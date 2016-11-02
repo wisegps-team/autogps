@@ -293,5 +293,7 @@ window.___={
 	'car_server_url':'车主服务链接',
 	'wx_name':'公众号名称',
 	'unconfig':'未设置',
-	'login_bind':'尚未绑定微信账号，请手动登录即可进行绑定'
+	'login_bind':'尚未绑定微信账号，请手动登录即可进行绑定',
+	'wx_seller_null':'营销号未配置',
+	'wx_server_null':'服务号未配置',
 }

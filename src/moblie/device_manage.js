@@ -313,6 +313,7 @@ class DeviceOut extends Component{
             brandId:'',
             model:'',
             modelId:'',
+            wxAppKey:null
         }
         this.custChange=this.custChange.bind(this);
         this.addId=this.addId.bind(this);
@@ -323,6 +324,7 @@ class DeviceOut extends Component{
         this.setState({
             cust_id:cust.objectId,
             cust_name:cust.name,
+            wxAppKey:cust.wxAppKey
         });
     }
     addId(){
@@ -428,9 +430,14 @@ class DeviceOut extends Component{
         W.loading();
         let _this=this;
         let text=___.check_out_ok.replace('%d',ids.length.toString());
+        let device={
+            _did:ids.join('|'),
+            uid:this.state.cust_id,
+        }
+        if(this.state.wxAppKey)device.serverId=device.uid
         W.alert(text,()=>{
             W.loading(true,___.outing);
-            Wapi.device.update(function(res_device){
+            Wapi.device.update(function(res_device){//把设备的uid改为分配到的客户的id
                 let popLog={//出库
                     uid:_user.customer.objectId,
                     did:ids,
@@ -465,10 +472,7 @@ class DeviceOut extends Component{
                         W.alert(___.out_success,_this.cancel);
                     },pushLog);
                 },popLog);
-            },{//把设备的uid改为分配到的客户的id
-                _did:ids.join('|'),
-                uid:this.state.cust_id,
-            });
+            },device);
         });
     }
 
