@@ -104,25 +104,25 @@ class App extends Component {
         let text='';
         switch (type) {
             case 0://兼职营销账号
-                text='http://wx.autogps.cn/?loginLocation=src%2Fmoblie%2Fmy_account.html&wx_app_id='+wxAppKey;
+                text='http://'+domain[1]+'/?loginLocation=src%2Fmoblie%2Fmy_account.html&wx_app_id='+wxAppKey;
                 break;
             case 1://兼职的营销管理
-                text='http://wx.autogps.cn/?loginLocation=src%2Fmoblie%2FpartTime_count.html&wx_app_id='+wxAppKey;
+                text='http://'+domain[1]+'/?loginLocation=src%2Fmoblie%2FpartTime_count.html&wx_app_id='+wxAppKey;
                 break;
             case 2://车主注册
-                text='http://user.autogps.cn/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
                 break;
             case 3://车主账号
-                text='http://user.autogps.cn/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
                 break;
             case 4://推荐有礼(未完成)
-                text='http://user.autogps.cn/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
                 break;
             case 5://车主主页
-                text='http://user.autogps.cn/?wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?wx_app_id='+wxAppKey;
                 break;
             default://车主注册
-                text='http://user.autogps.cn/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
                 break;
         }
         
