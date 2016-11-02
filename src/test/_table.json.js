@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=54;//版本号
+let version=55;//版本号
 
 //地区表
 export const area={
@@ -2040,6 +2040,11 @@ export const booking={
         },{
             'name': 'openId',
             'desc': '微信openId',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'installId',
+            'desc': '安装点的uid',
             'type': 'String',
             'query': true,
         },

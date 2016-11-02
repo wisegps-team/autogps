@@ -74,6 +74,7 @@ class AgentRegisterBox extends Component{
         let token=user.access_token;
         cust.access_token=token;
         cust.uid=user.uid;
+        cust.isInstall=_g.isInstall==1?1:0;
 
         Wapi.custType.get(type=>{
             cust.custType=type.data.name;
