@@ -56,13 +56,16 @@ class App extends Component {
         }
         Wapi.customer.get(function(cust){
             user.customer=cust.data;
+            //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
+            //兼职营销人员只有自己的权限
+            let _uid=(user.employee&&user.employee.departId==-1)?user.uid:user.customer.uid;
             if(!user.customer){
                 W.alert(___.not_allow_login);
                 return;
             }
             Wapi.role.list(function(role){
                 user.role=role.data;
-                let acl=cust.uid;//暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
+                let acl=_uid;//暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
                 if(user.role&&user.role.length)
                     acl+='|role:'+user.role.map(r=>r.objectId).join('|role:');
                 Wapi.page.list(function(page){
@@ -80,7 +83,7 @@ class App extends Component {
                     appId:CONFIG.objectId
                 });
             },{
-                users: user.customer.uid, //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
+                users: _uid, 
                 access_token: token
             });
         },cust_data);
