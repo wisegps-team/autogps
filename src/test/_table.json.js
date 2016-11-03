@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=55;//版本号
+let version=56;//版本号
 
 //地区表
 export const area={
@@ -501,6 +501,11 @@ export const department={
             'type': 'String',
             'display': 'TextBox',
             'query': true    //可查询字段
+        },{
+            'name': 'type',
+            'desc': '部门类型（0或者空都是用户创建类型，1非本公司部门，如营销人员类别）',
+            'type': 'Number',
+            'query': true 
         }
     ],
     indexDefine: [
@@ -2105,6 +2110,36 @@ export const activity={
             'name': 'reward',
             'desc': '奖励标准',
             'type': 'Number',
+            'query': true
+        },{
+            'name': 'pay',
+            'desc': '支付方式（0现金支付）',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'deposit',
+            'desc': '订金标准',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'offersDesc',
+            'desc': '优惠描述',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'price',
+            'desc': '终端价格',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'installationFee',
+            'desc': '安装费用',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'getCard',
+            'desc': '客户经理开卡',
+            'type': 'Boolean',
             'query': true
         }
     ],

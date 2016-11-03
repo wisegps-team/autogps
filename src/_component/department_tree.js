@@ -135,7 +135,8 @@ class Department extends Component{
                 uid:_user.customer.objectId,
                 name:t,
                 parentId:pid,
-                treePath:tp
+                treePath:tp,
+                type:0
             }
             Wapi.department.add(function(res){
                 data.objectId=res.objectId;

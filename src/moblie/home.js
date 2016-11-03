@@ -42,7 +42,7 @@ function loadDictionary(){
     STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
     STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(product_act.get({uid:_user.customer.objectId}));//品牌
-    STORE.dispatch(department_act.get({uid:_user.customer.objectId}));//部门
+    STORE.dispatch(department_act.get({uid:_user.customer.objectId,type:0}));//部门
 }
 loadDictionary();
 
