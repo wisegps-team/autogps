@@ -282,5 +282,8 @@ window.___={
 	'subordinate':'渠道管理',
 	'group_marketing':'集团营销',
 	'distribution':'渠道分销',
-	'enterprises':'政企业务'
+	'enterprises':'政企业务',
+	'purchase':'采购',
+	'install':'安装',
+	'seller_activity':'营销活动',
 }
