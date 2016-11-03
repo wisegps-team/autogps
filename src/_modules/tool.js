@@ -48,3 +48,13 @@ export function getAllChild(data){
     }
     return ids;
 }
+
+
+export function makeRandomEvent(obj){
+    let key=randomStr();
+    let o={};
+    for(let k in obj){
+        o[k]=key+obj[k];
+    }
+    return o;
+}

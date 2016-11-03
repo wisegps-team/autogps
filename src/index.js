@@ -58,7 +58,7 @@ class App extends Component {
             user.customer=cust.data;
             //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
             //兼职营销人员只有自己的权限
-            let _uid=(user.employee&&user.employee.departId==-1)?user.uid:user.customer.uid;
+            let _uid=(user.employee&&user.employee.type==1)?user.uid:user.customer.uid;
             if(!user.customer){
                 W.alert(___.not_allow_login);
                 return;

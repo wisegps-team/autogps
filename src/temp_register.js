@@ -43,9 +43,10 @@ class App extends Component {
         let sty={padding:'10px'};
         let data={
             companyId:_g.parentId,
-            departId:-1,
+            departId:_g.departId,
             role:'兼职营销',
-            roleId:'779209108162220000'
+            roleId:'779209108162220000',
+            type:1
         }
         return (
             <ThemeProvider>

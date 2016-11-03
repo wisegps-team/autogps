@@ -123,16 +123,12 @@ const _pages=[//所有的页面
         icon:<ToggleStar style={sty.icon}/>
     },
 
-    {
-        href:'partTime_sellers',
-        name:___.partTime_sellers,
-        icon:<CommunicationContacts style={sty.icon}/>
-    },
-    {
-        href:'partTime_count',
-        name:___.sell_count,
-        icon:<ContentSort style={sty.icon}/>
-    },
+    // {//原本的营销推广
+    //     href:'partTime_sellers',
+    //     name:___.partTime_sellers,
+    //     icon:<CommunicationContacts style={sty.icon}/>
+    // },
+    
     {   /*角色管理链接 */
         href:'role_manage',
         name:___.role_manage,
@@ -152,6 +148,16 @@ const _pages=[//所有的页面
         href:'wx_config',
         name:___.config_wx,
         icon:<ImageHdrStrong style={sty.icon}/>
+    },
+    {
+        href:'partTime_count',
+        name:___.sell_count,
+        icon:<ContentSort style={sty.icon}/>
+    },
+    {   /*营销人员 */
+        href:'marketing_personnel',
+        name:___.marketing_personnel,
+        icon:<ActionRecordVoiceOver style={sty.icon}/>
     }
 ];
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));

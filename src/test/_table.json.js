@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=56;//版本号
+let version=58;//版本号
 
 //地区表
 export const area={
@@ -506,6 +506,11 @@ export const department={
             'desc': '部门类型（0或者空都是用户创建类型，1非本公司部门，如营销人员类别）',
             'type': 'Number',
             'query': true 
+        },{
+            'name': 'isSimProvider',
+            'desc': 'type等于1时使用',
+            'type': 'Boolean',
+            'query': true 
         }
     ],
     indexDefine: [
@@ -677,6 +682,12 @@ export const employee={
                 date:'驾照过期时间必须为合法日期'
             }
         },
+        {
+            'name': 'type',
+            'desc': '人员类型（0默认，1编外人员，如兼职营销）',
+            'type': 'Number',
+            'query': true,
+        }
     ],
     indexDefine: [
         {
@@ -2140,6 +2151,26 @@ export const activity={
             'name': 'getCard',
             'desc': '客户经理开卡',
             'type': 'Boolean',
+            'query': true
+        },{
+            'name': 'principal',
+            'desc': '负责人名称',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'principalId',
+            'desc': '负责人id',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'sellerType',
+            'desc': '销售类别',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'sellerTypeId',
+            'desc': '销售类别Id',
+            'type': 'String',
             'query': true
         }
     ],
