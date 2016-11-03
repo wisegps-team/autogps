@@ -42,13 +42,16 @@ function loadDictionary(){
     STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
     STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(product_act.get({uid:_user.customer.objectId}));//品牌
-    STORE.dispatch(department_act.get({uid:_user.customer.objectId}));//部门
+    STORE.dispatch(department_act.get({uid:_user.customer.objectId,type:0}));//部门
 }
 loadDictionary();
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+});
+thisView.addEventListener('show',function(){
+    document.title=_user.customer.name;
 });
 
 

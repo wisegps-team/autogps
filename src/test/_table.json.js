@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=53;//版本号
+let version=56;//版本号
 
 //地区表
 export const area={
@@ -501,6 +501,11 @@ export const department={
             'type': 'String',
             'display': 'TextBox',
             'query': true    //可查询字段
+        },{
+            'name': 'type',
+            'desc': '部门类型（0或者空都是用户创建类型，1非本公司部门，如营销人员类别）',
+            'type': 'Number',
+            'query': true 
         }
     ],
     indexDefine: [
@@ -2042,6 +2047,11 @@ export const booking={
             'desc': '微信openId',
             'type': 'String',
             'query': true,
+        },{
+            'name': 'installId',
+            'desc': '安装点的uid',
+            'type': 'String',
+            'query': true,
         },
     ],
     indexDefine: [
@@ -2101,6 +2111,36 @@ export const activity={
             'desc': '奖励标准',
             'type': 'Number',
             'query': true
+        },{
+            'name': 'pay',
+            'desc': '支付方式（0现金支付）',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'deposit',
+            'desc': '订金标准',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'offersDesc',
+            'desc': '优惠描述',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'price',
+            'desc': '终端价格',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'installationFee',
+            'desc': '安装费用',
+            'type': 'Number',
+            'query': true
+        },{
+            'name': 'getCard',
+            'desc': '客户经理开卡',
+            'type': 'Boolean',
+            'query': true
         }
     ],
     indexDefine: [
@@ -2111,11 +2151,54 @@ export const activity={
     ]
 }
 
+//公众号表
+export const weixin={
+    name: 'weixin',             //表名
+    desc: '微信公众号表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'uid',
+            'desc': '所属公司id',
+            'type': 'String',
+            'query': true,    //可查询字段
+        },{
+            'name': 'type',
+            'desc': '类型（0服务号，1营销号）',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'name',
+            'desc': '公众号名称',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'wxAppKey',
+            'desc': '微信appid',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'wxAppSecret',
+            'desc': '微信密钥',
+            'type': 'String',
+            'query': true
+        }
+    ],
+    indexDefine: [
+        {uid:1},
+        {wxAppKey:1}
+    ]
+}
+
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-
+    weixin
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
