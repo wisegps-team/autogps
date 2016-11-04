@@ -26,7 +26,9 @@ import ContentSort from 'material-ui/svg-icons/content/sort';
 import AvFeaturedPlayList from 'material-ui/svg-icons/av/featured-play-list';
 import AvRecentActors from 'material-ui/svg-icons/av/recent-actors';
 import ActionPermContactCalendar from 'material-ui/svg-icons/action/perm-contact-calendar';
+import ActionEvent from 'material-ui/svg-icons/action/event';
 import ImageHdrStrong from 'material-ui/svg-icons/image/hdr-strong';
+import HardwareDeviceHub from 'material-ui/svg-icons/hardware/device-hub';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -144,6 +146,11 @@ const _pages=[//所有的页面
         name:___.carowner_seller,
         icon:<AvRecentActors style={sty.icon}/>
     },
+    {   /*营销活动链接 */
+        href:'seller_activity',
+        name:___.seller_activity,
+        icon:<ActionEvent style={sty.icon}/>
+    },
     {   /*公众号配置 */
         href:'wx_config',
         name:___.config_wx,
@@ -158,8 +165,14 @@ const _pages=[//所有的页面
         href:'marketing_personnel',
         name:___.marketing_personnel,
         icon:<ActionRecordVoiceOver style={sty.icon}/>
-    }
+    },
+    {   /*安装网点 */
+        href:'install_shop',
+        name:___.install_shop,
+        icon:<HardwareDeviceHub style={sty.icon}/>
+    },
 ];
+
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 

@@ -9,30 +9,132 @@ import {List, ListItem} from 'material-ui/List';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Card from 'material-ui/Card';
 
 import AppBar from '../_component/base/appBar';
+import SonPage from '../_component/base/sonPage';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
+
+
+const styles={
+    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingBottom:'20px'},
+    main_sonpage:{width:'90%',paddingTop:'10px',paddingLeft:'5%',paddingRight:'5%',paddingBottom:'20px'},
+    card:{marginTop:'0.5em',padding:'0.5em',borderBottom:'1px solid #999999'},
+    line:{marginTop:'0.5em',fontSize:'0.8em',color:'#999999'},
+    link:{marginRight:'1em',color:'#009688'},
+}
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
 
-
+const emptyCust={
+    name:'',
+    contact:'',
+    tel:'',
+    province:'',
+    city:'',
+    area:''
+}
 class App extends Component{
     constructor(props, context) {
         super(props, context);
-        this._data={
-            parentId:_user.customer.objectId,
-            custTypeId:'5',
-            isInstall:1,
-        };
+        // this._data={
+        //     parentId:_user.customer.objectId,
+        //     custTypeId:'5|8',
+        //     isInstall:1,//注释掉这一个条件，假装有数据
+        // };
+        this.custs=[];
+        this.state={
+            detail:false,
+            inCount:false,
+            curCust:null,
+        }
+        this.detail = this.detail.bind(this);
+        this.detailBack = this.detailBack.bind(this);
+        this.purchase = this.purchase.bind(this);
     }
     getChildContext(){
         return{
-            'VIEW':thisView
+            'VIEW':thisView,
+            detail:this.detail,
+            purchase:this.purchase,
         }
     }
+    componentDidMount() {
+        // purchaseNum//采购数量，即上一级出库到此用户的设备数量
+        // distributeNum//分配数量，上级分配给此用户安装的设备数量（不进入此用户的库存）
+        // installNum//安装数量，此用户的出库记录
+
+        let params={
+            parentId:_user.customer.objectId,
+            custTypeId:'5|8',
+            isInstall:1,//注释掉这一个条件，假装有数据
+        };
+        Wapi.customer.list(res=>{//获取此用户的所有下级
+            let custs=res.data;
+
+            let par={
+                'group':{
+                    '_id':{'to':'$to'},
+                    'outCount':{'$sum':'$outCount'},
+                },
+                'sorts':'objectId',
+                'from':_user.customer.objectId,
+                'type':0
+            };
+            Wapi.deviceLog.aggr(re=>{//从当前用户出库的出库，按接收方id分组
+                custs.map(ele=>{
+                    ele.purchaseNum=0;
+                    ele.distributeNum=0;
+                    ele.installNum=0;
+
+                    let tarData=re.data.find(item=>item._id.to==ele.objectId);
+                    ele.purchaseNum=tarData?tarData.outCount:0;
+                });
+
+                let p={
+                    'group':{
+                        '_id':{'from':'$from'},
+                        'outCount':{'$sum':'$outCount'},
+                    },
+                    'sorts':'objectId',
+                    'type':0
+                };
+                Wapi.deviceLog.aggr(r=>{//获取所有用户的出库数量，按发出方分组
+                    custs.map(ele=>{
+                        let tarData=r.data.find(item=>item._id.from==ele.objectId);
+                        ele.installNum=tarData?tarData.outCount:0;
+                    });
+
+                    let pBooking={
+                        'group':{
+                            '_id':{'installId':'$installId'},
+                            'status0':{'$sum':'$status0'},
+                        },
+                        'sorts':'objectId',
+                        'uid':_user.customer.objectId,
+                    };
+                    Wapi.booking.aggr(rBooking=>{//获取所有预定记录数量，按installId分组
+                        custs.map(ele=>{
+                            let tarData=rBooking.data.find(item=>item._id.installId==ele.objectId);
+                            ele.distributeNum=tarData?tarData.status0:0;
+                        });
+
+                        console.log(custs);
+                        this.custs=custs;
+                        this.forceUpdate();
+
+                    },pBooking);
+
+                },p);
+
+            },par);
+            
+        },params,{limit:-1});
+    }
+    
     tip(){
         if(W.native)
             W.alert({
@@ -49,77 +151,64 @@ class App extends Component{
             });
         }
     }
+    detail(data){
+        this.setState({
+            curCust:data,
+            detail:true,
+        });
+    }
+    detailBack(){
+        this.setState({
+            curCust:null,
+            detail:false,
+        });
+    }
+    purchase(data){
+
+        let params={
+            from:_user.customer.objectId,
+            to:data.objectId,
+        }
+        thisView.postMessage('pushPopCount.js',params);
+        thisView.goTo('pushPopCount.js',params);
+    }
     render() {
         return (
             <ThemeProvider>
                 <AppBar iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>
-                <CustList data={this._data}/>
+                <div style={styles.main}>
+                    <CustList data={this.custs}/>
+                </div>
+                <SonPage open={this.state.detail} back={this.detailBack}>
+                    <CustDetail data={this.state.curCust}/>
+                </SonPage>
             </ThemeProvider>
         );
     }
 }
 App.childContextTypes={
     VIEW:React.PropTypes.object,
+
+    detail:React.PropTypes.func,
+    purchase:React.PropTypes.func,
 }
 
 class UserItem extends Component{
     constructor(props, context) {
         super(props, context);
-        this.state={
-            data:props.data
-        }
-        this.operation = this.operation.bind(this);
-    }
-    componentWillReceiveProps(nextProps) {
-        this.setState({data:nextProps.data});
-    }
-    
-    shouldComponentUpdate(nextProps, nextState) {
-        return (nextProps.data!==this.props.data);
-    }
-    
-    operation(index){
-        switch(index){
-            case 0://编辑
-                break;
-            case 1://详情
-                break;
-            case 2://删除
-                let that=this;
-                W.confirm(___.confirm_delete,function(b){
-                    if(b)Wapi.customer.update(res=>that.context.delete(that.props.data.objectId),{
-                            _objectId:that.props.data.objectId,
-                            parentId:'-"'+_user.customer.objectId+'"'
-                        });
-                });
-                break;
-            case 3://业务统计
-                this.context.showCount(this.props.data,'pop');
-                break;
-        }
     }
     render() {
-        if(!this.props.data.custType){
-            let types=STORE.getState().custType;
-            let type=types.find(type=>this.props.data.custTypeId==type.id);
-            this.props.data.custType=type?type.name:this.props.data.custType;
-        }
-        let tr=(<div style={cust_item_sty.tab}>
-                <span style={cust_item_sty.td}>{this.props.data.custType}</span>
-                <span style={cust_item_sty.td}>{this.props.data.contact}</span>
-                <span style={cust_item_sty.td}>{this.props.data.tel}</span>
-            </div>);
-        let title=(<span>
-            {this.props.data.name}
-            <small style={cust_item_sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
-        </span>);
+        console.log('render item');
+        let data=this.props.data;
         return (
-            <ListItem
-                rightIcon={<RightIconMenu onClick={this.operation}/>}
-                primaryText={title}
-                secondaryText={tr}
-                style={cust_item_sty.item}
-            />
+            <div style={styles.card}>
+                <div onClick={()=>this.context.detail(data)}>{data.name}</div>
+                <div style={{marginTop:'0.5em',fontSize:'0.8em'}}>
+                    <span style={styles.link} onClick={()=>this.context.purchase(data)}>{___.purchase+' '+data.purchaseNum||0}</span>
+                    <span style={{marginRight:'1em'}}>{___.distribute+' '+data.distributeNum||0}</span>
+                    <span style={{marginRight:'1em'}}>{___.install+' '+data.installNum||0}</span>
+                </div>
+            </div>
         );
     }
 }
@@ -127,48 +216,72 @@ UserItem.contextTypes ={
     VIEW:React.PropTypes.object,
     delete:React.PropTypes.func,
     showCount:React.PropTypes.func,
-}
 
-class RightIconMenu extends Component{
-    shouldComponentUpdate(nextProps, nextState) {
-        return false;
+    detail:React.PropTypes.func,
+    purchase:React.PropTypes.func,
+}
+class CustList extends Component {
+    constructor(props,context){
+        super(props,context);
+        this.data=[];
+    }
+    componentDidMount() {
+        if(this.props.data){
+            this.data=this.data.concat(this.props.data);
+            this.forceUpdate();
+        }
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.data){
+            this.data=this.data.concat(nextProps.data);
+            this.forceUpdate();
+        }
     }
     
     render() {
+        console.log('render list');
+        let items=this.data.map((ele,i)=><UserItem key={i} data={ele}/>);
         return (
-            <IconMenu
-                iconButtonElement={
-                    <IconButton>
-                        <MoreVertIcon/>
-                    </IconButton>
-                }
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                style={{
-                    height: '48px',
-                    width: '48px',
-                    position: 'absolute',
-                    right: '0px',
-                    top: '0px',
-                    bottom: '0px',
-                    margin: 'auto'
-                }}
-            >
-                <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
-            </IconMenu>
+            <div>
+                {items}
+            </div>
         );
     }
 }
 
-let CustList=CustListHC(UserItem);
+
+class CustDetail extends Component {
+    render() {
+        let data=Object.assign(emptyCust,this.props.data);
+        return (
+            <div style={styles.main_sonpage}>
+                <div>
+                    <div style={styles.line}>{___.name}</div>
+                    <div>{data.name}</div>
+                </div>
+                <div>
+                    <div style={styles.line}>{___.person}</div>
+                    <div>{data.contact}</div>
+                </div>
+                <div>
+                    <div style={styles.line}>{___.cellphone}</div>
+                    <div>{data.tel}</div>
+                </div>
+                <div>
+                    <div style={styles.line}>{___.address}</div>
+                    <div>{data.province + data.city + data.area}</div>
+                </div>
+            </div>
+        );
+    }
+}
 
 
 function setShare(){
     var op={
         title: ___.invitation_url, // 分享标题
         desc: _user.customer.name, // 分享描述
-        link: location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType=5&name='+encodeURIComponent(_user.customer.name), // 分享链接
+        link: location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType=8&name='+encodeURIComponent(_user.customer.name)+'&isInstall=1', // 分享链接
         imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
         success: function(){},
         cancel: function(){}

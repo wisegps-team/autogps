@@ -69,8 +69,6 @@ export function CustListHC(Com,isList){
                 sorts:'objectId'
             }
             
-            this.openedPushPopPage=false;
-
             this.countParams=null;
             this.showCount = this.showCount.bind(this);
         }
@@ -82,8 +80,6 @@ export function CustListHC(Com,isList){
         }
         componentDidMount() {
             Wapi.customer.list(res=>{
-                // console.log(this.props.data);
-                // console.log(res);
                 this.setState(res);
             },this.props.data,this.op);
         }
@@ -103,26 +99,16 @@ export function CustListHC(Com,isList){
                     to:cust.objectId,
                     type:0,
                 }
-                if(this.openedPushPopPage){
-                    this.context.VIEW.postMessage('pushPopCount.js',paramsPop);
-                    this.context.VIEW.goTo('pushPopCount.js',paramsPop);
-                }else{
-                    this.openedPushPopPage=true;
-                    this.context.VIEW.goTo('pushPopCount.js',paramsPop);
-                }
+                this.context.VIEW.postMessage('pushPopCount.js',paramsPop);
+                this.context.VIEW.goTo('pushPopCount.js',paramsPop);
             }else{
                 let paramsPush={
                     from:cust.objectId,
                     to:_user.customer.objectId,
                     type:1,
                 }
-                if(this.openedPushPopPage){
-                    this.context.VIEW.postMessage('pushPopCount.js',paramsPush);
-                    this.context.VIEW.goTo('pushPopCount.js',paramsPush);
-                }else{
-                    this.openedPushPopPage=true;
-                    this.context.VIEW.goTo('pushPopCount.js',paramsPush);
-                }
+                this.context.VIEW.postMessage('pushPopCount.js',paramsPush);
+                this.context.VIEW.goTo('pushPopCount.js',paramsPush);
             }
         }
         load(){

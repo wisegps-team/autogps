@@ -28,12 +28,9 @@ class ProductLogList extends Component {
             pop:false,
             selectProduct:null,
         }
-        this.openedPushPopPage=false;
         
         this.toPushPage = this.toPushPage.bind(this);
-        this.pushPageBack = this.pushPageBack.bind(this);
         this.toPopPage = this.toPopPage.bind(this);
-        this.popPageback = this.popPageback.bind(this);
         this.getProduct = this.getProduct.bind(this);
         this.getStockNum = this.getStockNum.bind(this);
     }
@@ -43,7 +40,6 @@ class ProductLogList extends Component {
     }
     
     getProduct(params){
-        // console.log('get product');
         let product=this.state.product;
         if(this.props.isBrandSeller){
             this.getStockNum(product,params);
@@ -120,32 +116,16 @@ class ProductLogList extends Component {
             type:1,
             modelId:product.objectId
         }
-        if(this.openedPushPopPage){
-            this.props.thisView.postMessage('pushPopCount.js',paramsPush);
-            this.props.thisView.goTo('pushPopCount.js',paramsPush);
-        }else{
-            this.openedPushPopPage=true;
-            this.props.thisView.goTo('pushPopCount.js',paramsPush);
-        }
-    }
-    pushPageBack(){
-        this.setState({push:false});
+        this.props.thisView.postMessage('pushPopCount.js',paramsPush);
+        this.props.thisView.goTo('pushPopCount.js',paramsPush);
     }
     toPopPage(product){
         let paramsPop={
             type:0,
             modelId:product.objectId
         }
-        if(this.openedPushPopPage){
-            this.props.thisView.postMessage('pushPopCount.js',paramsPop);
-            this.props.thisView.goTo('pushPopCount.js',paramsPop);
-        }else{
-            this.openedPushPopPage=true;
-            this.props.thisView.goTo('pushPopCount.js',paramsPop);
-        }
-    }
-    popPageback(){
-        this.setState({pop:false});
+        this.props.thisView.postMessage('pushPopCount.js',paramsPop);
+        this.props.thisView.goTo('pushPopCount.js',paramsPop);
     }
     render() {
         let items=this.state.product.map((ele,i)=>
@@ -157,7 +137,7 @@ class ProductLogList extends Component {
                 <div style={{marginTop:'0.5em',fontSize:'0.8em'}}>
                     <span onClick={()=>this.toPushPage(ele)} style={{marginRight:'1em',color:'#009688'}}>{___.push+' '+ele.inCount||0}</span>
                     <span onClick={()=>this.toPopPage(ele)} style={{marginRight:'1em',color:'#009688'}}>{' '+___.pop+' '+ele.outCount||0}</span>
-                    <span style={{color:'#009688'}}>{' '+___.stock_count+' '+ele.stock||0}</span>
+                    <span>{' '+___.stock_count+' '+ele.stock||0}</span>
                 </div>
             </div>);
 
