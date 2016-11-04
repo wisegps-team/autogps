@@ -15,6 +15,11 @@
 		<script src="wslib/WiStorm.js"></script>
 		<script>
 			if(W._login&&!_g.location&&!_g.intent)top.location=_g.loginLocation||"src/moblie/home.html";
+			if (WiStorm.agent.weixin&&_g.intent!="forget"&&_g.intent!="logout") {
+				if (!_g.sso_login){ //微信下跳转授权页面
+					W.wxLogin();	
+				}
+			}
 			document.write('<title>'+___.index_login+'</title>');
 		</script>
 	</head>

@@ -134,7 +134,10 @@ class EmployeeRegisterBox extends Component{
             Wapi.user.updateMe(null,{
                 _sessionToken:user.session_token,
                 access_token:token,
-                userType:9
+                userType:9,
+                authData:{
+                    openId:_g.openid
+                }
             });
         },{
             account:user.mobile,

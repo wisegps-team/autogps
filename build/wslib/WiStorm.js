@@ -379,8 +379,12 @@ W.ajax=function(url,options) {
 	    for (items in json.data){
 			data+="&"+items+"="+json.data[items];
 		}
-		if(json.type=="GET")
-			json.url+="?"+data.slice(1);
+		if(json.type=="GET"){
+			if(json.url.indexOf('?')==-1)
+				json.url+="?"+data.slice(1);
+			else
+				json.url+=data;
+		}
     }
 	
 	var xmlhttp=new XMLHttpRequest();
@@ -741,7 +745,7 @@ W.wxLogin=function(s){
 	}else{
 		W.setCookie("__login_redirect_uri__",location.href,-15);
 		var u=encodeURIComponent(WiStorm.config.wx_login);
-		top.location="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+WiStorm.config.wx_app_id+"&redirect_uri="+u+"&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect";
+		top.location="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+WiStorm.config.wx_app_id+"&redirect_uri="+u+"&response_type=code&scope=snsapi_base&state="+state+"#wechat_redirect";
 	}				
 }
 
