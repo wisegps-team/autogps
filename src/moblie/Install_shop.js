@@ -175,7 +175,7 @@ class App extends Component{
     render() {
         return (
             <ThemeProvider>
-                <AppBar iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>
+                <AppBar title={___.install_shop} iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>
                 <div style={styles.main}>
                     <CustList data={this.custs}/>
                 </div>
