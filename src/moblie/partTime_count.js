@@ -72,7 +72,7 @@ class App extends React.Component {
                 _seller=e.params;
                 _isSeller=false;
                 _sellerId=_seller.objectId;
-            }else if(_user.employee&&_user.employee.departId=='-1'){
+            }else if(_user.employee&&_user.employee.type==1){
                 //如果是销售人员自己登录，则显示该销售人员名下的客户
                 _isSeller=true;
                 _sellerId=_user.employee.objectId;
