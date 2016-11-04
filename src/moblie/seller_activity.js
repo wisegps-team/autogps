@@ -167,7 +167,7 @@ class App extends Component {
             <ThemeProvider>
                 <div>
                     <AppBar 
-                        title={___.carowner_seller}
+                        title={___.seller_activity}
                         style={{position:'fixed'}}
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                     />
@@ -181,7 +181,7 @@ class App extends Component {
                         />
                     </div>
                     
-                    <SonPage open={this.state.isEdit} back={this.editBack}>
+                    <SonPage title={___.seller_activity} open={this.state.isEdit} back={this.editBack}>
                         <EditActivity 
                             data={this.state.curActivity} 
                             editSubmit={this.editSubmit} 
@@ -204,8 +204,9 @@ class DList extends Component{
         super(props,context);
         this.toActivityPage = this.toActivityPage.bind(this);
     }
-    toActivityPage(url){
-        window.location=url;
+    toActivityPage(data){
+        history.replaceState('home.html','home.html','home.html');
+        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
     }
     render() {
         let data=this.props.data;
@@ -215,23 +216,23 @@ class DList extends Component{
                     <tbody>
                         <tr >
                             <td style={styles.td_left}>{___.activity_name}</td>
-                            <td style={styles.td_right} onClick={()=>this.toActivityPage(ele.url)}>{ele.name}</td>
+                            <td style={styles.td_right} onClick={()=>this.toActivityPage(ele)}>{ele.name}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.activity_status}</td>
-                            <td style={styles.td_right} onClick={this.toActivityPage}>{strStatus[ele.status]}</td>
+                            <td style={styles.td_right}>{strStatus[ele.status]}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.activity_reward}</td>
-                            <td style={styles.td_right} onClick={this.toActivityPage}>{ele.reward}</td>
+                            <td style={styles.td_right}>{ele.reward}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.project_manager}</td>
-                            <td style={styles.td_right} onClick={this.toActivityPage}>{ele.principal}</td>
+                            <td style={styles.td_right}>{ele.principal}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.seller}</td>
-                            <td style={styles.td_right} onClick={this.toActivityPage}>{ele.sellerType}</td>
+                            <td style={styles.td_right}>{ele.sellerType}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -255,17 +256,18 @@ let Alist=AutoList(DList);
 function getInitData(){
     const initData={
         name:'',    //活动名称
-        url:'',     //活动链接
+        reward:'',  //佣金标准
+        pay:0,      //佣金支付方式
+        deposit:'',     //订金标准
+        offersDesc:'',  //预定优惠
+        price:'',       //终端价格
+        installationFee:'', //安装费用
+        url:'',     //文案链接
         principal:'',   //项目经理
         principalId:'', //项目经理id
         sellerType:'',  //营销人员类别
         sellerTypeId:'',//营销人员类别id
-        reward:'',  //佣金
-        pay:0,     //佣金支付方式
-        offersDesc:'',  //预定优惠
-        price:'',       //终端价格
-        installationFee:'', //安装费用
-        getCard:false,      //客户经理开卡
+        getCard:false,  //客户经理开卡
         status:1,   //活动状态（进行中/已终止）
     };
     return initData;
@@ -321,23 +323,15 @@ class EditActivity extends Component {
             W.alert(___.name+___.not_null);
             return;
         }
-        if(data.url==''){//活动链接不为空
-            W.alert(___.activity_url+___.not_null);
-            return;
-        }
-        if(data.principal==''){//项目经理不为空
-            W.alert(___.project_manager+___.not_null);
-            return;
-        }
-        if(data.sellerType==''){//销售人员类型不为空
-            W.alert(___.seller+___.not_null);
-            return;
-        }
         if(data.reward==''){//佣金不为空
             W.alert(___.activity_reward+___.not_null);
             return;
         }
-        if(data.offersDesc==''){//优惠描述不为空
+        if(data.deposit==''){//订金不为空
+            W.alert(___.deposit+___.not_null);
+            return;
+        }
+        if(data.offersDesc==''){//预订优惠不为空
             W.alert(___.booking_offersDesc+___.not_null);
             return;
         }
@@ -347,6 +341,18 @@ class EditActivity extends Component {
         }
         if(data.installationFee==''){//安装费用不为空
             W.alert(___.install_price+___.not_null);
+            return;
+        }
+        if(data.url==''){//文案链接不为空
+            W.alert(___.activity_url+___.not_null);
+            return;
+        }
+        if(data.principal==''){//项目经理不为空
+            W.alert(___.project_manager+___.not_null);
+            return;
+        }
+        if(data.sellerType==''){//销售人员类型不为空
+            W.alert(___.seller+___.not_null);
             return;
         }
 
@@ -378,6 +384,30 @@ class EditActivity extends Component {
                 {/*活动名称*/}
                 <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} />
                 
+                {/*佣金标准*/}
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} />
+                
+                {/*支付方式*/}
+                <SelectField name='pay' floatingLabelText={___.pay_type} style={{width:'100%',textAlign:'left'}} value={this.data.pay} onChange={this.dataChange}>
+                    <MenuItem value={0} primaryText={___.wxPay} />
+                </SelectField>
+
+                {/*订金标准*/}
+                <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} />
+
+                {/*预订优惠*/}
+                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} />
+
+                {/*产品型号*/}
+
+                {/*产品链接*/}
+
+                {/*终端价格*/}
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} />
+
+                {/*安装费用*/}
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} />
+
                 {/*活动链接*/}
                 <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} />
                 
@@ -391,20 +421,6 @@ class EditActivity extends Component {
                     <UserTypeSearch name='sellerType' floatText={___.seller} defaultValue={this.data.sellerType} onChange={this.sellerTypeChange} data={{uid:_user.customer.objectId,type:1}}/>
                 </div>
 
-                {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} />
-                
-                {/*支付方式*/}
-                <SelectField name='pay' floatingLabelText={___.pay_type} style={{width:'100%',textAlign:'left'}} value={this.data.pay} onChange={this.dataChange}>
-                    <MenuItem value={0} primaryText={___.cash} />
-                </SelectField>
-
-                {/*优惠描述*/}
-                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} />
-                {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} />
-                {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} />
                 {/*客户经理开卡*/}
                 <div style={styles.input_group}>
                     <Checkbox 
