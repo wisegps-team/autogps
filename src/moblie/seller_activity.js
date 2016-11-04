@@ -318,35 +318,35 @@ class EditActivity extends Component {
     submit(){
         let data=this.data;
         if(data.name==''){//名称不为空
-            W.alert('name empty');
+            W.alert(___.name+___.not_null);
             return;
         }
         if(data.url==''){//活动链接不为空
-            W.alert('url empty');
+            W.alert(___.activity_url+___.not_null);
             return;
         }
         if(data.principal==''){//项目经理不为空
-            W.alert('project_manager empty');
+            W.alert(___.project_manager+___.not_null);
             return;
         }
         if(data.sellerType==''){//销售人员类型不为空
-            W.alert('sellerType empty');
+            W.alert(___.seller+___.not_null);
             return;
         }
         if(data.reward==''){//佣金不为空
-            W.alert('reward empty');
+            W.alert(___.activity_reward+___.not_null);
             return;
         }
         if(data.offersDesc==''){//优惠描述不为空
-            W.alert('offersDesc empty');
+            W.alert(___.booking_offersDesc+___.not_null);
             return;
         }
         if(data.price==''){//设备价格不为空
-            W.alert('price empty');
+            W.alert(___.device_price+___.not_null);
             return;
         }
         if(data.installationFee==''){//安装费用不为空
-            W.alert('installationFee empty');
+            W.alert(___.install_price+___.not_null);
             return;
         }
 
