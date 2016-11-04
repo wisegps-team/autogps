@@ -16,7 +16,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import SonPage from '../_component/base/sonPage';
-import ProductLogList,{PushPopCount} from '../_component/productlog_list';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view

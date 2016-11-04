@@ -40,11 +40,11 @@ const emptyCust={
 class App extends Component{
     constructor(props, context) {
         super(props, context);
-        this._data={
-            parentId:_user.customer.objectId,
-            custTypeId:'5|8',
-            // isInstall:1,//注释掉这一个条件，假装有数据
-        };
+        // this._data={
+        //     parentId:_user.customer.objectId,
+        //     custTypeId:'5|8',
+        //     isInstall:1,//注释掉这一个条件，假装有数据
+        // };
         this.custs=[];
         this.state={
             detail:false,
@@ -70,7 +70,7 @@ class App extends Component{
         let params={
             parentId:_user.customer.objectId,
             custTypeId:'5|8',
-            // isInstall:1,
+            isInstall:1,//注释掉这一个条件，假装有数据
         };
         Wapi.customer.list(res=>{//获取此用户的所有下级
             let custs=res.data;
@@ -132,7 +132,7 @@ class App extends Component{
 
             },par);
             
-        },params);
+        },params,{limit:-1});
     }
     
     tip(){
