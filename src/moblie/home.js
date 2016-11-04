@@ -167,8 +167,8 @@ const _pages=[//所有的页面
     },
 ];
 
-// let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
-let pages=_pages;
+let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
+// let pages=_pages;
 
 
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
