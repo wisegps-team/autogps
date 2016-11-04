@@ -102,15 +102,15 @@ class App extends Component {
     getUrl(type){
         let wxAppKey='';
         if(type<2){//营销号
-            if(this.state.data[0])
-                wxAppKey=this.state.data[0].wxAppKey;
+            if(this.state.data[1])
+                wxAppKey=this.state.data[1].wxAppKey;
             else{
                 W.alert(___.wx_seller_null);
                 return;
             }
         }else{//服务号
-            if(this.state.data[1])
-                wxAppKey=this.state.data[1].wxAppKey;
+            if(this.state.data[0])
+                wxAppKey=this.state.data[0].wxAppKey;
             else{
                 W.alert(___.wx_server_null);
                 return;
@@ -256,7 +256,7 @@ class Wxbox extends Component{
         history.back();
     }
     render(){
-        let set_url=___.set_url.replace('<%domain%>',domain[this.props.type]);
+        // let set_url=___.set_url.replace('<%domain%>',domain[this.props.type]);
         let save_wx_data=___.save_wx_data.replace('<%domain%>',domain[this.props.type]);
         return (
             <div style={sty.wxbox}>
@@ -265,7 +265,6 @@ class Wxbox extends Component{
                 <p style={sty.h4}>{___.find_appid}</p>
                 <Input name='wxAppKey' onChange={this.change} hintText={'AppId'}/>
                 <Input name='wxAppSecret' onChange={this.change} hintText={'AppSecret'}/>
-                <p style={sty.h4}>{set_url}</p>
                 <p style={sty.h4}>{___.input_file_name}</p>
                 <Input name='fileName' onChange={this.change} hintText={___.wx_file_name}/>
                 <p style={sty.h4}>{save_wx_data}</p>
