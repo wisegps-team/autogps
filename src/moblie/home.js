@@ -151,11 +151,6 @@ const _pages=[//所有的页面
         name:___.seller_activity,
         icon:<ActionEvent style={sty.icon}/>
     },
-    {   /*公众号配置 */
-        href:'wx_config',
-        name:___.config_wx,
-        icon:<ImageHdrStrong style={sty.icon}/>
-    },
     {
         href:'partTime_count',
         name:___.sell_count,
@@ -170,6 +165,11 @@ const _pages=[//所有的页面
         href:'install_shop',
         name:___.install_shop,
         icon:<HardwareDeviceHub style={sty.icon}/>
+    },
+    {   /*公众号配置 */
+        href:'wx_config',
+        name:___.config_wx,
+        icon:<ImageHdrStrong style={sty.icon}/>
     },
 ];
 
