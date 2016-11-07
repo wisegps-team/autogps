@@ -97,7 +97,9 @@ class App extends React.Component {
             },par)
 
         },{
-            name:data.name
+            name:data.name,
+            uid:_user.customer.objectId,
+            appId:WiStorm.config.objectId
         });
     }
     // editRole(role){
