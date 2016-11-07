@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=58;//版本号
+let version=59;//版本号
 
 //地区表
 export const area={
@@ -2170,6 +2170,16 @@ export const activity={
         },{
             'name': 'sellerTypeId',
             'desc': '销售类别Id',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'product',
+            'desc': '产品型号',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'productId',
+            'desc': '产品型号Id',
             'type': 'String',
             'query': true
         }

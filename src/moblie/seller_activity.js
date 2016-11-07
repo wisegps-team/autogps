@@ -123,7 +123,8 @@ class App extends Component {
             },par);
 
         },{
-            uid:_user.customer.objectId
+            uid:_user.customer.objectId,
+            type:1
         },{
             limit:this.limit,
             page_no:this.page_no,
@@ -269,6 +270,7 @@ function getInitData(){
         sellerTypeId:'',//营销人员类别id
         getCard:false,  //客户经理开卡
         status:1,   //活动状态（进行中/已终止）
+        type:1
     };
     return initData;
 }
