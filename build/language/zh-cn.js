@@ -324,5 +324,6 @@ window.___={
 	'register_url':'注册链接',
 	'input_type':'请输入营销人员类别',
 	'sim_provider':'SIM卡提供商',
-	'seller_wx_app_null':'未获取到营销公众号，如果没有配置，请先配置营销公众号'
+	'seller_wx_app_null':'未获取到营销公众号，如果没有配置，请先配置营销公众号',
+	'to_do':'待办事项'
 }

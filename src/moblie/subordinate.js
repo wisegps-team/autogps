@@ -159,7 +159,6 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
             </IconMenu>
         );
     }

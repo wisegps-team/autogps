@@ -31,12 +31,19 @@ const sty={
     }
 }
 
-const p=[
-    //公众号管理         营销统计            注册管理           活动管理            安装网点
-    '792915075680833500|779223776712855600|793341452628398100|793341505392742400|793341563228000300',//'集团营销'
-    '792915075680833500|779223776712855600|793282011149242400',//渠道分销
-    '773357884716224500'//政企业务
-];
+// const p=[
+//     //公众号管理         营销统计            注册管理           活动管理            安装网点
+//     '792915075680833500|779223776712855600|793341452628398100|793341505392742400|793341563228000300',//'集团营销'
+//     '792915075680833500|779223776712855600|793282011149242400',//渠道分销
+//     '773357884716224500',//政企业务
+//     '791907964700201000',//车主营销
+// ];
+const r=[
+    '795551910793973800',//集团营销权限角色
+    '795552168802390000',//渠道分销权限角色
+    '795552269532794900',//政企业务权限角色
+    '795552341104398300',//车主营销权限角色
+]
 
 
 class App extends Component {
@@ -71,24 +78,31 @@ class App extends Component {
     }
 
     setRole(i){
-        let rid=p[i];
-        let uid=this.data.uid;
-        Wapi.page.list(function(res){
-            let pages=res.data;
-            let ids=pages.filter(e=>!e.ACL.includes(uid.toString())).map(e=>e.objectId).join('|');
-            if(ids==''){
-                W.alert(___.setting_success);
-                return;
-            }
-            Wapi.page.update(function(res){
-                W.alert(___.setting_success);
+        if(this.data){
+            let rid=r[i];
+            let uid=this.data.uid;
+            Wapi.role.get(function(res){
+                if(res.data.ACL.find(uid))
+                    W.alert(___.setting_success);
+                else
+                    Wapi.role.update(function(res){
+                        let VA=(_user.customer.other?(_user.customer.other.va||''):'').split(',');
+                        VA.push(i);
+                        let va=VA.join(',');
+                        Wapi.customer.update(function(res){
+                            W.alert(___.setting_success);
+                        },{
+                            _objectId:uid,
+                            'other.va':va
+                        });
+                    },{
+                        _objectId:rid,
+                        users:'+"'+uid+'"'
+                    });
             },{
-                _objectId:ids,
-                ACL:'+"'+uid+'"'
-            });
-        },{
-            objectId:rid
-        },{fields:'objectId,ACL,name'});
+                objectId:rid
+            },{fields:'objectId,ACL,name'});
+        }
     }
 
     render() {
@@ -97,10 +111,10 @@ class App extends Component {
                 <AppBar title={___.activity_agent}/>
                 <div style={sty.p}>
                     <UserSearch onChange={this.setCust} data={this._data}/>
-                    <RaisedButton label={___.set_to_agent} style={sty.w} onClick={this.set}/>
                     <RaisedButton label={___.group_marketing} style={sty.w} onClick={e=>this.setRole(0)} />
                     <RaisedButton label={___.distribution} style={sty.w} onClick={e=>this.setRole(1)} />
                     <RaisedButton label={___.enterprises} style={sty.w} onClick={e=>this.setRole(2)} />
+                    <RaisedButton label={___.carowner_seller} style={sty.w} onClick={e=>this.setRole(3)} />
                 </div>
             </ThemeProvider>
         );

@@ -538,7 +538,7 @@ WTableApi.prototype.refresh=function(callback,op){
 function WRoleApi(token){//角色
 	WiStormAPI.call(this,'role',token,config.app_key,config.app_secret);
 	this.get_op={
-		fields:'objectId,name,roles,users,createdAt,updatedAt'//默认返回的字段
+		fields:'objectId,name,roles,users,appId,uid,createdAt,updatedAt'//默认返回的字段
 	}
 	this.list_op={
 		fields:this.get_op.fields,

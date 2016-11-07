@@ -29,6 +29,7 @@ import ActionPermContactCalendar from 'material-ui/svg-icons/action/perm-contact
 import ActionEvent from 'material-ui/svg-icons/action/event';
 import ImageHdrStrong from 'material-ui/svg-icons/image/hdr-strong';
 import HardwareDeviceHub from 'material-ui/svg-icons/hardware/device-hub';
+import ActionInfoOutline from 'material-ui/svg-icons/action/info-outline';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -136,11 +137,11 @@ const _pages=[//所有的页面
         name:___.role_manage,
         icon:<ActionFace style={sty.icon}/>
     },
-    {   /*注册信息链接 */
-        href:'register_info',
-        name:___.register_info,
-        icon:<AvFeaturedPlayList style={sty.icon}/>
-    },
+    // {   /*注册信息链接 */
+    //     href:'register_info',
+    //     name:___.register_info,
+    //     icon:<AvFeaturedPlayList style={sty.icon}/>
+    // },
     {   /*车主营销链接 */
         href:'carowner_seller',
         name:___.carowner_seller,
@@ -151,25 +152,25 @@ const _pages=[//所有的页面
         name:___.seller_activity,
         icon:<ActionEvent style={sty.icon}/>
     },
-    {
-        href:'partTime_count',
-        name:___.sell_count,
-        icon:<ContentSort style={sty.icon}/>
-    },
+    // { //营销统计
+    //     href:'partTime_count',
+    //     name:___.sell_count,
+    //     icon:<ContentSort style={sty.icon}/>
+    // },
     {   /*营销人员 */
         href:'marketing_personnel',
         name:___.marketing_personnel,
         icon:<ActionRecordVoiceOver style={sty.icon}/>
     },
-    {   /*安装网点 */
-        href:'install_shop',
-        name:___.install_shop,
-        icon:<HardwareDeviceHub style={sty.icon}/>
-    },
     {   /*公众号配置 */
         href:'wx_config',
         name:___.config_wx,
         icon:<ImageHdrStrong style={sty.icon}/>
+    },
+    {   /*公司信息 */
+        href:'company_info',
+        name:___.company_info,
+        icon:<ActionInfoOutline style={sty.icon}/>
     },
 ];
 
@@ -192,9 +193,6 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div style={sty.main}>
-                <div className='title'>
-                    <h2>{___.app_name}</h2>
-                </div>
                 <div className='main'>
                     {cards}
                 </div>
@@ -207,8 +205,8 @@ class App extends Component {
                     <Tab
                         className='tab'
                         icon={<ActionWork/>}
-                        label={___.company_info}
-                        value={'company_info'}
+                        label={___.to_do}
+                        value={'to_do'}
                         onActive={this.go}
                     />
                     <Tab
