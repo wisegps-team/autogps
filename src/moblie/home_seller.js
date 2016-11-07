@@ -140,7 +140,7 @@ class ActivityList extends Component {
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(_user.customer.other.url)+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId+'&mobile='+this.state.seller.tel+'&title='+encodeURIComponent(_user.customer.other.title)+'&agent_tel='+_user.customer.tel+'&seller_name='+_user.employee.name+'&wx_app_id='+_user.customer.wxAppKey,
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId='+_user.employee.objectId+'&mobile='+_user.employee.tel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_user.employee.name)+'&wx_app_id='+_user.customer.wxAppKey,
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
@@ -148,23 +148,14 @@ class ActivityList extends Component {
             wx.onMenuShareTimeline(op);
             wx.onMenuShareAppMessage(op);
             setShare=null;
+            W.alert(___.share_activity);
         }
         if(W.native){
             setShare();
-            W.alert({
-                title:data.name,
-                text:data.booking_offersDesc
-            });
         }
         else{
             W.toast(___.ready_activity_url);
-            window.addEventListener('nativeSdkReady',function(){
-                setShare();
-                W.alert({
-                    title:data.name,
-                    text:data.booking_offersDesc
-                });
-            });
+            window.addEventListener('nativeSdkReady',setShare);
         }
 
         console.log('share');

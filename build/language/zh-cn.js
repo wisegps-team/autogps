@@ -331,4 +331,5 @@ window.___={
 	'user':'我的',
 	'share':'分享',
 	'ready_activity_url':'正在准备活动链接……',
+	'share_activity':'点击右上角微信分享即可分享活动',
 }
