@@ -146,7 +146,7 @@ class UserAdd extends React.Component{
     }
 
     clickSave(){
-        let data=this.data;
+        let data=Object.assign({},this.data);
         console.log(data);
         if(data.name==''){
             W.alert(___.user_name_empty);
@@ -203,8 +203,8 @@ class UserAdd extends React.Component{
                 },data);
             },{
                 userType:this._userType,
-                mobile:this.data.tel,
-                password:md5(this.data.tel.slice(-6))
+                mobile:data.tel,
+                password:md5(data.tel.slice(-6))
             });
         }
     }
