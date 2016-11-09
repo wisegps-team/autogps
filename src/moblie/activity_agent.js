@@ -66,48 +66,41 @@ class App extends Component {
     setCust(val){
         this.data=val;
     }
-    set(){
-        if(this.data){
-            Wapi.role.update(function(res){
-                W.alert(___.setting_success);
-            },{
-                _objectId:'779227173931323400',
-                users:'+"'+this.data.uid+'"'
-            });
-        }
-    }
 
     setRole(i){
         let cust=this.data;
         if(cust){
-            let rid=r[i];
-            let uid=cust.uid;
-            Wapi.role.get(function(res){
-                if(res.data.users.includes(uid))
-                    W.alert(___.setting_success);
-                else
-                    Wapi.role.update(function(res){
-                        let VA=(cust.other&&cust.other.va)?cust.other.va.split(','):[];
-                        if(VA.includes(i.toString())){
-                            W.alert(___.setting_success);
-                            return;
-                        }
-                        VA.push(i);
-                        let va=VA.join(',');
-                        Wapi.customer.update(function(res){
-                            W.alert(___.setting_success);
-                        },{
-                            _objectId:cust.objectId,
-                            'other.va':va
-                        });
-                    },{
+            Wapi.role.get(res=>{
+                if(res.data.users.includes(cust.uid)){
+                    this.custUpdate(cust,i);
+                }else
+                    Wapi.role.update(r=>this.custUpdate(cust,i),{
                         _objectId:rid,
-                        users:'+"'+uid+'"'
+                        users:'+"'+cust.uid+'"'
                     });
             },{
-                objectId:rid
-            },{fields:'objectId,name,users'});
+                objectId:r[i]
+            },{
+                fields:'objectId,name,users'
+            });
         }
+    }
+
+    custUpdate(cust,i){
+        let VA=(cust.other&&cust.other.va)?cust.other.va.split(','):[];
+        if(VA.includes(i.toString())){
+            W.alert(___.setting_success);
+            return;
+        }
+        VA.push(i);
+        let va=VA.join(',');
+        Wapi.customer.update(function(res){
+            cust.other=Object.assign({},cust.other,{va});
+            W.alert(___.setting_success);
+        },{
+            _objectId:cust.objectId,
+            'other.va':va
+        });
     }
 
     render() {
