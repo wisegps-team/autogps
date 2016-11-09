@@ -292,7 +292,9 @@ WCommApi.prototype.sendSMS=function(callback,mobile,type,content){
 		method:this.apiName+".sms.send",
 		mobile:mobile,
 		type:type,
-		'content':content
+		'content':content,
+		content_type:0,
+		content_sign:'智联车网'
 	};
 	
 	this.getApi(Data,callback);	

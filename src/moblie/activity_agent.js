@@ -82,7 +82,7 @@ class App extends Component {
             let rid=r[i];
             let uid=this.data.uid;
             Wapi.role.get(function(res){
-                if(res.data.ACL.find(uid))
+                if(res.data.ACL.includes(uid))
                     W.alert(___.setting_success);
                 else
                     Wapi.role.update(function(res){
