@@ -137,7 +137,7 @@ class App extends Component {
         for(let i=this.activities.length-1;i>=0;i--){
             if(this.activities[i].objectId==activity._objectId){
                 this.activities[i]=activity;
-                console.log('changed');
+                break;
             }
         }
         this.forceUpdate();
