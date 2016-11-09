@@ -49,6 +49,7 @@ App.childContextTypes={
     VIEW:React.PropTypes.object,
 }
 
+const _strVa=[___.group_marketing,___.distribution,___.enterprises,___.carowner_seller];
 class TraderItem extends Component{
     shouldComponentUpdate(nextProps, nextState) {
         return (nextProps.data!==this.props.data);
@@ -61,12 +62,27 @@ class TraderItem extends Component{
             this.props.data.custType=type?type.name:this.props.data.custType;
         }
         let tr=(<div style={cust_item_sty.tab}>
-                <span style={cust_item_sty.td}>{this.props.data.custType}</span>
                 <span style={cust_item_sty.td}>{this.props.data.contact}</span>
                 <span style={cust_item_sty.td}>{this.props.data.tel}</span>
             </div>);
+
+        let arrVa=(this.props.data.other&&this.props.data.other.va) ? this.props.data.other.va.split(',') : [];
+        let strVa=___.no_added_service;
+        if(arrVa!=[]){
+            strVa=arrVa.map(ele=>_strVa[ele]).join(' ');
+        }
+        if(this.props.data.isInstall){
+            if(strVa==___.no_added_service){
+                strVa=___.install_shop;
+            }else{
+                strVa=strVa+' '+___.install_shop;
+            }
+        }
+                
         let title=(<span>
             {this.props.data.name}
+            <small style={cust_item_sty.sm}>{this.props.data.custType}</small>
+            <small style={cust_item_sty.sm}>{strVa}</small>
             <small style={cust_item_sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
         </span>);
         return (

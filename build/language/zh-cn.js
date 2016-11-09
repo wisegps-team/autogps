@@ -332,4 +332,10 @@ window.___={
 	'share':'分享',
 	'ready_activity_url':'正在准备活动链接……',
 	'share_activity':'点击右上角微信分享即可分享活动',
+	'value_added_service':'增值业务',
+	'no_added_service':'暂无增值业务',
+	'open_carowner_seller':'开启车主营销',
+	'close_carowner_seller':'关闭车主营销',
+	'set_install_shop':'设为安装网点',
+	'cancel_install_shop':'取消安装网点',
 }

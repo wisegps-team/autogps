@@ -54,13 +54,28 @@ class App extends Component {
 }
 
 
+const _strVa=[___.group_marketing,___.distribution,___.enterprises,___.carowner_seller];
 class ShowBox extends Component{
     render() {
         let cust=_user.customer;
         let button=(cust.uid==_user.uid)?(<FlatButton label={___.edit} onClick={this.props.edit} primary={true} />):null;
+
+        let arrVa=(cust.other && cust.other.va) ? cust.other.va.split(',') : [];
+        let strVa=___.no_added_service;
+        if(arrVa!=[]){
+            strVa=arrVa.map(ele=>_strVa[ele]).join(' ');
+        }
+        if(cust.isInstall){
+            if(strVa==___.no_added_service){
+                strVa=___.install_shop;
+            }else{
+                strVa=strVa+' '+___.install_shop;
+            }
+        }
         return (
             <Paper zDepth={1} style={sty.p}>
                 <h2>{cust.name}</h2>
+                <p>{___.value_added_service+'：'+strVa}</p>
                 <p>{___.cust_type+'：'+cust.custType}</p>
                 <p>{___.person+'：'+cust.contact}</p>
                 <p>{___.cellphone+'：'+cust.tel}</p>

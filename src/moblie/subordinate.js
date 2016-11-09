@@ -66,6 +66,7 @@ App.childContextTypes={
     VIEW:React.PropTypes.object,
 }
 
+const _strVa=[___.group_marketing,___.distribution,___.enterprises,___.carowner_seller];
 class UserItem extends Component{
     constructor(props, context) {
         super(props, context);
@@ -100,6 +101,49 @@ class UserItem extends Component{
             case 3://业务统计
                 this.context.showCount(this.props.data,'pop');
                 break;
+            case 4://开启/关闭车主营销
+                let arrVa=[];
+                if(this.props.data.other && this.props.data.other.va){
+                    let strVa=this.props.data.other.va;
+                    arrVa=strVa.split(',');
+                }
+
+                if(arrVa.includes('3')){
+                    let va=arrVa.filter(ele=>ele!='3').join(',');
+                    Wapi.customer.update(res=>{
+                        this.props.data.other.va=va;
+                        this.forceUpdate();
+                        W.alert(___.setting_success);
+                    },{
+                        _objectId:this.props.data.objectId,
+                        'other.va':va
+                    });
+                }else{
+                    arrVa.push('3');
+                    let va=arrVa.join(',');
+                    Wapi.customer.update(res=>{
+                        this.props.data.other.va=va;
+                        this.forceUpdate();
+                        W.alert(___.setting_success);
+                    },{
+                        _objectId:this.props.data.objectId,
+                        'other.va':va
+                    });
+                }
+                break;
+            case 5://设置安装网点
+                let isInstall=Number(!this.props.data.isInstall);
+                Wapi.customer.update(res=>{
+                    this.props.data.isInstall=isInstall;
+                    this.forceUpdate();
+                    W.alert(___.setting_success);
+                },{
+                    _objectId:this.props.data.objectId,
+                    'isInstall':isInstall
+                });
+                break;
+            default:
+                break;
         }
     }
     render() {
@@ -109,17 +153,40 @@ class UserItem extends Component{
             this.props.data.custType=type?type.name:this.props.data.custType;
         }
         let tr=(<div style={cust_item_sty.tab}>
-                <span style={cust_item_sty.td}>{this.props.data.custType}</span>
                 <span style={cust_item_sty.td}>{this.props.data.contact}</span>
                 <span style={cust_item_sty.td}>{this.props.data.tel}</span>
             </div>);
+
+        let arrVa=(this.props.data.other&&this.props.data.other.va) ? this.props.data.other.va.split(',') : [];
+        let strVa=___.no_added_service;
+        if(arrVa.length!=0){
+            strVa=arrVa.map(ele=>_strVa[ele]).join(' ');
+        }
+        if(this.props.data.isInstall){
+            if(strVa==___.no_added_service){
+                strVa=___.install_shop;
+            }else{
+                strVa=strVa+' '+___.install_shop;
+            }
+        }
+        let openCS={//open_carowner_seller 开启车主营销，对应其上级应当已开启车主营销
+            canOpen:_user.customer.other && _user.customer.other.va && _user.customer.other.va.includes('3'),
+            isOpened:arrVa.includes('3'),
+        }
+        let setIS={//set_install_shop 设置安装网点,对应其上级已开启集团营销
+            canSet:_user.customer.other && _user.customer.other.va && _user.customer.other.va.includes('0'),
+            isSetted:this.props.data.isInstall,
+        }
+        
         let title=(<span>
             {this.props.data.name}
+            <small style={cust_item_sty.sm}>{this.props.data.custType}</small>
+            <small style={cust_item_sty.sm}>{strVa}</small>
             <small style={cust_item_sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
         </span>);
         return (
             <ListItem
-                rightIcon={<RightIconMenu onClick={this.operation}/>}
+                rightIcon={<RightIconMenu openCS={openCS} setIS={setIS} onClick={this.operation}/>}
                 primaryText={title}
                 secondaryText={tr}
                 style={cust_item_sty.item}
@@ -133,12 +200,19 @@ UserItem.contextTypes ={
     showCount:React.PropTypes.func,
 }
 
-class RightIconMenu extends Component{
+class RightIconMenu extends Component{    
     shouldComponentUpdate(nextProps, nextState) {
-        return false;
+        if(nextProps.openCS.isOpened==this.props.openCS.isOpened && nextProps.setIS.isSetted==this.props.setIS.isSetted){
+            return false;
+        }else{
+            return true;
+        }
     }
-    
     render() {
+        let styOpenCS=this.props.openCS.canOpen ? null : {display:'none'};
+        let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;
+        let stySetIS=this.props.setIS.canSet ? null : {display:'none'};
+        let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;
         return (
             <IconMenu
                 iconButtonElement={
@@ -159,6 +233,8 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
+                <MenuItem style={styOpenCS} onClick={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>
+                <MenuItem style={stySetIS} onClick={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
             </IconMenu>
         );
     }
