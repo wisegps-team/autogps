@@ -6,26 +6,9 @@ import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
 import AppBar from '../_component/base/appBar';
-import {List,ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import SelectField from 'material-ui/SelectField';
-import TextField from 'material-ui/TextField';
 import Card from 'material-ui/Card';
-import Divider from 'material-ui/Divider';
 
-import STORE from '../_reducers/main';
-import BrandSelect from'../_component/base/brandSelect';
-import SonPage from '../_component/base/sonPage';
-import DeviceLogList from '../_component/device_list';
-import ProductLogList from '../_component/productlog_list';
-import {reCode} from '../_modules/tool';
-import UserSearch from '../_component/user_search';
 import AutoList from '../_component/base/autoList';
 
 

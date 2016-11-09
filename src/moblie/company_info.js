@@ -75,8 +75,8 @@ class ShowBox extends Component{
         return (
             <Paper zDepth={1} style={sty.p}>
                 <h2>{cust.name}</h2>
-                <p>{___.value_added_service+'：'+strVa}</p>
                 <p>{___.cust_type+'：'+cust.custType}</p>
+                <p>{___.value_added_service+'：'+strVa}</p>
                 <p>{___.person+'：'+cust.contact}</p>
                 <p>{___.cellphone+'：'+cust.tel}</p>
                 <address>{___.address+'：'+(cust.province||'')+(cust.city||'')+(cust.area||'')+(cust.address||'')}</address>
