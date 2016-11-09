@@ -78,21 +78,26 @@ class App extends Component {
     }
 
     setRole(i){
-        if(this.data){
+        let cust=this.data;
+        if(cust){
             let rid=r[i];
-            let uid=this.data.uid;
+            let uid=cust.uid;
             Wapi.role.get(function(res){
-                if(res.data.ACL.includes(uid))
+                if(res.data.users.includes(uid))
                     W.alert(___.setting_success);
                 else
                     Wapi.role.update(function(res){
-                        let VA=(_user.customer.other?(_user.customer.other.va||''):'').split(',');
+                        let VA=(cust.other&&cust.other.va)?cust.other.va.split(','):[];
+                        if(VA.includes(i.toString())){
+                            W.alert(___.setting_success);
+                            return;
+                        }
                         VA.push(i);
                         let va=VA.join(',');
                         Wapi.customer.update(function(res){
                             W.alert(___.setting_success);
                         },{
-                            _objectId:uid,
+                            _objectId:cust.objectId,
                             'other.va':va
                         });
                     },{
@@ -101,7 +106,7 @@ class App extends Component {
                     });
             },{
                 objectId:rid
-            },{fields:'objectId,ACL,name'});
+            },{fields:'objectId,name,users'});
         }
     }
 
