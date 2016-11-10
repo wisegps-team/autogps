@@ -34,10 +34,13 @@ function getInitData(){
         installationFee:'', //安装费用
         url:'',     //文案链接
         principal:'',   //项目经理
+        principalTel:'',//项目经理电话
         principalId:'', //项目经理id
+        sellerType:'',  //营销人员(营销人员类型)
+        sellerTypeId:'',//营销人员类型id，从type=1的depart里面选
         getCard:false,  //客户经理开卡
         status:1,   //活动状态（进行中/已终止）
-        type:0
+        type:0      //0车主营销，1营销活动
     };
     return initData;
 }
@@ -100,9 +103,10 @@ class EditActivity extends Component {
         this.data.product=this.products.find(ele=>ele.modelId==key).model;
         this.forceUpdate();
     }
-    principalChange(data){
+    principalChange(data){//+++这里要加入 选当前用户选项（公司管理员），所以要加上判断(未完成)
         console.log(data);
         this.data.principal=data.name;
+        this.data.principalTel=data.tel;
         this.data.principalId=data.objectId;
     }
     sellerTypeChange(data){
@@ -140,7 +144,7 @@ class EditActivity extends Component {
             W.alert(___.activity_url+___.not_null);
             return;
         }
-        if(data.principal==''){//项目经理不为空
+        if(data.principal=='' && !this.props.isCarownerSeller){//项目经理不为空
             W.alert(___.project_manager+___.not_null);
             return;
         }
@@ -149,7 +153,7 @@ class EditActivity extends Component {
             return;
         }
 
-        if(this.intent=='edit'){
+        if(this.intent=='edit'){//修改
             data._objectId=data.objectId;
             delete data.objectId;
             Wapi.activity.update(res=>{
@@ -157,7 +161,12 @@ class EditActivity extends Component {
                 this.data=getInitData();
                 this.forceUpdate();
             },data);
-        }else{
+        }else{//添加 如果是车主营销，则type=0,不是则为1
+            if(this.props.isCarownerSeller){
+                data.type=0;
+            }else{
+                data.type=1;
+            }
             data.uid=_user.customer.objectId;
             Wapi.activity.add(res=>{
                 data.status0=0;
@@ -209,7 +218,7 @@ class EditActivity extends Component {
                 <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} />
                 
                 {/*项目经理*/}
-                <div style={{textAlign:'left'}}>
+                <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
                     <EmployeeSearch name='principal' floatText={___.project_manager} defaultValue={this.data.principal} onChange={this.principalChange} data={{companyId:_user.customer.objectId,type:0}}/>
                 </div>
                 

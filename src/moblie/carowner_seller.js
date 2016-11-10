@@ -66,6 +66,11 @@ class App extends Component {
         this.getData();
     }
     getData(){
+        let parents=_user.customer.parentId.join('|');
+        let params={//可以看到当前代理商及其上级的车主营销活动
+            uid:_user.customer.objectId + '|' +parents,
+            type:0
+        }
         Wapi.activity.list(res=>{
             this.total=res.total;
             let activities=res.data;
@@ -101,10 +106,7 @@ class App extends Component {
                 this.forceUpdate();
             },par);
 
-        },{
-            uid:_user.customer.objectId,
-            type:0
-        },{
+        },params,{
             limit:this.limit,
             page_no:this.page_no,
             sorts:'-createdAt',
