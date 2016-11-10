@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=59;//版本号
+let version=60;//版本号
 
 //地区表
 export const area={
@@ -2160,6 +2160,11 @@ export const activity={
         },{
             'name': 'principalId',
             'desc': '负责人id',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'principalTel',
+            'desc': '负责人电话',
             'type': 'String',
             'query': true
         },{

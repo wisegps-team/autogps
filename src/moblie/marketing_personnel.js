@@ -246,30 +246,23 @@ class AddBox extends Component{
     constructor(props, context) {
         super(props, context);
         this.state={
-            name:props.data?props.data.name:'',
-            isSimProvider:props.data?props.data.isSimProvider:false
+            name:props.data?props.data.name:''
         };
         this._data={
             type:1,
             uid:_user.customer.objectId
         };
         this.change = this.change.bind(this);
-        this.sim = this.sim.bind(this);
         this.submit = this.submit.bind(this);
         this.cancel = this.cancel.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.data)
             this.setState({
-                name:nextProps.data.name,
-                isSimProvider:nextProps.data.isSimProvider
+                name:nextProps.data.name
             });
     }
     
-    
-    sim(e,isSimProvider){
-        this.setState({isSimProvider});
-    }
     change(e,name){
         this.setState({name});
     }
@@ -294,20 +287,13 @@ class AddBox extends Component{
     cancel(){
         history.back();
         this.setState({
-            name:'',
-            isSimProvider:false
+            name:''
         });
     }
     render() {
         return (
             <div style={styles.card}>
                 <Input hintText={___.input_type} value={this.state.name} onChange={this.change}/>
-                <Checkbox //SIM卡提供商
-                    style={{paddingTop:'10px'}} 
-                    checked={this.state.isSimProvider}
-                    label={___.sim_provider} 
-                    onCheck={this.sim } 
-                />
                 <div style={{textAlign:'right'}}>
                     <FlatButton label={___.cancel} onClick={this.cancel} primary={true}/>
                     <FlatButton label={___.ok} onClick={this.submit} primary={true}/>
