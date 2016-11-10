@@ -338,5 +338,9 @@ window.___={
 	'close_carowner_seller':'关闭车主营销',
 	'set_install_shop':'设为安装网点',
 	'cancel_install_shop':'取消安装网点',
-	'wx_server_url':'微信服务器配置'
+	'wx_server_url':'微信服务器配置',
+	'please_select_model':'请选择产品型号',
+	'please_select_principal':'请选择项目经理',
+	'please_select_sellerType':'请选择营销人员',
+	'agent_manager':'代理商管理员',
 }

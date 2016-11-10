@@ -93,42 +93,45 @@ class ActivityList extends Component {
         Wapi.activity.list(res=>{
             this.total=res.total;
             let activities=res.data;
+            this.activities=this.activities.concat(activities);
+            this.forceUpdate();
 
-            let par={
-                "group":{
-                    "_id":{"activityId":"$activityId"},
-                    "status0":{"$sum":"$status0"},
-                    "status1":{"$sum":"$status1"},
-                    "status2":{"$sum":"$status2"},
-                    "status3":{"$sum":"$status3"}
-                },
-                "sorts":"sellerId",
-                "uid":_user.customer.objectId
-            }
-            Wapi.booking.aggr(resAggr=>{
-                let arr=resAggr.data;
-                activities.map(ele=>{
-                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
-                    if(booking){
-                        ele.status0=booking.status0;
-                        ele.status1=booking.status1;
-                        ele.status2=booking.status2;
-                        ele.status3=booking.status3;
-                    }else{
-                        ele.status0=0;
-                        ele.status1=0;
-                        ele.status2=0;
-                        ele.status3=0;
-                    }
-                });
-                this.activities=this.activities.concat(activities);
-                this.forceUpdate();
-            },par);
+            // let par={
+            //     "group":{
+            //         "_id":{"activityId":"$activityId"},
+            //         "status0":{"$sum":"$status0"},
+            //         "status1":{"$sum":"$status1"},
+            //         "status2":{"$sum":"$status2"},
+            //         "status3":{"$sum":"$status3"}
+            //     },
+            //     "sorts":"sellerId",
+            //     "uid":_user.customer.objectId
+            // }
+            // Wapi.booking.aggr(resAggr=>{
+            //     let arr=resAggr.data;
+            //     activities.map(ele=>{
+            //         let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+            //         if(booking){
+            //             ele.status0=booking.status0;
+            //             ele.status1=booking.status1;
+            //             ele.status2=booking.status2;
+            //             ele.status3=booking.status3;
+            //         }else{
+            //             ele.status0=0;
+            //             ele.status1=0;
+            //             ele.status2=0;
+            //             ele.status3=0;
+            //         }
+            //     });
+            //     this.activities=this.activities.concat(activities);
+            //     this.forceUpdate();
+            // },par);
 
         },{
             uid:_user.customer.objectId,
             sellerTypeId:_user.employee.departId,
-            type:1
+            status:1,
+            type:1,
         },{
             limit:this.limit,
             page_no:this.page_no,
