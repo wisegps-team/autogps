@@ -50,7 +50,6 @@ class App extends Component {
     constructor(props, context) {
         super(props, context);
         this.setCust = this.setCust.bind(this);
-        this.set = this.set.bind(this);
         this._data={
             custTypeId:'1|5|8'
         }
@@ -69,6 +68,7 @@ class App extends Component {
 
     setRole(i){
         let cust=this.data;
+        let rid=r[i];
         if(cust){
             Wapi.role.get(res=>{
                 if(res.data.users.includes(cust.uid)){
@@ -79,7 +79,7 @@ class App extends Component {
                         users:'+"'+cust.uid+'"'
                     });
             },{
-                objectId:r[i]
+                objectId:rid
             },{
                 fields:'objectId,name,users'
             });

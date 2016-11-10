@@ -107,29 +107,12 @@ class UserItem extends Component{
                     let strVa=this.props.data.other.va;
                     arrVa=strVa.split(',');
                 }
-
-                if(arrVa.includes('3')){
-                    let va=arrVa.filter(ele=>ele!='3').join(',');
-                    Wapi.customer.update(res=>{
-                        this.props.data.other.va=va;
-                        this.forceUpdate();
-                        W.alert(___.setting_success);
-                    },{
-                        _objectId:this.props.data.objectId,
-                        'other.va':va
-                    });
-                }else{
-                    arrVa.push('3');
-                    let va=arrVa.join(',');
-                    Wapi.customer.update(res=>{
-                        this.props.data.other.va=va;
-                        this.forceUpdate();
-                        W.alert(___.setting_success);
-                    },{
-                        _objectId:this.props.data.objectId,
-                        'other.va':va
-                    });
-                }
+                let add=(arrVa.includes('3'))?false:true;
+                setRole(this.props.data,e=>{
+                    this.forceUpdate();
+                    W.alert(___.setting_success);
+                },add);
+                
                 break;
             case 5://设置安装网点
                 let isInstall=Number(!this.props.data.isInstall);
@@ -262,3 +245,45 @@ if(W.native)
     setShare()
 else
     window.addEventListener('nativeSdkReady',setShare);
+
+
+
+
+function setRole(cust,callback,add){
+    let rid='795552341104398300';
+    let i='3';
+    let a=add?'+':'-';
+    Wapi.role.get(res=>{
+        if(add==res.data.users.includes(cust.uid)){
+            custUpdate(cust,i,callback,add);
+        }else
+            Wapi.role.update(r=>custUpdate(cust,i,callback,add),{
+                _objectId:rid,
+                users:a+'"'+cust.uid+'"'
+            });
+    },{
+        objectId:rid
+    },{
+        fields:'objectId,name,users'
+    });
+}
+
+function custUpdate(cust,i,callback,add){
+    let VA=(cust.other&&cust.other.va)?cust.other.va.split(','):[];
+    if(add==VA.includes(i.toString())){
+        callback();
+        return;
+    }
+    if(add)
+        VA.push(i);
+    else
+        VA=VA.filter(v=>v!=i);
+    let va=VA.join(',');
+    Wapi.customer.update(function(res){
+        cust.other=Object.assign({},cust.other,{va});
+        callback();
+    },{
+        _objectId:cust.objectId,
+        'other.va':va
+    });
+}
