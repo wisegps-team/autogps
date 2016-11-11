@@ -49,6 +49,7 @@ class EditActivity extends Component {
     constructor(props,context){
         super(props,context);
         this.data=getInitData();
+        // this.noEdit=true;
 
         this.products=[
             {model:___.please_select_model,modelId:0},
@@ -115,11 +116,17 @@ class EditActivity extends Component {
     }
     
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         if(nextProps.data){
             console.log('edit');
             this.intent='edit';
             let data=getInitData();
             this.data=Object.assign(data,nextProps.data);
+            // if(nextProps.data.uid!=_user.customer.objectId){
+            //     this.noEdit=true;
+            // }else{
+            //     this.noEdit=false;
+            // }
             this.forceUpdate();
         }else{
             this.intent='add';
@@ -200,13 +207,20 @@ class EditActivity extends Component {
         console.log(data);
 
         if(this.intent=='edit'){//修改
-            data._objectId=data.objectId;
-            delete data.objectId;
+            let _data=Object.assign({},data);
+
+            _data._objectId=data.objectId;
+            delete _data.objectId;
+            delete _data.status0;
+            delete _data.status1;
+            delete _data.status2;
+
             Wapi.activity.update(res=>{
                 this.props.editSubmit(data);
                 this.data=getInitData();
                 this.forceUpdate();
-            },data);
+            },_data);
+
         }else{//添加 如果是车主营销，则type=0,不是则为1
             if(this.props.isCarownerSeller){
                 data.type=0;
@@ -232,48 +246,48 @@ class EditActivity extends Component {
         return (
             <div style={styles.input_page}>
                 {/*活动名称*/}
-                <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} />
+                <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} disabled={this.props.noEdit} />
                 
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} />
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={this.props.noEdit} />
                 
                 {/*支付方式*/}
-                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200}>
+                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
                     <MenuItem value={0} primaryText={___.wxPay} />
                 </SelectField>
 
                 {/*订金标准*/}
-                <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} />
+                <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} disabled={this.props.noEdit} />
 
                 {/*预订优惠*/}
-                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} />
+                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} disabled={this.props.noEdit} />
 
                 {/*产品型号*/}
-                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200}>
+                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
                     {productItems}
                 </SelectField>
 
                 {/*产品链接*/}
 
                 {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} />
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} disabled={this.props.noEdit} />
 
                 {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} />
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} disabled={this.props.noEdit} />
 
                 {/*活动链接*/}
-                <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} />
+                <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={this.props.noEdit} />
                 
                 {/*项目经理*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200}>
+                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
                         {principalItems}
                     </SelectField>
                 </div>
                 
                 {/*营销人员（类型）*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200}>
+                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
                         {selleTypeItems}
                     </SelectField>
                 </div>
@@ -286,6 +300,7 @@ class EditActivity extends Component {
                         checked={this.data.getCard}
                         label={___.isgetCard} 
                         onCheck={this.dataChange} 
+                        disabled={this.props.noEdit}
                     />
                 </div>
                 <div style={styles.input_group}>
@@ -296,6 +311,7 @@ class EditActivity extends Component {
                         labelPosition="right" 
                         toggled={Boolean(this.data.status)} 
                         onToggle={this.dataChange}
+                        disabled={this.props.noEdit}
                     />
                 </div>
 

@@ -1,4 +1,4 @@
-//营销活动
+//我的营销
 "use strict";
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
@@ -40,14 +40,16 @@ class App extends Component {
         this.state={
             isEdit:false,
             curActivity:null,
+            isCarownerSeller:false,
+            noEdit:true,
             activityName:'',
-            noEdit:false,
         }
         this.limit=20;
         this.page_no=1;
         this.total=-1;
         this.activities=[];
         this.booking=[];
+        this.strType='';
 
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
@@ -62,6 +64,7 @@ class App extends Component {
         };
     }
     componentDidMount() {
+        let parents=_user.customer.parentId.join('|');
         let par={
             "group":{
                 "_id":{"activityId":"$activityId"},
@@ -71,7 +74,7 @@ class App extends Component {
                 "status3":{"$sum":"$status3"}
             },
             "sorts":"sellerId",
-            "uid":_user.customer.objectId,
+            "uid":_user.customer.objectId + '|' +parents,
             status:1,
         }
         Wapi.booking.aggr(resAggr=>{
@@ -80,39 +83,81 @@ class App extends Component {
         },par);
     }
     nextPage(){
-        this.page_no++;
-        this.getData();
+        // this.page_no++;
+        // this.getData();
     }
     getData(){
-        Wapi.activity.list(res=>{
-            this.total=res.total;
-            let activities=res.data;
+        if(_user.customer.other && _user.customer.other.va){
 
-            activities.map(ele=>{
-                let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
-                if(booking){
-                    ele.status0=booking.status0;
-                    ele.status1=booking.status1;
-                    ele.status2=booking.status2;
-                    ele.status3=booking.status3;
-                }else{
-                    ele.status0=0;
-                    ele.status1=0;
-                    ele.status2=0;
-                    ele.status3=0;
+            if(_user.customer.other.va.includes('3')){//如果开通车主营销，则显示type=0的车主营销，包括本身及其上级的车主营销
+
+                let parents=_user.customer.parentId.join('|');
+                let par1={
+                    uid:_user.customer.objectId + '|' + parents,
+                    status:1,
+                    type:0
                 }
-            });
-            this.activities=this.activities.concat(activities);
-            this.forceUpdate();
-        },{
-            uid:_user.customer.objectId,
-            status:1,
-            type:1  //集团营销（营销活动）type=1
-        },{
-            limit:this.limit,
-            page_no:this.page_no,
-            sorts:'-createdAt',
-        });
+                Wapi.activity.list(res=>{//type=0 车主营销的活动
+                    this.total=res.total;
+                    let activities=res.data;
+                    
+                    activities.map(ele=>{
+                        let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
+                        if(booking){
+                            ele.status0=booking.status0;
+                            ele.status1=booking.status1;
+                            ele.status2=booking.status2;
+                            ele.status3=booking.status3;
+                        }else{
+                            ele.status0=0;
+                            ele.status1=0;
+                            ele.status2=0;
+                            ele.status3=0;
+                        }
+                    });
+                    this.activities=this.activities.concat(activities);
+                    this.forceUpdate();
+                },par1,{
+                    sorts:'-createdAt',
+                    limit:-1,
+                });
+
+            }
+            if(_user.customer.other.va.includes('0')){//如果开通集团营销，则显示type=1的营销活动
+                
+                let par2={
+                    uid:_user.customer.objectId,
+                    status:1,
+                    type:1
+                }
+                Wapi.activity.list(res=>{//type=0 车主营销的活动
+                    this.total=res.total;
+                    let activities=res.data;
+                    
+                    activities.map(ele=>{
+                        let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
+                        if(booking){
+                            ele.status0=booking.status0;
+                            ele.status1=booking.status1;
+                            ele.status2=booking.status2;
+                            ele.status3=booking.status3;
+                        }else{
+                            ele.status0=0;
+                            ele.status1=0;
+                            ele.status2=0;
+                            ele.status3=0;
+                        }
+                    });
+                    this.activities=this.activities.concat(activities);
+                    this.forceUpdate();
+                },par2,{
+                    sorts:'-createdAt',
+                    limit:-1,
+                });
+
+            }
+
+        }
     }
     add(){
         this.setState({
@@ -127,15 +172,15 @@ class App extends Component {
         history.back();
     }
     edit(activity){
-        let noEdit=false;
-        if(activity.uid!=_user.customer.objectId){
-            noEdit=true;
+        let isCarownerSeller=false;
+        if(activity.type==0){
+            isCarownerSeller=true;
         }
         this.setState({
             isEdit:true,
             curActivity:activity,
             activityName:activity.name,
-            noEdit:noEdit,
+            isCarownerSeller:isCarownerSeller,
         });
     }
     editBack(){
@@ -161,7 +206,7 @@ class App extends Component {
             <ThemeProvider>
                 <div>
                     <AppBar 
-                        title={___.seller_activity}
+                        title={___.my_marketing}
                         style={{position:'fixed'}}
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                     />
@@ -177,7 +222,7 @@ class App extends Component {
                     
                     <SonPage title={___.seller_activity} open={this.state.isEdit} back={this.editBack}>
                         <EditActivity 
-                            isCarownerSeller={false}
+                            isCarownerSeller={this.state.isCarownerSeller}
                             data={this.state.curActivity} 
                             noEdit={this.state.noEdit}
                             editSubmit={this.editSubmit} 
