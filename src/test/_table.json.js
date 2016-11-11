@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=60;//版本号
+let version=61;//版本号
 
 //地区表
 export const area={
@@ -1935,6 +1935,11 @@ export const booking={
             'messages': {
                 required:'营销人员id为必填'
             }
+        },{
+            'name': 'sellerName',
+            'desc': '营销人员',
+            'type': 'String',
+            'query': true
         },{
             'name': 'uid',
             'desc': '代理商id',

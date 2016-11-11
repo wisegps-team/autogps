@@ -22,12 +22,24 @@ const styles = {
     box:{
         borderBottom:'1px solid #ccc'
     },
+    emp:{
+        lineeight:'40px',
+        padding:'0 2em'
+    },
+    a:{
+        color: 'rgb(26, 140, 255)',
+        marginRight:'2em'
+    },
+    t:{
+        top: '-3px'
+    }
 };
 
 const EVENT=makeRandomEvent({
     typeAdd:'type_add',
     typeUpdate:'type_update',
-    openAddBox:'open_add_box'
+    openAddBox:'open_add_box',
+    getPerson:'get_person'
 });
 if(!_user.customer.sellerWxAppKey)
     Wapi.weixin.get(function(res){
@@ -42,6 +54,7 @@ var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
 thisView.addEventListener('load',function(){
     ReactDOM.render(<AppDeviceManage/>,thisView);
+    thisView.prefetch('person_list.js',2);
 });
 
 class AppDeviceManage extends Component{
@@ -49,25 +62,36 @@ class AppDeviceManage extends Component{
         super(props,context);
         this.state={
             showAdd:false,
-            data:null
+            data:null,
+            showPerson:false,
+            depId:0,
+            depName:''
         }
         this.toList=this.toList.bind(this);
         this.openBox = this.openBox.bind(this);
+        this.openPerson = this.openPerson.bind(this);
     }
     componentDidMount() {
         window.addEventListener(EVENT.openAddBox,this.openBox);
+        // window.addEventListener(EVENT.getPerson,this.openPerson);
     }
     componentWillUnmount() {
         window.removeEventListener(EVENT.openAddBox,this.openBox);
+        // window.removeEventListener(EVENT.getPerson,this.openPerson);
     }
     
     openBox(e){
         let data=e?e.params:{};
         this.setState({data,showAdd:true});
     }
+    openPerson(e){
+        // let data=e?e.params:{};
+        // this.setState({depId:data.objectId,depName:data.name,showPerson:true});
+        
+    }
 
     toList(){
-        this.setState({showAdd:false});
+        this.setState({showAdd:false,showPerson:false});
     }
 
     render(){
@@ -87,6 +111,7 @@ class AppDeviceManage extends Component{
                     <SonPage title={___.register_type} open={this.state.showAdd} back={this.toList}>
                         <AddBox data={this.state.data}/>
                     </SonPage>
+                    
                 </div>
             </ThemeProvider>
         );
@@ -100,6 +125,7 @@ class TypeItem extends Component{
         this.toUpdate = this.toUpdate.bind(this);
         this.getUrl = this.getUrl.bind(this);
         this.update = this.update.bind(this);
+        this.getPerson = this.getPerson.bind(this);
     }
     getUrl(){
         if(!_user.customer.sellerWxAppKey){
@@ -124,6 +150,10 @@ class TypeItem extends Component{
         window.removeEventListener(EVENT.typeUpdate,this.update);
         this.forceUpdate();
     }
+    getPerson(){
+        thisView.goTo('person_list.js',Object.assign({},this.props.data));
+        // W.emit(window,EVENT.getPerson,Object.assign({},this.props.data));
+    }
     render() {
         return (
             <div style={styles.box}>
@@ -132,8 +162,9 @@ class TypeItem extends Component{
                     <FlatButton label={___.edit} onClick={this.toUpdate} primary={true}/>
                 </h4>
                 <div>
-                    <span>{___.register_num+'：'+this.props.data.total||0}</span>
-                    <FlatButton label={___.register_url} onClick={this.getUrl} primary={true}/>
+                    <span>{___.register_num+'：'}</span>
+                    <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
+                    <FlatButton style={styles.t} label={___.register_url} onClick={this.getUrl} primary={true}/>
                 </div>
             </div>
         );

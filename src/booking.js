@@ -85,6 +85,7 @@ class From extends Component{
         this.valid=false;
         this.data={
             sellerId:_g.sellerId,
+            sellerName:_g.seller_name,
             uid:_g.uid,
             status:0,
             status0:1,

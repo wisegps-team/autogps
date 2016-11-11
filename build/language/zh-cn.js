@@ -338,5 +338,11 @@ window.___={
 	'close_carowner_seller':'关闭车主营销',
 	'set_install_shop':'设为安装网点',
 	'cancel_install_shop':'取消安装网点',
-	'wx_server_url':'微信服务器配置'
+	'wx_server_url':'微信服务器配置',
+	'wx_push_config':'推送模板设置',
+	'do_not_disclose':'重要信息，请勿泄露',
+	'wx_config_last':'最后一步，请到公众号主页》开发》基本配置中，启用服务器配置，并把“微信服务器配置”链接填入其中，Token设置为“baba”',
+	'booking_status':['预订','注册','结算','确认'],
+	'recommender':'推荐人',
+	'booker':'预订人',
 }

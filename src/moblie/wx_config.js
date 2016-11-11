@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
 
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import Input from '../_component/base/input';
 import AppBar from '../_component/base/appBar';
@@ -39,6 +40,10 @@ const sty={
         flex:'1 0 50%'
     },
     h4:{textAlign:'left'},
+    m:{
+        marginTop: '10px',
+        marginLeft: '10px'
+    }
 }
 
 class App extends Component {
@@ -58,6 +63,8 @@ class App extends Component {
             this.setState({data});
         },{
             uid:_user.customer.objectId
+        },{
+            fields:'objectId,uid,name,type,wxAppKey,wxAppSecret'
         });
     }
     
@@ -93,6 +100,7 @@ class App extends Component {
                 wxAppKey:wx.wxAppKey,
                 wxAppSecret:wx.wxAppSecret
             });
+            W.alert(___.wx_config_last);
         }else{
             data[0]=wx;
         }
@@ -100,18 +108,20 @@ class App extends Component {
     }
 
     getUrl(type){
-        let wxAppKey='';
+        let wxAppKey,wxAppSecret;
         if(type<2){//营销号
-            if(this.state.data[1])
+            if(this.state.data[1]){
                 wxAppKey=this.state.data[1].wxAppKey;
-            else{
+                wxAppSecret=this.state.data[1].wxAppSecret;
+            }else{
                 W.alert(___.wx_seller_null);
                 return;
             }
         }else{//服务号
-            if(this.state.data[0])
+            if(this.state.data[0]){
                 wxAppKey=this.state.data[0].wxAppKey;
-            else{
+                wxAppSecret=this.state.data[0].wxAppSecret;
+            }else{
                 W.alert(___.wx_server_null);
                 return;
             }
@@ -136,12 +146,25 @@ class App extends Component {
             case 5://车主主页
                 text='http://'+domain[0]+'/?wx_app_id='+wxAppKey;
                 break;
+            case 6://服务器url
+                text='http://'+domain[0]+'/user.autogps.php?wxAppKey='+wxAppKey+'&wxAppSecret='+wxAppSecret;
+                W.alert({title:___.do_not_disclose,text});
+                return;
             default://车主注册
                 text='http://'+domain[0]+'/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
                 break;
         }
         
         W.alert(text);
+    }
+
+    goPush(i){
+        if(i){//营销号
+
+        }else{//服务号
+
+        }
+        W.alert('正在开发');
     }
 
     render() {
@@ -168,7 +191,9 @@ class App extends Component {
                             <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(3)} primary={true}/>
                             {/*<FlatButton style={sty.b} label={___.recommend_url} onClick={e=>this.getUrl(4)} primary={true}/>*/}
                             <FlatButton style={sty.b} label={___.car_server_url} onClick={e=>this.getUrl(5)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.wx_server_url} onClick={e=>this.getUrl(6)} primary={true}/>
                         </div>
+                        <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(0)}/>
                     </div>
                     <div style={sty.p}>
                         <h3>{___.wx_seller+"："}
@@ -179,6 +204,7 @@ class App extends Component {
                             <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(0)} primary={true}/>
                             <FlatButton style={sty.b} label={___.seller_url} onClick={e=>this.getUrl(1)} primary={true}/>
                         </div>
+                        <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(1)}/>
                     </div>
                 </div>
                 <SonPage open={this.state.show_sonpage} back={this.showWxBox}>
