@@ -142,6 +142,10 @@ class ActivityList extends Component {
         });
     }
     share(data){
+        if(!_user.customer.wxAppKey){
+            W.alert(___.wx_server_null);
+            return;
+        }
         function setShare(){
             var op={
                 title: data.name, // 分享标题

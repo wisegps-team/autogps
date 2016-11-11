@@ -84,8 +84,8 @@ class App extends Component {
     configSuccess(wx){
         //配置成功
         let data=this.state.data.concat();
-        if(this.state.type==1){
-            data[1]=wx;
+        if(this.state.type==0){
+            data[0]=wx;
             Wapi.customer.update(res=>{
                 Wapi.device.update(res=>{//把现有的设备都改serverId
                     _user.customer.wxAppKey=wx.wxAppKey;
@@ -102,7 +102,7 @@ class App extends Component {
             });
             W.alert(___.wx_config_last);
         }else{
-            data[0]=wx;
+            data[1]=wx;
         }
         this.setState({data});
     }

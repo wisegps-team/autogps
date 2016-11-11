@@ -230,6 +230,14 @@ class EditActivity extends Component {
             data.uid=_user.customer.objectId;
             Wapi.activity.add(res=>{
                 data.objectId=res.objectId;
+                data.createdAt=W.dateToString(new Date());
+
+                //额外信息
+                data.status0=0;
+                data.status1=0;
+                data.status2=0;
+                data.status3=0;
+
                 this.props.addSubmit(data);
                 this.data=getInitData();
                 this.forceUpdate();

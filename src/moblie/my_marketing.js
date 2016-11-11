@@ -79,8 +79,14 @@ class App extends Component {
         }
         Wapi.booking.aggr(resAggr=>{
             this.booking=resAggr.data;
-            this.getData();
+            Wapi.customer.list(res=>{
+                this._parents=res.data||[];
+                this.getData();
+            },{
+                objectId:_user.customer.parentId.join('|')
+            });
         },par);
+        
     }
     nextPage(){
         // this.page_no++;
@@ -101,7 +107,7 @@ class App extends Component {
                     this.total=res.total;
                     let activities=res.data;
                     
-                    activities.map(ele=>{
+                    activities.forEach(ele=>{
                         let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                         if(booking){
                             ele.status0=booking.status0;
@@ -113,6 +119,10 @@ class App extends Component {
                             ele.status1=0;
                             ele.status2=0;
                             ele.status3=0;
+                        }
+                        let cust=this._parents.find(c=>c.objectId==ele.uid);
+                        if(cust){
+                            ele.wxAppKey=cust.wxAppKey;
                         }
                     });
                     this.activities=this.activities.concat(activities);
@@ -134,7 +144,7 @@ class App extends Component {
                     this.total=res.total;
                     let activities=res.data;
                     
-                    activities.map(ele=>{
+                    activities.forEach(ele=>{
                         let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                         if(booking){
                             ele.status0=booking.status0;
@@ -147,6 +157,7 @@ class App extends Component {
                             ele.status2=0;
                             ele.status3=0;
                         }
+                        ele.wxAppKey=_user.customer.wxAppKey;
                     });
                     this.activities=this.activities.concat(activities);
                     this.forceUpdate();
@@ -267,6 +278,10 @@ class DList extends Component{
         console.log(data);
     }
     share(data){
+        if(!data.wxAppKey){
+            W.alert(___.wx_server_null);
+            return;
+        }
         function setShare(){
             let _seller=_user.employee?_user.employee.name:_user.customer.contact;
             let _sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
@@ -274,7 +289,7 @@ class DList extends Component{
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+_user.customer.wxAppKey+'&activityId='+data.objectId,
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+data.wxAppKey+'&activityId='+data.objectId,
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
@@ -313,18 +328,6 @@ class DList extends Component{
                             <td style={styles.td_left}>{___.start_date}</td>
                             <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
                         </tr>
-                        {/*<tr style={styles.line}>
-                            <td style={styles.td_left}>{___.activity_reward}</td>
-                            <td style={styles.td_right}>{ele.reward}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.project_manager}</td>
-                            <td style={styles.td_right}>{ele.principal}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.seller}</td>
-                            <td style={styles.td_right}>{ele.sellerType}</td>
-                        </tr>*/}
                     </tbody>
                 </table>
                 <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
