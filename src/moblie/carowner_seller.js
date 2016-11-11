@@ -67,44 +67,47 @@ class App extends Component {
     }
     getData(){
         let parents=_user.customer.parentId.join('|');
-        let params={//可以看到当前代理商及其上级的车主营销活动
+        let params={//可以看到当前代理商及其上级的车主营销活动,只显示进行中的
             uid:_user.customer.objectId + '|' +parents,
+            status:1,
             type:0
         }
         Wapi.activity.list(res=>{
             this.total=res.total;
             let activities=res.data;
+            this.activities=this.activities.concat(activities);
+            this.forceUpdate();
 
-            let par={
-                "group":{
-                    "_id":{"activityId":"$activityId"},
-                    "status0":{"$sum":"$status0"},
-                    "status1":{"$sum":"$status1"},
-                    "status2":{"$sum":"$status2"},
-                    "status3":{"$sum":"$status3"}
-                },
-                "sorts":"sellerId",
-                "uid":_user.customer.objectId
-            }
-            Wapi.booking.aggr(resAggr=>{
-                let arr=resAggr.data;
-                activities.map(ele=>{
-                    let booking=arr.find(item=>item._id.sellerId==ele.objectId);
-                    if(booking){
-                        ele.status0=booking.status0;
-                        ele.status1=booking.status1;
-                        ele.status2=booking.status2;
-                        ele.status3=booking.status3;
-                    }else{
-                        ele.status0=0;
-                        ele.status1=0;
-                        ele.status2=0;
-                        ele.status3=0;
-                    }
-                });
-                this.activities=this.activities.concat(activities);
-                this.forceUpdate();
-            },par);
+            // let par={
+            //     "group":{
+            //         "_id":{"activityId":"$activityId"},
+            //         "status0":{"$sum":"$status0"},
+            //         "status1":{"$sum":"$status1"},
+            //         "status2":{"$sum":"$status2"},
+            //         "status3":{"$sum":"$status3"}
+            //     },
+            //     "sorts":"sellerId",
+            //     "uid":_user.customer.objectId
+            // }
+            // Wapi.booking.aggr(resAggr=>{
+            //     let arr=resAggr.data;
+            //     activities.map(ele=>{
+            //         let booking=arr.find(item=>item._id.sellerId==ele.objectId);
+            //         if(booking){
+            //             ele.status0=booking.status0;
+            //             ele.status1=booking.status1;
+            //             ele.status2=booking.status2;
+            //             ele.status3=booking.status3;
+            //         }else{
+            //             ele.status0=0;
+            //             ele.status1=0;
+            //             ele.status2=0;
+            //             ele.status3=0;
+            //         }
+            //     });
+            //     this.activities=this.activities.concat(activities);
+            //     this.forceUpdate();
+            // },par);
 
         },params,{
             limit:this.limit,
@@ -138,7 +141,11 @@ class App extends Component {
         console.log(activity);
         for(let i=this.activities.length-1;i>=0;i--){
             if(this.activities[i].objectId==activity._objectId){
-                this.activities[i]=activity;
+                if(activity.status==0){
+                    this.activities.splice(i,1);
+                }else{
+                    this.activities[i]=activity;
+                }
                 break;
             }
         }

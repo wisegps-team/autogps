@@ -18,6 +18,7 @@ const styles = {
     input_page:{textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     input_group:{marginTop:'0.5em',textAlign:'left'},
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'10px'},
+    select:{width:'100%',textAlign:'left'},
 };
 
 const strStatus=[___.terminated,___.ongoing];
@@ -29,18 +30,18 @@ function getInitData(){
         deposit:'',     //订金标准
         offersDesc:'',  //预定优惠
         product:'',     //产品型号
-        productId:'',   //产品型号Id
+        productId:0,    //产品型号Id
         price:'',       //终端价格
         installationFee:'', //安装费用
-        url:'',     //文案链接
-        principal:'',   //项目经理
-        principalTel:'',//项目经理电话
-        principalId:'', //项目经理id
-        sellerType:'',  //营销人员(营销人员类型)
-        sellerTypeId:'',//营销人员类型id，从type=1的depart里面选
+        url:'',             //文案链接
+        principal:_user.customer.name,          //项目经理
+        principalId:_user.customer.objectId,    //项目经理id,默认本公司
+        principalTel:_user.mobile,              //项目经理电话
+        sellerType:_user.customer.name,         //营销人员(营销人员类型)
+        sellerTypeId:_user.customer.objectId,   //营销人员类型id，从type=1的depart里面选，默认本公司
         getCard:false,  //客户经理开卡
-        status:1,   //活动状态（进行中/已终止）
-        type:0      //0车主营销，1营销活动
+        status:1,       //活动状态（1进行中/0已终止）
+        type:0          //0车主营销，1营销活动
     };
     return initData;
 }
@@ -48,7 +49,17 @@ class EditActivity extends Component {
     constructor(props,context){
         super(props,context);
         this.data=getInitData();
-        this.products=[];
+
+        this.products=[
+            {model:___.please_select_model,modelId:0},
+        ],
+        this.principals=[
+            {name:_user.customer.name,objectId:_user.customer.objectId,tel:_user.mobile},
+        ];
+        this.sellerTypes=[
+            {name:_user.customer.name,objectId:_user.customer.objectId},
+        ];
+        
         this.intent='add';
 
         this.dataChange = this.dataChange.bind(this);
@@ -58,7 +69,8 @@ class EditActivity extends Component {
         this.submit = this.submit.bind(this);
     }
     componentDidMount() {
-        let par={
+        let flag=0;
+        let par1={
             "group":{
                 "_id":{
                     "modelId":"$modelId",
@@ -67,11 +79,39 @@ class EditActivity extends Component {
             },
             "sorts":"objectId",
             "uid":_user.customer.objectId
-        }
+        }//获取设备数组
         Wapi.device.aggr(res=>{
-            this.products=res.data.map(ele=>ele._id);
-            this.forceUpdate();
-        },par);
+            let devices=res.data.map(ele=>ele._id);
+            this.products=this.products.concat(devices);
+            flag++;
+            if(flag==3){
+                this.forceUpdate();
+            }
+        },par1);
+
+        let par2={
+            companyId:_user.customer.objectId,
+            type:0  //人员的type=0表示本公司人员
+        }//获取人员数组（项目经理）
+        Wapi.employee.list(res=>{
+            this.principals=this.principals.concat(res.data);
+            flag++;
+            if(flag==3){
+                this.forceUpdate();
+            }
+        },par2);
+
+        let par3={
+            uid:_user.customer.objectId,
+            type:1  //部门的type=1表示营销部门
+        }//获取营销人员数组
+        Wapi.department.list(res=>{
+            this.sellerTypes=this.sellerTypes.concat(res.data);
+            flag++;
+            if(flag==3){
+                this.forceUpdate();
+            }
+        },par3);
     }
     
     componentWillReceiveProps(nextProps) {
@@ -103,19 +143,20 @@ class EditActivity extends Component {
         this.data.product=this.products.find(ele=>ele.modelId==key).model;
         this.forceUpdate();
     }
-    principalChange(data){//+++这里要加入 选当前用户选项（公司管理员），所以要加上判断(未完成)
-        console.log(data);
-        this.data.principal=data.name;
-        this.data.principalTel=data.tel;
-        this.data.principalId=data.objectId;
+    principalChange(e,v,k){//+++这里要加入 选当前用户选项（公司管理员），所以要加上判断(未完成)
+        this.data.principalId=k;
+        this.data.principal=this.principals.find(ele=>ele.objectId==k).name;
+        this.data.principalTel=this.principals.find(ele=>ele.objectId==k).tel;
+        this.forceUpdate();
     }
-    sellerTypeChange(data){
-        console.log(data);
-        this.data.sellerType=data.name;
-        this.data.sellerTypeId=data.objectId;
+    sellerTypeChange(e,v,k){
+        this.data.sellerTypeId=k;
+        this.data.sellerType=this.sellerTypes.find(ele=>ele.objectId==k).name;
+        this.forceUpdate();
     }
     submit(){
         let data=this.data;
+        
         if(data.name==''){//名称不为空
             W.alert(___.name+___.not_null);
             return;
@@ -132,6 +173,10 @@ class EditActivity extends Component {
             W.alert(___.booking_offersDesc+___.not_null);
             return;
         }
+        if(data.productId==0){//产品型号不为空
+            W.alert(___.product_type+___.not_null);
+            return;
+        }
         if(data.price==''){//设备价格不为空
             W.alert(___.device_price+___.not_null);
             return;
@@ -144,14 +189,15 @@ class EditActivity extends Component {
             W.alert(___.activity_url+___.not_null);
             return;
         }
-        if(data.principal=='' && !this.props.isCarownerSeller){//项目经理不为空
-            W.alert(___.project_manager+___.not_null);
-            return;
-        }
-        if(data.sellerType=='' && !this.props.isCarownerSeller){//销售人员类型不为空
-            W.alert(___.seller+___.not_null);
-            return;
-        }
+        // if(!this.props.isCarownerSeller && data.principalId==0){//项目经理不为空（非车主营销活动）
+        //     W.alert(___.project_manager+___.not_null);
+        //     return;
+        // }
+        // if(!this.props.isCarownerSeller && data.sellerTypeId==0){//销售人员类型不为空（非车主营销活动）
+        //     W.alert(___.seller+___.not_null);
+        //     return;
+        // }
+        console.log(data);
 
         if(this.intent=='edit'){//修改
             data._objectId=data.objectId;
@@ -169,9 +215,6 @@ class EditActivity extends Component {
             }
             data.uid=_user.customer.objectId;
             Wapi.activity.add(res=>{
-                data.status0=0;
-                data.status1=0;
-                data.status2=0;
                 data.objectId=res.objectId;
                 this.props.addSubmit(data);
                 this.data=getInitData();
@@ -182,6 +225,10 @@ class EditActivity extends Component {
     render() {
         let productItems=this.products.map(ele=>
             <MenuItem key={ele.modelId} value={ele.modelId} primaryText={ele.model} />);
+        let principalItems=this.principals.map(el=>
+            <MenuItem key={el.objectId} value={el.objectId.toString()} primaryText={el.name} />);
+        let selleTypeItems=this.sellerTypes.map(e=>
+            <MenuItem key={e.objectId} value={e.objectId.toString()} primaryText={e.name} />);
         return (
             <div style={styles.input_page}>
                 {/*活动名称*/}
@@ -191,7 +238,7 @@ class EditActivity extends Component {
                 <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} />
                 
                 {/*支付方式*/}
-                <SelectField name='pay' floatingLabelText={___.pay_type} style={{width:'100%',textAlign:'left'}} value={this.data.pay} onChange={this.dataChange}>
+                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200}>
                     <MenuItem value={0} primaryText={___.wxPay} />
                 </SelectField>
 
@@ -202,7 +249,7 @@ class EditActivity extends Component {
                 <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} />
 
                 {/*产品型号*/}
-                <SelectField name='productId' floatingLabelText={___.product_type} style={{width:'100%',textAlign:'left'}} value={this.data.productId} onChange={this.productChange}>
+                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200}>
                     {productItems}
                 </SelectField>
 
@@ -219,12 +266,16 @@ class EditActivity extends Component {
                 
                 {/*项目经理*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <EmployeeSearch name='principal' floatText={___.project_manager} defaultValue={this.data.principal} onChange={this.principalChange} data={{companyId:_user.customer.objectId,type:0}}/>
+                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200}>
+                        {principalItems}
+                    </SelectField>
                 </div>
                 
                 {/*营销人员（类型）*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <UserTypeSearch name='sellerType' floatText={___.seller} defaultValue={this.data.sellerType} onChange={this.sellerTypeChange} data={{uid:_user.customer.objectId,type:1}}/>
+                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200}>
+                        {selleTypeItems}
+                    </SelectField>
                 </div>
 
                 {/*客户经理开卡*/}

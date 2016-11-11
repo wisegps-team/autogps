@@ -345,4 +345,8 @@ window.___={
 	'booking_status':['预订','注册','结算','确认'],
 	'recommender':'推荐人',
 	'booker':'预订人',
+	'please_select_model':'请选择产品型号',
+	'please_select_principal':'请选择项目经理',
+	'please_select_sellerType':'请选择营销人员',
+	'agent_manager':'代理商管理员',
 }
