@@ -63,7 +63,7 @@ class ProductLogList extends Component {
             let product=res.data;
             product.map(ele=>{
                 ele.inCount=ele.inCount||0;
-                ele.outCount=ele.inCount||0;
+                ele.outCount=ele.outCount||0;
                 ele.stock=ele.inCount-ele.outCount;
             });
             this.setState({product:product});
