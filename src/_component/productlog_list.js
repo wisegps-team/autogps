@@ -22,7 +22,7 @@ class ProductLogList extends Component {
         super(props, context);
         this.state={
             // brand:STORE.getState().brand,
-            product:STORE.getState().product,
+            product:[],
             push:false,
             pop:false,
             selectProduct:null,
@@ -60,13 +60,13 @@ class ProductLogList extends Component {
             par = Object.assign(par,params);
         }
         Wapi.deviceLog.aggr(res=>{
-            let product=res.data;
-            product.map(ele=>{
+            let product=res.data.filter(l=>l._id.modelId);
+            product.forEach(ele=>{
                 ele.inCount=ele.inCount||0;
                 ele.outCount=ele.outCount||0;
                 ele.stock=ele.inCount-ele.outCount;
             });
-            this.setState({product:product});
+            this.setState({product});
         },par);
     }
     

@@ -38,6 +38,7 @@ const styles={
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'10px'},
     tabs:{position: 'fixed',width: '100vw',bottom: '0px'},
+    a:{marginRight:'1em',color:'#009688'},
 };
 
 require('../_sass/home.scss');
@@ -73,12 +74,30 @@ class ActivityList extends Component {
         this.page_no=1;
         this.total=-1;
         this.activities=[];
+        this.booking=[];
 
         this.nextPage = this.nextPage.bind(this);
         this.share = this.share.bind(this);
     }
     componentDidMount() {
-        this.getData();
+        let par={
+            "group":{
+                "_id":{"activityId":"$activityId"},
+                "status0":{"$sum":"$status0"},
+                "status1":{"$sum":"$status1"},
+                "status2":{"$sum":"$status2"},
+                "status3":{"$sum":"$status3"}
+            },
+            "sorts":"objectId",
+            "uid":_user.customer.objectId,
+            sellerId:_user.employee.objectId,
+        }
+        Wapi.booking.aggr(resAggr=>{
+            this.booking=resAggr.data;
+            // this.activities=this.activities.concat(activities);
+            // this.forceUpdate();
+            this.getData();
+        },par);
     }
     getChildContext(){
         return {
@@ -93,39 +112,23 @@ class ActivityList extends Component {
         Wapi.activity.list(res=>{
             this.total=res.total;
             let activities=res.data;
-            this.activities=this.activities.concat(activities);
-            this.forceUpdate();
 
-            // let par={
-            //     "group":{
-            //         "_id":{"activityId":"$activityId"},
-            //         "status0":{"$sum":"$status0"},
-            //         "status1":{"$sum":"$status1"},
-            //         "status2":{"$sum":"$status2"},
-            //         "status3":{"$sum":"$status3"}
-            //     },
-            //     "sorts":"sellerId",
-            //     "uid":_user.customer.objectId
-            // }
-            // Wapi.booking.aggr(resAggr=>{
-            //     let arr=resAggr.data;
-            //     activities.map(ele=>{
-            //         let booking=arr.find(item=>item._id.sellerId==ele.objectId);
-            //         if(booking){
-            //             ele.status0=booking.status0;
-            //             ele.status1=booking.status1;
-            //             ele.status2=booking.status2;
-            //             ele.status3=booking.status3;
-            //         }else{
-            //             ele.status0=0;
-            //             ele.status1=0;
-            //             ele.status2=0;
-            //             ele.status3=0;
-            //         }
-            //     });
-            //     this.activities=this.activities.concat(activities);
-            //     this.forceUpdate();
-            // },par);
+            activities.map(ele=>{
+                let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                if(booking){
+                    ele.status0=booking.status0;
+                    ele.status1=booking.status1;
+                    ele.status2=booking.status2;
+                    ele.status3=booking.status3;
+                }else{
+                    ele.status0=0;
+                    ele.status1=0;
+                    ele.status2=0;
+                    ele.status3=0;
+                }
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            });
 
         },{
             uid:_user.customer.objectId,
@@ -191,10 +194,26 @@ class DList extends Component{
     constructor(props,context){
         super(props,context);
         this.toActivityPage = this.toActivityPage.bind(this);
+        this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
         history.replaceState('home.html','home.html','home.html');
         window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
+    }
+    toCountPage(page,data){
+        if(page=='booking'){
+            let par={
+                activityId:data.objectId,
+                status:0
+            }
+            thisView.goTo('booking_list.js',par);
+        }else{
+            let par={
+                activityId:data.objectId,
+                status:1
+            }
+            thisView.goTo('booking_list.js',par);
+        }
     }
     render() {
         let data=this.props.data;
@@ -212,15 +231,17 @@ class DList extends Component{
                             <td style={styles.td_right}>{strStatus[ele.status]}</td>
                         </tr>
                         <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.activity_reward}</td>
-                            <td style={styles.td_right}>{ele.reward}</td>
+                            <td style={styles.td_left}>{___.start_date}</td>
+                            <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div style={{marginTop:'5px',marginLeft:'3px',fontSize:'0.8em'}}>
-                    <span>{___.count_booked + ele.status0}</span>
+                    {/*<span>{___.count_booked + ele.status0}</span>
                     <span style={{marginLeft:'10px'}}>{___.count_registed + ele.status1}</span>
-                    <span style={{marginLeft:'10px'}}>{___.count_paid + ele.status2}</span>
+                    <span style={{marginLeft:'10px'}}>{___.count_paid + ele.status2}</span>*/}
+                    <span style={styles.a} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
+                    <span style={styles.a} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
                 </div>
                 <div style={styles.bottom_btn_right}>
                     <FlatButton label={___.share} primary={true} onClick={()=>this.context.share(ele)} />

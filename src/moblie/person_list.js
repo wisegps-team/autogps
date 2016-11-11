@@ -134,8 +134,8 @@ class PersonBox extends Component{
                     <span>{e.tel}</span>
                 </div>
                 <div>
-                    <span style={sty.s}>{'预订：'}<a style={sty.a} onClick={e=>this.goList(e,0)}>{e.status0}</a></span>
-                    <span style={sty.s}>{'注册：'}<a style={sty.a} onClick={e=>this.goList(e,1)}>{e.status1}</a></span>
+                    <span style={sty.s}>{___.booking_status[0]+'：'}<a style={sty.a} onClick={()=>this.goList(e,0)}>{e.status0}</a></span>
+                    <span style={sty.s}>{___.booking_status[1]+'：'}<a style={sty.a} onClick={()=>this.goList(e,1)}>{e.status1}</a></span>
                 </div>
             </div>
         ));

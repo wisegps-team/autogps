@@ -71,7 +71,7 @@ class App extends Component {
                 "status2":{"$sum":"$status2"},
                 "status3":{"$sum":"$status3"}
             },
-            "sorts":"sellerId",
+            "sorts":"activityId",
             "uid":_user.customer.objectId
         }
         Wapi.booking.aggr(resAggr=>{
@@ -95,7 +95,7 @@ class App extends Component {
             let activities=res.data;
 
             activities.map(ele=>{
-                let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
+                let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                 if(booking){
                     ele.status0=booking.status0;
                     ele.status1=booking.status1;

@@ -73,9 +73,9 @@ class App extends Component {
                 "status2":{"$sum":"$status2"},
                 "status3":{"$sum":"$status3"}
             },
-            "sorts":"sellerId",
+            "sorts":"activityId",
             "uid":_user.customer.objectId + '|' +parents,
-            status:1,
+            sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
         }
         Wapi.booking.aggr(resAggr=>{
             this.booking=resAggr.data;
@@ -102,7 +102,7 @@ class App extends Component {
                     let activities=res.data;
                     
                     activities.map(ele=>{
-                        let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
+                        let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                         if(booking){
                             ele.status0=booking.status0;
                             ele.status1=booking.status1;
@@ -135,7 +135,7 @@ class App extends Component {
                     let activities=res.data;
                     
                     activities.map(ele=>{
-                        let booking=this.booking.find(item=>item._id.sellerId==ele.objectId);
+                        let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                         if(booking){
                             ele.status0=booking.status0;
                             ele.status1=booking.status1;
@@ -208,7 +208,6 @@ class App extends Component {
                     <AppBar 
                         title={___.my_marketing}
                         style={{position:'fixed'}}
-                        iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                     />
                     <div name='list' style={styles.main}>
                         {/*items*/}
@@ -267,6 +266,35 @@ class DList extends Component{
         console.log(page);
         console.log(data);
     }
+    share(data){
+        function setShare(){
+            let _seller=_user.employee?_user.employee.name:_user.customer.contact;
+            let _sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
+            let _sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+            var op={
+                title: data.name, // 分享标题
+                desc: data.booking_offersDesc, // 分享描述
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+_user.customer.wxAppKey+'&activityId='+data.objectId,
+                imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                success: function(){},
+                cancel: function(){}
+            }
+            wx.onMenuShareTimeline(op);
+            wx.onMenuShareAppMessage(op);
+            setShare=null;
+            W.alert(___.share_activity);
+        }
+        if(W.native){
+            setShare();
+        }
+        else{
+            W.toast(___.ready_activity_url);
+            window.addEventListener('nativeSdkReady',setShare);
+        }
+
+        console.log('share');
+        
+    }
     render() {
         let data=this.props.data;
         let items=data.map((ele,i)=>
@@ -305,6 +333,7 @@ class DList extends Component{
                 </div>
                 <div style={styles.bottom_btn_right}>
                     <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />
+                    <FlatButton label={___.share} primary={true} onClick={()=>this.share(ele)} />
                 </div>
             </Card>);
         return(

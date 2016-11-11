@@ -30,6 +30,7 @@ import ActionEvent from 'material-ui/svg-icons/action/event';
 import ImageHdrStrong from 'material-ui/svg-icons/image/hdr-strong';
 import HardwareDeviceHub from 'material-ui/svg-icons/hardware/device-hub';
 import ActionInfoOutline from 'material-ui/svg-icons/action/info-outline';
+import ActionTrendingUp from 'material-ui/svg-icons/action/trending-up';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -171,6 +172,11 @@ const _pages=[//所有的页面
         href:'company_info',
         name:___.company_info,
         icon:<ActionInfoOutline style={sty.icon}/>
+    },
+    {   /*我的营销 */
+        href:'my_marketing',
+        name:___.my_marketing,
+        icon:<ActionTrendingUp style={sty.icon}/>
     },
 ];
 
