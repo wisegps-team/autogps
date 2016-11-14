@@ -55,6 +55,7 @@ loadDictionary();
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+    thisView.prefetch('booking_list.js',2);
 });
 thisView.addEventListener('show',function(){
     document.title=___.seller_activity;
@@ -150,7 +151,16 @@ class ActivityList extends Component {
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+data.uid+'&sellerId='+_user.employee.objectId+'&mobile='+_user.employee.tel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_user.employee.name)+'&wx_app_id='+_user.customer.wxAppKey+'&activityId='+data.objectId,
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                    +'&uid='+data.uid
+                    +'&sellerId='+_user.employee.objectId
+                    +'&mobile='+_user.employee.tel
+                    +'&title='+encodeURIComponent(data.name)
+                    +'&agent_tel='+_user.customer.tel
+                    +'&seller_name='+encodeURIComponent(_user.employee.name)
+                    +'&wx_app_id='+_user.customer.wxAppKey
+                    +'&activityId='+data.objectId
+                    +'$timerstamp'+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
@@ -202,7 +212,13 @@ class DList extends Component{
     }
     toActivityPage(data){
         history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
+        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+            +'&uid='+_user.customer.objectId
+            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+            +'&title='+encodeURIComponent(data.name)
+            +'&agent_tel='+_user.customer.tel
+            +'&seller_name='+encodeURIComponent(___.noBooking)
+            +'$timerstamp'+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){

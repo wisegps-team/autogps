@@ -256,7 +256,13 @@ class DList extends Component{
     }
     toActivityPage(data){
         history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
+        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+            +'&uid='+_user.customer.objectId
+            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+            +'&title='+encodeURIComponent(data.name)
+            +'&agent_tel='+_user.customer.tel
+            +'&seller_name='+encodeURIComponent(___.noBooking)
+            +'$timerstamp'+Number(new Date());
     }
     toCountPage(page,data){
         let par={
@@ -283,7 +289,16 @@ class DList extends Component{
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+data.uid+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+data.wxAppKey+'&activityId='+data.objectId,
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                    +'&uid='+data.uid
+                    +'&sellerId='+_sellerId
+                    +'&mobile='+_sellerTel
+                    +'&title='+encodeURIComponent(data.name)
+                    +'&agent_tel='+_user.customer.tel
+                    +'&seller_name='+encodeURIComponent(_seller)
+                    +'&wx_app_id='+data.wxAppKey
+                    +'&activityId='+data.objectId
+                    +'$timerstamp'+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
