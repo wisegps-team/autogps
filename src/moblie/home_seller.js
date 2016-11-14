@@ -112,9 +112,8 @@ class ActivityList extends Component {
     getData(){
         Wapi.activity.list(res=>{
             this.total=res.total;
-            let activities=res.data;
-
-            activities.map(ele=>{
+            this.activities=res.data||[];
+            this.activities.forEach(ele=>{
                 let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
                 if(booking){
                     ele.status0=booking.status0;
@@ -127,10 +126,8 @@ class ActivityList extends Component {
                     ele.status2=0;
                     ele.status3=0;
                 }
-                this.activities=this.activities.concat(activities);
-                this.forceUpdate();
             });
-
+            this.forceUpdate();
         },{
             uid:_user.customer.objectId,
             sellerTypeId:_user.employee.departId,
