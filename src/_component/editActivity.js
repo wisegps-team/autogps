@@ -116,9 +116,8 @@ class EditActivity extends Component {
     }
     
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
+        // console.log(nextProps);
         if(nextProps.data){
-            console.log('edit');
             this.intent='edit';
             let data=getInitData();
             this.data=Object.assign(data,nextProps.data);

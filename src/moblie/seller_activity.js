@@ -116,6 +116,7 @@ class App extends Component {
     add(){
         this.setState({
             isEdit:true,
+            noEdit:false,
             curActivity:null,
             activityName:'',
         });
@@ -201,8 +202,14 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        //     +'&uid='+_user.customer.objectId
+        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+        //     +'&title='+encodeURIComponent(data.name)
+        //     +'&agent_tel='+_user.customer.tel
+        //     +'&seller_name='+encodeURIComponent(___.noBooking)
+        //     +'$timerstamp'+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){

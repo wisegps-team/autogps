@@ -73,7 +73,7 @@ class App extends Component {
             },
             "sorts":"activityId",
             "uid":_user.customer.objectId+'|'+_user.customer.parentId.join('|')
-        }
+        }//获取当前用户及其上级用户的活动预定统计数据
         Wapi.booking.aggr(resAggr=>{
             this.booking=resAggr.data;
             this.getData();
@@ -83,7 +83,7 @@ class App extends Component {
         this.page_no++;
         this.getData();
     }
-    getData(){
+    getData(){//获取活动列表，并将统计数据与活动对应
         let parents=_user.customer.parentId.join('|');
         let params={//可以看到当前代理商及其上级的车主营销活动,只显示进行中的
             uid:_user.customer.objectId + '|' +parents,
@@ -116,9 +116,10 @@ class App extends Component {
             sorts:'-createdAt',
         });
     }
-    add(){
+    add(){//添加活动
         this.setState({
             isEdit:true,
+            noEdit:false,
             curActivity:null,
             activityName:'',
         });
@@ -128,7 +129,7 @@ class App extends Component {
         this.activities.unshift(activity);
         history.back();
     }
-    edit(activity){
+    edit(activity){//修改活动
         let noEdit=false;
         if(activity.uid!=_user.customer.objectId){
             noEdit=true;
@@ -204,8 +205,14 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        //     +'&uid='+_user.customer.objectId
+        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+        //     +'&title='+encodeURIComponent(data.name)
+        //     +'&agent_tel='+_user.customer.tel
+        //     +'&seller_name='+encodeURIComponent(___.noBooking)
+        //     +'$timerstamp'+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){
