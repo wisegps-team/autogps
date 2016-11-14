@@ -988,9 +988,11 @@ try {
 	if(_g.wx_app_id)
 			WiStorm.config.wx_login=WiStorm.config.wx_login+'?wx_app_id='+WiStorm.config.wx_app_id;
 } catch (error) {
-	var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
-	loc=(loc=='index.html')?'':'&location='+loc;
-	location=location.origin+(location.search||'?')+loc;
+	if(_g.intent!='logout'){
+		var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
+		loc=(loc=='index.html')?'':'&location='+loc;
+		location=location.origin+(location.search||'?')+loc;
+	}
 }
 keys=undefined;
 
