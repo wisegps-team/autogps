@@ -64,7 +64,6 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        let parents=_user.customer.parentId.join('|');
         let par={
             "group":{
                 "_id":{"activityId":"$activityId"},
@@ -74,7 +73,6 @@ class App extends Component {
                 "status3":{"$sum":"$status3"}
             },
             "sorts":"activityId",
-            "uid":_user.customer.objectId + '|' +parents,
             sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
         }
         Wapi.booking.aggr(resAggr=>{
@@ -83,7 +81,7 @@ class App extends Component {
                 this._parents=res.data||[];
                 this.getData();
             },{
-                objectId:_user.customer.parentId.join('|')
+                objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
             });
         },par);
         
@@ -261,19 +259,15 @@ class DList extends Component{
         window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(___.noBooking);
     }
     toCountPage(page,data){
-        if(page=='booking'){
-            let par={
-                activityId:data.objectId,
-                status:0
-            }
-            thisView.goTo('booking_list.js',par);
-        }else{
-            let par={
-                activityId:data.objectId,
-                status:1
-            }
-            thisView.goTo('booking_list.js',par);
+        let par={
+            activityId:data.objectId,
+            sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
+            status:1
         }
+        if(page=='booking'){
+            par.status=0
+        }
+        thisView.goTo('booking_list.js',par);
         console.log(page);
         console.log(data);
     }
@@ -289,7 +283,7 @@ class DList extends Component{
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+_user.customer.objectId+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+data.wxAppKey+'&activityId='+data.objectId,
+                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)+'&uid='+data.uid+'&sellerId='+_sellerId+'&mobile='+_sellerTel+'&title='+encodeURIComponent(data.name)+'&agent_tel='+_user.customer.tel+'&seller_name='+encodeURIComponent(_seller)+'&wx_app_id='+data.wxAppKey+'&activityId='+data.objectId,
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}

@@ -18,8 +18,10 @@ import AutoList from '../_component/base/autoList';
 import {makeRandomEvent} from '../_modules/tool';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
-thisView.addEventListener('load',function(){
+let _par=null;
+thisView.addEventListener('load',function(e){
     ReactDOM.render(<App/>,thisView);
+    _par=e.params;
 });
 
 const EVENT=makeRandomEvent({
@@ -67,7 +69,11 @@ class App extends React.Component {
                 total:0,
             });
             _this.page=1;
-            _this._data=e.params;
+            if(e.params){
+                _this._data=e.params;
+            }else{
+                _this._data=_par;
+            }
             Wapi.booking.list(res=>{
                 _this.setState({
                     books:res.data,

@@ -72,7 +72,7 @@ class App extends Component {
                 "status3":{"$sum":"$status3"}
             },
             "sorts":"activityId",
-            "uid":_user.customer.objectId
+            "uid":_user.customer.objectId+'|'+_user.customer.parentId.join('|')
         }
         Wapi.booking.aggr(resAggr=>{
             this.booking=resAggr.data;
