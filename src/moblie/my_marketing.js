@@ -120,7 +120,7 @@ class App extends Component {
                         }
                         let cust=this._parents.find(c=>c.objectId==ele.uid);
                         if(cust){
-                            ele.wxAppKey=cust.wxAppKey;
+                            ele.wxAppKey=_user.customer.wxAppKey;
                         }
                     });
                     this.activities=this.activities.concat(activities);
@@ -136,9 +136,10 @@ class App extends Component {
                 let par2={
                     uid:_user.customer.objectId,
                     status:1,
-                    type:1
+                    type:1,
+                    sellerTypeId:_user.customer.objectId,
                 }
-                Wapi.activity.list(res=>{//type=0 车主营销的活动
+                Wapi.activity.list(res=>{
                     this.total=res.total;
                     let activities=res.data;
                     
@@ -255,14 +256,14 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-            +'&uid='+_user.customer.objectId
-            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
-            +'&title='+encodeURIComponent(data.name)
-            +'&agent_tel='+_user.customer.tel
-            +'&seller_name='+encodeURIComponent(___.noBooking)
-            +'$timerstamp'+Number(new Date());
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        //     +'&uid='+_user.customer.objectId
+        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+        //     +'&title='+encodeURIComponent(data.name)
+        //     +'&agent_tel='+_user.customer.tel
+        //     +'&seller_name='+encodeURIComponent(___.noBooking)
+        //     +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         let par={
@@ -298,7 +299,8 @@ class DList extends Component{
                     +'&seller_name='+encodeURIComponent(_seller)
                     +'&wx_app_id='+data.wxAppKey
                     +'&activityId='+data.objectId
-                    +'$timerstamp'+Number(new Date()),
+                    +'&seller_open_id='+_user.authData.openId
+                    +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
