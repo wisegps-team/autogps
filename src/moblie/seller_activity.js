@@ -209,7 +209,7 @@ class DList extends Component{
         //     +'&title='+encodeURIComponent(data.name)
         //     +'&agent_tel='+_user.customer.tel
         //     +'&seller_name='+encodeURIComponent(___.noBooking)
-        //     +'$timerstamp'+Number(new Date());
+        //     +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){

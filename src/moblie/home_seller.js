@@ -160,7 +160,7 @@ class ActivityList extends Component {
                     +'&seller_name='+encodeURIComponent(_user.employee.name)
                     +'&wx_app_id='+_user.customer.wxAppKey
                     +'&activityId='+data.objectId
-                    +'$timerstamp'+Number(new Date()),
+                    +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
@@ -218,7 +218,7 @@ class DList extends Component{
             +'&title='+encodeURIComponent(data.name)
             +'&agent_tel='+_user.customer.tel
             +'&seller_name='+encodeURIComponent(___.noBooking)
-            +'$timerstamp'+Number(new Date());
+            +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){

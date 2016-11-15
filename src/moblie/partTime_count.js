@@ -168,7 +168,7 @@ class App extends React.Component {
                 +'&title='+encodeURIComponent(_user.customer.other.title)
                 +'&agent_tel='+_user.customer.tel
                 +'&seller_name='+_user.employee.name
-                +'$timerstamp'+Number(new Date());
+                +'&timerstamp='+Number(new Date());
         }else{
             W.alert(___.no_event_page);
         }
