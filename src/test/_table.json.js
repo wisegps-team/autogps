@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=62;//版本号
+let version=63;//版本号
 
 //地区表
 export const area={
@@ -2066,6 +2066,21 @@ export const booking={
         },{
             'name': 'installId',
             'desc': '安装点的uid',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'type',
+            'desc': '预订类型（0，为自己预订；1，为他人预订）',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'userName',
+            'desc': '车主姓名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'userMobile',
+            'desc': '车主手机号',
             'type': 'String',
             'query': true,
         },
