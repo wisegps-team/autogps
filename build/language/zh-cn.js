@@ -352,4 +352,13 @@ window.___={
 	'start_date':'启用日期',
 	'bookingNum':'预定',
 	'my_marketing':'我的营销',
+	'activity_stop':'很抱歉，当前活动已终止',
+	'booking_for_self':'是否为本人预订？',
+	'booking_name':'预订人姓名',
+	'carowner_name':'车主姓名',
+	'carowner_phone':'车主手机号',
+	'pay_deposit':'支付订金',
+	'unpay_deposit':'不支付订金',
+	'pay_deposit_now':'现在支付订金XX元',
+	'getting_qr':'获取二维码中……'
 }

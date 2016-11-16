@@ -5,7 +5,7 @@ import WiStormAPI from './WiStormAPI.js';
 
 class ServerApi{
     constructor(props, context) {
-		this.url='http://h5.bibibaba.cn/server_api.php';
+		this.url='http://wx.autogps.cn/server_api.php';
 		this.ajax=WiStormAPI.prototype.ajax;
 	}
     get(data={},success,dataType='json'){
@@ -24,6 +24,11 @@ class ServerApi{
 	}
     saveConfigFile(callback,data){
         data.method='wx_config_file';
+		this.get(data,callback);
+    }
+
+	getAnyQrcode(callback,data){
+        data.method='getAnyQrcode';
 		this.get(data,callback);
     }
 }
