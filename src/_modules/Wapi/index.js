@@ -502,7 +502,7 @@ function WDeveloperApi(token){
 WDeveloperApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 
 function WAppApi(token){
-    WAPI.call(this,'app',token);
+	WiStormAPI.call(this,'app',token,config.app_key,config.app_secret);
 	this.get_op={
 		fields:'objectId,devId,name,logo,appKey,appSecret,version,contact,domainName,ACL,creator,createdAt,updatedAt'//默认返回的字段
 	}
@@ -513,7 +513,7 @@ function WAppApi(token){
 		limit:"20"
 	}
 }
-WAppApi.prototype=new WAPI();//继承父类WiStormAPI
+WAppApi.prototype=new WiStormAPI();
 
 function WTableApi(token){
 	WAPI.call(this,'table',token);

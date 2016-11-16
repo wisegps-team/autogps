@@ -138,7 +138,7 @@ class App extends Component {
                 text='http://'+domain[0]+'/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
                 break;
             case 3://车主账号
-                text='http://'+domain[0]+'/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
+                text='http://'+domain[0]+'/?loginLocation=%2Fwo365_user%2Fsrc%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
                 break;
             case 4://推荐有礼(未完成)
                 text='http://'+domain[0]+'/?loginLocation=src%2Fmoblie%2Fmy_account&wx_app_id='+wxAppKey;
@@ -150,9 +150,6 @@ class App extends Component {
                 text='http://'+domain[0]+'/user.autogps.php?wxAppKey='+wxAppKey+'&wxAppSecret='+wxAppSecret;
                 W.alert({title:___.do_not_disclose,text});
                 return;
-            default://车主注册
-                text='http://'+domain[0]+'/?location=%2Fwo365_user%2Fregister.html&intent=logout&needOpenId=true&wx_app_id='+wxAppKey;
-                break;
         }
         
         W.alert(text);
