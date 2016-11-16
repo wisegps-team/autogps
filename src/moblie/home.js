@@ -180,6 +180,9 @@ const _pages=[//所有的页面
     },
 ];
 
+if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
+    _user.pages=_user.pages.filter(ele=>ele.name!='车主营销');
+}
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 
