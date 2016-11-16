@@ -32,8 +32,8 @@ function getInitData(){
         product:'',     //产品型号
         productId:0,    //产品型号Id
         price:'',       //终端价格
-        installationFee:'', //安装费用
-        url:'',             //文案链接
+        installationFee:0, //安装费用
+        url:'',            //文案链接
         principal:_user.customer.name,          //项目经理
         principalId:_user.customer.objectId,    //项目经理id,默认本公司
         principalTel:_user.mobile,              //项目经理电话
@@ -41,7 +41,8 @@ function getInitData(){
         sellerTypeId:_user.customer.objectId,   //营销人员类型id，从type=1的depart里面选，默认本公司
         getCard:false,  //客户经理开卡
         status:1,       //活动状态（1进行中/0已终止）
-        type:0          //0车主营销，1营销活动
+        type:0,         //0车主营销，1营销活动
+        wxAppKey:_user.customer.wxAppKey||'',   //配置公众号才有此项目
     };
     return initData;
 }
@@ -163,6 +164,10 @@ class EditActivity extends Component {
     submit(){
         let data=this.data;
         
+        if(data.wxAppKey==''){//微信公众号未配置
+            W.alert(___.wx_server_null);
+            return;
+        }
         if(data.name==''){//名称不为空
             W.alert(___.name+___.not_null);
             return;
@@ -187,9 +192,10 @@ class EditActivity extends Component {
             W.alert(___.device_price+___.not_null);
             return;
         }
-        if(data.installationFee==''){//安装费用不为空
-            W.alert(___.install_price+___.not_null);
-            return;
+        if(data.installationFee==''){//安装费用为空则默认为0
+            data.installationFee=0;
+            // W.alert(___.install_price+___.not_null);
+            // return;
         }
         if(data.url==''){//文案链接不为空
             W.alert(___.activity_url+___.not_null);
@@ -250,51 +256,52 @@ class EditActivity extends Component {
             <MenuItem key={el.objectId} value={el.objectId.toString()} primaryText={el.name} />);
         let selleTypeItems=this.sellerTypes.map(e=>
             <MenuItem key={e.objectId} value={e.objectId.toString()} primaryText={e.name} />);
+        let noEdit=this.props.noEdit;
         return (
             <div style={styles.input_page}>
                 {/*活动名称*/}
-                <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} disabled={noEdit} />
                 
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={noEdit} />
                 
                 {/*支付方式*/}
-                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
+                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={noEdit}>
                     <MenuItem value={0} primaryText={___.wxPay} />
                 </SelectField>
 
                 {/*订金标准*/}
-                <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} disabled={noEdit} />
 
                 {/*预订优惠*/}
-                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} disabled={noEdit} />
 
                 {/*产品型号*/}
-                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
+                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={noEdit}>
                     {productItems}
                 </SelectField>
 
                 {/*产品链接*/}
 
                 {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} disabled={noEdit} />
 
                 {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} disabled={noEdit} />
 
                 {/*活动链接*/}
-                <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={this.props.noEdit} />
+                <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={noEdit} />
                 
                 {/*项目经理*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
+                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200} disabled={noEdit}>
                         {principalItems}
                     </SelectField>
                 </div>
                 
                 {/*营销人员（类型）*/}
                 <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={this.props.noEdit}>
+                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
                         {selleTypeItems}
                     </SelectField>
                 </div>
@@ -307,7 +314,7 @@ class EditActivity extends Component {
                         checked={this.data.getCard}
                         label={___.isgetCard} 
                         onCheck={this.dataChange} 
-                        disabled={this.props.noEdit}
+                        disabled={noEdit}
                     />
                 </div>
                 <div style={styles.input_group}>
@@ -318,7 +325,7 @@ class EditActivity extends Component {
                         labelPosition="right" 
                         toggled={Boolean(this.data.status)} 
                         onToggle={this.dataChange}
-                        disabled={this.props.noEdit}
+                        disabled={noEdit}
                     />
                 </div>
 
