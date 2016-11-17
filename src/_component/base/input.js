@@ -23,7 +23,7 @@ class Input extends Component {
     constructor(props, context) {
         super(props, context);
         this.state={
-            value:props.value
+            value:props.value||''
         }
         this.change = this.change.bind(this);
     }
