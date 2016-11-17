@@ -118,8 +118,7 @@ class App extends Component {
                             ele.status2=0;
                             ele.status3=0;
                         }
-                        let cust=this._parents.find(c=>c.objectId==ele.uid);
-                        if(cust){
+                        if(_user.customer.wxAppKey){
                             ele.wxAppKey=_user.customer.wxAppKey;
                         }
                     });
@@ -156,7 +155,6 @@ class App extends Component {
                             ele.status2=0;
                             ele.status3=0;
                         }
-                        ele.wxAppKey=_user.customer.wxAppKey;
                     });
                     this.activities=this.activities.concat(activities);
                     this.forceUpdate();
