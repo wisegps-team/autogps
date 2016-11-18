@@ -9,12 +9,12 @@ class PhoneInput extends Component{
             code_err:null,
             value:null,
         }
+        this.change=this.change.bind(this);
     }
     change(e,value){
-        this.setState({value:value});
         let reg=/^[1][3578][0-9]{9}$/;
         if(reg.test(value)){
-            this.setState({code_err:null});
+            this.setState({value,code_err:null});
 
             let _this=this;
             Wapi.user.checkExists(function(json){
@@ -33,10 +33,10 @@ class PhoneInput extends Component{
             },{mobile:value});
         }else{
             if(value==''){
-                this.setState({code_err:___.phone_empty});
+                this.setState({value,code_err:___.phone_empty});
                 this.props.onChange(value,___.phone_empty);
             }else{
-                this.setState({code_err:___.phone_err});
+                this.setState({value,code_err:___.phone_err});
                 this.props.onChange(value,___.phone_err); 
             }
         }
@@ -46,7 +46,7 @@ class PhoneInput extends Component{
             <Input
                 {...this.props}
                 errorText={this.state.code_err}
-                onChange={this.change.bind(this)}
+                onChange={this.change}
                 value={this.state.value||this.props.value}
             />
         );
