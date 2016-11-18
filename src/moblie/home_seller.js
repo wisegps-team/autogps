@@ -157,6 +157,7 @@ class ActivityList extends Component {
                     +'&seller_name='+encodeURIComponent(_user.employee.name)
                     +'&wx_app_id='+_user.customer.wxAppKey
                     +'&activityId='+data.objectId
+                    +'&seller_open_id='+(_user.authData&&_user.authData.openId)?_user.authData.openId:''
                     +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
@@ -208,14 +209,14 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-            +'&uid='+_user.customer.objectId
-            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
-            +'&title='+encodeURIComponent(data.name)
-            +'&agent_tel='+_user.customer.tel
-            +'&seller_name='+encodeURIComponent(___.noBooking)
-            +'&timerstamp='+Number(new Date());
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        //     +'&uid='+_user.customer.objectId
+        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+        //     +'&title='+encodeURIComponent(data.name)
+        //     +'&agent_tel='+_user.customer.tel
+        //     +'&seller_name='+encodeURIComponent(___.noBooking)
+        //     +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){
