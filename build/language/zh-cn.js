@@ -360,5 +360,8 @@ window.___={
 	'pay_deposit':'支付订金',
 	'unpay_deposit':'不支付订金',
 	'pay_deposit_now':'现在支付订金XX元',
-	'getting_qr':'获取二维码中……'
+	'getting_qr':'获取二维码中……',
+	'see':'查看',
+	'please_select_role':'请选择角色',
+	'please_select_install':'请选择安装网点',
 }

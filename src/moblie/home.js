@@ -37,7 +37,7 @@ import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
 
 import STORE from '../_reducers/main';
-import {user_type_act,brand_act,department_act,product_act} from '../_reducers/dictionary';
+import {user_type_act,brand_act,department_act,product_act,role_act} from '../_reducers/dictionary';
 
 require('../_sass/home.scss');
 
@@ -47,6 +47,7 @@ function loadDictionary(){
     STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(product_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(department_act.get({uid:_user.customer.objectId,type:0}));//部门
+    STORE.dispatch(role_act.get({uid:_user.customer.objectId}));//角色
 }
 loadDictionary();
 
@@ -181,7 +182,7 @@ const _pages=[//所有的页面
 ];
 
 if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
-    _user.pages=_user.pages.filter(ele=>ele.name!='车主营销');
+    _user.pages=_user.pages.filter(ele=>ele.objectId!='791907964700201000');  //name!='车主营销'
 }
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;

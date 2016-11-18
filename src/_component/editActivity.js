@@ -164,7 +164,7 @@ class EditActivity extends Component {
     submit(){
         let data=this.data;
         
-        if(data.wxAppKey==''){//微信公众号未配置
+        if(this.intent=='add' && data.wxAppKey==''){//微信公众号未配置
             W.alert(___.wx_server_null);
             return;
         }
@@ -211,7 +211,7 @@ class EditActivity extends Component {
         // }
         console.log(data);
 
-        if(this.intent=='edit'){//修改
+        if(this.intent=='edit'){    //修改
             let _data=Object.assign({},data);
 
             _data._objectId=data.objectId;
@@ -226,7 +226,7 @@ class EditActivity extends Component {
                 this.forceUpdate();
             },_data);
 
-        }else{//添加 如果是车主营销，则type=0,不是则为1
+        }else{  //添加 如果是车主营销，则type=0,不是则为1
             if(this.props.isCarownerSeller){
                 data.type=0;
             }else{

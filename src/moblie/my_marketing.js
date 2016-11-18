@@ -308,7 +308,6 @@ class DList extends Component{
                 success: function(){},
                 cancel: function(){}
             }
-            console.log(op);
             wx.onMenuShareTimeline(op);
             wx.onMenuShareAppMessage(op);
             setShare=null;

@@ -8,12 +8,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 
 import Input from './base/input';
-// import Checkbox from './base/Checkbox';
 import PhoneInput from './base/PhoneInput';
 import SexRadio from './base/sexRadio';
 import {DepartmentTree,DepartmentSelcet} from'./department_tree';
 
-const _type=['角色A','角色B','角色C'];
 const styles={
     sonpage_main:WiStorm.agent.mobile?
         {paddingBottom:'20px',marginLeft:(window.innerWidth-256)/2+'px',marginRight:(window.innerWidth-256)/2+'px'}
@@ -37,21 +35,28 @@ class EditEmployee extends React.Component{
             tel:'',
             sex:1,
             departId:0,
-            type:0,
+            role:0,
             isQuit:false,
             quitDate:_today,
         }
+        this.roles=[];
         this.nameChange=this.nameChange.bind(this);
         this.sexChange=this.sexChange.bind(this);
         this.telChange=this.telChange.bind(this);
         this.deparChange=this.deparChange.bind(this);
-        this.typeChange=this.typeChange.bind(this);
+        this.roleChange = this.roleChange.bind(this);
         this.allowLogin=this.allowLogin.bind(this);
         this.inputDriver=this.inputDriver.bind(this);
         this.quit=this.quit.bind(this);
         this.quitTimeChange=this.quitTimeChange.bind(this);
         this.submit=this.submit.bind(this);
     }
+    componentDidMount() {
+        Wapi.role.list(res=>{
+            this.roles=res.data;
+        },{uid:_user.customer.objectId})
+    }
+    
     componentWillReceiveProps(nextProps){
         let data=nextProps.data;
         if(data.uid){//如果props中有uid，则说明是页面为用户编辑
@@ -60,19 +65,21 @@ class EditEmployee extends React.Component{
             this.data.tel=data.tel;
             this.data.departId=data.departId;
             this.data.sex=data.sex;
-            this.data.type=data.type;
+            this.data.roleId=data.roleId;
+            this.data.role=data.role;
             this.data.isQuit=false;
             this.intent='edit';
+            this.forceUpdate();
         }else{//如果props中没有uid，则当前页面为用户新增
             this.data.name='';
             this.data.tel='';
             this.data.departId=0;
             this.data.sex=1;
-            this.data.type=0;
+            this.data.roleId=0;
+            this.intent='add';
             this.setState({
                 allowLogin:false,
             });
-            this.intent='add';
         }
     }
     setParams(data){
@@ -91,8 +98,9 @@ class EditEmployee extends React.Component{
         this.data.departId=value.id;
         this.forceUpdate();
     }
-    typeChange(e,k,value){
-        this.data.type=value;
+    roleChange(e,k,value){
+        this.data.roleId=value;
+        this.data.role=this.roles.find(ele=>ele.objectId==value).name;
         this.forceUpdate();
     }
     allowLogin(e,value){
@@ -121,6 +129,10 @@ class EditEmployee extends React.Component{
             W.alert(___.department+' '+___.not_null);
             return;
         }
+        if(this.data.roleId==0){
+            W.alert(___.role+' '+___.not_null);
+            return;
+        }
         let data=this.data;
         this.props.submit(data,this.state.allowLogin);
         this.data={
@@ -129,12 +141,17 @@ class EditEmployee extends React.Component{
             tel:'',
             sex:1,
             departId:0,
-            type:0,
+            roleId:0,
+            role:'',
             isQuit:false,
             quitDate:_today,
         }
     }
     render(){
+        let roleItems=this.roles.map(ele=>
+            <MenuItem key={ele.objectId} value={ele.objectId} primaryText={ele.name} />
+        );
+        roleItems.unshift(<MenuItem key={0} value={0} primaryText={___.please_select_role} />);
         return(
             <div style={styles.sonpage_main}>
                 <Input floatingLabelText={___.person_name} value={this.data.name} onChange={this.nameChange} />
@@ -147,11 +164,9 @@ class EditEmployee extends React.Component{
                 <p style={{fontSize:'0.75em', color:'rgba(0, 0, 0, 0.498039)'}}>{___.department}</p>
                 <DepartmentSelcet value={this.data.departId} onChange={this.deparChange}/>
               
-                {/*<SelectField floatingLabelText={___.role} value={this.data.type} onChange={this.typeChange} >
-                    <MenuItem key={0} value={0} primaryText={_type[0]} />
-                    <MenuItem key={1} value={1} primaryText={_type[1]} />
-                    <MenuItem key={2} value={2} primaryText={_type[2]} />
-                </SelectField>*/}
+                <SelectField floatingLabelText={___.role} value={Number(this.data.roleId)} onChange={this.roleChange} >
+                    {roleItems}
+                </SelectField>
 
                 <div style={{display:this.intent=='edit'?'block':'none'}} >
                     <Checkbox //离职选择框

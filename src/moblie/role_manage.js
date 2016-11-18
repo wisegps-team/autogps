@@ -35,6 +35,7 @@ const styles={
     td_right:{paddingLeft:'1em'},
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'5px'},
     checkbox: {marginBottom: '16px'},
+    hide:{display:'none'},
 }
 
 
@@ -42,7 +43,7 @@ class App extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state={
-            total:0,
+            // total:0,
             show_sonpage:false,
             isEdit:false,
         }
@@ -52,19 +53,23 @@ class App extends React.Component {
         this.addRole=this.addRole.bind(this);
         this.addRoleCancel=this.addRoleCancel.bind(this);
         this.addRoleSubmit=this.addRoleSubmit.bind(this);
-        // this.editRole=this.editRole.bind(this);
+        this.editRole=this.editRole.bind(this);
+        //暂时去掉角色修改的功能，角色修改页面目前只能查看，不能修改
         // this.editRoleCancel=this.editRoleCancel.bind(this);
         // this.editRoleSubmit=this.editRoleSubmit.bind(this);
     }
     componentDidMount(){
-        Wapi.role.list(res=>{//获取所有角色
-            this.roles=res.data;
-            this.setState({
-                total:res.total,
-            });
-        },{objectId:'>0'})
+        // Wapi.role.list(res=>{//获取所有角色
+        //     this.roles=res.data;
+        //     this.setState({
+        //         total:res.total,
+        //     });
+        // },{objectId:'>0'})
+        this.roles=STORE.getState().role;
+        this.forceUpdate();
     }
     addRole(){
+        this.curRole={};
         this.setState({
             show_sonpage:true,
             isEdit:false,
@@ -74,7 +79,6 @@ class App extends React.Component {
         this.setState({show_sonpage:false});
     }
     addRoleSubmit(data){
-        console.log(data);
         if(data.name==''){
             W.alert(___.name+___.not_null);
             return;
@@ -83,37 +87,37 @@ class App extends React.Component {
             W.alert(___.permission+___.not_null);
             return;
         }
-        Wapi.role.add(res=>{//新建一个角色
+        Wapi.role.add(res=>{    //新建一个角色
             let par={
                 _objectId:data.pages.join('|'),
                 ACL:'+role:'+res.objectId
             }
-            Wapi.page.update(re=>{
-                //在所选的page的ACL中添加当前角色
+            Wapi.page.update(re=>{  //在所选的page的ACL中添加当前角色
                 this.roles.push({name:data.name,objectId:res.objectId});
                 this.setState({
                     show_sonpage:false,
                 });
             },par)
-
         },{
             name:data.name,
             uid:_user.customer.objectId,
             appId:WiStorm.config.objectId
         });
     }
-    // editRole(role){
-    //     this.curRole=role;
-    //     this.setState({
-    //         show_sonpage:true,
-    //         isEdit:true,
-    //     });
-    // }
+    editRole(role){
+        Wapi.page.list(res=>{
+            role.pages=res.data.map(ele=>ele.objectId);
+            this.curRole=role;
+            this.setState({
+                show_sonpage:true,
+                isEdit:true,
+            });
+        },{ACL:'role:'+role.objectId});
+    }
     // editRoleCancel(){
     //     this.setState({show_sonpage:false});
     // }
     // editRoleSubmit(data){
-    //     console.log(data);
     //     if(data.name==''){
     //         W.alert(___.name+___.not_null);
     //         return;
@@ -122,7 +126,7 @@ class App extends React.Component {
     //         W.alert(___.permission+___.not_null);
     //         return;
     //     }
-    //     Wapi.role.update(res=>{//新建一个角色
+    //     Wapi.role.update(res=>{  //更新角色
     //         let par={
     //             _objectId:data.pages.join('|'),
     //             ACL:'+role:'+res.objectId
@@ -140,7 +144,6 @@ class App extends React.Component {
     //     });
     // }
     deleteRole(role){
-        console.log(role);
         let _this=this;
         W.confirm(___.confirm_delete_role,function(b){
             if(b){
@@ -154,7 +157,13 @@ class App extends React.Component {
     }
     render(){
         let items=this.roles.map((ele,i)=>
-            [<ListItem key={i} primaryText={ele.name} rightIcon={<RightIconMenu onClick={()=>this.deleteRole(ele)}/>}/>,
+            [<ListItem 
+                key={i} 
+                primaryText={ele.name} 
+                rightIcon={
+                    <RightIconMenu edit={()=>this.editRole(ele)} delete={()=>this.deleteRole(ele)}/>
+                }
+            />,
             <Divider />]
         );
         return(
@@ -169,12 +178,13 @@ class App extends React.Component {
                         <List>
                             {items}
                         </List>
-                        {/*<div style={styles.bottom_btn_right}>
-                            <FlatButton label={___.add} primary={true} onClick={this.addRole} />
-                        </div>*/}
                     </div>
                     <SonPage title={___.role_add} open={this.state.show_sonpage} back={this.addRoleCancel}>
-                        <AddRole submit={this.addRoleSubmit} isEdit={this.state.isEdit} role={this.curRole}/>
+                        <AddRole 
+                            role={this.curRole}
+                            isEdit={this.state.isEdit} 
+                            addSubmit={this.addRoleSubmit} 
+                        />
                     </SonPage>
                 </div>
             </ThemeProvider>
@@ -188,11 +198,21 @@ class AddRole extends React.Component {
         this.data={
             name:'',
             pages:[],
-        }
+        };
         this.nameChange=this.nameChange.bind(this);
         this.pageCheck=this.pageCheck.bind(this);
+        this.submit = this.submit.bind(this);
     }
-    
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.isEdit){
+            this.data=Object.assign({},nextProps.role);
+        }else{
+            this.data={
+                name:'',
+                pages:[]
+            };
+        }
+    }
     nameChange(e,val){
         this.data.name=val;
     }
@@ -203,25 +223,44 @@ class AddRole extends React.Component {
             this.data.pages=this.data.pages.filter(ele=>ele!=e.target.name);
         }
     }
+    submit(data){
+        this.props.addSubmit(data);
+    }
     render(){
+        let _disabled=this.props.isEdit;
         let pages=_user.pages;
-        let items=pages.map((ele,i)=>
-            <Checkbox
-                key={i}
-                name={ele.objectId.toString()}
-                label={ele.name}
-                style={styles.checkbox}
-                onCheck={this.pageCheck}
-            />
-        )
+        let items=[];
+        if(_disabled){
+            items=pages.map((ele,i)=>
+                <Checkbox
+                    key={i}
+                    name={ele.objectId.toString()}
+                    label={ele.name}
+                    style={styles.checkbox}
+                    disabled={_disabled}
+                    onCheck={this.pageCheck}
+                    checked={this.data.pages.includes(ele.objectId)}
+                />
+            );
+        }else{
+            items=pages.map((ele,i)=>
+                <Checkbox
+                    key={i}
+                    name={ele.objectId.toString()}
+                    label={ele.name}
+                    style={styles.checkbox}
+                    onCheck={this.pageCheck}
+                />
+            );
+        }
         return(
             <div style={styles.sonpage_main}>
-                <Input floatingLabelText={___.name} onChange={this.nameChange} />
+                <Input disabled={_disabled} floatingLabelText={___.name} value={this.data.name} onChange={this.nameChange} />
                 <div style={{paddingBottom:'1em'}}>{___.permission}</div>
                 <div>{items}</div>
 
-                <div style={styles.bottom_btn_center}>
-                    <RaisedButton label={___.ok} primary={true} onClick={()=>{this.props.submit(this.data)}} />
+                <div style={_disabled ? styles.hide : styles.bottom_btn_center}>
+                    <RaisedButton label={___.ok} primary={true} onClick={()=>this.submit(this.data)} />
                 </div>
             </div>
         )
@@ -253,7 +292,8 @@ class RightIconMenu extends React.Component{
                     margin: 'auto'
                 }}
             >
-                <MenuItem onTouchTap={this.props.onClick}>{___.delete}</MenuItem>
+                <MenuItem onTouchTap={this.props.edit}>{___.see}</MenuItem>
+                <MenuItem onTouchTap={this.props.delete}>{___.delete}</MenuItem>
             </IconMenu>
         );
     }
