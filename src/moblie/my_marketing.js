@@ -285,6 +285,11 @@ class DList extends Component{
             let _seller=_user.employee?_user.employee.name:_user.customer.contact;
             let _sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
             let _sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+            
+            let strOpenId='';
+            if(_user.authData && _user.authData.openId){
+                strOpenId='&seller_open_id='+_user.authData.openId;
+            }
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
@@ -297,12 +302,13 @@ class DList extends Component{
                     +'&seller_name='+encodeURIComponent(_seller)
                     +'&wx_app_id='+data.wxAppKey
                     +'&activityId='+data.objectId
-                    +'&seller_open_id='+(_user.authData&&_user.authData.openId)?_user.authData.openId:''
+                    +strOpenId
                     +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},
                 cancel: function(){}
             }
+            console.log(op);
             wx.onMenuShareTimeline(op);
             wx.onMenuShareAppMessage(op);
             setShare=null;
