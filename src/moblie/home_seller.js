@@ -157,7 +157,7 @@ class ActivityList extends Component {
                     +'&seller_name='+encodeURIComponent(_user.employee.name)
                     +'&wx_app_id='+_user.customer.wxAppKey
                     +'&activityId='+data.objectId
-                    +'&seller_open_id='+(_user.authData&&_user.authData.openId)?_user.authData.openId:''
+                    +'&seller_open_id='+((_user.authData&&_user.authData.openId)?_user.authData.openId:'')
                     +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},

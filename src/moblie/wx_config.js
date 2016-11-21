@@ -128,6 +128,9 @@ class App extends Component {
         }
         let text='';
         switch (type) {
+            case -1://员工和营销人员登录
+                text='http://'+domain[1]+'/?wx_app_id='+wxAppKey;
+                break;
             case 0://兼职营销账号
                 text='http://'+domain[1]+'/?loginLocation=src%2Fmoblie%2Fmy_account.html&wx_app_id='+wxAppKey;
                 break;
@@ -200,6 +203,7 @@ class App extends Component {
                         <div style={sty.box}>
                             <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(0)} primary={true}/>
                             <FlatButton style={sty.b} label={___.seller_url} onClick={e=>this.getUrl(1)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.login_url} onClick={e=>this.getUrl(-1)} primary={true}/>
                         </div>
                         <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(1)}/>
                     </div>
