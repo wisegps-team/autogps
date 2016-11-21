@@ -847,6 +847,7 @@ const Wapi={
 	serverApi:new ServerApi(),
 	crash:new WCrashApi(),
 	weixin:new WAPI('weixin',_user?_user.access_token:null),
+	qrData:new WAPI('qrData',_user?_user.access_token:null),
 };
 
 
@@ -863,11 +864,11 @@ function makeGetOp(name,fields,lop){
 	Object.assign(Wapi[name].list_op,lop);
 }
 
-makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,serverId,wxAppKey');
+makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,wxAppKey');
 makeGetOp('deviceLog','objectId,uid,did,type,createdAt,from,to,fromName,toName,brand,brandId,model,modelId,outCount,inCount,status');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
-makeGetOp('device','objectId,did,uid,status,commType,commSign,model,modelId,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt');
+makeGetOp('device','objectId,did,uid,status,commType,commSign,model,modelId,hardwareVersion,softwareVersion,activedIn,expiredIn,activeGpsData,activeObdData,params,ip,port,binded,bindDate,vehicleName,vehicleId,createdAt,serverId');
 makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,mileage,fuel,createdAt');
 makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,day');
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
@@ -880,6 +881,7 @@ makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('booking','activityId,mobile,userName,userMobile,type,sellerId,sellerName,uid,status,status0,status1,status2,status3,name,carType,resTime,payTime,confirmTime,money,objectId,createdAt,updatedAt');
 makeGetOp('activity','name,type,uid,objectId,wxAppKey,createdAt,updatedAt,url,principal,principalId,sellerType,sellerTypeId,reward,pay,offersDesc,price,installationFee,getCard,status,deposit,product,productId');
+makeGetOp('qrData','objectId,id,data');
 
 
 

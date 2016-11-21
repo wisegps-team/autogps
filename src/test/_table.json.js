@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=63;//版本号
+let version=68;//版本号
 
 //地区表
 export const area={
@@ -2069,6 +2069,16 @@ export const booking={
             'type': 'String',
             'query': true,
         },{
+            'name': 'install',
+            'desc': '安装点的名称',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'installDate',
+            'desc': '预约的安装时间',
+            'type': 'Date',
+            'query': true,
+        },{
             'name': 'type',
             'desc': '预订类型（0，为自己预订；1，为他人预订）',
             'type': 'Number',
@@ -2082,6 +2092,16 @@ export const booking={
             'name': 'userMobile',
             'desc': '车主手机号',
             'type': 'String',
+            'query': true,
+        },{
+            'name': 'payMoney',
+            'desc': '预付金额',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'payStatus',
+            'desc': '预付状态(0,未预付，1预付订金，2，预付全款加安装费)',
+            'type': 'Number',
             'query': true,
         },
     ],
@@ -2257,7 +2277,12 @@ export const weixin={
             'desc': '微信密钥',
             'type': 'String',
             'query': true
-        }
+        },{
+            'name': 'template',
+            'desc': '所有的模板',
+            'type': 'Object',
+            'query': true
+        },
     ],
     indexDefine: [
         {uid:1},
@@ -2265,11 +2290,39 @@ export const weixin={
     ]
 }
 
+//二维码映射表
+export const qrData={
+    name: 'qrData',             //表名
+    desc: '二维码映射表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'id',
+            'desc': '数据id',
+            'type': 'Number',
+            'default':'@AutoInc',
+            'query': true,    //可查询字段
+        },{
+            'name': 'data',
+            'desc': '对应的数据',
+            'type': 'Object',
+            'query': true,    //可查询字段
+        }
+    ],
+    indexDefine: [
+        {id:1}
+    ]
+}
+
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin
+    weixin,qrData
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);

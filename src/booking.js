@@ -68,6 +68,10 @@ const sty={
     },
     con:{
         wordBreak: 'break-all'
+    },
+    img:{
+        width:window.screen.width*0.75-48+'px',
+        height:window.screen.width*0.75-48+'px'
     }
 }
 
@@ -99,33 +103,53 @@ class App extends Component {
 
     success(booking){
         this.getQrcode(booking);//获取二维码
-        if(this.state.self){
-            if(ACT.deposit){
+        if(ACT.deposit){
+            if(this.state.self){
                 let state={
                     confirm_text:___.booking_success+'，'+___.pay_deposit_now.replace('XX',ACT.deposit)+'，'+ACT.offersDesc,
                     yes_t:___.pay_deposit,
                     no_t:___.unpay_deposit,
-                    yes:e=>alert('跳转到支付订金'),
-                    no:()=>this.setState(this._state),
+                    yes:e=>alert('跳转到支付订金,跳回来时给seller推送'),
+                    no:()=>{
+                        this.setState({
+                            confirm_open:false,
+                            confirm_text:___.getting_qr
+                        });
+                        setTimeout(e=>this.setState(this._state),500);
+                        this.sendToSeller(booking);
+                    },
                     confirm_open:true
                 }
                 this.setState(state);
-            }else
-                W.alert(___.booking_success,()=>this.setState(this._state));
-        }else{//为他人预订
-
+            }else{//为他人预订
+                let state={
+                    confirm_text:___.booking_success+'，'+W.replace(___.pan_all,ACT)+'，'+ACT.offersDesc,
+                    yes_t:___.pay_now,
+                    no_t:___.pay_install,
+                    yes:e=>alert('跳转到支付全款和安装费用,跳回来时给seller推送'),
+                    no:()=>{
+                        this.setState({
+                            confirm_open:false,
+                            confirm_text:___.getting_qr
+                        });
+                        setTimeout(e=>this.setState(this._state),500);
+                        this.sendToSeller(booking);
+                    },
+                    confirm_open:true
+                }
+                this.setState(state);
+            }
+        }else{
+            W.alert(___.booking_success,()=>this.setState(this._state));
+            this.sendToSeller(booking);
         }
     }
 
     getQrcode(booking){
-        let scene='1001'+booking.objectId;
-        let state=W.ls(scene);
-        if(state){//是否已经获取过了(应付支付后返回的情况)
-            this._state=state;
-            if(!this.state.confirm_open&&this.state.confirm_text==___.getting_qr){
-                this.setState(this._state);
-                W.setLS(scene,null);
-            }
+        let scene=booking.objectId;
+        let qrRes=W.ls(scene);
+        if(qrRes){//是否已经获取过了(应付支付后返回的情况)
+            this.setQr(qrRes,scene);
             return;
         }
         Wapi.serverApi.getAnyQrcode(res=>{
@@ -133,26 +157,83 @@ class App extends Component {
                 W.alert(res.err_msg);
                 return;
             }
-            this._state={
-                confirm_text:(<img src={res.url}/>),
-                yes_t:___.ok,
-                no_t:'',
-                yes:e=>e,
-                no:e=>e,
-                confirm_open:true
-            }
-            W.setLS(scene,this._state);
-            if(!this.state.confirm_open&&this.state.confirm_text==___.getting_qr){
-                this.setState(this._state);
-                W.setLS(scene,null);
-            }
+            W.setLS(scene,res);
+            Wapi.booking.update(null,{_objectId:booking.objectId,'carType.qrUrl':res.url});
+            this.setQr(res,scene);
         },{
-            scene,
+            type:1001,
+            data:scene,
             wxAppKey:_g.wx_app_id
         });
     }
+
+    setQr(res,scene){
+        let booking_qr=this.state.self?___.booking_qr:___._booking_qr;
+        this._state={
+            confirm_text:[
+                <div key='booking_qr'>{booking_qr.replace('<%%>',res.name)}</div>,
+                <div key='booking_do_not_share'>{___.booking_do_not_share}</div>,
+                <img style={sty.img} src={res.url} key='qr'/>
+            ],
+            no_t:null,
+            confirm_open:true
+        };
+        if(!this.state.confirm_open&&this.state.confirm_text==___.getting_qr){
+            this.setState(this._state);
+            W.setLS(scene,null);
+        }
+    }
+
+    sendToSeller(booking){
+        if(!_g.seller_open_id)return;
+        let pay=___.not_pay;
+        if(booking['payStatus']){
+            if(booking['payStatus']==1)
+                pay=___._deposit+'：'+booking['payMoney'];
+            else if(booking['payStatus']==2)
+                pay=___.all_price+'：'.booking['payMoney'];
+        }
+        Wapi.serverApi.sendWeixinToSeller(function(res){
+            console.log(res);
+        },{
+            openId:_g.seller_open_id,
+            uid:_g.uid,
+            templateId:'OPENTM407674335',
+            link:'#',
+            data:{
+                "first": {//标题
+                    "value": ACT.name,
+                    "color": "#173177"
+                },
+                "keyword1": {//预订时间
+                    "value": W.dateToString(new Date()).slice(0,16),
+                    "color": "#173177"
+                },
+                "keyword2": {//预订人
+                    "value": booking.name+'/'+booking.mobile,
+                    "color": "#173177"
+                },
+                "keyword3": {//客户
+                    "value": booking.userName+'/'+booking.userMobile,
+                    "color": "#173177"
+                },
+                "keyword4": {//产品型号
+                    "value": ACT.product+'(￥'+ACT.price+')，'+___.install_price+'：￥'+ACT.installationFee,
+                    "color": "#173177"
+                },
+                "keyword5": {//预付款
+                    "value": pay,
+                    "color": "#173177"
+                },
+                "remark": {
+                    "value": '',
+                    "color": "#173177"
+                }
+            }
+        });
+    }
     render() {
-        let actions=[
+        let actions=this.state.no_t?[
             <FlatButton
                 label={this.state.no_t}
                 primary={true}
@@ -163,7 +244,7 @@ class App extends Component {
                 primary={true}
                 onClick={this.state.yes}
             />
-        ];
+        ]:null;
         return (
             <ThemeProvider>
                 <div style={sty.p}>
@@ -231,12 +312,14 @@ class From extends Component{
                 that.forceUpdate();
             }
         },{
-            mobile:val,
+            userMobile:val,
             activityId:_g.activityId
         });
     }
     change(e,val){
         this.data[e.target.name]=val;
+        if(e.target.name=='mobile')
+            this.forceUpdate();
     }
     changeVerifi(val){
         this.valid=true;
@@ -253,9 +336,11 @@ class From extends Component{
         if(this.props.self){//为自己预订，预订人等于自己
             submit_data.userName=submit_data.name;
             submit_data.userMobile=submit_data.mobile;
+            submit_data.type=0;
         }else{
             submit_data.userName=submit_data.userName;
             submit_data.userMobile=submit_data.userMobile;
+            submit_data.type=1;
         }
         for(let k in submit_data){
             if(submit_data[k]==null||typeof submit_data[k]=='undefined'){
@@ -264,40 +349,10 @@ class From extends Component{
             }
         }
 
-
         let _this=this;
         Wapi.booking.add(function(res){
             submit_data.objectId=res.objectId;
-            let sms_data={
-                agent_mobile:_g.agent_tel,//代理商电话
-                seller_name:_g.seller_name,//客户经理姓名
-                seller_mobile:_g.mobile,//客户经理电话
-                customer_name:_this.data.name,//客户姓名
-                customer_mobile:_this.data.mobile,//客户电话
-                carNum:_this.data.carType.car_num,//客户车牌
-            }
-            Wapi.comm.sendSMS(function(res){//发短信给客户
-                if(res.status_code){
-                    W.errorCode(res);
-                    return;
-                }
-                _this.props.onSuccess(submit_data);
-            },sms_data.customer_mobile,0,W.replace(___.booking_sms_customer,sms_data));
-            
-            Wapi.comm.sendSMS(function(res){//发短信给代理商
-                if(res.status_code){
-                    W.errorCode(res);
-                    return;
-                }
-            },sms_data.agent_mobile,0,W.replace(___.booking_sms_agent,sms_data));
-            
-            Wapi.comm.sendSMS(function(res){//发送短信给客户经理
-                if(res.status_code){
-                    W.errorCode(res);
-                    return;
-                }
-            },sms_data.seller_mobile,0,W.replace(___.booking_sms_seller,sms_data));
-
+            _this.props.onSuccess(submit_data);
         },submit_data);
     }
     render() {
@@ -311,6 +366,13 @@ class From extends Component{
                 <PhoneInput name='userMobile' floatingLabelText={___.booking_phone} onChange={(val,err)=>this.mobileChange(val,err,true)} needExist={false}/>
             </div>
         ];
+        let mobile=this.props.self?(<div style={sty.r}>
+            <HardwareSmartphone style={sty.i}/>
+            <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={false}/>
+        </div>):(<div style={sty.r}>
+            <HardwareSmartphone style={sty.i}/>
+            <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change}/>
+        </div>);
         return (
             <div style={sty.f}>
                 {carowner}
@@ -318,10 +380,7 @@ class From extends Component{
                     <ActionAccountBox style={sty.i}/>
                     <Input name='name' floatingLabelText={___.booking_name} onChange={this.change}/>
                 </div>
-                <div style={sty.r}>
-                    <HardwareSmartphone style={sty.i}/>
-                    <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={false}/>
-                </div>
+                {mobile}
                 <div style={sty.r}>
                     <ActionVerifiedUser style={sty.i}/>
                     <VerificationCode 

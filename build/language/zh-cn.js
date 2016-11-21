@@ -360,5 +360,15 @@ window.___={
 	'pay_deposit':'支付订金',
 	'unpay_deposit':'不支付订金',
 	'pay_deposit_now':'现在支付订金XX元',
-	'getting_qr':'获取二维码中……'
+	'getting_qr':'获取二维码中……',
+	'pay_now':'现在支付',
+	'pay_install':'安装时支付',
+	'pan_all':'现在支付<%price%>元设备款及<%installationFee%>元安装费',
+	'booking_qr':'预订成功，长按二维码识别关注<%%>公众号获取授权安装网点信息',
+	'_booking_qr':'预订成功，长按二维码发送给车主关注<%%>公众号，可获取授权安装网点信息',
+	'booking_do_not_share':'（包含预订信息，请勿分享给无关人员）',
+	'login_url':'登录链接',
+	'not_pay':'未预付',
+	'_deposit':'订金',
+	'all_price':'全款+安装费'
 }

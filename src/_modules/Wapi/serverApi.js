@@ -31,6 +31,25 @@ class ServerApi{
         data.method='getAnyQrcode';
 		this.get(data,callback);
     }
+
+	sendWeixinByTemplate(callback,data){
+		data.data=encodeURIComponent(JSON.stringify(data.data));
+		data.link=encodeURIComponent(data.link);
+		data.method=data.wxAppKey?'sendWeixinByTemplate':'sendWeixinByUid';
+		this.get(data,callback);
+	}
+
+	sendWeixinToSeller(callback,data){
+		data.data=encodeURIComponent(JSON.stringify(data.data));
+		data.link=encodeURIComponent(data.link);
+		data.method='sendWeixinByUid';
+		this.get(data,callback);
+	}
+
+	getInstallByUid(callback,data){
+		data.method='getInstallByUid';
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;
