@@ -47,24 +47,7 @@ const styles={
     bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'2em'},
 }
 
-const _employee={
-    uid:1,
-    departId:1,
-    type:1,
-    name:'小明',
-    sex:1,
-    tel:'1234567890',
-}
-const _employees=[];
-for(let i=0;i<=4;i++){
-    let e=Object.assign({},_employee);
-    e.uid=i;
-    e.tel+=i;
-    _employees.push(e);
-}
 const _sex=[___.woman,___.man];
-const _type=['角色A','角色B','角色C'];
-// const _depar=[{name:'部门A',id:1234},'部门B','部门C'];
 
 class App extends React.Component {
     constructor(props, context) {
@@ -106,12 +89,10 @@ class App extends React.Component {
             departId:'>0',
             isQuit:false
         },{
-            fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
+            fields:'objectId,uid,companyId,name,tel,sex,departId,isQuit,role,roleId',
             limit:20
         });
 
-        //测试用数据
-        // this.setState({employees:_employees});
     }
 
     addEmployee(){
@@ -139,7 +120,8 @@ class App extends React.Component {
                 tel:data.tel,
                 sex:data.sex,
                 departId:data.departId,
-                type:data.type,
+                roleId:data.roleId,
+                role:data.role,
                 isQuit:data.isQuit
             };
             Wapi.employee.update(res=>{
@@ -150,7 +132,8 @@ class App extends React.Component {
                         ele.tel=params.tel;
                         ele.sex=params.sex;
                         ele.departId=params.departId;
-                        ele.type=params.type;
+                        ele.roleId=params.roleId;
+                        ele.role=params.role;
                         ele.isQuit=params.isQuit;
                     }
                 });
@@ -169,25 +152,26 @@ class App extends React.Component {
             if(allowLogin){
                 par.password=md5(data.tel.slice(-6));
             }
-            Wapi.user.add(function (res) {
+            Wapi.user.add(function (res) {  //用户表添加一条数据
                 let params={
                     companyId:_user.customer.objectId,
                     name:data.name,
                     tel:data.tel,
                     sex:data.sex,
                     departId:data.departId,
-                    type:data.type,
+                    role:data.role,
+                    roleId:data.roleId,
                     isQuit:false,
                 };
                 params.uid=res.uid;
-                Wapi.employee.add(function(res){
+                Wapi.employee.add(function(res){    //人员表添加一条数据
                     params.objectId=res.objectId;
                     let arr=that.state.employees;
                     arr.unshift(params);
                     that.setState({employees:arr});//添加完成后将新增的人员加入人员数组
                     history.back();//更新数据后返回
 
-                    Wapi.role.update(function(role){
+                    Wapi.role.update(function(role){    //对应的角色表更新一条数据
                         data.objectId=res.objectId;
                         let sms=___.employee_sms_content;
                         let tem={
@@ -224,7 +208,7 @@ class App extends React.Component {
             departId:'>0',
             isQuit:false
         },{
-            fields:'objectId,uid,companyId,name,tel,sex,departId,type,isQuit',
+            fields:'objectId,uid,companyId,name,tel,sex,departId,isQuit,role,roleId',
             limit:20,
             page_no:this.page
         });
@@ -282,10 +266,10 @@ class DumbList extends React.Component{
                             <td style={styles.td_left}>{___.department}</td>
                             <td style={styles.td_right}>{getDepart(ele.departId)}</td>
                         </tr>
-                        {/*<tr style={styles.table_tr}>
+                        <tr style={styles.table_tr}>
                             <td style={styles.td_left}>{___.role}</td>
-                            <td style={styles.td_right}>{_type[ele.type]}</td>
-                        </tr>*/}
+                            <td style={styles.td_right}>{ele.role}</td>
+                        </tr>
                         <tr style={styles.table_tr}>
                             <td style={styles.td_left}>{___.phone}</td>
                             <td style={styles.td_right}>{ele.tel}</td>

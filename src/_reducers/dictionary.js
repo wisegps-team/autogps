@@ -84,3 +84,4 @@ export const user_type_act=new dictionaryAction('custType');
 export const brand_act=new dictionaryAction('brand');
 export const product_act=new dictionaryAction('product');
 export const department_act=new dictionaryAction('department');
+export const role_act=new dictionaryAction('role');

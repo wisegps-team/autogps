@@ -145,6 +145,10 @@ class ActivityList extends Component {
             return;
         }
         function setShare(){
+            let strOpenId='';
+            if(_user.authData && _user.authData.openId){
+                strOpenId='&seller_open_id='+_user.authData.openId;
+            }
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
@@ -157,7 +161,7 @@ class ActivityList extends Component {
                     +'&seller_name='+encodeURIComponent(_user.employee.name)
                     +'&wx_app_id='+_user.customer.wxAppKey
                     +'&activityId='+data.objectId
-                    +'&seller_open_id='+((_user.authData&&_user.authData.openId)?_user.authData.openId:'')
+                    +strOpenId
                     +'&timerstamp='+Number(new Date()),
                 imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                 success: function(){},

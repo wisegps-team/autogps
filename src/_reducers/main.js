@@ -9,6 +9,7 @@ const initialState = {
     brand:[],//品牌类型字典
     product:[],//品牌类型字典
     department:[],
+    role:[],
     customer:{
         data:[],    //客户列表
         total:-1,    //总客户数
@@ -30,6 +31,7 @@ function main(state = initialState, action) {
         brand:dictionaryReducer(state.brand,action,'brand'),
         product:dictionaryReducer(state.product,action,'product'),
         department:dictionaryReducer(state.department,action,'department'),
+        role:dictionaryReducer(state.role,action,'role'),
     };
 }
 

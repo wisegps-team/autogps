@@ -370,5 +370,8 @@ window.___={
 	'login_url':'登录链接',
 	'not_pay':'未预付',
 	'_deposit':'订金',
-	'all_price':'全款+安装费'
+	'all_price':'全款+安装费',
+	'see':'查看',
+	'please_select_role':'请选择角色',
+	'please_select_install':'请选择安装网点',
 }
