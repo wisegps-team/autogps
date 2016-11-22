@@ -50,6 +50,11 @@ class ServerApi{
 		data.method='getInstallByUid';
 		this.get(data,callback);
 	}
+
+	setWxTemplate(callback,data){
+		data.method='setWxTemplate';
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;

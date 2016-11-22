@@ -4,6 +4,8 @@ import {ThemeProvider} from '../_theme/default';
 
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import HardwareKeyboard from 'material-ui/svg-icons/hardware/keyboard';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import Input from '../_component/base/input';
 import AppBar from '../_component/base/appBar';
@@ -43,6 +45,51 @@ const sty={
     m:{
         marginTop: '10px',
         marginLeft: '10px'
+    },
+    menu:{
+        display:'flex',
+        position: 'absolute',
+        width: '100%',
+        bottom: '0px',
+        borderTop: '1px solid #aaa',
+        textAlign: 'center',
+        background:'#f4f4f4',
+        color: '#000'
+    },
+    mi:{
+        flex:'1 1 33%',
+        lineHeight:'3em',
+        borderRight:'1px solid #aaa',
+        position: 'relative'
+    },
+    k:{
+        borderRight: '1px solid rgb(170, 170, 170)',
+        padding: '0 0.6em',
+        paddingTop: '0.8em'
+    },
+    son_menu:{
+        display:'inline-block',
+        border: '1px solid #aaa',
+        borderBottom: '0px',
+    },
+    sm:{
+        padding:'0 1em',
+        borderBottom:'1px solid #aaa'
+    },
+    sw:{
+        width: '200%',
+        position: 'absolute',
+        bottom: '100%',
+        right: '-50%'
+    },
+    add:{
+        margin:' 0 1.5em',
+        verticalAlign: 'middle',
+    },
+    save:{
+        marginTop:'40vh',
+        marginLeft:'30%',
+        width:'40%'
     }
 }
 
@@ -52,10 +99,12 @@ class App extends Component {
         this.state={
             show_sonpage:false,
             type:0,
-            data:null
+            data:null,
+            show_menu:false
         }
         this.showWxBox = this.showWxBox.bind(this);
         this.configSuccess = this.configSuccess.bind(this);
+        this.goMenu = this.goMenu.bind(this);
     }
     componentDidMount() {
         Wapi.weixin.list(res=>{
@@ -64,7 +113,7 @@ class App extends Component {
         },{
             uid:_user.customer.objectId
         },{
-            fields:'objectId,uid,name,type,wxAppKey,wxAppSecret'
+            fields:'objectId,uid,name,type,wxAppKey,wxAppSecret,menu'
         });
     }
     
@@ -159,12 +208,32 @@ class App extends Component {
     }
 
     goPush(i){
-        if(i){//营销号
+        let wx=this.state.data[i];
+        if(!wx)
+            W.alert(i?___.wx_server_null:___.wx_seller_null);
 
-        }else{//服务号
+        W.confirm(___.have_template,res=>{
+            if(!res){
+                W.alert(___.wait_for_template);                
+                return;
+            }
+            W.loading(true,___.setting_template);
+            Wapi.serverApi.setWxTemplate(function(res){
+                W.loading(false);
+                if(res.status_code||res.errcode){
+                    W.alert((res.errmsg||res.err_msg)+'，'+___.error['000']);
+                    return;
+                }
+                W.alert(___.setting_success);
+            },{
+                wxAppKey:wx.wxAppKey
+            });
+        });
+    }
 
-        }
-        W.alert('正在开发');
+    goMenu(){
+        if(_user.customer.wxAppKey)
+            this.setState({show_menu:!this.state.show_menu});
     }
 
     render() {
@@ -194,6 +263,7 @@ class App extends Component {
                             <FlatButton style={sty.b} label={___.wx_server_url} onClick={e=>this.getUrl(6)} primary={true}/>
                         </div>
                         <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(0)}/>
+                        <RaisedButton label={___.wx_menu} primary={true} style={sty.m} onClick={this.goMenu}/>
                     </div>
                     <div style={sty.p}>
                         <h3>{___.wx_seller+"："}
@@ -210,6 +280,9 @@ class App extends Component {
                 </div>
                 <SonPage open={this.state.show_sonpage} back={this.showWxBox}>
                     <Wxbox type={this.state.type} onSuccess={this.configSuccess}/>
+                </SonPage>
+                <SonPage open={this.state.show_menu} back={this.goMenu}>
+                    <MenuBox data={this.state.data?this.state.data[0].menu:null}/>
                 </SonPage>
             </ThemeProvider>
         );
@@ -253,33 +326,43 @@ class Wxbox extends Component{
             W.alert(___.wx_file_name_null);
             return;
         }
-        
-        Wapi.serverApi.saveConfigFile(res=>{
-            //检查是否有配置过，有就update
-            Wapi.weixin.get(_wx=>{
-                if(_wx.data){
-                    wx._objectId=_wx.data.objectId;
-                    Wapi.weixin.update(res=>{
-                        wx.objectId=_wx.data.objectId;
-                        delete wx._objectId;
-                        this.props.onSuccess(wx);
-                        this.cancel();
-                    },wx);
-                }else
-                    Wapi.weixin.add(res=>{
-                        wx.objectId=res.objectId;
-                        this.props.onSuccess(wx);
-                        this.cancel();
-                    },wx);
+        W.loading(true,___.config_wx);
+        Wapi.weixin.get(_wx=>{
+            if(_wx.data&&_wx.data.uid!=_user.customer.objectId){
+                W.loading(false);
+                W.alert(___.wxApp_used);
+                return;
+            }
+            Wapi.serverApi.saveConfigFile(res=>{
+                //检查是否有配置过，有就update
+                Wapi.weixin.get(_wx=>{
+                    if(_wx.data){
+                        wx._objectId=_wx.data.objectId;
+                        Wapi.weixin.update(res=>{
+                            wx.objectId=_wx.data.objectId;
+                            delete wx._objectId;
+                            this.props.onSuccess(wx);
+                            this.cancel();
+                        },wx);
+                    }else
+                        Wapi.weixin.add(res=>{
+                            wx.objectId=res.objectId;
+                            this.props.onSuccess(wx);
+                            this.cancel();
+                        },wx);
+                },{
+                    uid:wx.uid,
+                    type:wx.type
+                });
             },{
-                uid:wx.uid,
-                type:wx.type
+                fileName:this.fromData.fileName
             });
         },{
-            fileName:this.fromData.fileName
+            wxAppKey:wx.wxAppKey
         });
     }
     cancel(){
+        W.loading(false);
         history.back();
     }
     render(){
@@ -297,6 +380,125 @@ class Wxbox extends Component{
                 <p style={sty.h4}>{save_wx_data}</p>
                 <FlatButton label={___.cancel} onClick={this.cancel} primary={true}/>
                 <FlatButton label={___.save} onClick={this.save} primary={true}/>
+            </div>
+        );
+    }
+}
+
+
+class MenuBox extends Component{
+    constructor(props, context) {
+        super(props, context);
+        this.state=this.getDate(props.data);
+
+        this.changeName = this.changeName.bind(this);
+        this.addOne = this.addOne.bind(this);
+        this.deleteOne = this.deleteOne.bind(this);
+        this.save = this.save.bind(this);
+    }
+    componentWillReceiveProps(nextProps) {
+        this.setState(this.getDate(nextProps.data));   
+    }
+    getDate(data){
+        data=data||{};
+        let _data={
+            menus:data.sub_button||[],
+            name:data.name||___.edit_name
+        };
+        if(!_data.menus.length)
+            this._url=data.url;
+        return _data;
+    }
+
+    changeName(){
+        W.prompt({
+            text:'',
+            title:___.input_menu_name
+        },'',res=>this.setState({name:res||___.edit_name}));
+    }
+
+    addOne(){
+        W.prompt({
+            text:'',
+            title:___.input_menu_name
+        },'',name=>{
+            if(name)
+                W.prompt({
+                    text:'',
+                    title:___.input_menu_url
+                },'',url=>{
+                    if(url){
+                        let menus=this.state.menus.concat();
+                        menus.unshift({name,url});
+                        this.setState({menus});
+                    }
+                });
+        });
+    }
+    deleteOne(name){
+        let menus=this.state.menus.filter(m=>m.name!=name);
+        this.setState({menus});
+    }
+
+    save(){
+        let data;
+        if(!this.state.menus.length){
+            if(!this._url){
+                W.prompt({
+                    text:'',
+                    title:___.input_menu_url
+                },'',url=>{
+                    this._url=url;
+                    this.save();
+                });
+            }
+            data={
+                "type": "view",
+                "name": this.state.name,
+                "url": this._url
+            };
+        }else{
+            data={
+                "name": this.state.name,
+                "sub_button": this.state.menus.map(m=>Object.assign({},m,{type:'view'}))
+            }
+        }
+        Wapi.weixin.update(res=>{
+            W.alert(___.update_su);
+        },{
+            _wxAppKey:_user.customer.wxAppKey,
+            menu:data
+        });
+    }
+    render() {
+        let dis=Object.assign({},sty.mi);
+        dis.color='#aaa';
+        let menus=this.state.menus.map(m=>(
+            <div key={m.name} style={sty.sm} onClick={e=>this.deleteOne(m.name)}>
+                {m.name}
+            </div>)
+        );
+        menus.unshift(<div key={'add'} style={sty.sm} onClick={this.addOne}>
+            <ContentAdd style={sty.add}/>
+        </div>);
+        return (
+            <div>
+                <RaisedButton label={___.submit} primary={true} style={sty.save} onClick={this.save}/>
+                <div style={sty.menu}>
+                    <div style={sty.k}>
+                        <HardwareKeyboard/>
+                    </div>
+                    <div style={dis}>{___.my_home}</div>
+                    <div style={sty.mi}>
+                        <span onClick={this.changeName}>{this.state.name}</span>
+                        <div style={sty.sw}>
+                            <div style={sty.son_menu}>
+                                {menus}
+                            </div>
+                        </div>
+                    </div>
+                    <div style={dis}>{___.more}</div>
+                </div>
             </div>
         );
     }
