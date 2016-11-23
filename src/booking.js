@@ -193,11 +193,12 @@ class App extends Component {
             else if(booking['payStatus']==2)
                 pay=___.all_price+'：'.booking['payMoney'];
         }
-        Wapi.serverApi.sendWeixinToSeller(function(res){
+        Wapi.serverApi.sendWeixinByTemplate(function(res){
             console.log(res);
         },{
             openId:_g.seller_open_id,
             uid:_g.uid,
+            type:1,
             templateId:'OPENTM407674335',
             link:'#',
             data:{

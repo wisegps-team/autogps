@@ -39,13 +39,6 @@ class ServerApi{
 		this.get(data,callback);
 	}
 
-	sendWeixinToSeller(callback,data){
-		data.data=encodeURIComponent(JSON.stringify(data.data));
-		data.link=encodeURIComponent(data.link);
-		data.method='sendWeixinByUid';
-		this.get(data,callback);
-	}
-
 	getInstallByUid(callback,data){
 		data.method='getInstallByUid';
 		this.get(data,callback);
@@ -53,6 +46,11 @@ class ServerApi{
 
 	setWxTemplate(callback,data){
 		data.method='setWxTemplate';
+		this.get(data,callback);
+	}
+
+	getUserOpenId(callback,data){
+		data.method='getUserOpenId';
 		this.get(data,callback);
 	}
 }

@@ -120,6 +120,7 @@ class App extends Component {
                         }
                         if(_user.customer.wxAppKey){
                             ele.wxAppKey=_user.customer.wxAppKey;
+                            ele.uid=_user.customer.objectId;
                         }
                     });
                     this.activities=this.activities.concat(activities);
