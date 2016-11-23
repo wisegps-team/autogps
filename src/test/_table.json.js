@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=68;//版本号
+let version=69;//版本号
 
 //地区表
 export const area={
@@ -2280,6 +2280,11 @@ export const weixin={
         },{
             'name': 'template',
             'desc': '所有的模板',
+            'type': 'Object',
+            'query': true
+        },{
+            'name': 'menu',
+            'desc': '自定义菜单',
             'type': 'Object',
             'query': true
         },
