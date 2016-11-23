@@ -43,6 +43,11 @@ class ServerApi{
 		data.method='getInstallByUid';
 		this.get(data,callback);
 	}
+	
+	getUserOpenId(callback,data){
+		data.method='getUserOpenId';
+		this.get(data,callback);
+	}
 
 	setWxTemplate(callback,data){
 		data.method='setWxTemplate';
