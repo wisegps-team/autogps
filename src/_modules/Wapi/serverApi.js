@@ -50,6 +50,11 @@ class ServerApi{
 		data.method='getInstallByUid';
 		this.get(data,callback);
 	}
+	
+	getUserOpenId(callback,data){
+		data.method='getUserOpenId';
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;
