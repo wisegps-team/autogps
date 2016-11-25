@@ -1,6 +1,7 @@
 import WiStormAPI from './WiStormAPI.js';
 import config from './config.js';
 import ServerApi from './serverApi.js';
+import WPayApi from './pay.js';
 
 
 export function WAPI(name,token){
@@ -67,20 +68,14 @@ WUserApi.prototype.register=function(callback,data,op){
 }
 
 /**
- * 检查账号或者用户名是否存在
+ * 检查用户是否已注册（特指user表和customer都存在的情况
  * mobile: 手机号
  * username: 用户名
  * @param {Object} callback
  * @param {Object} data
- * @param {Object} op
  */
-WUserApi.prototype.checkExists=function(callback,data,op){
-	var OP={
-		fields:'exist'			//默认返回的字段
-	};
-	Object.assign(OP,op);
-	OP.method=this.apiName+".exists";//接口名称
-	this.getApi(data,callback,OP);
+WUserApi.prototype.checkExists=function(callback,data){
+	Wapi.serverApi.checkExists(callback,data);
 }
 
 
@@ -824,6 +819,7 @@ const Wapi={
 	page:new WPageApi(_user?_user.access_token:null),
 	feature:new WFeatureApi(_user?_user.access_token:null),
 	service:new WServiceApi(_user?_user.access_token:null),
+	pay:new WPayApi(_user?_user.access_token:null),
 	//以下为非核心功能表
 	customer:new WAPI('customer',_user?_user.access_token:null),//客户表
 	employee:new WAPI('employee',_user?_user.access_token:null),//员工表

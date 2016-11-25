@@ -58,6 +58,11 @@ class ServerApi{
 		data.method='getUserOpenId';
 		this.get(data,callback);
 	}
+
+	checkExists(callback,data){
+		data.method='checkExists';
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;

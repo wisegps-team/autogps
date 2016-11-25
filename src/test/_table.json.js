@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=69;//版本号
+let version=70;//版本号
 
 //地区表
 export const area={
@@ -2103,7 +2103,12 @@ export const booking={
             'desc': '预付状态(0,未预付，1预付订金，2，预付全款加安装费)',
             'type': 'Number',
             'query': true,
-        },
+        },{
+            'name': 'orderId',
+            'desc': '订单id',
+            'type': 'String',
+            'query': true,
+        }
     ],
     indexDefine: [
         {
