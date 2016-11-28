@@ -14,7 +14,7 @@ Wapi.table.list(function(res){
             setTimeout(()=>addTable(tab),i*1000);
         }
     }
-},{creator:'>0'})
+},{creator:'>0'},{limit:-1})
 
 window.getTableFields=function getTableFields(table){
     let arr=table.fieldDefine;
