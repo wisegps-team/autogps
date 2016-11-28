@@ -31,6 +31,8 @@ import ImageHdrStrong from 'material-ui/svg-icons/image/hdr-strong';
 import HardwareDeviceHub from 'material-ui/svg-icons/hardware/device-hub';
 import ActionInfoOutline from 'material-ui/svg-icons/action/info-outline';
 import ActionTrendingUp from 'material-ui/svg-icons/action/trending-up';
+import EditorMonetizationOn from 'material-ui/svg-icons/editor/monetization-on';
+import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -144,6 +146,11 @@ const _pages=[//所有的页面
     //     name:___.register_info,
     //     icon:<AvFeaturedPlayList style={sty.icon}/>
     // },
+    {   /*测试用营销产品 */
+        href:'selling_product',
+        name:___.selling_product,
+        icon:<ActionShopTwo style={sty.icon}/>
+    },
     {   /*车主营销链接 */
         href:'carowner_seller',
         name:___.carowner_seller,
@@ -178,6 +185,11 @@ const _pages=[//所有的页面
         href:'my_marketing',
         name:___.my_marketing,
         icon:<ActionTrendingUp style={sty.icon}/>
+    },
+    {   /*测试用财务管理 */
+        href:'financial_manage',
+        name:___.financial_manage,
+        icon:<EditorMonetizationOn style={sty.icon}/>
     },
 ];
 

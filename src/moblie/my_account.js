@@ -10,10 +10,13 @@ import Divider from 'material-ui/Divider';
 import Input from '../_component/base/input';
 import AreaSelect from '../_component/base/areaSelect';
 import Avatar from 'material-ui/Avatar';
+
 import ActionLock from 'material-ui/svg-icons/action/lock';
+import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import ActionFace from 'material-ui/svg-icons/action/face';
 import ActionAccountBox from 'material-ui/svg-icons/action/account-box';
 import ContentClear from 'material-ui/svg-icons/content/clear';
+
 import RaisedButton from 'material-ui/RaisedButton';
 import LinearProgress from 'material-ui/LinearProgress';
 
@@ -28,6 +31,8 @@ thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     let view=thisView.prefetch('#forget',3);
     ReactDOM.render(<ForgetApp/>,view);
+    let walletView=thisView.prefetch('#wallet',3);
+    ReactDOM.render(<WalletApp/>,walletView);
 });
 
 const sty={
@@ -50,6 +55,12 @@ const sty={
     limg:{
         width: '100%',
         height: '100%'
+    },
+    income:{
+        color:'#009900'
+    },
+    expenses:{
+        color:'#990000'
     }
 }
 
@@ -84,6 +95,7 @@ class App extends Component {
     }
 }
 
+
 class ForgetApp extends Component{
     resetSuccess(){
         W.alert(___.resset_success,function(){
@@ -106,6 +118,52 @@ class ForgetApp extends Component{
     }
 }
 
+let record={
+    objectId:1,
+    money:233,
+    remark:'remark',
+    income:true,
+}
+let records=[];
+for(let i=5;i--;){
+    let r=Object.assign({},record);
+    r.objectId=i;
+    r.income=!(i%2);
+    records[i]=r;
+}
+class WalletApp extends Component {
+    constructor(props,context){
+        super(props,context);
+        this.withdrawCash = this.withdrawCash.bind(this);
+    }
+    withdrawCash(){
+        console.log('take cash');
+    }
+    render() {
+        let data=records;
+        let items=data.map(ele=>
+            <ListItem 
+                key={ele.objectId}
+                primaryText={ele.income ? ('+'+ele.money) : ('-'+ele.money)} 
+                style={ele.income ? sty.income : sty.expenses}
+                secondaryText={ele.remark}
+            />
+        );
+        return (
+            <ThemeProvider>
+            <div>
+                <AppBar title={___.my_wallet} iconElementRight={<FlatButton label={___.withdraw_cash} onClick={this.withdrawCash}/>}/>
+                <div style={sty.p}>
+                    <List>
+                        {items}
+                    </List>
+                </div>
+            </div>
+            </ThemeProvider>
+        );
+    }
+}
+
 
 class ShowBox extends Component{
     constructor(props, context) {
@@ -118,6 +176,7 @@ class ShowBox extends Component{
         this.close = this.close.bind(this);
         this.changeName = this.changeName.bind(this);
         this.saveName = this.saveName.bind(this);
+        this.wallet = this.wallet.bind(this);
     }
 
     reset(){
@@ -150,6 +209,11 @@ class ShowBox extends Component{
             })
         }
     }
+
+    wallet(){
+        console.log('wallet');
+        thisView.goTo('#wallet');
+    }
     
     render() {
         const actions = [
@@ -180,6 +244,12 @@ class ShowBox extends Component{
                 <List>
                     <ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>
                     <ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>
+                    {/*(<ListItem 
+                        primaryText={___.my_wallet} 
+                        leftIcon={<ActionAccountBalanceWallet/>} 
+                        onClick={this.wallet}
+                        rightAvatar={<span style={{marginTop:'13px'}}>￥233</span>}
+                    />*/}
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
