@@ -94,6 +94,33 @@ class App extends Component {
         }
         this.success = this.success.bind(this);
     }
+
+    componentDidMount() {
+        let that=this;
+        // alert('等一下');
+        Wapi.pay.checkWxPay(function(res){
+            let booking=W.ls('booking');
+            that.setState(that._state);
+            if(res.status_code){
+                W.alert(___.pay_fail);
+                booking.payMoney=0;
+                booking.payStatus=0;
+            }else{
+                booking.orderId=res.orderId;
+                W.alert(___.pay_success,e=>{
+                    that.getQrcode(booking);
+                });
+                Wapi.booking.update(e=>console.log(e),{
+                    _objectId:booking.objectId,
+                    orderId:booking.orderId,
+                    payMoney:booking.payMoney,
+                    payStatus:booking.payStatus
+                });
+            }
+            that.sendToSeller(booking);
+        },location.href);
+    }
+    
     
     getChildContext(){
         return{
@@ -101,7 +128,8 @@ class App extends Component {
         }
     }
 
-    success(booking){
+    success(booking,uid){
+        W.setLS('booking',booking);
         this.getQrcode(booking);//获取二维码
         if(ACT.deposit){
             if(this.state.self){
@@ -109,7 +137,18 @@ class App extends Component {
                     confirm_text:___.booking_success+'，'+___.pay_deposit_now.replace('XX',ACT.deposit)+'，'+ACT.offersDesc,
                     yes_t:___.pay_deposit,
                     no_t:___.unpay_deposit,
-                    yes:e=>alert('跳转到支付订金,跳回来时给seller推送'),
+                    yes:e=>{
+                        booking.payMoney=ACT.deposit;
+                        booking.payStatus=1;
+                        W.setLS('booking',booking);
+                        Wapi.pay.wxPay({
+                            uid,
+                            order_type:1,
+                            remark:ACT.product+___._deposit,
+                            amount:booking.payMoney,
+                            title:ACT.product+___._deposit
+                        },location.href);
+                    },
                     no:()=>{
                         this.setState({
                             confirm_open:false,
@@ -126,7 +165,18 @@ class App extends Component {
                     confirm_text:___.booking_success+'，'+W.replace(___.pan_all,ACT)+'，'+ACT.offersDesc,
                     yes_t:___.pay_now,
                     no_t:___.pay_install,
-                    yes:e=>alert('跳转到支付全款和安装费用,跳回来时给seller推送'),
+                    yes:e=>{
+                        booking.payMoney=ACT.price+ACT.installationFee;
+                        booking.payStatus=2;
+                        W.setLS('booking',booking);
+                        Wapi.pay.wxPay({
+                            uid,
+                            order_type:1,
+                            remark:ACT.product+___.all_price,
+                            amount:booking.payMoney,
+                            title:ACT.product
+                        },location.href);
+                    },
                     no:()=>{
                         this.setState({
                             confirm_open:false,
@@ -158,7 +208,7 @@ class App extends Component {
                 return;
             }
             W.setLS(scene,res);
-            Wapi.booking.update(null,{_objectId:booking.objectId,'carType.qrUrl':res.url});
+            Wapi.booking.update(null,{_objectId:scene,'carType.qrUrl':res.url});
             this.setQr(res,scene);
         },{
             type:1001,
@@ -181,6 +231,7 @@ class App extends Component {
         if(!this.state.confirm_open&&this.state.confirm_text==___.getting_qr){
             this.setState(this._state);
             W.setLS(scene,null);
+            W.setLS('booking',null);
         }
     }
 
@@ -191,7 +242,7 @@ class App extends Component {
             if(booking['payStatus']==1)
                 pay=___._deposit+'：'+booking['payMoney'];
             else if(booking['payStatus']==2)
-                pay=___.all_price+'：'.booking['payMoney'];
+                pay=___.all_price+'：'+booking['payMoney'];
         }
         Wapi.serverApi.sendWeixinByTemplate(function(res){
             console.log(res);
@@ -286,6 +337,8 @@ class From extends Component{
             carType:null,
             openId:_g.openid,
             activityId:_g.activityId||'0',
+            payStatus:0,
+            payMoney:0
         }
         this.change = this.change.bind(this);
         this.changeVerifi=this.changeVerifi.bind(this);
@@ -324,6 +377,7 @@ class From extends Component{
     }
     changeVerifi(val){
         this.valid=true;
+        this._valid=val;
     }
     changeCarName(e,val){
         this.data.carType={car_num:val};
@@ -351,10 +405,18 @@ class From extends Component{
         }
 
         let _this=this;
-        Wapi.booking.add(function(res){
-            submit_data.objectId=res.objectId;
-            _this.props.onSuccess(submit_data);
-        },submit_data);
+        Wapi.user.register(function(user){
+            let uid=user.uid;
+            Wapi.booking.add(function(res){
+                submit_data.objectId=res.objectId;
+                _this.props.onSuccess(submit_data,uid);
+            },submit_data);
+        },{
+            mobile:submit_data.mobile,
+            valid_code:this._valid,
+            password:submit_data.mobile.slice(-6),
+            valid_type:1
+        });
     }
     render() {
         let carowner=this.props.self?null:[

@@ -395,4 +395,6 @@ window.___={
 	'financial_manage':'财务管理',
 	'selling_product':'营销产品',
 	'add_selling_product':'添加营销产品',
+	'pay_success':'支付成功',
+	'pay_fail':'支付失败',
 }
