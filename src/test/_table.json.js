@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=75;//版本号
+let version=76;//版本号
 
 //地区表
 export const area={
@@ -2296,6 +2296,11 @@ export const activity={
             'name': 'wxAppKey',
             'desc': '微信appkey',
             'type': 'String',
+            'query': true
+        },{
+            'name': 'count',
+            'desc': '计算提成',
+            'type': 'Boolean',
             'query': true
         }
     ],
