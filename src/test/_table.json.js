@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=70;//版本号
+let version=75;//版本号
 
 //地区表
 export const area={
@@ -329,6 +329,11 @@ export const customer={
             'name': 'isInstall',
             'desc': '是否安装网点',
             'type': 'Number',
+            'query': true,
+        },{
+            'name': 'parentEme',
+            'desc': '父级的客户经理',
+            'type': 'Object',//由于多对多关系，所以以父级uid为键名，父级指定的人员id为值；如父级uid为1233，客户经理为1234，则本字段则为{"1233":"1234"}
             'query': true,
         },
     ],
@@ -2108,6 +2113,61 @@ export const booking={
             'desc': '订单id',
             'type': 'String',
             'query': true,
+        },{
+            'name': 'activityType',
+            'desc': '活动类别',//参考活动表的类别（0，车主营销，1，集团营销，2，员工营销，3渠道营销）
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'userOpenId',//后台注册时跟注册openId一样
+            'desc': '车主openId',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'product',
+            'desc':'预订产品信息',//name名称，id产品id，price设备款，installationFee安装费，reward佣金
+            'type':'Object',
+            'query':true
+        },{
+            'name': 'receiptDate',
+            'desc': '收款时间',
+            'type': 'Date',
+            'query': true,
+        },{
+            'name': 'selectInstallDate',
+            'desc': '选择安装网点时间',
+            'type': 'Date',
+            'query': true,
+        },{
+            'name': 'res',
+            'desc': '注册相关信息',//openId注册openid，name注册姓名，mobile注册手机，seller销售商，productId注册的产品型号id，product产品型号，price价格，installationFee安装费，reward佣金
+            'type': 'Object',
+            'query': true
+        },{
+            'name': 'receipt',
+            'desc': '货款支付金额',//顶级系统支付给销售商（预付款扣除手续费）
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'receiptId',
+            'desc': '货款收款id',//销售商ID
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'commission',
+            'desc': '佣金支付标准',//（若注册产品佣金>预订产品佣金，则佣金为两者之和除于2，若注册产品佣金<预订产品佣金,则佣金为注册产品佣金）
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'commissionId',
+            'desc': '佣金收款id',//营销人员ID
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'managerId',
+            'desc': '客户经理id',
+            'type': 'String',
+            'query': true,
         }
     ],
     indexDefine: [
@@ -2143,7 +2203,7 @@ export const activity={
             'type': 'String',
             'query': true,    //可查询字段
         },{
-            'name': 'type',
+            'name': 'type',//（0，车主营销，1，集团营销，2，员工营销，3渠道营销）
             'desc': '活动类型',
             'type': 'Number',
             'query': true,
@@ -2164,7 +2224,7 @@ export const activity={
             'query': true
         },{
             'name': 'reward',
-            'desc': '奖励标准',
+            'desc': '佣金标准',
             'type': 'Number',
             'query': true
         },{
@@ -2328,11 +2388,73 @@ export const qrData={
     ]
 }
 
+//营销产品表
+export const activityProduct={
+    name: 'activityProduct',             //表名
+    desc: '营销产品表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'uid',
+            'desc': '所属公司',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'productId',
+            'desc': '产品id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'name',
+            'desc': '产品名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'brandId',
+            'desc': '品牌id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'brand',
+            'desc': '品牌名称',
+            'type': 'String',
+            'query': true, 
+        },{
+            'name': 'price',
+            'desc': '产品价格',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'installationFee',
+            'desc': '安装费用',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'reward',
+            'desc': '佣金标准',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'productUrl',
+            'desc': '产品介绍链接',
+            'type': 'String',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin,qrData
+    weixin,qrData,activityProduct
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
