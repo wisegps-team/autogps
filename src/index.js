@@ -56,16 +56,14 @@ class App extends Component {
         }
         Wapi.customer.get(function(cust){
             user.customer=cust.data;
-            //暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
-            //兼职营销人员只有自己的权限
-            let _uid=(user.employee&&user.employee.type==1)?user.uid:user.customer.uid;
+            let _uid=user.uid;
             if(!user.customer){
                 W.alert(___.not_allow_login);
                 return;
             }
             Wapi.role.list(function(role){
                 user.role=role.data;
-                let acl=_uid;//暂时人员拥有全权限，之后应该使用users:user.uid作为筛选角色权限的条件
+                let acl=_uid;
                 if(user.role&&user.role.length)
                     acl+='|role:'+user.role.map(r=>r.objectId).join('|role:');
                 Wapi.page.list(function(page){
@@ -77,7 +75,7 @@ class App extends Component {
                     user.pages=page.data;
                     W._loginSuccess(user);
                     let loginLocation=_g.loginLocation||"src/moblie/home.html";
-                    if(user.employee&&_user.employee.type)loginLocation='src/moblie/partTime_count.html';
+                    if(user.employee&&user.employee.type==1)loginLocation='src/moblie/partTime_count.html';
                     if(loginLocation.indexOf('.html')==-1)//需要到home.html跳转
                         loginLocation="src/moblie/home.html?loginLocation="+_g.loginLocation;
                     top.location=loginLocation;
