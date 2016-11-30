@@ -25,23 +25,24 @@ const strStatus=[___.terminated,___.ongoing];
 function getInitData(){
     const initData={
         name:'',    //活动名称
-        reward:'',  //佣金标准
+        type:2,     //活动类别 （0，车主营销，1，集团营销，2，员工营销，3渠道营销）
         pay:0,      //佣金支付方式
         deposit:'',     //订金标准
         offersDesc:'',  //预定优惠
         product:'',     //产品型号
         productId:0,    //产品型号Id
-        price:'',       //终端价格
-        installationFee:0, //安装费用
-        url:'',            //文案链接
+        price:0,        //终端价格
+        installationFee:0,  //安装费用
+        reward:0,           //佣金标准
+        url:'',             //文案链接
         principal:_user.customer.name,          //项目经理
         principalId:_user.customer.objectId,    //项目经理id,默认本公司
         principalTel:_user.mobile,              //项目经理电话
         sellerType:_user.customer.name,         //营销人员(营销人员类型)
         sellerTypeId:_user.customer.objectId,   //营销人员类型id，从type=1的depart里面选，默认本公司
+        count:false,    //计算提成
         getCard:false,  //客户经理开卡
         status:1,       //活动状态（1进行中/0已终止）
-        type:0,         //0车主营销，1营销活动
         wxAppKey:_user.customer.wxAppKey||'',   //配置公众号才有此项目
     };
     return initData;
@@ -53,7 +54,13 @@ class EditActivity extends Component {
         // this.noEdit=true;
 
         this.products=[
-            {model:___.please_select_model,modelId:0},
+            {
+                name:___.please_select_model,
+                productId:0,
+                price:0,
+                installationFee:0,
+                reward:0
+            },
         ],
         this.principals=[
             {name:_user.customer.name,objectId:_user.customer.objectId,tel:_user.mobile},
@@ -65,6 +72,7 @@ class EditActivity extends Component {
         this.intent='add';
 
         this.dataChange = this.dataChange.bind(this);
+        this.typeChange = this.typeChange.bind(this);
         this.productChange = this.productChange.bind(this);
         this.principalChange = this.principalChange.bind(this);
         this.sellerTypeChange = this.sellerTypeChange.bind(this);
@@ -72,24 +80,32 @@ class EditActivity extends Component {
     }
     componentDidMount() {
         let flag=0;
-        let par1={
-            "group":{
-                "_id":{
-                    "modelId":"$modelId",
-                    "model":"$model"
-                }
-            },
-            "sorts":"objectId",
-            "uid":_user.customer.objectId
-        }//获取设备数组
-        Wapi.device.aggr(res=>{
-            let devices=res.data.map(ele=>ele._id);
+        // let par1={
+        //     "group":{
+        //         "_id":{
+        //             "modelId":"$modelId",
+        //             "model":"$model"
+        //         }
+        //     },
+        //     "sorts":"objectId",
+        //     "uid":_user.customer.objectId
+        // }//获取设备数组
+        // Wapi.device.aggr(res=>{
+        //     let devices=res.data.map(ele=>ele._id);
+        //     this.products=this.products.concat(devices);
+        //     flag++;
+        //     if(flag==3){
+        //         this.forceUpdate();
+        //     }
+        // },par1);
+        Wapi.activityProduct.list(res=>{
+            let devices=res.data;
             this.products=this.products.concat(devices);
             flag++;
             if(flag==3){
                 this.forceUpdate();
             }
-        },par1);
+        },{uid:_user.customer.objectId});
 
         let par2={
             companyId:_user.customer.objectId,
@@ -117,7 +133,6 @@ class EditActivity extends Component {
     }
     
     componentWillReceiveProps(nextProps) {
-        // console.log(nextProps);
         if(nextProps.data){
             this.intent='edit';
             let data=getInitData();
@@ -143,11 +158,22 @@ class EditActivity extends Component {
         }else if(e.target.name=='getCard'){
             this.data.getCard=value;
             this.forceUpdate();
+        }else if(e.target.name=='count'){
+            this.data.count=value;
+            this.forceUpdate();
         }
     }
+    typeChange(e,v,key){
+        this.data.type=key;
+        this.forceUpdate();
+    }
     productChange(e,v,key){
-        this.data.productId=key;
-        this.data.product=this.products.find(ele=>ele.modelId==key).model;
+        let target=this.products.find(ele=>ele.productId==key);
+        this.data.productId=target.productId;
+        this.data.product=target.name;
+        this.data.price=target.price;
+        this.data.installationFee=target.installationFee;
+        this.data.reward=target.reward;
         this.forceUpdate();
     }
     principalChange(e,v,k){//+++这里要加入 选当前用户选项（公司管理员），所以要加上判断(未完成)
@@ -172,10 +198,6 @@ class EditActivity extends Component {
             W.alert(___.name+___.not_null);
             return;
         }
-        if(data.reward==''){//佣金不为空
-            W.alert(___.activity_reward+___.not_null);
-            return;
-        }
         if(data.deposit==''){//订金不为空
             W.alert(___.deposit+___.not_null);
             return;
@@ -188,82 +210,109 @@ class EditActivity extends Component {
             W.alert(___.product_type+___.not_null);
             return;
         }
-        if(data.price==''){//设备价格不为空
-            W.alert(___.device_price+___.not_null);
-            return;
-        }
-        if(data.installationFee==''){//安装费用为空则默认为0
-            data.installationFee=0;
-            // W.alert(___.install_price+___.not_null);
-            // return;
-        }
         if(data.url==''){//文案链接不为空
             W.alert(___.activity_url+___.not_null);
             return;
         }
-        // if(!this.props.isCarownerSeller && data.principalId==0){//项目经理不为空（非车主营销活动）
-        //     W.alert(___.project_manager+___.not_null);
-        //     return;
-        // }
-        // if(!this.props.isCarownerSeller && data.sellerTypeId==0){//销售人员类型不为空（非车主营销活动）
-        //     W.alert(___.seller+___.not_null);
-        //     return;
-        // }
         console.log(data);
 
-        if(this.intent=='edit'){    //修改
-            let _data=Object.assign({},data);
+        // if(this.intent=='edit'){    //修改
+        //     let _data=Object.assign({},data);
 
-            _data._objectId=data.objectId;
-            delete _data.objectId;
-            delete _data.status0;
-            delete _data.status1;
-            delete _data.status2;
+        //     _data._objectId=data.objectId;
+        //     delete _data.objectId;
+        //     delete _data.status0;
+        //     delete _data.status1;
+        //     delete _data.status2;
 
-            Wapi.activity.update(res=>{
-                this.props.editSubmit(data);
-                this.data=getInitData();
-                this.forceUpdate();
-            },_data);
+        //     Wapi.activity.update(res=>{
+        //         this.props.editSubmit(data);
+        //         this.data=getInitData();
+        //         this.forceUpdate();
+        //     },_data);
 
-        }else{  //添加 如果是车主营销，则type=0,不是则为1
-            if(this.props.isCarownerSeller){
-                data.type=0;
-            }else{
-                data.type=1;
-            }
-            data.uid=_user.customer.objectId;
-            Wapi.activity.add(res=>{
-                data.objectId=res.objectId;
-                data.createdAt=W.dateToString(new Date());
+        // }else{  //添加
+        //     data.uid=_user.customer.objectId;
+        //     Wapi.activity.add(res=>{
+        //         data.objectId=res.objectId;
+        //         data.createdAt=W.dateToString(new Date());
 
-                //额外信息
-                data.status0=0;
-                data.status1=0;
-                data.status2=0;
-                data.status3=0;
+        //         //额外信息
+        //         data.status0=0;
+        //         data.status1=0;
+        //         data.status2=0;
+        //         data.status3=0;
 
-                this.props.addSubmit(data);
-                this.data=getInitData();
-                this.forceUpdate();
-            },data);
-        }
+        //         this.props.addSubmit(data);
+        //         this.data=getInitData();
+        //         this.forceUpdate();
+        //     },data);
+        // }
     }
     render() {
-        let productItems=this.products.map(ele=>
-            <MenuItem key={ele.modelId} value={ele.modelId} primaryText={ele.model} />);
-        let principalItems=this.principals.map(el=>
-            <MenuItem key={el.objectId} value={el.objectId.toString()} primaryText={el.name} />);
-        let selleTypeItems=this.sellerTypes.map(e=>
+        let typeItems=[<MenuItem key={2} value={2} primaryText={___.employee_marketing} />];
+        let va=_user.customer.other.va;//判断当前用户权限，添加营销类别选项 va中0,1,2,3分别表示[集团营销，渠道营销，政企业务，车主营销]
+        if(va.includes('3')){
+            typeItems.push(<MenuItem key={0} value={0} primaryText={___.carowner_seller} />);   //车主营销
+        }
+        if(va.includes('1')){
+            typeItems.push(<MenuItem key={3} value={3} primaryText={___.subordinate_marketing} />);   //渠道营销
+        }
+        if(va.includes('0')){
+            typeItems.push(<MenuItem key={1} value={1} primaryText={___.group_marketing} />);   //集团营销
+        }
+
+        let productItems=this.products.map(ele=>    //产品选项
+            <MenuItem key={ele.productId} value={ele.productId} primaryText={ele.name} />);
+
+        let selleTypeItems=this.sellerTypes.map(e=> //营销人员（类型）选项
             <MenuItem key={e.objectId} value={e.objectId.toString()} primaryText={e.name} />);
+
         let noEdit=this.props.noEdit;
+
         return (
             <div style={styles.input_page}>
                 {/*活动名称*/}
                 <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} disabled={noEdit} />
                 
+                {/*营销类别*/}
+                <SelectField name='productId' floatingLabelText={___.activity_type} value={this.data.type} onChange={this.typeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
+                    {typeItems}
+                </SelectField>
+
+                {/*营销人员（类型）*/}
+                <div style={ this.data.type==1 ? {textAlign:'left'} : {display:'none'} }>
+                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
+                        {selleTypeItems}
+                    </SelectField>
+                </div>
+                
+                {/*计算提成*/}
+                <div style={ (this.data.type==1||this.data.type==3) ? styles.input_group : {display:'none'} }>
+                    <Checkbox 
+                        name='count' 
+                        checked={this.data.count}
+                        label={___.calculate_commission} 
+                        onCheck={this.dataChange} 
+                        disabled={noEdit}
+                    />
+                </div>
+
+                {/*产品型号*/}
+                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={noEdit}>
+                    {productItems}
+                </SelectField>
+
+                {/*产品链接*/}
+
+                {/*终端价格*/}
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} disabled={true} />
+
+                {/*安装费用*/}
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} disabled={true} />
+
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={noEdit} />
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} disabled={true} />
                 
                 {/*支付方式*/}
                 <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={noEdit}>
@@ -276,36 +325,9 @@ class EditActivity extends Component {
                 {/*预订优惠*/}
                 <Input name='offersDesc' floatingLabelText={___.booking_offersDesc+___.characters} value={this.data.offersDesc} onChange={this.dataChange} disabled={noEdit} />
 
-                {/*产品型号*/}
-                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={noEdit}>
-                    {productItems}
-                </SelectField>
-
-                {/*产品链接*/}
-
-                {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} disabled={noEdit} />
-
-                {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} disabled={noEdit} />
-
                 {/*活动链接*/}
                 <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={noEdit} />
                 
-                {/*项目经理*/}
-                <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='principalId' floatingLabelText={___.project_manager} value={this.data.principalId} onChange={this.principalChange} style={styles.select} maxHeight={200} disabled={noEdit}>
-                        {principalItems}
-                    </SelectField>
-                </div>
-                
-                {/*营销人员（类型）*/}
-                <div style={this.props.isCarownerSeller ? {display:'none'} : {textAlign:'left'}}>
-                    <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
-                        {selleTypeItems}
-                    </SelectField>
-                </div>
-
                 {/*客户经理开卡*/}
                 <div style={styles.input_group}>
                     <Checkbox 
@@ -317,6 +339,8 @@ class EditActivity extends Component {
                         disabled={noEdit}
                     />
                 </div>
+
+                {/*活动状态*/}
                 <div style={styles.input_group}>
                     <span style={{fontSize:'0.7em',color:'#999999'}}>{___.status}</span>
                     <Toggle //活动状态（进行中或已终止）

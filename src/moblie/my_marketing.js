@@ -91,80 +91,76 @@ class App extends Component {
         // this.getData();
     }
     getData(){
-        if(_user.customer.other && _user.customer.other.va){
+        if(_user.customer.custTypeId==8){//经销商账号，显示上一级代理商创建的渠道营销活动。
 
-            if(_user.customer.other.va.includes('3')){//如果开通车主营销，则显示type=0的车主营销，包括本身及其上级的车主营销
-
-                let parents=_user.customer.parentId.join('|');
-                let par1={
-                    uid:_user.customer.objectId + '|' + parents,
-                    status:1,
-                    type:0
-                }
-                Wapi.activity.list(res=>{//type=0 车主营销的活动
-                    this.total=res.total;
-                    let activities=res.data;
-                    
-                    activities.forEach(ele=>{
-                        let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
-                        if(booking){
-                            ele.status0=booking.status0;
-                            ele.status1=booking.status1;
-                            ele.status2=booking.status2;
-                            ele.status3=booking.status3;
-                        }else{
-                            ele.status0=0;
-                            ele.status1=0;
-                            ele.status2=0;
-                            ele.status3=0;
-                        }
-                        if(_user.customer.wxAppKey){
-                            ele.wxAppKey=_user.customer.wxAppKey;
-                            ele.uid=_user.customer.objectId;
-                        }
-                    });
-                    this.activities=this.activities.concat(activities);
-                    this.forceUpdate();
-                },par1,{
-                    sorts:'-createdAt',
-                    limit:-1,
-                });
-
+            let parents=_user.customer.parentId.join('|');
+            let par1={
+                uid:_user.customer.objectId + '|' + parents,
+                status:1,
+                type:3
             }
-            if(_user.customer.other.va.includes('0')){//如果开通集团营销，则显示type=1的营销活动
+            Wapi.activity.list(res=>{//type=0 车主营销的活动
+                this.total=res.total;
+                let activities=res.data;
                 
-                let par2={
-                    uid:_user.customer.objectId,
-                    status:1,
-                    type:1,
-                    sellerTypeId:_user.customer.objectId,
-                }
-                Wapi.activity.list(res=>{
-                    this.total=res.total;
-                    let activities=res.data;
-                    
-                    activities.forEach(ele=>{
-                        let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
-                        if(booking){
-                            ele.status0=booking.status0;
-                            ele.status1=booking.status1;
-                            ele.status2=booking.status2;
-                            ele.status3=booking.status3;
-                        }else{
-                            ele.status0=0;
-                            ele.status1=0;
-                            ele.status2=0;
-                            ele.status3=0;
-                        }
-                    });
-                    this.activities=this.activities.concat(activities);
-                    this.forceUpdate();
-                },par2,{
-                    sorts:'-createdAt',
-                    limit:-1,
+                activities.forEach(ele=>{
+                    let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                    if(_user.customer.wxAppKey){
+                        ele.wxAppKey=_user.customer.wxAppKey;
+                        ele.uid=_user.customer.objectId;
+                    }
                 });
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            },par1,{
+                sorts:'-createdAt',
+                limit:-1,
+            });
 
+        }
+        if(_user.customer.custTypeId==5){//如果是代理商账号，显示员工营销活动；
+            
+            let par2={
+                uid:_user.customer.objectId,
+                status:1,
+                type:2,
+                // sellerTypeId:_user.customer.objectId,
             }
+            Wapi.activity.list(res=>{
+                this.total=res.total;
+                let activities=res.data;
+                
+                activities.forEach(ele=>{
+                    let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                });
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            },par2,{
+                sorts:'-createdAt',
+                limit:-1,
+            });
 
         }
     }
@@ -176,7 +172,6 @@ class App extends Component {
         });
     }
     addSubmit(activity){
-        console.log(activity);
         this.activities.unshift(activity);
         history.back();
     }
@@ -196,7 +191,6 @@ class App extends Component {
         this.setState({isEdit:false});
     }
     editSubmit(activity){
-        console.log(activity);
         for(let i=this.activities.length-1;i>=0;i--){
             if(this.activities[i].objectId==activity.objectId){
                 if(activity.status==0){
@@ -247,7 +241,9 @@ App.childContextTypes={
 }
 
 let strStatus=[___.terminated,___.ongoing];
-let strBoolean=[___.no,___.yes]
+let strBoolean=[___.no,___.yes];
+let activityType=[___.carowner_seller,___.group_marketing,___.employee_marketing,___.subordinate_marketing];
+
 class DList extends Component{
     constructor(props,context){
         super(props,context);
@@ -274,8 +270,6 @@ class DList extends Component{
             par.status=0
         }
         thisView.goTo('booking_list.js',par);
-        console.log(page);
-        console.log(data);
     }
     share(data){
         if(!data.wxAppKey){
@@ -322,8 +316,6 @@ class DList extends Component{
             window.addEventListener('nativeSdkReady',setShare);
         }
 
-        console.log('share');
-        
     }
     render() {
         let data=this.props.data;
@@ -339,6 +331,10 @@ class DList extends Component{
                             <td style={styles.td_left}>{___.activity_status}</td>
                             <td style={styles.td_right}>{strStatus[ele.status]}</td>
                         </tr>
+                        {/*<tr >
+                            <td style={styles.td_left}>{___.activity_type}</td>
+                            <td style={styles.td_right}>{activityType[ele.type]}</td>
+                        </tr>*/}
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.start_date}</td>
                             <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>

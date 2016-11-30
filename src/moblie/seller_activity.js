@@ -52,12 +52,14 @@ class App extends Component {
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
+        this.delete = this.delete.bind(this);
         this.edit = this.edit.bind(this);
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
     }
     getChildContext(){
         return {
+            delete:this.delete,
             edit:this.edit
         };
     }
@@ -106,7 +108,6 @@ class App extends Component {
         },{
             uid:_user.customer.objectId,
             status:1,
-            type:1  //集团营销（营销活动）type=1
         },{
             limit:this.limit,
             page_no:this.page_no,
@@ -122,13 +123,40 @@ class App extends Component {
         });
     }
     addSubmit(activity){
-        console.log(activity);
         this.activities.unshift(activity);
         history.back();
     }
+    delete(activity){
+        if(_user.objectId!=activity.creator){
+            W.alert(___.not_creator);
+            return;
+        }
+        if(activity.status0!=0){
+            W.alert(___.activity_delete_booked);
+            return;
+        }
+        W.confirm(___.confirm_delete_activity,(b)=>{
+            if(b){
+                Wapi.activity.delete(res=>{
+                    if(res.status_code==0){
+                        for(let i=this.activities.length;i--;){
+                            if(this.activities[i].objectId==activity.objectId){
+                                this.activities.splice(i,1);
+                                this.forceUpdate();
+                                break;
+                            }
+                        }
+                        W.alert(___.delete_activity_success);
+                    }else{
+                        W.alert(___.delete_activity_fail);
+                    }
+                },{objectId:activity.objectId});
+            }
+        });
+    }
     edit(activity){
         let noEdit=false;
-        if(activity.uid!=_user.customer.objectId){
+        if(activity.creator!=_user.objectId){
             noEdit=true;
         }
         this.setState({
@@ -142,7 +170,6 @@ class App extends Component {
         this.setState({isEdit:false});
     }
     editSubmit(activity){
-        console.log(activity);
         for(let i=this.activities.length-1;i>=0;i--){
             if(this.activities[i].objectId==activity.objectId){
                 if(activity.status==0){
@@ -166,7 +193,6 @@ class App extends Component {
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                     />
                     <div name='list' style={styles.main}>
-                        {/*items*/}
                         <Alist 
                             max={this.total} 
                             limit={this.limit} 
@@ -190,11 +216,13 @@ class App extends Component {
     }
 }
 App.childContextTypes={
+    delete:React.PropTypes.func,
     edit:React.PropTypes.func
 }
 
 let strStatus=[___.terminated,___.ongoing];
-let strBoolean=[___.no,___.yes]
+let strBoolean=[___.no,___.yes];
+let activityType=[___.carowner_seller,___.group_marketing,___.employee_marketing,___.subordinate_marketing];
 class DList extends Component{
     constructor(props,context){
         super(props,context);
@@ -225,8 +253,6 @@ class DList extends Component{
             }
             thisView.goTo('booking_list.js',par);
         }
-        console.log(page);
-        console.log(data);
     }
     render() {
         let data=this.props.data;
@@ -241,6 +267,10 @@ class DList extends Component{
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.activity_status}</td>
                             <td style={styles.td_right}>{strStatus[ele.status]}</td>
+                        </tr>
+                        <tr >
+                            <td style={styles.td_left}>{___.activity_type}</td>
+                            <td style={styles.td_right}>{activityType[ele.type]}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.start_date}</td>
@@ -265,6 +295,7 @@ class DList extends Component{
                     <span style={styles.a} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
                 </div>
                 <div style={styles.bottom_btn_right}>
+                    <FlatButton label={___.delete} primary={true} onClick={()=>this.context.delete(ele)} />
                     <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />
                 </div>
             </Card>);
@@ -276,6 +307,7 @@ class DList extends Component{
     }
 }
 DList.contextTypes={
+    delete: React.PropTypes.func,
     edit: React.PropTypes.func
 };
 let Alist=AutoList(DList);
