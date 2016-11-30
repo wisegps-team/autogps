@@ -200,13 +200,21 @@ class ShowBox extends Component{
     saveName(){
         if(this._name){
             let that=this;
-            Wapi.user.updateMe(function(res){
-                _user.username=that._name;
-                W.setSetting('user',_user);
-                that.close();
+            Wapi.user.get(function(res){
+                if(res.status_code==0){
+                    W.alert(___.username_registed);
+                }else{
+                    Wapi.user.updateMe(function(re){
+                        _user.username=that._name;
+                        W.setSetting('user',_user);
+                        that.close();
+                    },{
+                        username:that._name
+                    });
+                }
             },{
-                username:this._name
-            })
+                username:that._name
+            });
         }
     }
 
