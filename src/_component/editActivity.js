@@ -216,38 +216,38 @@ class EditActivity extends Component {
         }
         console.log(data);
 
-        // if(this.intent=='edit'){    //修改
-        //     let _data=Object.assign({},data);
+        if(this.intent=='edit'){    //修改
+            let _data=Object.assign({},data);
 
-        //     _data._objectId=data.objectId;
-        //     delete _data.objectId;
-        //     delete _data.status0;
-        //     delete _data.status1;
-        //     delete _data.status2;
+            _data._objectId=data.objectId;
+            delete _data.objectId;
+            delete _data.status0;
+            delete _data.status1;
+            delete _data.status2;
 
-        //     Wapi.activity.update(res=>{
-        //         this.props.editSubmit(data);
-        //         this.data=getInitData();
-        //         this.forceUpdate();
-        //     },_data);
+            Wapi.activity.update(res=>{
+                this.props.editSubmit(data);
+                this.data=getInitData();
+                this.forceUpdate();
+            },_data);
 
-        // }else{  //添加
-        //     data.uid=_user.customer.objectId;
-        //     Wapi.activity.add(res=>{
-        //         data.objectId=res.objectId;
-        //         data.createdAt=W.dateToString(new Date());
+        }else{  //添加
+            data.uid=_user.customer.objectId;
+            Wapi.activity.add(res=>{
+                data.objectId=res.objectId;
+                data.createdAt=W.dateToString(new Date());
 
-        //         //额外信息
-        //         data.status0=0;
-        //         data.status1=0;
-        //         data.status2=0;
-        //         data.status3=0;
+                //额外信息
+                data.status0=0;
+                data.status1=0;
+                data.status2=0;
+                data.status3=0;
 
-        //         this.props.addSubmit(data);
-        //         this.data=getInitData();
-        //         this.forceUpdate();
-        //     },data);
-        // }
+                this.props.addSubmit(data);
+                this.data=getInitData();
+                this.forceUpdate();
+            },data);
+        }
     }
     render() {
         let typeItems=[<MenuItem key={2} value={2} primaryText={___.employee_marketing} />];
