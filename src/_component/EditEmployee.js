@@ -21,6 +21,19 @@ const styles={
 
 //使用时需要传入数据data和点击提交方法submit，submit会返回编辑后的data
 let _today=new Date();
+function initData(){
+    return{
+        uid:'',
+        name:'',
+        tel:'',
+        sex:1,
+        departId:0,
+        roleId:0,
+        role:'',
+        isQuit:false,
+        quitDate:_today,
+    };
+}
 class EditEmployee extends React.Component{
     constructor(props,context){
         super(props,context);
@@ -29,16 +42,7 @@ class EditEmployee extends React.Component{
             isDriver:false,
         }
         this.intent='edit';
-        this.data={
-            uid:'',
-            name:'',
-            tel:'',
-            sex:1,
-            departId:0,
-            role:0,
-            isQuit:false,
-            quitDate:_today,
-        }
+        this.data=initData();
         this.roles=[];
         this.nameChange=this.nameChange.bind(this);
         this.sexChange=this.sexChange.bind(this);
@@ -134,18 +138,12 @@ class EditEmployee extends React.Component{
             return;
         }
         let data=this.data;
-        this.props.submit(data,this.state.allowLogin);
-        this.data={
-            uid:'',
-            name:'',
-            tel:'',
-            sex:1,
-            departId:0,
-            roleId:0,
-            role:'',
-            isQuit:false,
-            quitDate:_today,
-        }
+        let _this=this;
+        this.props.submit(data,this.state.allowLogin,function(){
+            console.log('call back');
+            _this.data=initData();
+            _this.forceUpdate();
+        });
     }
     render(){
         let roleItems=this.roles.map(ele=>
