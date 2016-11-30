@@ -20,6 +20,9 @@ import AutoList from '../_component/base/autoList';
 import SonPage from '../_component/base/sonPage';
 import Input from '../_component/base/input';
 
+import STORE from '../_reducers/main';
+import {role_act} from '../_reducers/dictionary';
+
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
@@ -97,6 +100,7 @@ class App extends React.Component {
                 this.setState({
                     show_sonpage:false,
                 });
+                STORE.dispatch(role_act.get({uid:_user.customer.objectId}));//角色
             },par)
         },{
             name:data.name,
