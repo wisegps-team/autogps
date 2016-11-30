@@ -9,6 +9,8 @@ import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import Checkbox from 'material-ui/Checkbox';
+import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
 
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
@@ -32,7 +34,11 @@ const styles = {
     },
     t:{
         top: '-3px'
-    }
+    },    
+    select:{
+        width:'100%',
+        textAlign:'left'
+    },
 };
 
 const EVENT=makeRandomEvent({
@@ -277,28 +283,57 @@ class AddBox extends Component{
     constructor(props, context) {
         super(props, context);
         this.state={
-            name:props.data?props.data.name:''
+            name:props.data?props.data.name:'',
+            adminId:0
         };
         this._data={
             type:1,
             uid:_user.customer.objectId
         };
+        this.managers=[];
         this.change = this.change.bind(this);
+        this.adminChange = this.adminChange.bind(this);
         this.submit = this.submit.bind(this);
         this.cancel = this.cancel.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        if(nextProps.data)
+        if(nextProps.data){
             this.setState({
-                name:nextProps.data.name
+                name:nextProps.data.name,
+                adminId:nextProps.data.adminId
             });
+        }else{
+            this.setState({
+                name:'',
+                adminId:'0'
+            });
+        }
+        Wapi.employee.list(res=>{
+            this.managers=res.data;
+            this.forceUpdate();
+        },{
+            companyId:_user.customer.objectId,
+            departId:'>0',
+            isQuit:false
+        });
     }
     
     change(e,name){
         this.setState({name});
     }
+    adminChange(e,v,adminId){
+        this.setState({adminId});
+    }
     submit(){
         let data=Object.assign({},this.state,this._data);
+        if(data.name==''){
+            W.alert(___.input_type);
+            return;
+        }
+        if(data.adminId==0){
+            W.alert(___.please_select_manager);
+            return;
+        }
         if(this.props.data&&this.props.data.objectId){
             data._objectId=this.props.data.objectId;
             Wapi.department.update(res=>{
@@ -322,9 +357,15 @@ class AddBox extends Component{
         });
     }
     render() {
+        let managers=this.managers;
+        let items=managers.map(ele=><MenuItem key={ele.objectId} value={ele.objectId.toString()} primaryText={ele.name}/>);
+        items.unshift(<MenuItem key={0} value={0} primaryText={___.please_select_manager} />);
         return (
             <div style={styles.card}>
                 <Input hintText={___.input_type} value={this.state.name} onChange={this.change}/>
+                <SelectField floatingLabelText={___.business_namager} value={this.state.adminId} onChange={this.adminChange} style={styles.select} maxHeight={500}>
+                    {items}
+                </SelectField>
                 <div style={{textAlign:'right'}}>
                     <FlatButton label={___.cancel} onClick={this.cancel} primary={true}/>
                     <FlatButton label={___.ok} onClick={this.submit} primary={true}/>
