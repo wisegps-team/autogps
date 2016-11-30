@@ -112,7 +112,7 @@ class App extends React.Component {
     editEmployeeCancel(){
         this.setState({show_sonpage:false});
     }
-    editEmployeeSubmit(data,allowLogin){
+    editEmployeeSubmit(data,allowLogin,callBack){
         if(this.state.intent=='edit'){//修改人员
             let params={
                 _uid:data.uid,
@@ -125,6 +125,11 @@ class App extends React.Component {
                 isQuit:data.isQuit
             };
             Wapi.employee.update(res=>{
+                if(res.status_code!=0){
+                    W.alert('更新人员信息失败');
+                    return;
+                }
+                callBack();//回调函数，重置人员编辑页面各组件的值
                 let arr=this.state.employees;
                 arr.map(ele=>{
                     if(ele.uid==data.uid){
@@ -153,6 +158,11 @@ class App extends React.Component {
                 par.password=md5(data.tel.slice(-6));
             }
             Wapi.user.add(function (res) {  //用户表添加一条数据
+                if(res.status_code!=0){
+                    W.alert('添加用户信息失败');
+                    return;
+                }
+                console.log('add user success');
                 let params={
                     companyId:_user.customer.objectId,
                     name:data.name,
@@ -163,8 +173,14 @@ class App extends React.Component {
                     roleId:data.roleId,
                     isQuit:false,
                 };
-                params.uid=res.objectId;
+                params.uid=res.uid;//201611301525返回值改回uid
                 Wapi.employee.add(function(res){    //人员表添加一条数据
+                    if(res.status_code!=0){
+                        W.alert('添加人员信息失败');
+                        return;
+                    }
+                    console.log('add emmployee success');
+                    callBack();//回调函数，重置人员编辑页面各组件的值
                     params.objectId=res.objectId;
                     let arr=that.state.employees;
                     arr.unshift(params);
@@ -172,6 +188,11 @@ class App extends React.Component {
                     history.back();//更新数据后返回
 
                     Wapi.role.update(function(role){    //对应的角色表更新一条数据
+                        if(role.status_code!=0){
+                            W.alert('更新角色表信息失败');
+                            return;
+                        }
+                        console.log('update role success');
                         data.objectId=res.objectId;
                         let sms=___.employee_sms_content;
                         let tem={
