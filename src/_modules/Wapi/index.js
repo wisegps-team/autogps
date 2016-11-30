@@ -844,6 +844,7 @@ const Wapi={
 	crash:new WCrashApi(),
 	weixin:new WAPI('weixin',_user?_user.access_token:null),
 	qrData:new WAPI('qrData',_user?_user.access_token:null),
+	activityProduct:new WAPI('activityProduct',_user?_user.access_token:null),
 };
 
 
@@ -870,13 +871,14 @@ makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,d
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit,role,roleId');
 makeGetOp('weixin','objectId,uid,name,type,wxAppKey');
+makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('booking','activityId,mobile,userName,userMobile,type,sellerId,sellerName,uid,status,status0,status1,status2,status3,name,carType,resTime,payTime,confirmTime,money,objectId,createdAt,updatedAt,installId');
-makeGetOp('activity','name,type,uid,objectId,wxAppKey,createdAt,updatedAt,url,principal,principalId,sellerType,sellerTypeId,reward,pay,offersDesc,price,installationFee,getCard,status,deposit,product,productId');
+makeGetOp('activity','name,type,uid,objectId,wxAppKey,createdAt,updatedAt,url,principal,principalId,sellerType,sellerTypeId,reward,pay,offersDesc,price,installationFee,getCard,status,deposit,product,productId,creator');
 makeGetOp('qrData','objectId,id,data');
 
 
