@@ -163,7 +163,7 @@ class App extends React.Component {
                     roleId:data.roleId,
                     isQuit:false,
                 };
-                params.uid=res.uid;
+                params.uid=res.objectId;
                 Wapi.employee.add(function(res){    //人员表添加一条数据
                     params.objectId=res.objectId;
                     let arr=that.state.employees;
