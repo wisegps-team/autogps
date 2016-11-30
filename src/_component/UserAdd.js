@@ -181,6 +181,10 @@ class UserAdd extends React.Component{
             delete data._objectId;
             let sms=this.props.type=='user_manage'?___.user_sms_content:___.cust_sms_content;
             Wapi.user.add(function (res) {
+                if(res.status_code){
+                    W.errorCode(res);
+                    return;
+                }
                 data.uid=res.uid;
                 Wapi.customer.add(function(res){
                     Wapi.role.update(function(role){
