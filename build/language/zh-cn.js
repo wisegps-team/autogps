@@ -320,7 +320,7 @@ window.___={
 	'login_bind':'尚未绑定微信账号，请手动登录即可进行绑定',
 	'wx_seller_null':'微信营销号未配置',
 	'wx_server_null':'微信服务号未配置',
-	'marketing_personnel':'集团营销人员',
+	'marketing_personnel':'集团营销',
 	'register_type':'注册类别',
 	'register_url':'注册链接',
 	'input_type':'请输入营销人员类别',
@@ -408,4 +408,5 @@ window.___={
 	'delete_activity_fail':'删除营销活动失败',
 	'activity_delete_booked':'该活动已有预定信息，无法删除',
 	'not_creator':'您不是该营销活动的创建者，无法删除该营销活动',
+	'product_description':'产品介绍'
 }

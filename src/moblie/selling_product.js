@@ -232,7 +232,7 @@ class EditProduct extends Component {
     }
     
     dataChange(e,value,key){
-        if(e.target.name){
+        if(e.target&&e.target.name){
             this.data[e.target.name]=value;
         }else{  //SelectField不能返回name，而且需要取key
             let type=this.types.find(ele=>ele.modelId==key);
@@ -300,7 +300,7 @@ class EditProduct extends Component {
                 <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={this.noEdit} />
 
                 {/*产品介绍*/}
-                <Input name='productUrl' floatingLabelText={___.activity_url} value={this.data.productUrl} onChange={this.dataChange} disabled={this.noEdit} />
+                <Input name='productUrl' floatingLabelText={___.product_description} value={this.data.productUrl} onChange={this.dataChange} disabled={this.noEdit} />
             
                 {/*提交*/}
                 <div style={styles.bottom_btn_center}>
