@@ -2149,7 +2149,7 @@ export const booking={
             'type': 'Number',
             'query': true,
         },{
-            'name': 'receiptId',
+            'name': 'receiptId',//与上面营销人员ID重复，已删除
             'desc': '货款收款id',//销售商ID
             'type': 'String',
             'query': true,
@@ -2159,7 +2159,7 @@ export const booking={
             'type': 'Number',
             'query': true,
         },{
-            'name': 'commissionId',
+            'name': 'commissionId',//与上面营销人员ID重复，已删除
             'desc': '佣金收款id',//营销人员ID
             'type': 'String',
             'query': true,
