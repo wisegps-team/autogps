@@ -129,7 +129,27 @@ class App extends React.Component {
                     W.alert('更新人员信息失败');
                     return;
                 }
-                callBack();//回调函数，重置人员编辑页面各组件的值
+                
+                if(this.state.edit_employee.roleId!=params.roleId){//如果当前人员的角色更改了，需要修改旧的角色和新的角色表
+
+                    let parDelete={
+                        _objectId:params.roleId,
+                        users:'-"'+params._uid+'"'
+                    };//从之前的角色的user中删除当前人员
+                    Wapi.role.update(reDelete=>{
+                        console.log('reDelete');
+                    },parDelete);
+
+                    let parAdd={
+                        _objectId:params.roleId,
+                        users:'+"'+params._uid+'"'
+                    };//在当前的角色的user中添加当前人员
+                    Wapi.role.update(reAdd=>{
+                        console.log('reAdd');
+                    },parAdd);
+
+                }
+
                 let arr=this.state.employees;
                 arr.map(ele=>{
                     if(ele.uid==data.uid){
@@ -144,18 +164,22 @@ class App extends React.Component {
                 });
                 arr=arr.filter(ele=>!ele.isQuit);
                 this.setState({employees:arr});//修改完成后更新该条人员数据
+
+                callBack();//回调函数，重置人员编辑页面各组件的值
                 history.back();//更新数据后返回
+
             },params);
+
         }else if(this.state.intent=='add'){//添加人员
             let that=this;
             
-            let par={
+            let param={
                 userType:9,
                 mobile:data.tel,
                 password:md5(randomStr())
             };
             if(allowLogin){
-                par.password=md5(data.tel.slice(-6));
+                param.password=md5(data.tel.slice(-6));
             }
             Wapi.user.add(function (res) {  //用户表添加一条数据
                 if(res.status_code!=0){
@@ -163,7 +187,8 @@ class App extends React.Component {
                     return;
                 }
                 console.log('add user success');
-                let params={
+
+                let par={
                     companyId:_user.customer.objectId,
                     name:data.name,
                     tel:data.tel,
@@ -173,47 +198,53 @@ class App extends React.Component {
                     roleId:data.roleId,
                     isQuit:false,
                 };
-                params.uid=res.uid;//201611301525返回值改回uid
-                Wapi.employee.add(function(res){    //人员表添加一条数据
-                    if(res.status_code!=0){
+                par.uid=res.uid;//201611301525返回值改回uid
+                Wapi.employee.add(function(re){    //人员表添加一条数据
+                    if(re.status_code!=0){
                         W.alert('添加人员信息失败');
                         return;
                     }
                     console.log('add emmployee success');
-                    callBack();//回调函数，重置人员编辑页面各组件的值
-                    params.objectId=res.objectId;
-                    let arr=that.state.employees;
-                    arr.unshift(params);
-                    that.setState({employees:arr});//添加完成后将新增的人员加入人员数组
-                    history.back();//更新数据后返回
 
+                    let p={
+                        _objectId:par.roleId,
+                        users:'+"'+par.uid+'"'
+                    };
                     Wapi.role.update(function(role){    //对应的角色表更新一条数据
                         if(role.status_code!=0){
                             W.alert('更新角色表信息失败');
                             return;
                         }
                         console.log('update role success');
-                        data.objectId=res.objectId;
-                        let sms=___.employee_sms_content;
-                        let tem={
-                            app_name:___.app_name,
-                            name:data.name,
-                            sex:data.sex?___.sir:___.lady,
-                            account:data.tel,
-                            pwd:data.tel.slice(-6)
-                        }
-                        if(allowLogin){
+
+                        if(allowLogin){//如果允许登录 则发送短信
+                            data.objectId=re.objectId;
+                            let sms=___.employee_sms_content;
+                            let tem={
+                                app_name:___.app_name,
+                                name:data.name,
+                                sex:data.sex?___.sir:___.lady,
+                                account:data.tel,
+                                pwd:data.tel.slice(-6)
+                            }
                             Wapi.comm.sendSMS(function(res){
                                 W.errorCode(res);
                             },data.tel,0,W.replace(sms,tem));
                         }
-                    },{
-                        _objectId:'773344067361837000',
-                        users:'+"'+params.uid+'"'
-                    })
-                },params);
+                        
+                        par.objectId=re.objectId;
+                        let arr=that.state.employees;
+                        arr.unshift(par);
+                        that.setState({employees:arr});//添加完成后将新增的人员加入人员数组
 
-            },par);
+                        callBack();//回调函数，重置人员编辑页面各组件的值
+                        history.back();//更新数据后返回
+
+                    },p);
+
+                },par);
+
+            },param);
 
         }
         

@@ -80,25 +80,7 @@ class EditActivity extends Component {
     }
     componentDidMount() {
         let flag=0;
-        // let par1={
-        //     "group":{
-        //         "_id":{
-        //             "modelId":"$modelId",
-        //             "model":"$model"
-        //         }
-        //     },
-        //     "sorts":"objectId",
-        //     "uid":_user.customer.objectId
-        // }//获取设备数组
-        // Wapi.device.aggr(res=>{
-        //     let devices=res.data.map(ele=>ele._id);
-        //     this.products=this.products.concat(devices);
-        //     flag++;
-        //     if(flag==3){
-        //         this.forceUpdate();
-        //     }
-        // },par1);
-        Wapi.activityProduct.list(res=>{
+        Wapi.activityProduct.list(res=>{//从营销产品里选择当前活动的产品
             let devices=res.data;
             this.products=this.products.concat(devices);
             flag++;
@@ -137,7 +119,7 @@ class EditActivity extends Component {
             this.intent='edit';
             let data=getInitData();
             this.data=Object.assign(data,nextProps.data);
-            // if(nextProps.data.uid!=_user.customer.objectId){
+            // if(nextProps.data.creator!=_user.objectId){//判断当前用户是否为活动的创建者，若不是则不能修改活动
             //     this.noEdit=true;
             // }else{
             //     this.noEdit=false;
