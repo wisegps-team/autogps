@@ -65,9 +65,7 @@ class EditActivity extends Component {
         this.principals=[
             {name:_user.customer.name,objectId:_user.customer.objectId,tel:_user.mobile},
         ];
-        this.sellerTypes=[
-            {name:_user.customer.name,objectId:_user.customer.objectId},
-        ];
+        this.sellerTypes=[];
         
         this.intent='add';
 
