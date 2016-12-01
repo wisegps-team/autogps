@@ -161,8 +161,8 @@ class ProductList extends Component {
                         targetOrigin={{horizontal: 'right', vertical: 'top'}}
                         style={styles.icon}
                     >
-                        <MenuItem key='0' onClick={()=>this.props.url(ele)}>{___.product_url}</MenuItem>
-                        <MenuItem key='1' onClick={()=>this.props.edit(ele)}>{___.edit}</MenuItem>
+                        <MenuItem key='0' onTouchTap={()=>this.props.url(ele)}>{___.product_url}</MenuItem>
+                        <MenuItem key='1' onTouchTap={()=>this.props.edit(ele)}>{___.edit}</MenuItem>
                     </IconMenu>}
             />
         );

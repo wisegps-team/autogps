@@ -129,13 +129,13 @@ class App extends React.Component {
                     W.alert('更新人员信息失败');
                     return;
                 }
-                
+
                 if(this.state.edit_employee.roleId!=params.roleId){//如果当前人员的角色更改了，需要修改旧的角色和新的角色表
 
                     let parDelete={
                         _objectId:params.roleId,
                         users:'-"'+params._uid+'"'
-                    };//从之前的角色的user中删除当前人员
+                    };//从之前的角色的users中删除当前人员
                     Wapi.role.update(reDelete=>{
                         console.log('reDelete');
                     },parDelete);
@@ -143,7 +143,7 @@ class App extends React.Component {
                     let parAdd={
                         _objectId:params.roleId,
                         users:'+"'+params._uid+'"'
-                    };//在当前的角色的user中添加当前人员
+                    };//在当前的角色的users中添加当前人员
                     Wapi.role.update(reAdd=>{
                         console.log('reAdd');
                     },parAdd);
@@ -176,7 +176,8 @@ class App extends React.Component {
             let param={
                 userType:9,
                 mobile:data.tel,
-                password:md5(randomStr())
+                password:md5(randomStr()),
+                err:true
             };
             if(allowLogin){
                 param.password=md5(data.tel.slice(-6));
@@ -197,6 +198,7 @@ class App extends React.Component {
                     role:data.role,
                     roleId:data.roleId,
                     isQuit:false,
+                    err:true
                 };
                 par.uid=res.uid;//201611301525返回值改回uid
                 Wapi.employee.add(function(re){    //人员表添加一条数据
@@ -208,9 +210,10 @@ class App extends React.Component {
 
                     let p={
                         _objectId:par.roleId,
-                        users:'+"'+par.uid+'"'
+                        users:'+"'+par.uid+'"',
+                        err:true
                     };
-                    Wapi.role.update(function(role){    //对应的角色表更新一条数据
+                    Wapi.role.update(function(role){    //对应的角色表更新一条数据,添加一个User
                         if(role.status_code!=0){
                             W.alert('更新角色表信息失败');
                             return;
