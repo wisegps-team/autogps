@@ -95,9 +95,13 @@ class WPayApi extends WiStormAPI {
 	 */
 	wxPay(data,key,link){
 		//跳转确认订单页面
-		// let url=location.origin+'/order.php?key='+key;
+		// let url=location.origin+'/order.php?key='+encodeURIComponent(key);
+
+		//测试用
 		WiStorm.config.wxAppKey='wxa5c196f7ec4b5df9';
-		let url='http://h5.bibibaba.cn/order.php?key='+encodeURIComponent(key);		
+		let url='http://h5.bibibaba.cn/order.php?key='+encodeURIComponent(key);
+		
+				
 		if(link)url+='&callback='+encodeURIComponent(link);
 		for(let k in data){
 			url+='&'+k+'='+encodeURIComponent(data[k]);
