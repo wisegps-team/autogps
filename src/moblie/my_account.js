@@ -252,12 +252,12 @@ class ShowBox extends Component{
                 <List>
                     <ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>
                     <ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>
-                    {/*(<ListItem 
+                    <ListItem 
                         primaryText={___.my_wallet} 
                         leftIcon={<ActionAccountBalanceWallet/>} 
                         onClick={this.wallet}
                         rightAvatar={<span style={{marginTop:'13px'}}>￥233</span>}
-                    />*/}
+                    />
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
