@@ -114,7 +114,8 @@ class App extends Component {
                     _objectId:booking.objectId,
                     orderId:booking.orderId,
                     payMoney:booking.payMoney,
-                    payStatus:booking.payStatus
+                    payStatus:booking.payStatus,
+                    receiptDate:W.dateToString(new Date())
                 });
             }
             that.sendToSeller(booking);
@@ -146,7 +147,8 @@ class App extends Component {
                             order_type:1,
                             remark:ACT.product+___._deposit,
                             amount:booking.payMoney,
-                            title:ACT.product+___._deposit
+                            title:ACT.product+___._deposit,
+                            attach:booking.objectId
                         },location.href);
                     },
                     no:()=>{
@@ -174,7 +176,8 @@ class App extends Component {
                             order_type:1,
                             remark:ACT.product+___.all_price,
                             amount:booking.payMoney,
-                            title:ACT.product
+                            title:ACT.product,
+                            attach:booking.objectId
                         },location.href);
                     },
                     no:()=>{
@@ -403,6 +406,16 @@ class From extends Component{
                 return;
             }
         }
+
+        //补上数据
+        submit_data.activityType=ACT.type;
+        submit_data.product={
+            name:ACT.product,
+            id:ACT.productId,
+            price:ACT.price,
+            installationFee:ACT.installationFee,
+            reward:ACT.reward
+        };
 
         let _this=this;
         Wapi.user.register(function(user){
