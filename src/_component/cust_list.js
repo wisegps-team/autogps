@@ -66,7 +66,8 @@ export function CustListHC(Com,isList){
 
             this.op=props.op||{
                 page:'objectId',
-                sorts:'objectId'
+                sorts:'objectId',
+                page_no:1
             }
             
             this.countParams=null;
@@ -112,11 +113,10 @@ export function CustListHC(Com,isList){
             }
         }
         load(){
-            let last=this.props.data[this.props.data.length-1];
-            let first=this.props.data[0];
-            this.op.max_id=last.objectId,
+            this.op.page_no++;
             Wapi.customer.list(res=>{
-                this.setState(res);
+                let data=this.state.data.concat(res.data);
+                this.setState({data});
             },this.props.data,this.op);
         }
         onData(data){

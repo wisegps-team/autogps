@@ -200,50 +200,26 @@ WUserApi.prototype.add=function(callback,data,op){
 	};
 	Object.assign(OP,op);
 	OP.method=this.apiName+".create"; //接口名称
-	if(data.obj_name)
-		data.obj_name=data.obj_name.toUpperCase();
 	this.getApi(data,callback,OP);
 }
 
-WUserApi.prototype.getQrcode=function(callback,data,op){
-	data.method=this.apiName+'.getQrcode';
-	this.safetyGet(data,callback);
-}
 /**
- * 添加绑定商户
+ * 获取用户账单列表
  * 参数:
- *     cust_id: 用户ID
- *     seller_id: 商户ID
+ *     uid: 用户ID
+ *	   start_time: 开始时间
+ *	   end_time: 结束时间
  * @param {Object} callback
  * @param {Object} data 				
  * @param {Object} op
  */
-WUserApi.prototype.addSeller=function(callback,data,op){
-	var D={
-		access_token:data.access_token,
-		_cust_id:data.cust_id
+WUserApi.prototype.getBillList=function(callback,data,op){
+	var OP={
+		fields:'status_code'
 	};
-	delete data.cust_id;
-	delete data.access_token;
-	D.seller_ids="+"+JSON.stringify(data);
-	this.update(callback,D,op);
-}
-
-/**
- * 删除绑定商户
- * 参数:
- *     cust_id: 用户ID
- *     seller_id: 商户ID
- * @param {Object} callback
- * @param {Object} data 				
- * @param {Object} op
- */
-WUserApi.prototype.deleteSeller=function(callback,data,op){
-	data._cust_id=data.cust_id;
-	data.seller_ids="-"+data.seller_id.toString();
-	delete data.seller_id;
-	delete data.cust_id;
-	this.update(callback,data,op);
+	Object.assign(OP,op);
+	OP.method="wicare.bill.list"; //接口名称
+	this.getApi(data,callback,OP);
 }
 
 WUserApi.prototype.updateMe=function(callback,data,op){
