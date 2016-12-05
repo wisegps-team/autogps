@@ -2149,13 +2149,13 @@ export const booking={
             'type': 'Number',
             'query': true,
         },{
-            'name': 'receiptId',//与上面营销人员ID重复，已删除
+            'name': 'receiptId',//与上面销售商ID重复，已删除
             'desc': '货款收款id',//销售商ID
             'type': 'String',
             'query': true,
         },{
             'name': 'commission',
-            'desc': '佣金支付标准',//（若注册产品佣金>预订产品佣金，则佣金为两者之和除于2，若注册产品佣金<预订产品佣金,则佣金为注册产品佣金）
+            'desc': '实际支付佣金',//（若注册产品佣金>预订产品佣金，则佣金为两者之和除于2，若注册产品佣金<预订产品佣金,则佣金为注册产品佣金）
             'type': 'Number',
             'query': true,
         },{
