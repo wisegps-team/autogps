@@ -78,6 +78,25 @@ const sty={
     }
 }
 
+function checkWallet(){
+    Wapi.user.get(res=>{//检查是否有公司钱包
+        console.log(res);
+        if(res.status_code!=0){//如果没有，则用公司的objectId作为mobile和password创建一个use作为公司账户
+            Wapi.user.add(re=>{
+                return;
+            },{
+                mobile:_user.customer.objectId,
+                password:_user.customer.objectId,
+            });
+        }
+    },{
+        mobile:_user.customer.objectId,
+    },{
+        err:true,
+    });
+}
+checkWallet();
+
 const _pages=[//所有的页面
     // {
     //     href:'brand_trader',
@@ -146,16 +165,16 @@ const _pages=[//所有的页面
     //     name:___.register_info,
     //     icon:<AvFeaturedPlayList style={sty.icon}/>
     // },
-    {   /*测试用营销产品 */
+    {   /*营销产品 */
         href:'selling_product',
         name:___.selling_product,
         icon:<ActionShopTwo style={sty.icon}/>
     },
-    {   /*车主营销链接 */
-        href:'carowner_seller',
-        name:___.carowner_seller,
-        icon:<AvRecentActors style={sty.icon}/>
-    },
+    // {   /*车主营销链接 */
+    //     href:'carowner_seller',
+    //     name:___.carowner_seller,
+    //     icon:<AvRecentActors style={sty.icon}/>
+    // },
     {   /*营销活动链接 */
         href:'seller_activity',
         name:___.seller_activity,
@@ -186,11 +205,11 @@ const _pages=[//所有的页面
         name:___.my_marketing,
         icon:<ActionTrendingUp style={sty.icon}/>
     },
-    {   /*测试用财务管理 */
-        href:'financial_manage',
-        name:___.financial_manage,
-        icon:<EditorMonetizationOn style={sty.icon}/>
-    },
+    // {   /*测试用财务管理 */
+    //     href:'financial_manage',
+    //     name:___.financial_manage,
+    //     icon:<EditorMonetizationOn style={sty.icon}/>
+    // },
 ];
 
 if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面

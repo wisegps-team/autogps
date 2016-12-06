@@ -23,6 +23,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import Forget from '../_component/login/forget';
 import UserNameInput from '../_component/base/userNameInput';
 import AppBar from '../_component/base/appBar';
+import AutoList from '../_component/base/autoList';
 
 import Dialog from 'material-ui/Dialog';
 
@@ -36,6 +37,14 @@ thisView.addEventListener('load',function(){
 });
 
 const sty={
+    appbar:{
+        position:'fixed',
+        top:'0px'
+    },
+    main:{
+        padding:'10px',
+        marginTop:'50px',
+    },
     p:{
         padding: '10px',
     },
@@ -61,7 +70,15 @@ const sty={
     },
     expenses:{
         color:'#990000'
-    }
+    },
+    bill:{
+        padding:'5px 10px',
+        borderBottom:'1px solid #cccccc'
+    },
+    bill_remark:{
+        fontSize:'14px',
+        color:'#999999'
+    },
 }
 
 class App extends Component {
@@ -72,6 +89,11 @@ class App extends Component {
         }
         this.edit = this.edit.bind(this);
         this.back = this.back.bind(this);
+    }
+    componentDidMount() {
+        Wapi.pay.checkWxPay(res=>{
+            this.forceUpdate();
+        },'wxPay_withdraw');
     }
     
     edit(){
@@ -134,36 +156,139 @@ for(let i=5;i--;){
 class WalletApp extends Component {
     constructor(props,context){
         super(props,context);
+        this.state={
+            isInputAmount:false,
+        }
+        this.data=[];
+        this.amount=0;
+        this.page_no=1;
+        this.total=0;
+        this.loadNextPage = this.loadNextPage.bind(this);
+        this.getRecords = this.getRecords.bind(this);
+        this.inputAmount = this.inputAmount.bind(this);
+        this.closeInputAmount = this.closeInputAmount.bind(this);
+        this.amountChange = this.amountChange.bind(this);
         this.withdrawCash = this.withdrawCash.bind(this);
     }
+    componentDidMount() {
+        this.getRecords();
+    }
+    loadNextPage(){
+        this.page_no++;
+        this.getRecords();
+    }
+    getRecords(){
+        Wapi.user.getBillList(res=>{
+            this.tota=res.total;
+            this.data=this.data.concat(res.data);
+            this.forceUpdate();
+        },{
+            uid:_user.objectId,
+            start_time:'2016-01-01',
+            end_time:'2026-12-12',
+        },{
+            page_no:this.page_no
+        });
+    }
+    inputAmount(){
+        this.setState({isInputAmount:true});
+    }
+    closeInputAmount(){
+        this.setState({isInputAmount:false});
+    }
+    amountChange(value){
+        this.amount=value;
+    }
     withdrawCash(){
-        console.log('take cash');
+        console.log('wxPay_withdraw');
+        console.log(this.amount);
+        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+        if(!reg.test(this.amount)){
+            alert(___.amount_error);
+            return;
+        }
+        if(this.amount>_user.balance){
+            alert(___.balance_not_enough);
+            return;
+        }
+        this.setState({isInputAmount:false});
+        
+        history.replaceState('home','home','home.html');
+        Wapi.pay.wxPay({
+            uid:_user.uid,
+            order_type:3,
+            remark:'提现',
+            amount:this.amount,
+            title:'提现',
+            // isCust:1,
+        },'wxPay_withdraw',location.href);
     }
     render() {
-        let data=records;
-        let items=data.map(ele=>
-            <ListItem 
-                key={ele.objectId}
-                primaryText={ele.income ? ('+'+ele.money) : ('-'+ele.money)} 
-                style={ele.income ? sty.income : sty.expenses}
-                secondaryText={ele.remark}
+        const actions = [
+            <FlatButton
+                label={___.cancel}
+                primary={true}
+                onClick={this.closeInputAmount}
+            />,
+            <FlatButton
+                label={___.ok}
+                primary={true}
+                onClick={this.withdrawCash}
             />
-        );
+        ];
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.my_wallet} iconElementRight={<FlatButton label={___.withdraw_cash} onClick={this.withdrawCash}/>}/>
-                <div style={sty.p}>
-                    <List>
-                        {items}
-                    </List>
+                <AppBar 
+                    style={sty.appbar}
+                    title={___.my_wallet} 
+                    iconElementRight={
+                        <FlatButton label={___.withdraw_cash} onClick={this.inputAmount}/>
+                    }
+                />
+                <div style={sty.main}>
+                    <Alist 
+                        max={this.total} 
+                        limit={20} 
+                        data={this.data} 
+                        next={this.loadNextPage} 
+                    />
                 </div>
+                
+                <Dialog
+                    title={___.withdraw_amount}
+                    open={this.state.isInputAmount}
+                    actions={actions}
+                >
+                    <UserNameInput onChange={this.amountChange} floatingLabelText={___.input_withdraw_amount}/>
+                </Dialog>
             </div>
             </ThemeProvider>
         );
     }
 }
 
+class DList extends React.Component{
+    constructor(props,context){
+        super(props,context);
+    }
+    render() {
+        let items=this.props.data.map((ele)=>
+            <div key={ele.objectId} style={sty.bill}>
+                <div style={(ele.amount>=0) ? sty.income : sty.expenses}>
+                    {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
+                </div>
+                <div style={sty.bill_remark}>{ele.remark}</div>
+            </div>
+        );
+        return(
+            <div>
+                {items}
+            </div>
+        )
+    }
+}
+let Alist=AutoList(DList);
 
 class ShowBox extends Component{
     constructor(props, context) {
@@ -219,7 +344,6 @@ class ShowBox extends Component{
     }
 
     wallet(){
-        console.log('wallet');
         thisView.goTo('#wallet');
     }
     
@@ -252,12 +376,12 @@ class ShowBox extends Component{
                 <List>
                     <ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>
                     <ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>
-                    <ListItem 
+                    {/*<ListItem 
                         primaryText={___.my_wallet} 
                         leftIcon={<ActionAccountBalanceWallet/>} 
                         onClick={this.wallet}
-                        rightAvatar={<span style={{marginTop:'13px'}}>￥233</span>}
-                    />
+                        rightAvatar={<span style={{marginTop:'13px'}}>{toMoneyFormat(_user.balance)}</span>}
+                    />*/}
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
@@ -286,35 +410,35 @@ class Logo extends Component{
     
     uploadLogo(){
         return;
-        let that=this;
-        let input=document.createElement('input');
-        input.type='file';
-        input.accept="image/*";
-        input.addEventListener('change',function(){
-            let file=this.files[0];
-            let type=file.type.split('/')[0];
-            if(type!="image"){
-                h.value="";
-                h.files=null;
-                W.alert(___.only_image);
-                return;
-            }
-            Wapi.file.upload(function(res){
-                if (res.status_code) {
-                    W.errorCode(res);
-                    return;
-                }
-                Wapi.user.update(function(){
-                    _user.logo=res.image_file_url;
-                    W.setSetting('user',_user);
-                    that.setState({'completed':0});
-                },{
-                    _uid:_user.uid,
-                    logo:res.image_file_url
-                });
-            },file,(completed)=>that.setState({'completed':completed*100}));
-        });
-        input.click();
+        // let that=this;
+        // let input=document.createElement('input');
+        // input.type='file';
+        // input.accept="image/*";
+        // input.addEventListener('change',function(){
+        //     let file=this.files[0];
+        //     let type=file.type.split('/')[0];
+        //     if(type!="image"){
+        //         h.value="";
+        //         h.files=null;
+        //         W.alert(___.only_image);
+        //         return;
+        //     }
+        //     Wapi.file.upload(function(res){
+        //         if (res.status_code) {
+        //             W.errorCode(res);
+        //             return;
+        //         }
+        //         Wapi.user.update(function(){
+        //             _user.logo=res.image_file_url;
+        //             W.setSetting('user',_user);
+        //             that.setState({'completed':0});
+        //         },{
+        //             _uid:_user.uid,
+        //             logo:res.image_file_url
+        //         });
+        //     },file,(completed)=>that.setState({'completed':completed*100}));
+        // });
+        // input.click();
     }
     render() {
         let logo=_user.logo?(<Avatar src={_user.logo} onClick={this.uploadLogo} style={sty.limg}/>):
@@ -326,5 +450,16 @@ class Logo extends Component{
                 {progress}
             </span>
         );
+    }
+}
+
+
+//工具方法 金额转字符
+function toMoneyFormat(money){
+    let str=money.toString();
+    if(str.includes('.')){
+        return '￥' + str;
+    }else{
+        return '￥' + str +'.00';
     }
 }
