@@ -231,7 +231,10 @@ class EditActivity extends Component {
     }
     render() {
         let typeItems=[<MenuItem key={2} value={2} primaryText={___.employee_marketing} />];
-        let va=_user.customer.other.va;//判断当前用户权限，添加营销类别选项 va中0,1,2,3分别表示[集团营销，渠道营销，政企业务，车主营销]
+        let va='';
+        if(_user.customer.other && _user.customer.other.va){
+            va=_user.customer.other.va;//判断当前用户权限，添加营销类别选项 va中0,1,2,3分别表示[集团营销，渠道营销，政企业务，车主营销]
+        }
         if(va.includes('3')){
             typeItems.push(<MenuItem key={0} value={0} primaryText={___.carowner_seller} />);   //车主营销
         }

@@ -409,5 +409,13 @@ window.___={
 	'delete_activity_fail':'删除营销活动失败',
 	'activity_delete_booked':'该活动已有预定信息，无法删除',
 	'not_creator':'您不是该营销活动的创建者，无法删除该营销活动',
-	'product_description':'产品介绍'
+	'product_description':'产品介绍',
+	'balance':'余额',
+	'bill_details':'账单明细',
+	'withdraw_amount':'提现金额',
+	'recharge_amount':'充值金额',
+	'input_withdraw_amount':'请输入提现金额',
+	'input_recharge_amount':'请输入充值金额',
+	'balance_not_enough':'余额不足，请确认后重新输入',
+	'amount_error':'请输入有效的金额数字',
 }
