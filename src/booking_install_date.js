@@ -54,7 +54,7 @@ class App extends Component {
         
     }
     
-    dateChange(date){
+    dateChange(e,date){
         console.log(date);
         this.data.date=date;
         this.forceUpdate();
@@ -88,7 +88,7 @@ class App extends Component {
 
             Wapi.serverApi.sendWeixinByTemplate(re=>{   //发送给车主
                 console.log(re);
-                if(re.status_code==0){
+                if(!re.errcode&&!re.status_code){
                     W.alert(___.sendWeixinByTemplate_success);
                     submited=true;
                     this.forceUpdate();
