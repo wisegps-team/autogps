@@ -21,6 +21,7 @@ import HardwareSmartphone from 'material-ui/svg-icons/hardware/smartphone';
 import MapsDirectionsCar from 'material-ui/svg-icons/maps/directions-car';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import Checkbox from 'material-ui/Checkbox';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -72,6 +73,10 @@ const sty={
     img:{
         width:window.screen.width*0.75-48+'px',
         height:window.screen.width*0.75-48+'px'
+    },
+    c:{
+        marginLeft: '9px',
+        marginTop: '1em'
     }
 }
 
@@ -81,7 +86,7 @@ class App extends Component {
         super(props);
         this.state={
             self:true,
-            confirm_open:true,
+            confirm_open:false,
             yes:e=>this.setState({confirm_open:false,self:true}),
             no:e=>this.setState({confirm_open:false,self:false}),
             yes_t:___.yes,
@@ -93,6 +98,7 @@ class App extends Component {
             confirm_text:___.getting_qr
         }
         this.success = this.success.bind(this);
+        this.setSelf = this.setSelf.bind(this);
     }
 
     componentDidMount() {
@@ -132,7 +138,7 @@ class App extends Component {
     success(booking,uid){
         W.setLS('booking',booking);
         this.getQrcode(booking);//获取二维码
-        if(ACT.deposit){
+        if(false&&ACT.deposit){
             if(this.state.self){
                 let state={
                     confirm_text:___.booking_success+'，'+___.pay_deposit_now.replace('XX',ACT.deposit)+'，'+ACT.offersDesc,
@@ -221,11 +227,10 @@ class App extends Component {
     }
 
     setQr(res,scene){
-        let booking_qr=this.state.self?___.booking_qr:___._booking_qr;
+        let booking_qr=___.booking_qr;
         this._state={
             confirm_text:[
                 <div key='booking_qr'>{booking_qr.replace('<%%>',res.name)}</div>,
-                <div key='booking_do_not_share'>{___.booking_do_not_share}</div>,
                 <img style={sty.img} src={res.url} key='qr'/>
             ],
             no_t:null,
@@ -287,6 +292,12 @@ class App extends Component {
             }
         });
     }
+
+    setSelf(self){
+        if(self!==this.state.self){
+            this.setState({self});
+        }
+    }
     render() {
         let actions=this.state.no_t?[
             <FlatButton
@@ -300,12 +311,11 @@ class App extends Component {
                 onClick={this.state.yes}
             />
         ]:null;
-        return (
-            <ThemeProvider>
-                <div style={sty.p}>
-                    <From self={this.state.self} onSuccess={this.success}/>
-                </div>
-                <Dialog
+
+        let box=(<div style={sty.p}>
+                    <From self={this.state.self} onSuccess={this.success} setSelf={this.setSelf}/>
+                </div>);
+        let dialog=(<Dialog
                     key='confirm'                    
                     title={_g.title}
                     actions={actions}
@@ -313,7 +323,18 @@ class App extends Component {
                     contentStyle={sty.con}
                 >
                     {this.state.confirm_text}
-                </Dialog>
+                </Dialog>);
+        //显示二维码
+        if(!actions&&this.state.confirm_open){
+            box=(<div style={sty.p}>
+                {this.state.confirm_text}
+            </div>);
+            dialog=null;
+        }
+        return (
+            <ThemeProvider>
+                {box}
+                {dialog}
             </ThemeProvider>
         );
     }
@@ -441,7 +462,7 @@ class From extends Component{
             </div>,
             <div style={sty.r} key={'carowner_phone'}>
                 <HardwareSmartphone style={sty.i}/>
-                <PhoneInput name='userMobile' floatingLabelText={___.booking_phone} onChange={(val,err)=>this.mobileChange(val,err,true)} needExist={false}/>
+                <PhoneInput name='userMobile' floatingLabelText={___.carowner_phone} onChange={(val,err)=>this.mobileChange(val,err,true)} needExist={false}/>
             </div>
         ];
         let mobile=this.props.self?(<div style={sty.r}>
@@ -453,6 +474,8 @@ class From extends Component{
         </div>);
         return (
             <div style={sty.f}>
+                <Checkbox label="本人预订" checked={this.props.self} onCheck={e=>this.props.setSelf(true)} style={sty.c}/>
+                <Checkbox label="为他人预订" checked={!this.props.self} onCheck={e=>this.props.setSelf(false)} style={sty.c}/>
                 {carowner}
                 <div style={sty.r}>
                     <ActionAccountBox style={sty.i}/>
@@ -467,10 +490,6 @@ class From extends Component{
                         account={this.data.mobile} 
                         onSuccess={this.changeVerifi}
                     />
-                </div>
-                <div style={sty.r}>
-                    <MapsDirectionsCar style={sty.i}/>
-                    <Input floatingLabelText={___.carNum} name='carNum' onChange={this.changeCarName}/>
                 </div>
                 <div style={sty.b}>
                     <RaisedButton label={___.submit_booking} primary={true} onClick={this.submit}/>
