@@ -110,7 +110,7 @@ class App extends Component {
         
         Wapi.booking.update(res=>{
             
-            Wapi.serverApi.sendWeixinToSeller(re=>{
+            Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
                 if(re.status_code==0){
                     W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName));
@@ -124,7 +124,7 @@ class App extends Component {
                 templateId:'OPENTM407674335',
                 type:'1',
                 // link:'http://192.168.3.201:8081/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
-                link:'http://wx.autogps.cn/autogps/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
+                link:'http://wx.autogps.cn/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 data:{
                     "first": {//标题
                         "value": ACT.name,

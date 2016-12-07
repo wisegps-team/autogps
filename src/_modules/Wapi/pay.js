@@ -95,14 +95,13 @@ class WPayApi extends WiStormAPI {
 	 */
 	wxPay(data,key,link){
 		//跳转确认订单页面
-		// let url=location.origin+'/order.php?key='+encodeURIComponent(key);
+// let url=location.origin+'/order.php?key='+encodeURIComponent(key);
 
 		//测试用
 		// WiStorm.config.wxAppKey='wxa5c196f7ec4b5df9';
 		// let url='http://h5.bibibaba.cn/order.php?key='+encodeURIComponent(key);
 		let url='http://user.autogps.cn/order.php?key='+encodeURIComponent(key);
 		
-				
 		if(link)url+='&callback='+encodeURIComponent(link);
 		for(let k in data){
 			url+='&'+k+'='+encodeURIComponent(data[k]);
@@ -120,9 +119,7 @@ class WPayApi extends WiStormAPI {
 		localStorage.removeItem(key);
 		if(res){
 			res=JSON.parse(res);
-			let r={
-				err_msg:res.err_msg
-			};
+			let r=Object.assign({},res);
 			if(res.err_msg=="get_brand_wcpay_request:ok")//支付成功
 				r.status_code=0
 			else if(res.err_msg=="get_brand_wcpay_request:cancel")
