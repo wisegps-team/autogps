@@ -378,6 +378,7 @@ window.___={
 	'booking_install_date':'安装日期',
 	'select_install_date':'请选择安装日期',
 	'select_install_time':'请选择安装时间',
+	'install_time_success':'安装时间已设置成功',
 	'sendWeixinToSeller_success':'已发送预订信息至经销商，稍后xxx将联系您预约安装时间。',
 	'sendWeixinByTemplate_success':'安装时间已设置成功，请联系客户确认车型和安装时间后点击回复预约安装通知。',
 	'edit_name':'修改名称',

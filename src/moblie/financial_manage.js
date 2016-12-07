@@ -35,6 +35,7 @@ const styles={
     expenses:{color:'#990000'},
 }
 
+let _custUid='';
 
 class App extends Component {
     constructor(props,context){
@@ -45,7 +46,7 @@ class App extends Component {
             isInputWithdraw:false,
         }
         this.data={
-            balance:_user.balance,
+            balance:0,
         }
         this.amount=0;
 
@@ -63,6 +64,10 @@ class App extends Component {
         this.toWithdraw = this.toWithdraw.bind(this);
     }
     componentDidMount() {
+        Wapi.user.get(res=>{
+            _custUid=res.data.objectId;
+            this.data.balance=res.data.balance;
+        },{mobile:_user.customer.objectId});
         Wapi.pay.checkWxPay(res=>{
             this.forceUpdate();
         },'wxPay_recharge');
@@ -100,7 +105,7 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:_user.uid,
+            uid:_custUid,
             order_type:2,
             remark:'充值',
             amount:this.amount,
@@ -121,13 +126,13 @@ class App extends Component {
     toWithdraw(){
         console.log('withdraw');
         console.log(this.amount);
-
+        //输入管理员密码
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)){
             alert(___.amount_error);
             return;
         }
-        if(this.amount>_user.balance){
+        if(this.amount>this.data.balance){
             alert(___.balance_not_enough);
             return;
         }
@@ -135,7 +140,7 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:_user.uid,
+            uid:_custUid,
             order_type:3,
             remark:'提现',
             amount:this.amount,
@@ -151,7 +156,7 @@ class App extends Component {
 
                 <div style={styles.head}>
                     <div style={styles.head_str}>{___.balance}</div>
-                    <div onTouchTap={this.toBill} style={styles.head_num}>{toMoneyFormat(_user.balance)}</div>
+                    <div onTouchTap={this.toBill} style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
                 </div>
 
                 <List>
@@ -240,7 +245,7 @@ class BillPage extends Component {
             this.data=this.data.concat(res.data);
             this.forceUpdate();
         },{
-            uid:_user.objectId,
+            uid:_custUid,
             start_time:'2016-01-01',
             end_time:'2026-12-12',
         },{
