@@ -54,7 +54,7 @@ class App extends Component {
         
     }
     
-    dateChange(date){
+    dateChange(e,date){
         console.log(date);
         this.data.date=date;
         this.forceUpdate();
@@ -89,7 +89,7 @@ class App extends Component {
             Wapi.serverApi.sendWeixinByTemplate(re=>{   //发送给车主
                 console.log(re);
                 if(re.status_code==0){
-                    W.alert(___.sendWeixinByTemplate_success);
+                    W.alert(___.install_time_success);
                     submited=true;
                     this.forceUpdate();
                 }
@@ -126,7 +126,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "remark": {
-                        "value": '',
+                        "value": ___.sendWeixinByTemplate_success,
                         "color": "#173177"
                     }
                 }
