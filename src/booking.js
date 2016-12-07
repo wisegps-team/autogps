@@ -138,7 +138,7 @@ class App extends Component {
     success(booking,uid){
         W.setLS('booking',booking);
         this.getQrcode(booking);//获取二维码
-        if(ACT.deposit){
+        if(false&&ACT.deposit){
             if(this.state.self){
                 let state={
                     confirm_text:___.booking_success+'，'+___.pay_deposit_now.replace('XX',ACT.deposit)+'，'+ACT.offersDesc,
