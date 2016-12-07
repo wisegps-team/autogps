@@ -366,7 +366,6 @@ window.___={
 	'pay_install':'安装时支付',
 	'pan_all':'现在支付<%price%>元设备款及<%installationFee%>元安装费',
 	'booking_qr':'预订成功，长按二维码识别关注<%%>公众号获取授权安装网点信息',
-	'_booking_qr':'预订成功，长按二维码发送给车主关注<%%>公众号，可获取授权安装网点信息',
 	'booking_do_not_share':'（包含预订信息，请勿分享给无关人员）',
 	'login_url':'登录链接',
 	'not_pay':'未预付',
