@@ -205,11 +205,11 @@ const _pages=[//所有的页面
         name:___.my_marketing,
         icon:<ActionTrendingUp style={sty.icon}/>
     },
-    // {   /*测试用财务管理 */
-    //     href:'financial_manage',
-    //     name:___.financial_manage,
-    //     icon:<EditorMonetizationOn style={sty.icon}/>
-    // },
+    {   /*测试用财务管理 */
+        href:'financial_manage',
+        name:___.financial_manage,
+        icon:<EditorMonetizationOn style={sty.icon}/>
+    },
 ];
 
 if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面

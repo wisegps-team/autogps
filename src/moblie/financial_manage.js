@@ -17,7 +17,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
-import UserNameInput from '../_component/base/userNameInput';
+import Input from '../_component/base/input';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
@@ -35,7 +35,6 @@ const styles={
     expenses:{color:'#990000'},
 }
 
-let _custUid='';
 
 class App extends Component {
     constructor(props,context){
@@ -43,13 +42,16 @@ class App extends Component {
         this.state={
             show_bill:false,
             isInputRecharge:false,
+            isInputPsw:false,
             isInputWithdraw:false,
         }
         this.data={
             balance:0,
         }
+        this.custUid='0';
+        this.psw='';
         this.amount=0;
-
+        
         this.toBill = this.toBill.bind(this);
         this.billBack = this.billBack.bind(this);
 
@@ -58,15 +60,23 @@ class App extends Component {
         this.rechargeChange = this.rechargeChange.bind(this);
         this.toRecharge = this.toRecharge.bind(this);
 
+        this.inputPsw = this.inputPsw.bind(this);
+        this.closeInputPsw = this.closeInputPsw.bind(this);
+        this.pswChange = this.pswChange.bind(this);
+
         this.inputWithdraw = this.inputWithdraw.bind(this);
         this.closeInputWithdraw = this.closeInputWithdraw.bind(this);
         this.withdrawChange = this.withdrawChange.bind(this);
+
         this.toWithdraw = this.toWithdraw.bind(this);
     }
+    
     componentDidMount() {
         Wapi.user.get(res=>{
-            _custUid=res.data.objectId;
+            this.custUid=res.data.objectId;
             this.data.balance=res.data.balance;
+            console.log('get customer bill,custUid='+this.custUid);
+            this.forceUpdate();
         },{mobile:_user.customer.objectId});
         Wapi.pay.checkWxPay(res=>{
             this.forceUpdate();
@@ -89,7 +99,7 @@ class App extends Component {
     closeInputRecharge(){
         this.setState({isInputRecharge:false});
     }
-    rechargeChange(value){
+    rechargeChange(e,value){
         this.amount=value;
     }
     toRecharge(){
@@ -105,26 +115,43 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:_custUid,
+            uid:this.custUid,
             order_type:2,
             remark:'充值',
             amount:this.amount,
             title:'充值',
+            uidType:1,
             // isCust:1,
         },'wxPay_recharge',location.href);
     }
 
+
+    inputPsw(){
+        this.setState({isInputPsw:true});
+    }
+    closeInputPsw(){
+        this.setState({isInputPsw:false});
+    }
+    pswChange(e,value){
+        this.psw=value;
+    }
+
     inputWithdraw(){
-        this.setState({isInputWithdraw:true});
+        this.setState({
+            isInputPsw:false,
+            isInputWithdraw:true
+        });
     }
     closeInputWithdraw(){
         this.setState({isInputWithdraw:false});
     }
-    withdrawChange(value){
+    withdrawChange(e,value){
         this.amount=value;
     }
+
     toWithdraw(){
         console.log('withdraw');
+        console.log(this.psw);
         console.log(this.amount);
         //输入管理员密码
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
@@ -140,11 +167,13 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:_custUid,
+            uid:this.custUid,
             order_type:3,
             remark:'提现',
             amount:this.amount,
             title:'提现',
+            psw:this.psw,
+            uidType:1,
             // isCust:1,
         },'wxPay_withdraw',location.href);
     }
@@ -163,25 +192,25 @@ class App extends Component {
                     <ListItem 
                         key={1}
                         primaryText={___.recharge}
-                        onTouchTap={this.inputRecharge}
+                        onClick={this.inputRecharge}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #cccccc'}}
                     />
                     <ListItem 
                         key={2}
                         primaryText={___.withdraw_cash}
-                        onTouchTap={this.inputWithdraw}
+                        onClick={this.inputPsw}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #cccccc'}}
                     />
                 </List>
 
                 <SonPage open={this.state.show_bill} back={this.billBack} title={___.bill_details}>
-                    <BillPage />
+                    <BillPage custUid={this.custUid}/>
                 </SonPage>
 
+                {/*输入充值金额*/}
                 <Dialog 
-                    title={___.recharge_amount} 
                     open={this.state.isInputRecharge} 
                     actions={
                         [<FlatButton
@@ -195,11 +224,40 @@ class App extends Component {
                             onClick={this.toRecharge}
                         />]
                     } >
-                    <UserNameInput onChange={this.rechargeChange} floatingLabelText={___.input_recharge_amount}/>
+
+                    <Input
+                        floatingLabelText={___.input_recharge_amount}
+                        onChange={this.rechargeChange}
+                    />
+
                 </Dialog>
 
+                {/*输入用户密码*/}
                 <Dialog 
-                    title={___.withdraw_amount} 
+                    open={this.state.isInputPsw} 
+                    actions={
+                        [<FlatButton
+                            label={___.cancel}
+                            primary={true}
+                            onClick={this.closeInputPsw}
+                        />,
+                        <FlatButton
+                            label={___.ok}
+                            primary={true}
+                            onClick={this.inputWithdraw}
+                        />]
+                    } >
+                    
+                    <Input
+                        floatingLabelText={___.input_admin_psw}
+                        onChange={this.pswChange}
+                        type="password"
+                    />
+
+                </Dialog>
+
+                {/*输入提现金额*/}
+                <Dialog 
                     open={this.state.isInputWithdraw} 
                     actions={
                         [<FlatButton
@@ -213,7 +271,12 @@ class App extends Component {
                             onClick={this.toWithdraw}
                         />]
                     } >
-                    <UserNameInput onChange={this.withdrawChange} floatingLabelText={___.input_withdraw_amount}/>
+                    
+                    <Input
+                        floatingLabelText={___.input_withdraw_amount}
+                        onChange={this.withdrawChange}
+                    />
+
                 </Dialog>
 
             </div>
@@ -233,19 +296,33 @@ class BillPage extends Component {
         this.getRecords = this.getRecords.bind(this);
     }
     componentDidMount() {
-        this.getRecords();
+        this.getRecords(this.props.custUid);
     }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.custUid==this.props.custUid)return;
+        this.getRecords(nextProps.custUid);
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        if(nextProps.custUid==this.props.custUid){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
     loadNextPage(){
         this.page_no++;
-        this.getRecords();
+        this.getRecords(this.props.custUid);
     }
-    getRecords(){
+    getRecords(uid){
+        console.log('get records,custUid='+uid);
+        if(uid==0)return;
         Wapi.user.getBillList(res=>{
             this.tota=res.total;
             this.data=this.data.concat(res.data);
             this.forceUpdate();
         },{
-            uid:_custUid,
+            uid:uid,
             start_time:'2016-01-01',
             end_time:'2026-12-12',
         },{
@@ -253,6 +330,7 @@ class BillPage extends Component {
         });
     }
     render() {
+        console.log('bill page render');
         return (
             <div style={styles.main}>
                 <Alist 
@@ -271,6 +349,7 @@ class DList extends React.Component{
         super(props,context);
     }
     render() {
+        console.log('Dlist render');
         let items=this.props.data.map((ele)=>
             <div key={ele.objectId} style={styles.bill}>
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
@@ -287,7 +366,6 @@ class DList extends React.Component{
     }
 }
 let Alist=AutoList(DList);
-
 
 
 //工具方法 金额转字符
