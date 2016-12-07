@@ -94,6 +94,8 @@ class App extends Component {
     }
     submit(){
         console.log(this.data);
+        submited=true;
+
         if(this.data.installId==0){
             W.alert(___.please_select_install);
             return;
@@ -112,9 +114,9 @@ class App extends Component {
             
             Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
-                if(re.status_code==0){
+                if(!re.status_code){
                     W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName));
-                    submited=true;
+                    
                     this.forceUpdate();
                 }
             },{
