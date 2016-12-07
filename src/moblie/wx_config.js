@@ -149,7 +149,7 @@ class App extends Component {
                 wxAppKey:wx.wxAppKey,
                 wxAppSecret:wx.wxAppSecret
             });
-            W.alert(___.wx_config_last);
+            this.getUrl(6);
         }else{
             data[1]=wx;
         }
@@ -200,7 +200,7 @@ class App extends Component {
                 break;
             case 6://服务器url
                 text='http://'+domain[0]+'/user.autogps.php?wxAppKey='+wxAppKey+'&wxAppSecret='+wxAppSecret;
-                W.alert({title:___.do_not_disclose,text});
+                W.alert({title:___.do_not_disclose,text:___.wx_config_last+text});
                 return;
         }
         
@@ -256,10 +256,10 @@ class App extends Component {
                             <FlatButton label={___.config} onClick={e=>this.showWxBox(0)} primary={true}/>
                         </h3>
                         <div style={sty.box}>
-                            <FlatButton style={sty.b} label={___.your_register} onClick={e=>this.getUrl(2)} primary={true}/>
+                            {/*<FlatButton style={sty.b} label={___.your_register} onClick={e=>this.getUrl(2)} primary={true}/>
                             <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(3)} primary={true}/>
-                            {/*<FlatButton style={sty.b} label={___.recommend_url} onClick={e=>this.getUrl(4)} primary={true}/>*/}
-                            <FlatButton style={sty.b} label={___.car_server_url} onClick={e=>this.getUrl(5)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.recommend_url} onClick={e=>this.getUrl(4)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.car_server_url} onClick={e=>this.getUrl(5)} primary={true}/>*/}
                             <FlatButton style={sty.b} label={___.wx_server_url} onClick={e=>this.getUrl(6)} primary={true}/>
                         </div>
                         <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(0)}/>
@@ -271,10 +271,11 @@ class App extends Component {
                             <FlatButton label={___.config} onClick={e=>this.showWxBox(1)} primary={true}/>
                         </h3>
                         <div style={sty.box}>
-                            <FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(0)} primary={true}/>
+                            {/*<FlatButton style={sty.b} label={___.my_account_url} onClick={e=>this.getUrl(0)} primary={true}/>
                             <FlatButton style={sty.b} label={___.seller_url} onClick={e=>this.getUrl(1)} primary={true}/>
-                            <FlatButton style={sty.b} label={___.login_url} onClick={e=>this.getUrl(-1)} primary={true}/>
+                            <FlatButton style={sty.b} label={___.login_url} onClick={e=>this.getUrl(-1)} primary={true}/>*/}
                         </div>
+                        <RaisedButton label={___.login_url} primary={true} style={sty.m} onClick={e=>this.getUrl(-1)}/>
                         <RaisedButton label={___.wx_push_config} primary={true} style={sty.m} onClick={e=>this.goPush(1)}/>
                     </div>
                 </div>

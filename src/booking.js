@@ -416,6 +416,8 @@ class From extends Component{
             installationFee:ACT.installationFee,
             reward:ACT.reward
         };
+        if(ACT.count)
+            submit_data.managerId=ACT.principalId;//活动负责人id
 
         let _this=this;
         Wapi.user.register(function(user){
