@@ -419,4 +419,6 @@ window.___={
 	'input_recharge_amount':'请输入充值金额',
 	'balance_not_enough':'余额不足，请确认后重新输入',
 	'amount_error':'请输入有效的金额数字',
+	'input_admin_psw':'请输入管理员密码',
+	'input_user_psw':'请输入用户密码',
 }

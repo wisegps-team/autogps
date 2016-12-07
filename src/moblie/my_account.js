@@ -157,17 +157,26 @@ class WalletApp extends Component {
     constructor(props,context){
         super(props,context);
         this.state={
+            isInputPsw:false,
             isInputAmount:false,
         }
         this.data=[];
+        this.psw='';
         this.amount=0;
         this.page_no=1;
         this.total=0;
+
         this.loadNextPage = this.loadNextPage.bind(this);
         this.getRecords = this.getRecords.bind(this);
+
+        this.inputPsw = this.inputPsw.bind(this);
+        this.closeInputPsw = this.closeInputPsw.bind(this);
+        this.pswChange = this.pswChange.bind(this);
+
         this.inputAmount = this.inputAmount.bind(this);
         this.closeInputAmount = this.closeInputAmount.bind(this);
         this.amountChange = this.amountChange.bind(this);
+
         this.withdrawCash = this.withdrawCash.bind(this);
     }
     componentDidMount() {
@@ -190,17 +199,33 @@ class WalletApp extends Component {
             page_no:this.page_no
         });
     }
+
+    inputPsw(){
+        this.setState({isInputPsw:true});
+    }
+    closeInputPsw(){
+        this.setState({isInputPsw:false});
+    }
+    pswChange(e,value){
+        this.psw=value;
+    }
+
     inputAmount(){
-        this.setState({isInputAmount:true});
+        this.setState({
+            isInputPsw:false,
+            isInputAmount:true
+        });
     }
     closeInputAmount(){
         this.setState({isInputAmount:false});
     }
-    amountChange(value){
+    amountChange(e,value){
         this.amount=value;
     }
+
     withdrawCash(){
         console.log('wxPay_withdraw');
+        console.log(this.psw);
         console.log(this.amount);
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)){
@@ -220,22 +245,13 @@ class WalletApp extends Component {
             remark:'提现',
             amount:this.amount,
             title:'提现',
+            psw:this.psw,
             // isCust:1,
         },'wxPay_withdraw',location.href);
     }
+
     render() {
-        const actions = [
-            <FlatButton
-                label={___.cancel}
-                primary={true}
-                onClick={this.closeInputAmount}
-            />,
-            <FlatButton
-                label={___.ok}
-                primary={true}
-                onClick={this.withdrawCash}
-            />
-        ];
+        const actions = 1;
         return (
             <ThemeProvider>
             <div>
@@ -243,7 +259,7 @@ class WalletApp extends Component {
                     style={sty.appbar}
                     title={___.my_wallet} 
                     iconElementRight={
-                        <FlatButton label={___.withdraw_cash} onClick={this.inputAmount}/>
+                        <FlatButton label={___.withdraw_cash} onClick={this.inputPsw}/>
                     }
                 />
                 <div style={sty.main}>
@@ -256,11 +272,50 @@ class WalletApp extends Component {
                 </div>
                 
                 <Dialog
-                    title={___.withdraw_amount}
-                    open={this.state.isInputAmount}
-                    actions={actions}
+                    open={this.state.isInputPsw}
+                    actions={[
+                                <FlatButton
+                                    label={___.cancel}
+                                    primary={true}
+                                    onClick={this.closeInputPsw}
+                                />,
+                                <FlatButton
+                                    label={___.ok}
+                                    primary={true}
+                                    onClick={this.inputAmount}
+                                />
+                            ]}
                 >
-                    <UserNameInput onChange={this.amountChange} floatingLabelText={___.input_withdraw_amount}/>
+                    
+                    <Input
+                        floatingLabelText={___.input_user_psw}
+                        onChange={this.pswChange}
+                        type="password"
+                    />
+
+                </Dialog>
+
+                <Dialog
+                    open={this.state.isInputAmount}
+                    actions={[
+                                <FlatButton
+                                    label={___.cancel}
+                                    primary={true}
+                                    onClick={this.closeInputAmount}
+                                />,
+                                <FlatButton
+                                    label={___.ok}
+                                    primary={true}
+                                    onClick={this.withdrawCash}
+                                />
+                            ]}
+                >
+                    
+                    <Input
+                        floatingLabelText={___.input_withdraw_amount}
+                        onChange={this.amountChange}
+                    />
+
                 </Dialog>
             </div>
             </ThemeProvider>
@@ -376,12 +431,12 @@ class ShowBox extends Component{
                 <List>
                     <ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>
                     <ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>
-                    {/*<ListItem 
+                    <ListItem 
                         primaryText={___.my_wallet} 
                         leftIcon={<ActionAccountBalanceWallet/>} 
                         onClick={this.wallet}
                         rightAvatar={<span style={{marginTop:'13px'}}>{toMoneyFormat(_user.balance)}</span>}
-                    />*/}
+                    />
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
