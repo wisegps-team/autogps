@@ -20,6 +20,9 @@ const styles = {
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
 thisView.addEventListener('load',function(e){
+    if(!_user){
+        location='index.html?loginLocation='+location.href;
+    }
     ReactDOM.render(<App/>,thisView);
 });
 
@@ -65,11 +68,11 @@ class App extends Component {
         this.forceUpdate();
     }
     submit(){
-        console.log(this.data.date);
-        console.log(this.data.time);
         let date=W.dateToString(this.data.date).slice(0,10);
         let time=W.dateToString(this.data.time).slice(10);
         console.log(date+time);
+
+        submited=true;
         
         let pay=___.not_pay;
         if(booking['payStatus']){
@@ -88,9 +91,9 @@ class App extends Component {
 
             Wapi.serverApi.sendWeixinByTemplate(re=>{   //发送给车主
                 console.log(re);
-                if(re.status_code==0){
+                if(!re.status_code){
                     W.alert(___.install_time_success);
-                    submited=true;
+                    
                     this.forceUpdate();
                 }
             },{
