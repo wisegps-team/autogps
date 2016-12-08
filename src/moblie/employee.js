@@ -48,6 +48,7 @@ const styles={
 }
 
 const _sex=[___.woman,___.man];
+let submited=false;
 
 class App extends React.Component {
     constructor(props, context) {
@@ -113,6 +114,12 @@ class App extends React.Component {
         this.setState({show_sonpage:false});
     }
     editEmployeeSubmit(data,allowLogin,callBack){
+        if(submited){   //防止重复点击提交
+            W.alert(___.donot_click);
+            return;
+        }
+        submited=true;
+
         if(this.state.intent=='edit'){//修改人员
             let params={
                 _uid:data.uid,

@@ -420,4 +420,5 @@ window.___={
 	'amount_error':'请输入有效的金额数字',
 	'input_admin_psw':'请输入管理员密码',
 	'input_user_psw':'请输入用户密码',
+	'donot_click':'正在提交，请勿重复点击',
 }

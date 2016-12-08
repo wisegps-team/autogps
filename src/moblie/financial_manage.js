@@ -29,10 +29,10 @@ const styles={
     head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
     head_num:{fontSize:'26px',color:'#ffffff'},
     bill:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
-    bill_remark:{fontSize:'14px',color:'#999999'},
+    bill_remark:{fontSize:'14px',color:'#999999',paddingTop:'5px'},
     main:{margin:'10px'},
-    income:{color:'#009900'},
-    expenses:{color:'#990000'},
+    income:{color:'#009900',fontSize:'20px'},
+    expenses:{color:'#990000',fontSize:'20px'},
 }
 
 
@@ -48,7 +48,7 @@ class App extends Component {
         this.data={
             balance:0,
         }
-        this.custUid='0';
+        this.companyBillUid='0';
         this.psw='';
         this.amount=0;
         
@@ -73,11 +73,12 @@ class App extends Component {
     
     componentDidMount() {
         Wapi.user.get(res=>{
-            this.custUid=res.data.objectId;
+            this.companyBillUid=res.data.objectId;
             this.data.balance=res.data.balance;
-            console.log('get customer bill,custUid='+this.custUid);
+            console.log('get customer bill account,companyBillUid='+this.companyBillUid);
             this.forceUpdate();
         },{mobile:_user.customer.objectId});
+
         Wapi.pay.checkWxPay(res=>{
             this.forceUpdate();
         },'wxPay_recharge');
@@ -115,7 +116,7 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:this.custUid,
+            uid:this.companyBillUid,
             order_type:2,
             remark:'充值',
             amount:this.amount,
@@ -167,7 +168,7 @@ class App extends Component {
 
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
-            uid:this.custUid,
+            uid:this.companyBillUid,
             order_type:3,
             remark:'提现',
             amount:this.amount,
@@ -206,7 +207,7 @@ class App extends Component {
                 </List>
 
                 <SonPage open={this.state.show_bill} back={this.billBack} title={___.bill_details}>
-                    <BillPage custUid={this.custUid}/>
+                    <BillPage companyBillUid={this.companyBillUid}/>
                 </SonPage>
 
                 {/*输入充值金额*/}
@@ -296,14 +297,14 @@ class BillPage extends Component {
         this.getRecords = this.getRecords.bind(this);
     }
     componentDidMount() {
-        this.getRecords(this.props.custUid);
+        this.getRecords(this.props.companyBillUid);
     }
     componentWillReceiveProps(nextProps) {
-        if(nextProps.custUid==this.props.custUid)return;
-        this.getRecords(nextProps.custUid);
+        if(nextProps.companyBillUid==this.props.companyBillUid)return;
+        this.getRecords(nextProps.companyBillUid);
     }
     shouldComponentUpdate(nextProps, nextState) {
-        if(nextProps.custUid==this.props.custUid){
+        if(nextProps.companyBillUid==this.props.companyBillUid){
             return false;
         }else{
             return true;
@@ -312,21 +313,20 @@ class BillPage extends Component {
     
     loadNextPage(){
         this.page_no++;
-        this.getRecords(this.props.custUid);
+        this.getRecords(this.props.companyBillUid);
     }
     getRecords(uid){
-        console.log('get records,custUid='+uid);
+        console.log('get bill records,companyBillUid='+uid);
         if(uid==0)return;
         Wapi.user.getBillList(res=>{
             this.tota=res.total;
-            this.data=this.data.concat(res.data);
+            let _data=res.data.reverse();
+            this.data=this.data.concat(_data);
             this.forceUpdate();
         },{
             uid:uid,
             start_time:'2016-01-01',
             end_time:'2026-12-12',
-        },{
-            page_no:this.page_no
         });
     }
     render() {
@@ -355,7 +355,8 @@ class DList extends React.Component{
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
                     {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
                 </div>
-                <div style={styles.bill_remark}>{ele.remark}</div>
+                <div style={styles.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
+                <div style={styles.bill_remark}>{decodeURIComponent(ele.remark)}</div>
             </div>
         );
         return(

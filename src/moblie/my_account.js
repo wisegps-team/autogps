@@ -66,10 +66,12 @@ const sty={
         height: '100%'
     },
     income:{
-        color:'#009900'
+        color:'#009900',
+        fontSize:'20px'
     },
     expenses:{
-        color:'#990000'
+        color:'#990000',
+        fontSize:'20px'
     },
     bill:{
         padding:'5px 10px',
@@ -77,7 +79,8 @@ const sty={
     },
     bill_remark:{
         fontSize:'14px',
-        color:'#999999'
+        color:'#666666',
+        paddingTop:'5px'
     },
 }
 
@@ -189,14 +192,13 @@ class WalletApp extends Component {
     getRecords(){
         Wapi.user.getBillList(res=>{
             this.tota=res.total;
-            this.data=this.data.concat(res.data);
+            let _data=res.data.reverse();
+            this.data=this.data.concat(_data);
             this.forceUpdate();
         },{
             uid:_user.objectId,
             start_time:'2016-01-01',
             end_time:'2026-12-12',
-        },{
-            page_no:this.page_no
         });
     }
 
@@ -333,7 +335,8 @@ class DList extends React.Component{
                 <div style={(ele.amount>=0) ? sty.income : sty.expenses}>
                     {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
                 </div>
-                <div style={sty.bill_remark}>{ele.remark}</div>
+                <div style={sty.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
+                <div style={sty.bill_remark}>{decodeURIComponent(ele.remark)}</div>
             </div>
         );
         return(

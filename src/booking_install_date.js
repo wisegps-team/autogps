@@ -68,11 +68,15 @@ class App extends Component {
         this.forceUpdate();
     }
     submit(){
+        if(submited){   //防止重复点击
+            W.alert(___.donot_click);
+            return;
+        }
+        submited=true;
+
         let date=W.dateToString(this.data.date).slice(0,10);
         let time=W.dateToString(this.data.time).slice(10);
         console.log(date+time);
-
-        submited=true;
         
         let pay=___.not_pay;
         if(booking['payStatus']){

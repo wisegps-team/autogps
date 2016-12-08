@@ -93,14 +93,19 @@ class App extends Component {
         
     }
     submit(){
-        console.log(this.data);
-        submited=true;
-
-        if(this.data.installId==0){
+        if(this.data.installId==0){ //信息是否完整
             W.alert(___.please_select_install);
             return;
         }
-        this.data.openId=_g.openid;
+
+        if(submited){      //防止重复点击
+            W.alert(___.donot_click);
+            return;
+        }
+        submited=true;
+        console.log(this.data);
+
+        this.data.userOpenId=_g.openid;
         
         let pay=___.not_pay;
         if(booking['payStatus']){
