@@ -984,9 +984,7 @@ var keys=W.getCookie('_app_config_');
 try {
 	keys=JSON.parse(keys);
 	Object.assign(WiStorm.config,keys);
-	WiStorm.config.wx_app_id=_g.wx_app_id||keys.wxAppKey;
-	if(_g.wx_app_id)
-			WiStorm.config.wx_login=WiStorm.config.wx_login+'?wx_app_id='+WiStorm.config.wx_app_id;
+	WiStorm.config.wx_app_id=keys.wxAppKey;
 } catch (error) {
 	if(_g.intent!='logout'){
 		var loc=encodeURIComponent((location.origin+location.pathname).replace(WiStorm.root,''));
@@ -995,6 +993,10 @@ try {
 	}
 }
 keys=undefined;
+if(_g.wx_app_id){
+	WiStorm.config.wx_app_id=_g.wx_app_id;
+	WiStorm.config.wx_login=WiStorm.config.wx_login+'?wx_app_id='+WiStorm.config.wx_app_id;	
+}
 
 /**
  * 获取本地用户存储
