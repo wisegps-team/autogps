@@ -138,7 +138,7 @@ class App extends Component {
     success(booking,uid){
         W.setLS('booking',booking);
         this.getQrcode(booking);//获取二维码
-        if(false&&ACT.deposit){
+        if(ACT.deposit){
             if(this.state.self){
                 let state={
                     confirm_text:___.booking_success+'，'+___.pay_deposit_now.replace('XX',ACT.deposit)+'，'+ACT.offersDesc,
@@ -358,7 +358,6 @@ class From extends Component{
             status3:0,
             name:null,
             mobile:null,
-            carType:null,
             openId:_g.openid,
             activityId:_g.activityId||'0',
             payStatus:0,
@@ -415,6 +414,7 @@ class From extends Component{
         if(this.props.self){//为自己预订，预订人等于自己
             submit_data.userName=submit_data.name;
             submit_data.userMobile=submit_data.mobile;
+            submit_data.userOpenId=submit_data.openId;
             submit_data.type=0;
         }else{
             submit_data.userName=submit_data.userName;
@@ -474,8 +474,8 @@ class From extends Component{
         </div>);
         return (
             <div style={sty.f}>
-                <Checkbox label="本人预订" checked={this.props.self} onCheck={e=>this.props.setSelf(true)} style={sty.c}/>
-                <Checkbox label="为他人预订" checked={!this.props.self} onCheck={e=>this.props.setSelf(false)} style={sty.c}/>
+                <Checkbox label={___.booking_for_self} checked={this.props.self} onCheck={e=>this.props.setSelf(true)} style={sty.c}/>
+                <Checkbox label={___.booking_for_else} checked={!this.props.self} onCheck={e=>this.props.setSelf(false)} style={sty.c}/>
                 {carowner}
                 <div style={sty.r}>
                     <ActionAccountBox style={sty.i}/>
