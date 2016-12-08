@@ -444,7 +444,7 @@ class MenuBox extends Component{
     save(){
         let data;
         if(!this.state.menus.length){
-            if(!this._url){
+            if(this.state.name!==___.edit_name&&!this._url){
                 W.prompt({
                     text:'',
                     title:___.input_menu_url
@@ -464,8 +464,17 @@ class MenuBox extends Component{
                 "sub_button": this.state.menus.map(m=>Object.assign({},m,{type:'view'}))
             }
         }
+        if(data.type&&!data.url)
+            data={none:true};
         Wapi.weixin.update(res=>{
-            W.alert(___.update_su);
+            Wapi.serverApi.setMenu(res=>{
+                if(!res.errcode)
+                    W.alert(___.update_su);
+                else
+                    W.alert(___.menu_fail);
+            },{
+                wxAppKey:_user.customer.wxAppKey
+            });
         },{
             _wxAppKey:_user.customer.wxAppKey,
             menu:data
