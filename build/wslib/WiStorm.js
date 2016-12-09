@@ -841,28 +841,6 @@ W.login=function(){
 			//登录成功
 			W.setSetting("openId",_g.openid);
 			W.setCookie("access_token", _g.access_token,1);
-			var gd={
-				access_token: _g.access_token
-			}
-			if(_g.cust_id){
-				gd.cust_id=_g.cust_id;
-			}else if(_g.temporary){//临时页面
-				gd.login_id=_g.openid;
-			}else{
-				W.toRegister();
-				return;
-			}
-			Wapi.user.get(function(res) {//获取用户数据
-				if (res.status_code) {
-					W.alert(res.err_msg+"；获取用户信息失败；error_code:"+res.status_code);
-					return;
-				} else {
-					W._loginSuccess(res);
-					var evt = document.createEvent("HTMLEvents");
-					evt.initEvent("W.loginSuccess", false, false);//当页面load事件触发并且已经登录成功则会触发该事件,用于某些需要不经过登录页也可以直接访问，但是又需要用户授权登录的页面
-					window.dispatchEvent(evt);
-				}
-			},gd);
 		}
 	}else{
 		W.alert("没有sso_login");

@@ -87,6 +87,8 @@ function checkWallet(){
             },{
                 mobile:_user.customer.objectId,
                 password:_user.customer.objectId,
+                objectId:_user.customer.objectId,
+                account_type:2
             });
         }
     },{

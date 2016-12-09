@@ -67,6 +67,7 @@ class Register extends Component {
                     hintText={___.input_account}
                     floatingLabelText={___.account}
                     onChange={this.accountChange}
+                    type='tel'
                 />
                 <VerificationCode 
                     name='valid_code'
