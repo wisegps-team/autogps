@@ -994,10 +994,11 @@ if(_g.needUser&&!_g.openid){
 	W.wxLogin();
 }else if(_g.needOpenId=="true"){
 	if(!_g.openid){
-		var pi=W.ls('_useropenid',true);
-		if(!pi)
-			W.getOpenId();
-		else _g.openid=pi;
+		W.getOpenId();
+		// var pi=W.ls('_useropenid',true);
+		// if(!pi)
+		// 	W.getOpenId();
+		// else _g.openid=pi;
 	}else{
 		W.setLS('_useropenid',_g.openid,true);
 	}
