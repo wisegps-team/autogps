@@ -62,6 +62,7 @@ class ServerApi{
 
 	checkExists(callback,data){
 		data.method='checkExists';
+		data.appId=WiStorm.config.objectId;
 		this.get(data,callback);
 	}
 

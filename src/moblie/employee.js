@@ -205,6 +205,7 @@ class App extends React.Component {
                     role:data.role,
                     roleId:data.roleId,
                     isQuit:false,
+                    appId:WiStorm.config.objectId,
                     err:true
                 };
                 par.uid=res.uid;//201611301525返回值改回uid

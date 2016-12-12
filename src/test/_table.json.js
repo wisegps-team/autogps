@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=76;//版本号
+let version=77;//版本号
 
 //地区表
 export const area={
@@ -336,6 +336,12 @@ export const customer={
             'type': 'Object',//由于多对多关系，所以以父级uid为键名，父级指定的人员id为值；如父级uid为1233，客户经理为1234，则本字段则为{"1233":"1234"}
             'query': true,
         },
+        {
+            'name': 'appId',
+            'desc': '对应的appid',
+            'type': 'Number',
+            'query': true,
+        }
     ],
     indexDefine: [
         {
@@ -349,7 +355,8 @@ export const customer={
         {tel:1},
         {treePath:1},
         {parentId:1},
-        {dealer_id:1}
+        {dealer_id:1},
+        {appId:1}
     ]
 }
 
@@ -692,6 +699,12 @@ export const employee={
             'desc': '人员类型（0默认，1编外人员，如兼职营销）',
             'type': 'Number',
             'query': true,
+        },
+        {
+            'name': 'appId',
+            'desc': '对应的appid',
+            'type': 'Number',
+            'query': true,
         }
     ],
     indexDefine: [
@@ -703,7 +716,8 @@ export const employee={
         {idcard:1},
         {tel:1},
         {wechat:1},
-        {email:1}
+        {email:1},
+        {appId:1}
     ]
 }
 
