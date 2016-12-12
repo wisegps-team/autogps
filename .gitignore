@@ -55,6 +55,7 @@ Temporary Items
 /npm-debug.log
 
 
+/build/src/*/*/*.js
 /build/src/*/*.js
 /build/src/*.js
 

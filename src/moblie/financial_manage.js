@@ -20,8 +20,15 @@ import AutoList from '../_component/base/autoList';
 import Input from '../_component/base/input';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+let top=false;
+// top=true;
 thisView.addEventListener('load',function(){
-    ReactDOM.render(<App/>,thisView);
+    if(top){
+        ReactDOM.render(<FinanceTop/>,thisView);
+        thisView.prefetch('./finance/bill_list.js',2);
+    }else{
+        ReactDOM.render(<App/>,thisView);
+    }
 });
 
 const styles={
@@ -33,9 +40,17 @@ const styles={
     main:{margin:'10px'},
     income:{color:'#009900',fontSize:'20px'},
     expenses:{color:'#990000',fontSize:'20px'},
+    line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
+    line_right:{float:'right'},
+    a:{color:'#009988'},
+}
+function combineStyle(arr){
+    return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
 }
 
 
+
+//代理商、经销商的财务管理
 class App extends Component {
     constructor(props,context){
         super(props,context);
@@ -104,9 +119,6 @@ class App extends Component {
         this.amount=value;
     }
     toRecharge(){
-        console.log('recharge');
-        console.log(this.amount);
-
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)){
             alert(___.amount_error);
@@ -151,9 +163,6 @@ class App extends Component {
     }
 
     toWithdraw(){
-        console.log('withdraw');
-        console.log(this.psw);
-        console.log(this.amount);
         //输入管理员密码
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)){
@@ -330,7 +339,6 @@ class BillPage extends Component {
         });
     }
     render() {
-        console.log('bill page render');
         return (
             <div style={styles.main}>
                 <Alist 
@@ -349,7 +357,6 @@ class DList extends React.Component{
         super(props,context);
     }
     render() {
-        console.log('Dlist render');
         let items=this.props.data.map((ele)=>
             <div key={ele.objectId} style={styles.bill}>
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
@@ -367,6 +374,58 @@ class DList extends React.Component{
     }
 }
 let Alist=AutoList(DList);
+
+
+
+//顶级账户的财务管理
+class FinanceTop extends Component {
+    constructor(props,context){
+        super(props,context);
+        this.data={
+            balance:0,
+        }
+    }
+    componentDidMount() {
+        Wapi.user.get(res=>{
+            this.companyBillUid=res.data.objectId;
+            this.data.balance=res.data.balance;
+            this.forceUpdate();
+        },{mobile:_user.customer.objectId});
+    }
+    toListBillList(){
+        thisView.goTo('./finance/bill_list.js','from financial_manage to bill_list');
+    }
+    toCompanyAccount(){
+        thisView.goTo('./finance/company_account.js');
+    }
+    toPersonalAccount(){
+        thisView.goTo('./finance/personal_account.js');
+    }
+    render() {
+        return (
+            <ThemeProvider>
+            <div>
+                <div style={styles.head}>
+                    <div style={styles.head_str}>{___.balance}</div>
+                    <div style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
+                </div>
+                <div style={styles.line}>
+                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>$2333</div>
+                    <div >{___.temp_money}</div>
+                </div>
+                <div style={styles.line}>
+                    <div style={styles.line_right}>$555</div>
+                    <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}> 12</span></div>
+                </div>
+                <div style={styles.line}>
+                    <div style={styles.line_right}>$333</div>
+                    <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}> 21</span></div>
+                </div>
+            </div>
+            </ThemeProvider>
+        );
+    }
+}
 
 
 //工具方法 金额转字符

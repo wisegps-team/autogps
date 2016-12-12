@@ -87,6 +87,7 @@ function checkWallet(){
             },{
                 mobile:_user.customer.objectId,
                 password:_user.customer.objectId,
+                account_type:2  //  企业账单的user需要传2，个人账户为1(默认)
             });
         }
     },{
