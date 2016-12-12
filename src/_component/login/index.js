@@ -43,8 +43,6 @@ class Login extends Component {
                     uid:_g.uid,
                     user_type:_g.user_type
                 });
-            }else{
-                W.alert(___.login_bind);
             }
         }
     }
@@ -106,6 +104,7 @@ class Login extends Component {
                     value={this.formData.account}
                     errorText={this.state.account_err}
                     onChange={this.change}
+                    type='tel'
                 />
                 <Input
                     name='password'

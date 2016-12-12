@@ -48,6 +48,7 @@ class PhoneInput extends Component{
                 errorText={this.state.code_err}
                 onChange={this.change}
                 value={this.state.value||this.props.value}
+                type='tel'
             />
         );
     }

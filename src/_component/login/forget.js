@@ -43,6 +43,7 @@ constructor(props, context) {
                 mobileVerified:true,
                 _sessionToken:this.props.user.session_token
             }
+            this.props.user.mobileVerified=true;
             let that=this;
             Wapi.user.resetPassword((res)=>Wapi.user.updateMe(this.success,update),Object.assign({},this.formData));
         }else

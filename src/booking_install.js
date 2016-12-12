@@ -158,7 +158,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "remark": {
-                        "value": '',
+                        "value": ___.sendWeixinToInstall_remark,
                         "color": "#173177"
                     }
                 }
