@@ -20,8 +20,10 @@ import AutoList from '../_component/base/autoList';
 import Input from '../_component/base/input';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+
 let top=false;
-// top=true;
+if(_user.userType==10)top=true;
+
 thisView.addEventListener('load',function(){
     if(top){
         ReactDOM.render(<FinanceTop/>,thisView);
@@ -381,25 +383,57 @@ let Alist=AutoList(DList);
 class FinanceTop extends Component {
     constructor(props,context){
         super(props,context);
-        this.data={
-            balance:0,
-        }
+
+        this.companyNumber=0;
+        this.personNumber=0;
+
+        this.companyBalance=0;
+        this.personalBalance=0;
+        this.tempBalance=0;
+        this.totalBalance=0;
     }
     componentDidMount() {
-        Wapi.user.get(res=>{
-            this.companyBillUid=res.data.objectId;
-            this.data.balance=res.data.balance;
-            this.forceUpdate();
-        },{mobile:_user.customer.objectId});
+        let flag=0;
+
+        Wapi.user.getAccountList(res=>{
+            this.companyNumber=res.total;
+            if(flag==2){
+                this.forceUpdate();
+            }else{
+                flag++;
+            }
+        },{account_type:2});
+
+        Wapi.user.getAccountList(res=>{
+            this.personNumber=res.total;
+            if(flag==2){
+                this.forceUpdate();
+            }else{
+                flag++;
+            }
+        },{account_type:1});
+        
+        Wapi.user.getAccountTotal(res=>{
+            let data=res.data;
+            this.companyBalance = data.find(ele=>ele.accountType==2).total;
+            this.personalBalance = data.find(ele=>ele.accountType==1).total;
+            this.tempBalance = _user.balance;
+            this.totalBalance = this.companyBalance + this.personalBalance + this.tempBalance;
+            if(flag==2){
+                this.forceUpdate();
+            }else{
+                flag++;
+            }
+        });
     }
     toListBillList(){
-        thisView.goTo('./finance/bill_list.js','from financial_manage to bill_list');
+        thisView.goTo('./finance/bill_list.js',{objectId:_user.customer.objectId,name:___.app_name});
     }
     toCompanyAccount(){
-        thisView.goTo('./finance/company_account.js');
+        thisView.goTo('./finance/company_accounts.js');
     }
     toPersonalAccount(){
-        thisView.goTo('./finance/personal_account.js');
+        thisView.goTo('./finance/personal_accounts.js');
     }
     render() {
         return (
@@ -407,19 +441,19 @@ class FinanceTop extends Component {
             <div>
                 <div style={styles.head}>
                     <div style={styles.head_str}>{___.balance}</div>
-                    <div style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
+                    <div style={styles.head_num}>{toMoneyFormat(this.totalBalance)}</div>
                 </div>
                 <div style={styles.line}>
-                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>$2333</div>
+                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>{toMoneyFormat(this.tempBalance)}</div>
                     <div >{___.temp_money}</div>
                 </div>
                 <div style={styles.line}>
-                    <div style={styles.line_right}>$555</div>
-                    <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}> 12</span></div>
+                    <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
+                    <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}>{' '+this.companyNumber}</span></div>
                 </div>
                 <div style={styles.line}>
-                    <div style={styles.line_right}>$333</div>
-                    <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}> 21</span></div>
+                    <div style={styles.line_right}>{toMoneyFormat(this.companyBalance)}</div>
+                    <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
                 </div>
             </div>
             </ThemeProvider>
