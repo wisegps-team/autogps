@@ -14,8 +14,7 @@ import Card from 'material-ui/Card';
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
-
-
+import {getOpenIdKey} from '../_modules/tool';
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
     card:{margin:'1em',padding:'0.5em'},
@@ -282,8 +281,9 @@ class DList extends Component{
             let _sellerTel=_user.employee?_user.employee.tel:_user.mobile;
             
             let strOpenId='';
-            if(_user.authData && _user.authData.openId){
-                strOpenId='&seller_open_id='+_user.authData.openId;
+            let idKey=getOpenIdKey();
+            if(_user.authData && _user.authData[idKey]){
+                strOpenId='&seller_open_id='+_user.authData[idKey];
             }
             var op={
                 title: data.name, // 分享标题

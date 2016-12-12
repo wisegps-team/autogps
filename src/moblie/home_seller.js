@@ -26,6 +26,7 @@ import EmployeeSearch from '../_component/employee_search';
 
 import STORE from '../_reducers/main';
 import {user_type_act,brand_act,department_act,product_act} from '../_reducers/dictionary';
+import {getOpenIdKey} from '../_modules/tool';
 
 const styles={
     main:{paddingBottom:'50px'},
@@ -146,8 +147,9 @@ class ActivityList extends Component {
         }
         function setShare(){
             let strOpenId='';
-            if(_user.authData && _user.authData.openId){
-                strOpenId='&seller_open_id='+_user.authData.openId;
+            let idKey=getOpenIdKey();
+            if(_user.authData && _user.authData[idKey]){
+                strOpenId='&seller_open_id='+_user.authData[idKey];
             }
             var op={
                 title: data.name, // 分享标题
