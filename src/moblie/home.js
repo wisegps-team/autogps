@@ -80,7 +80,6 @@ const sty={
 
 function checkWallet(){
     Wapi.user.get(res=>{//检查是否有公司钱包
-        console.log(res);
         if(res.status_code!=0){//如果没有，则用公司的objectId作为mobile和password创建一个use作为公司账户
             Wapi.user.add(re=>{
                 return;

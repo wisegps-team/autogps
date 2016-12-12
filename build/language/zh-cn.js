@@ -413,6 +413,10 @@ window.___={
 	'not_creator':'您不是该营销活动的创建者，无法删除该营销活动',
 	'product_description':'产品介绍',
 	'balance':'余额',
+	'account_balance':'账户余额',
+	'temp_money':'暂存款',
+	'company_account':'企业账户',
+	'personal_account':'个人账户',
 	'bill_details':'账单明细',
 	'withdraw_amount':'提现金额',
 	'recharge_amount':'充值金额',
@@ -424,5 +428,7 @@ window.___={
 	'input_admin_psw':'请输入管理员密码',
 	'input_user_psw':'请输入用户密码',
 	'donot_click':'正在提交，请勿重复点击',
-	'ask_change_openId':'检测到微信号不对应，目前无法登录，更改绑定后可进行登录，是否接收验证码进行更改绑定？'
+	'ask_change_openId':'检测到微信号不对应，目前无法登录，更改绑定后可进行登录，是否接收验证码进行更改绑定？',
+	'deleted':'(已删除)',
+	'no_name':'(未命名)',
 }

@@ -5,7 +5,7 @@ app.use(express.static('build'));
 
 app.get('/src/*/*', function (req, res) {
     if(req.url.indexOf('.html')==-1){
-      res.send('<script>top.location="home.html"</script>');
+      res.send('<script>top.location="/src/moblie/home.html"</script>');
     }
 })
 
