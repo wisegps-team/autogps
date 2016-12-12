@@ -75,6 +75,7 @@ class AgentRegisterBox extends Component{
         cust.access_token=token;
         cust.uid=user.uid;
         cust.isInstall=_g.isInstall==1?1:0;
+        cust.appId=WiStorm.config.objectId;
 
         Wapi.custType.get(type=>{
             cust.custType=type.data.name;
@@ -98,6 +99,7 @@ class AgentRegisterBox extends Component{
             });
         },{
             id:tid,
+            appId=WiStorm.config.objectId,
             access_token:token
         });
     }

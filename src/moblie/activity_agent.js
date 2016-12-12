@@ -51,7 +51,8 @@ class App extends Component {
         super(props, context);
         this.setCust = this.setCust.bind(this);
         this._data={
-            custTypeId:'1|5|8'
+            custTypeId:'1|5|8',
+            appId:WiStorm.config.objectId
         }
         this.setRole = this.setRole.bind(this);
     }

@@ -29,7 +29,8 @@ class App extends Component{
         super(props, context);
         this._data={
             parentId:_user.customer.objectId,
-            custTypeId:'5|8'
+            custTypeId:'5|8',
+            appId:WiStorm.config.objectId
         };
     }
     getChildContext(){

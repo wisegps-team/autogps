@@ -13,7 +13,6 @@ import Card from 'material-ui/Card';
 
 import AppBar from '../_component/base/appBar';
 import SonPage from '../_component/base/sonPage';
-import {CustListHC,cust_item_sty} from '../_component/cust_list';
 
 
 const styles={
@@ -71,6 +70,7 @@ class App extends Component{
             parentId:_user.customer.objectId,
             custTypeId:'5|8',
             isInstall:1,//注释掉这一个条件，假装有数据
+            appId:WiStorm.config.objectId
         };
         Wapi.customer.list(res=>{//获取此用户的所有下级
             let custs=res.data;

@@ -65,6 +65,7 @@ class CustomerRegisterBox extends Component{
             let token=data.access_token;
             cust.access_token=token;
             cust.uid=data.uid;
+            cust.appId=WiStorm.config.objectId;
             if(user.status_code==8)//如果是之前就已经注册过用户则先校验一下有没有添加过客户表
                 Wapi.customer.get(function(cust){//如果有，则不能注册，提示去重置密码
                     if(cust.data){
@@ -73,7 +74,11 @@ class CustomerRegisterBox extends Component{
                         that.props.success(user);
                     }else
                         addCust();
-                },{uid:cust.uid,access_token:token});
+                },{
+                    uid:cust.uid,
+                    access_token:token,
+                    appId:WiStorm.config.objectId
+                });
             else
                 addCust();
 
