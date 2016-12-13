@@ -16,7 +16,6 @@ import VerificationCode from './_component/base/verificationCode';
 import CONFIG from './_modules/config';
 import sty from './_component/login/style';
 import {getOpenIdKey} from './_modules/tool';
-import Checkbox from 'material-ui/Checkbox';
 
 require('./_sass/index.scss');//包含css
 
@@ -39,7 +38,6 @@ class App extends Component {
 
     getUserData(user){
         //校验记录的openId是否当前获取到的openId
-        WiStorm.agent.weixin=true;
         if(WiStorm.agent.weixin&&_g.openid&&user.authData&&user.authData[getOpenIdKey()]){//保存有当前域名的openId
             if(user.authData[getOpenIdKey()]!==_g.openid){
                 W.confirm(___.ask_change_openId,res=>{
