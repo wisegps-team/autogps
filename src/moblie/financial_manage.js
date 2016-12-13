@@ -21,16 +21,9 @@ import Input from '../_component/base/input';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
-let top=false;
-if(_user.userType==10)top=true;
 
 thisView.addEventListener('load',function(){
-    if(top){
-        ReactDOM.render(<FinanceTop/>,thisView);
-        thisView.prefetch('./finance/bill_list.js',2);
-    }else{
-        ReactDOM.render(<App/>,thisView);
-    }
+    ReactDOM.render(<App/>,thisView);
 });
 
 const styles={
@@ -377,89 +370,6 @@ class DList extends React.Component{
 }
 let Alist=AutoList(DList);
 
-
-
-//顶级账户的财务管理
-class FinanceTop extends Component {
-    constructor(props,context){
-        super(props,context);
-
-        this.companyNumber=0;
-        this.personNumber=0;
-
-        this.companyBalance=0;
-        this.personalBalance=0;
-        this.tempBalance=0;
-        this.totalBalance=0;
-    }
-    componentDidMount() {
-        let flag=0;
-
-        Wapi.user.getAccountList(res=>{
-            this.companyNumber=res.total;
-            if(flag==2){
-                this.forceUpdate();
-            }else{
-                flag++;
-            }
-        },{account_type:2});
-
-        Wapi.user.getAccountList(res=>{
-            this.personNumber=res.total;
-            if(flag==2){
-                this.forceUpdate();
-            }else{
-                flag++;
-            }
-        },{account_type:1});
-        
-        Wapi.user.getAccountTotal(res=>{
-            let data=res.data;
-            this.companyBalance = data.find(ele=>ele.accountType==2).total;
-            this.personalBalance = data.find(ele=>ele.accountType==1).total;
-            this.tempBalance = _user.balance;
-            this.totalBalance = this.companyBalance + this.personalBalance + this.tempBalance;
-            if(flag==2){
-                this.forceUpdate();
-            }else{
-                flag++;
-            }
-        });
-    }
-    toListBillList(){
-        thisView.goTo('./finance/bill_list.js',{objectId:_user.customer.objectId,name:___.app_name});
-    }
-    toCompanyAccount(){
-        thisView.goTo('./finance/company_accounts.js');
-    }
-    toPersonalAccount(){
-        thisView.goTo('./finance/personal_accounts.js');
-    }
-    render() {
-        return (
-            <ThemeProvider>
-            <div>
-                <div style={styles.head}>
-                    <div style={styles.head_str}>{___.balance}</div>
-                    <div style={styles.head_num}>{toMoneyFormat(this.totalBalance)}</div>
-                </div>
-                <div style={styles.line}>
-                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>{toMoneyFormat(this.tempBalance)}</div>
-                    <div >{___.temp_money}</div>
-                </div>
-                <div style={styles.line}>
-                    <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
-                    <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}>{' '+this.companyNumber}</span></div>
-                </div>
-                <div style={styles.line}>
-                    <div style={styles.line_right}>{toMoneyFormat(this.companyBalance)}</div>
-                    <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
-                </div>
-            </div>
-            </ThemeProvider>
-        );
-    }
-}
 
 
 //工具方法 金额转字符
