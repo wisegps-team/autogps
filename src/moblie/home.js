@@ -206,8 +206,13 @@ const _pages=[//所有的页面
         name:___.my_marketing,
         icon:<ActionTrendingUp style={sty.icon}/>
     },
-    {   /*测试用财务管理 */
+    {   /*代理商，经销商的财务管理 */
         href:'financial_manage',
+        name:___.financial_manage,
+        icon:<EditorMonetizationOn style={sty.icon}/>
+    },
+    {   /*顶级用户的财务管理 */
+        href:'financial_manage_top',
         name:___.financial_manage,
         icon:<EditorMonetizationOn style={sty.icon}/>
     },
