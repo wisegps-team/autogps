@@ -103,6 +103,9 @@ export default class AreaSelect extends Component{
     }
     
     provinceChange(e,i,value){
+        if(this.props.selectModel){
+            this.props.select('provinceId',value);
+        }
         let areaId=value;
         if(areaId==-1){
             this.setState({
@@ -130,6 +133,9 @@ export default class AreaSelect extends Component{
         }
     }
     cityChange(e,i,value){
+        if(this.props.selectModel){
+            this.props.select('cityId',value);
+        }
         let areaId=value;
         if(areaId==-1){
             this.setState({
@@ -165,6 +171,9 @@ export default class AreaSelect extends Component{
         }
     }
     areaChange(e,i,value){
+        if(this.props.selectModel){
+            this.props.select('areaId',value);
+        }
         let areaId=value;
         if(areaId==-1){
             this.setState({
