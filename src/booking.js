@@ -111,6 +111,11 @@ const sty={
     },
     color:{
         color:'#2196f3'
+    },
+    vc:{
+        position: 'absolute',
+        top: '50%',
+        marginTop: '-50%'
     }
 }
 
@@ -552,7 +557,9 @@ class App2 extends Component{
         ]):"正在准备分享";
         return (
             <ThemeProvider>
-                {content}
+                <div style={sty.vc}>
+                    {content}
+                </div>
             </ThemeProvider>
         );
     }
@@ -633,8 +640,9 @@ class CheckBox extends Component {
 
 class QrBox extends Component{
     render() {
+        let s=Object.assign(sty.qr,sty.vc);
         return (
-            <div style={sty.qr}>
+            <div style={s}>
                 <img style={sty.img} src={this.props.url}/>,
                 <p>{'[ '+___.press+' ]'}</p>,
                 <h4>{___.booking_qr}</h4>,
