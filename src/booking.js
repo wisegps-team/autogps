@@ -30,11 +30,30 @@ thisView.addEventListener('load',function(){
     if(_g.bookingId){
         if(_g.openid)
             ReactDOM.render(<App3/>,thisView);
-        else 
+        else{
             ReactDOM.render(<App2/>,thisView);
+            var tit=_g.name+'为您预订了一个产品';
+            var __url='http://user.autogps.cn/?location=%2Fautogps%2Fbooking.html&intent=logout&needOpenId=true&bookingId='+_g.bookingId+'&wx_app_id='+_g.wxAppKey+'&name='+_g.name;
+            let setShare=function(){
+                var op={
+                    title: tit, // 分享标题
+                    desc: '点击进入选择安装网点', // 分享描述
+                    link: __url, // 分享链接
+                    imgUrl:'http://user.autogps.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){},
+                    cancel: function(){}
+                }
+                wx.onMenuShareTimeline(op);
+                wx.onMenuShareAppMessage(op);
+            }
+            if(W.native)setShare();
+            else window.addEventListener('nativeSdkReady',setShare);
+        }
+            
     }else
         ReactDOM.render(<App/>,thisView);
 });
+
 let ACT;
 if(_g.activityId)
     Wapi.activity.get(function(res){
@@ -253,14 +272,15 @@ class App extends Component {
 
     sendToSeller(booking){
         if(!_g.seller_open_id)return;
-        let pay=___.not_pay;
-        if(booking['payStatus']){
-            if(booking['payStatus']==1)
-                pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
-            else if(booking['payStatus']==2)
-                pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
-                    +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
-        }
+        // let pay=___.not_pay;
+        // if(booking['payStatus']){
+        //     if(booking['payStatus']==1)
+        //         pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
+        //     else if(booking['payStatus']==2)
+        //         pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
+        //             +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
+        // }
+        let pay=booking.payMoney?parseFloat(booking.payMoney).toFixed(2):'0.00';
 
         let title='订单ID：'+booking.objectId;
         Wapi.serverApi.sendWeixinByTemplate(function(res){
@@ -601,7 +621,7 @@ class CheckBox extends Component {
         let date=W.dateToString(W.date(this.props.data.createdAt)).slice(0,-3);
         return (
             <div>
-                <p><span style={sty.color}>{this.props.data.name}</span> 于 <span style={sty.color}>{date}</span> 为您预订了智能车联网产品，为保障信息安全，请短信验证后了解详情！</p>,
+                <p><span style={sty.color}>{this.props.data.name}</span> 于 <span style={sty.color}>{date}</span> 为您预订了智能车联网产品，为保障信息安全，请短信验证后了解详情！</p>
                 <MobileChecker mobile={this.props.data.userMobile} onSuccess={this.success}/>
                 <div style={sty.b}>
                     <RaisedButton label={___.ok} primary={true} onClick={this.submit}/>
