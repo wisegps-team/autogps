@@ -97,8 +97,7 @@ class App extends Component {
                 console.log(re);
                 if(!re.status_code){
                     W.alert(___.install_time_success);
-                    
-                    this.forceUpdate();
+                    wx.closeWindow();
                 }
             },{
                 openId:_g.cust_open_id,   //车主的openid
@@ -109,31 +108,27 @@ class App extends Component {
                 link:'#',
                 data:{
                     "first": {//标题
-                        "value": ACT.name,
+                        "value": ___.bookingId+' '+_g.bookingId,
                         "color": "#173177"
                     },
-                    "keyword1": {//预约时间
+                    "keyword1": {//安装时间
                         "value": par.installDate,
                         "color": "#173177"
                     },
-                    "keyword2": {//预约服务
-                        "value": ACT.product + ' '+___.install,
-                        "color": "#173177"
-                    },
-                    "keyword3": {//预约门店
+                    "keyword2": {//安装网点
                         "value": _user.customer.name,
                         "color": "#173177"
                     },
-                    "keyword4": {//门店电话
+                    "keyword3": {//联系电话
                         "value": _user.customer.tel,
                         "color": "#173177"
                     },
-                    "keyword5": {//门店地址
+                    "keyword4": {//地址
                         "value": _user.customer.province + _user.customer.city + _user.customer.area + (_user.customer.address||''),
                         "color": "#173177"
                     },
                     "remark": {
-                        "value": ___.sendWeixinByTemplate_success,
+                        "value": ___.carowner_info+':'+booking.userName+'/'+booking.userMobile,
                         "color": "#173177"
                     }
                 }
@@ -146,7 +141,6 @@ class App extends Component {
         return (
             <ThemeProvider>
                 <div style={styles.main}>
-                    <h3>{___.booking_install_date}</h3>
                     <DatePicker
                         floatingLabelText={___.select_install_date}
                         defaultDate={this.data.date}

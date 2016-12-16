@@ -10,12 +10,16 @@ import SelectField from 'material-ui/SelectField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
 import ToggleCheckBox from 'material-ui/svg-icons/toggle/check-box';
+import ToggleCheckBoxOutlineBlank from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+
+import AreaSelect from './_component/base/areaSelect';
 
 const styles = {
     main:{width:'90%',marginLeft:'5%'},
     bottom_btn:{display:'block',textAlign:'center',paddingTop:'20px',paddingBottom:'20px'},
     card:{margin:'0 1em',padding:'0.5em',borderBottom:'1px solid #999999'},
     card_select:{margin:'0 1em',padding:'0.5em',borderBottom:'1px solid #999999',backgroundColor:'#eeeeee'},
+    area:{width:'90%',marginLeft:'5%',marginBottom:'10px'},
 };
 
 
@@ -54,33 +58,59 @@ class App extends Component {
             installId:0,
             install:'',
         }
+        this.canSelect=true;
+
         this.installs=[];
+        this.visibleInstalls=[];
         this.seller_open_id='';
         this.installName='';
 
+        this.areaChange = this.areaChange.bind(this);
+        this.areaSelect = this.areaSelect.bind(this);
         this.installChange = this.installChange.bind(this);
         this.submit = this.submit.bind(this);
     }
     componentDidMount() {
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
+            if(booking.installId){
+                W.alert(___.selected_install.replace('xxx',_g.bookingId));
+                this.canSelect=false;
+            }
             let {uid,activityId}=res.data;
 
-            Wapi.activity.get(r=>{  //
+            Wapi.activity.get(r=>{
                 ACT=r.data;
 
                 Wapi.serverApi.getInstallByUid(re=>{
                     this.installs=re.data;//正式用
+                    this.visibleInstalls=re.data;
                     // this.installs=_customers;//测试用
                     this.forceUpdate();
-                },{uid:uid})
+                },{
+                    uid:uid,
+                    // uid:"781687274311127000"//测试用 这里的uid其实是objectId，
+                },{
+                    limit:999
+                });
 
             },{objectId:activityId});
 
         },{objectId:_g.bookingId});
 
     }
-    
+    areaChange(value){
+        console.log(value);
+    }
+    areaSelect(key,value){
+        console.log(key,value);
+        if(value==-1){
+            this.visibleInstalls=this.installs;
+        }else{
+            this.visibleInstalls=this.installs.filter(ele=>ele[key]==value);
+        }
+        this.forceUpdate();
+    }
     installChange(data){
         this.data.installId=data.objectId;
         this.data.install=data.contact;
@@ -93,6 +123,10 @@ class App extends Component {
         
     }
     submit(){
+        if(!this.canSelect){
+            W.alert(___.selected_install.replace('xxx',_g.bookingId));
+            return;
+        }
         if(this.data.installId==0){ //信息是否完整
             W.alert(___.please_select_install);
             return;
@@ -112,7 +146,7 @@ class App extends Component {
             if(booking['payStatus']==1)
                 pay=___._deposit+'：'+booking['payMoney'];
             else if(booking['payStatus']==2)
-                pay=___.all_price+'：'.booking['payMoney'];
+                pay=___.all_price+'：'+booking['payMoney'];
         }
         
         Wapi.booking.update(res=>{
@@ -121,42 +155,41 @@ class App extends Component {
                 console.log(re);
                 if(!re.status_code){
                     W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName));
-                    
-                    this.forceUpdate();
+                    wx.closeWindow();
                 }
             },{
                 openId:this.seller_open_id,   //安装网点的openid
                 // uid:'798351359882694700',   //booking的uid
                 uid:booking.uid,
-                templateId:'OPENTM407674335',
+                templateId:'OPENTM408168978',
                 type:'1',
                 // link:'http://192.168.3.201:8081/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 link:'http://wx.autogps.cn/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 data:{
                     "first": {//标题
-                        "value": ACT.name,
+                        "value": ___.bookingId+' '+_g.bookingId,
                         "color": "#173177"
                     },
                     "keyword1": {//预订时间
-                        "value": booking.createdAt,    //booking的createdAt
+                        "value": W.dateToString(new Date(booking.createdAt)),    //booking的createdAt
                         "color": "#173177"
                     },
-                    "keyword2": {//预订人
-                        "value": booking.name+'/'+booking.mobile,
+                    "keyword2": {//预订产品
+                        "value": ACT.product+'/￥'+ACT.price,
                         "color": "#173177"
                     },
-                    "keyword3": {//客户
+                    "keyword3": {//设备款项
+                        "value": ___.device_pay+' ￥'+ACT.price+'，'+___.install_pay+' ￥'+ACT.installationFee,
+                        "color": "#173177"
+                    },
+                    "keyword4": {//车主信息
                         "value": booking.userName+'/'+booking.userMobile,
                         "color": "#173177"
                     },
-                    "keyword4": {//产品型号
-                        "value": ACT.product+'(￥'+ACT.price+')，'+___.install_price+'：￥'+ACT.installationFee,
-                        "color": "#173177"
-                    },
-                    "keyword5": {//预付款
-                        "value": pay,
-                        "color": "#173177"
-                    },
+                    // "keyword5": {//预付款
+                    //     "value": pay,
+                    //     "color": "#173177"
+                    // },
                     "remark": {
                         "value": ___.sendWeixinToInstall_remark,
                         "color": "#173177"
@@ -168,7 +201,7 @@ class App extends Component {
     }
     render() {
         console.log('render');
-        let items=this.installs.map(ele=>
+        let items=this.visibleInstalls.map(ele=>
             <InstallShop 
                 key={ele.objectId} 
                 value={ele.objectId} 
@@ -182,6 +215,9 @@ class App extends Component {
             <ThemeProvider>
                 <div>
                     <h3 style={{marginLeft:'1.2em'}}>{___.please_select_install}</h3>
+                    <div style={styles.area}>
+                        <AreaSelect name='area' onChange={this.areaChange} selectModel={true} select={this.areaSelect}/>
+                    </div>
                     {items}
                     <div style={styles.bottom_btn}>
                         <RaisedButton
@@ -204,18 +240,21 @@ class InstallShop extends Component {
     render() {
         let data=this.props.data;
         let sty=styles.card;
-        let sty_icon={display:'none'};
+        // let sty_icon={display:'none'};
+        let box=<div style={{float:'right'}}><ToggleCheckBoxOutlineBlank/></div>;
         if(this.props.selected){
             sty=styles.card_select;
-            sty_icon={float:'right'};
+            // sty_icon={float:'right'};
+            box=<div style={{float:'right'}}><ToggleCheckBox/></div>;
         }
         return (
             <div style={sty} onClick={this.props.onClick}>
-                <div style={sty_icon}><ToggleCheckBox/></div>
+                {/*<div style={sty_icon}><ToggleCheckBox/></div>*/}
+                {box}
                 <div>{data.name}</div>
                 <div>{data.province+' '+data.city+' '+data.area +' '+(data.address||'')}</div>
-                <div>{data.contact}</div>
-                <div>{data.tel}</div>
+                {/*<div>{data.contact}</div>
+                <div>{data.tel}</div>*/}
             </div>
         );
     }
