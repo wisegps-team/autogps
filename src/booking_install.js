@@ -74,7 +74,7 @@ class App extends Component {
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
             if(booking.installId){
-                W.alert(___.selected_install.replace('xxx',_g.bookingId));
+                W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{wx.closeWindow();});
                 this.canSelect=false;
             }
             let {uid,activityId}=res.data;
@@ -113,7 +113,7 @@ class App extends Component {
     }
     installChange(data){
         this.data.installId=data.objectId;
-        this.data.install=data.contact;
+        this.data.install=data.name;
         this.installName=data.name;
 
         Wapi.serverApi.getUserOpenId(res=>{    //根据customer信息查找user的Openid
@@ -141,21 +141,23 @@ class App extends Component {
 
         this.data.userOpenId=_g.openid;
         
-        let pay=___.not_pay;
-        if(booking['payStatus']){
-            if(booking['payStatus']==1)
-                pay=___._deposit+'：'+booking['payMoney'];
-            else if(booking['payStatus']==2)
-                pay=___.all_price+'：'+booking['payMoney'];
-        }
+        let pay=booking.payMoney?parseFloat(booking.payMoney).toFixed(2):'0.00';
+        
+        // let pay=___.not_pay;
+        // if(booking['payStatus']){
+        //     if(booking['payStatus']==1)
+        //         pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
+        //     else if(booking['payStatus']==2)
+        //         pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
+        //             +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
+        // }
         
         Wapi.booking.update(res=>{
             
             Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName));
-                    wx.closeWindow();
+                    W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName),e=>{wx.closeWindow();});
                 }
             },{
                 openId:this.seller_open_id,   //安装网点的openid
@@ -171,7 +173,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword1": {//预订时间
-                        "value": W.dateToString(new Date(booking.createdAt)),    //booking的createdAt
+                        "value": W.dateToString(new Date(booking.createdAt)).slice(0,-3),    //booking的createdAt
                         "color": "#173177"
                     },
                     "keyword2": {//预订产品
@@ -179,7 +181,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword3": {//设备款项
-                        "value": ___.device_pay+' ￥'+ACT.price+'，'+___.install_pay+' ￥'+ACT.installationFee,
+                        "value": pay,
                         "color": "#173177"
                     },
                     "keyword4": {//车主信息

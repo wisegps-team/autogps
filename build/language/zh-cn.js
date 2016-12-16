@@ -444,4 +444,5 @@ window.___={
 	'device_pay':'设备款',
 	'install_pay':'安装费',
 	'carowner_info':'车主信息',
+	'need_check_phone':'为确保你的账户资金安全，需要验证你的手机号码。',
 }

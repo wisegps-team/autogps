@@ -11,7 +11,7 @@ thisView.addEventListener('load',function(){
 const styles={
     head:{width:'100%',height:'120px',display:'block',backgroundColor:'#29B6F6',textAlign:'center',paddingTop:'40px'},
     head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
-    head_num:{fontSize:'26px',color:'#ffffff'},
+    head_num:{fontSize:'36px',color:'#ffffff'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
     a:{color:'#009988'},
@@ -32,7 +32,13 @@ class FinanceTop extends Component {
         this.companyBalance=0;
         this.personalBalance=0;
         this.tempBalance=0;
+        this.counterFee=0;
         this.totalBalance=0;
+
+        this.toListBillList = this.toListBillList.bind(this);
+        this.toCompanyAccount = this.toCompanyAccount.bind(this);
+        this.toPersonalAccount = this.toPersonalAccount.bind(this);
+        this.toCounterFeeList = this.toCounterFeeList.bind(this);
     }
     componentDidMount() {
         let flag=0;
@@ -77,6 +83,9 @@ class FinanceTop extends Component {
     toPersonalAccount(){
         thisView.goTo('./finance/personal_accounts.js');
     }
+    toCounterFeeList(){
+        console.log('toCounterFeeList');
+    }
     render() {
         return (
             <div>
@@ -96,6 +105,10 @@ class FinanceTop extends Component {
                     <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
                     <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
                 </div>
+                <div style={styles.line}>
+                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toCounterFeeList}>{toMoneyFormat(this.counterFee)}</div>
+                    <div >{___.counter_fee}</div>
+                </div>
             </div>
         );
     }
@@ -104,10 +117,5 @@ class FinanceTop extends Component {
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }

@@ -22,17 +22,17 @@ class App extends Component {
     render() {
         return (
             <div style={{padding:'1em'}}>
-                <p>objectId:{this.data.objectId}</p>
-                <p>uid:{this.data.uid}</p>
-                <p>oid:{this.data.oid}</p>
-                <p>tid:{this.data.tid}</p>
-                <p>billType:{this.data.billType}</p>
-                <p>amount:{this.data.amount}</p>
-                <p>balance:{this.data.balance}</p>
-                <p>remark:{decodeURIComponent(this.data.remark)}</p>
-                <p>creator:{this.data.creator}</p>
-                <p>createdAt:{this.data.createdAt}</p>
-                <p>updatedAt:{this.data.updatedAt}</p>
+                {/*<p>objectId: {this.data.objectId}</p>*/}
+                {/*<p>uid: {this.data.uid}</p>*/}
+                <p>订单号: {this.data.oid}</p>
+                {/*<p>tid: {this.data.tid}</p>*/}
+                {/*<p>billType: {this.data.billType}</p>*/}
+                <p>金额: {this.data.amount}</p>
+                {/*<p>balance: {this.data.balance}</p>*/}
+                <p>备注: {decodeURIComponent(this.data.remark)}</p>
+                {/*<p>creator: {this.data.creator}</p>*/}
+                <p>创建时间: {W.dateToString(new Date(this.data.createdAt))}</p>
+                {/*<p>updatedAt: {this.data.updatedAt}</p>*/}
             </div>
         );
     }

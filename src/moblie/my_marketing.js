@@ -22,8 +22,12 @@ const styles = {
     td_right:{paddingLeft:'1em'},
     line:{marginTop:'0.5em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
-    a:{marginRight:'1em',color:'#009688'},
+    count:{marginRight:'1em'},
+    link:{color:'#009688'},
 };
+function combineStyle(arr){
+    return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
+}
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -250,14 +254,14 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        // history.replaceState('home.html','home.html','home.html');
-        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-        //     +'&uid='+_user.customer.objectId
-        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
-        //     +'&title='+encodeURIComponent(data.name)
-        //     +'&agent_tel='+_user.customer.tel
-        //     +'&seller_name='+encodeURIComponent(___.noBooking)
-        //     +'&timerstamp='+Number(new Date());
+        history.replaceState('home.html','home.html','home.html');
+        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+            +'&uid='+_user.customer.objectId
+            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+            +'&title='+encodeURIComponent(data.name)
+            +'&agent_tel='+_user.customer.tel
+            +'&seller_name='+encodeURIComponent(___.noBooking)
+            +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         let par={
@@ -325,7 +329,7 @@ class DList extends Component{
                     <tbody>
                         <tr >
                             <td style={styles.td_left}>{___.activity_name}</td>
-                            <td style={styles.td_right} onClick={()=>this.toActivityPage(ele)}>{ele.name}</td>
+                            <td style={combineStyle(['td_right','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</td>
                         </tr>
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.activity_status}</td>
@@ -342,8 +346,11 @@ class DList extends Component{
                     </tbody>
                 </table>
                 <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
-                    <span style={styles.a} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
-                    <span style={styles.a} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
+                    <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
+                    <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
+                    {/*<span style={styles.count} >{___.click +' '+ ele.status1}</span>
+                    <span style={styles.count} >{___.share +' '+ ele.status1}</span>
+                    <span style={styles.count} >{___.scan +' '+ ele.status1}</span>*/}
                 </div>
                 <div style={styles.bottom_btn_right}>
                     <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />

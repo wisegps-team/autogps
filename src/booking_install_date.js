@@ -96,8 +96,7 @@ class App extends Component {
             Wapi.serverApi.sendWeixinByTemplate(re=>{   //发送给车主
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.install_time_success);
-                    wx.closeWindow();
+                    W.alert(___.install_time_success,e=>{wx.closeWindow();});
                 }
             },{
                 openId:_g.cust_open_id,   //车主的openid
@@ -112,18 +111,22 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword1": {//安装时间
-                        "value": par.installDate,
+                        "value": par.installDate.slice(0,-3),
                         "color": "#173177"
                     },
-                    "keyword2": {//安装网点
+                    "keyword2": {//预约服务
+                        "value": ACT.product + ' '+___.install,
+                        "color": "#173177"
+                    },
+                    "keyword3": {//安装网点
                         "value": _user.customer.name,
                         "color": "#173177"
                     },
-                    "keyword3": {//联系电话
+                    "keyword4": {//联系电话
                         "value": _user.customer.tel,
                         "color": "#173177"
                     },
-                    "keyword4": {//地址
+                    "keyword5": {//地址
                         "value": _user.customer.province + _user.customer.city + _user.customer.area + (_user.customer.address||''),
                         "color": "#173177"
                     },
