@@ -33,6 +33,7 @@ import ActionInfoOutline from 'material-ui/svg-icons/action/info-outline';
 import ActionTrendingUp from 'material-ui/svg-icons/action/trending-up';
 import EditorMonetizationOn from 'material-ui/svg-icons/editor/monetization-on';
 import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
+import ImageFilterCenterFocus from 'material-ui/svg-icons/image/filter-center-focus';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -205,6 +206,11 @@ const _pages=[//所有的页面
         href:'my_marketing',
         name:___.my_marketing,
         icon:<ActionTrendingUp style={sty.icon}/>
+    },
+    {   /*二维码管理 */
+        href:'qrcode',
+        name:___.qrcode_manage,
+        icon:<ImageFilterCenterFocus style={sty.icon}/>
     },
     {   /*代理商，经销商的财务管理 */
         href:'financial_manage',

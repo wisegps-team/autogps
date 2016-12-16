@@ -74,8 +74,10 @@ class App extends Component {
     componentDidMount() {
         thisView.addEventListener('show',e=>{
             console.log(e.params);//这里的params最好是把公司id和公司名称一起传过来
-            this.company=e.params;
-            this.getData(e.params.uid);
+            if(e.params){
+                this.company=e.params;
+                this.getData(e.params.uid);
+            }
         });
     }
     nextPage(){

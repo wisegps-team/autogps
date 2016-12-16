@@ -32,7 +32,13 @@ class FinanceTop extends Component {
         this.companyBalance=0;
         this.personalBalance=0;
         this.tempBalance=0;
+        this.counterFee=0;
         this.totalBalance=0;
+
+        this.toListBillList = this.toListBillList.bind(this);
+        this.toCompanyAccount = this.toCompanyAccount.bind(this);
+        this.toPersonalAccount = this.toPersonalAccount.bind(this);
+        this.toCounterFeeList = this.toCounterFeeList.bind(this);
     }
     componentDidMount() {
         let flag=0;
@@ -77,6 +83,9 @@ class FinanceTop extends Component {
     toPersonalAccount(){
         thisView.goTo('./finance/personal_accounts.js');
     }
+    toCounterFeeList(){
+        console.log('toCounterFeeList');
+    }
     render() {
         return (
             <div>
@@ -95,6 +104,10 @@ class FinanceTop extends Component {
                 <div style={styles.line}>
                     <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
                     <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
+                </div>
+                <div style={styles.line}>
+                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toCounterFeeList}>{toMoneyFormat(this.counterFee)}</div>
+                    <div >{___.counter_fee}</div>
                 </div>
             </div>
         );
