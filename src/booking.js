@@ -272,14 +272,15 @@ class App extends Component {
 
     sendToSeller(booking){
         if(!_g.seller_open_id)return;
-        let pay=___.not_pay;
-        if(booking['payStatus']){
-            if(booking['payStatus']==1)
-                pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
-            else if(booking['payStatus']==2)
-                pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
-                    +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
-        }
+        // let pay=___.not_pay;
+        // if(booking['payStatus']){
+        //     if(booking['payStatus']==1)
+        //         pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
+        //     else if(booking['payStatus']==2)
+        //         pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
+        //             +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
+        // }
+        let pay=booking.payMoney?parseFloat(booking.payMoney).toFixed(2):'0.00';
 
         let title='订单ID：'+booking.objectId;
         Wapi.serverApi.sendWeixinByTemplate(function(res){
