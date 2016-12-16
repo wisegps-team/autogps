@@ -13,8 +13,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 
 		<script src="wslib/WiStorm.js"></script>
+		<script src='wslib/toolkit/WxSdk.js'></script>
 		<script>
-			document.write('<title>'+___.divice_booking+'</title>');
 			var config={
 				src:'src',    //静态资源根目录
 				defaultModule:'src/booking.js',//主页面模块
@@ -23,6 +23,32 @@
 			}
 		</script>
 		<script src="wslib/launcher.js"></script>
+		<script>
+			var title=___.divice_booking;
+			if(_g.bookingId){
+				if(_g.openid){
+					title=_g.name+'为您预订了一个产品';
+				}else{
+					title='请将此页面分享给'+_g.userName;
+					var tit=_g.name+'为您预订了一个产品';
+					var __url='http://user.autogps.cn/?location=%2Fautogps%2Fbooking.html&intent=logout&needOpenId=true&bookingId='+_g.bookingId+'&wx_app_id='+_g.wxAppKey+'&name='+_g.name;
+					history.replaceState("","",__url);
+					window.addEventListener('nativeSdkReady',function(){
+						var op={
+							title: tit, // 分享标题
+							desc: '点击进入选择安装网点', // 分享描述
+							link: __url, // 分享链接
+							imgUrl:'http://user.autogps.cn/wo365/img/s.jpg', // 分享图标
+							success: function(){},
+							cancel: function(){}
+						}
+						wx.onMenuShareTimeline(op);
+						wx.onMenuShareAppMessage(op);
+					});
+				}
+			}
+			document.write('<title>'+title+'</title>');
+		</script>
 	</head>
 	<body>
 		<div id='main'></div>

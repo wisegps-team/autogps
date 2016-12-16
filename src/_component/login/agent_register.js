@@ -99,7 +99,6 @@ class AgentRegisterBox extends Component{
             });
         },{
             id:tid,
-            appId:WiStorm.config.objectId,
             access_token:token
         });
     }
