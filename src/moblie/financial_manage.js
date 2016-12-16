@@ -18,6 +18,7 @@ import FlatButton from 'material-ui/FlatButton';
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import Input from '../_component/base/input';
+import MobileChecker from '../_component/base/mobileChecker';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
@@ -35,12 +36,12 @@ thisView.addEventListener('load',function(){
 const styles={
     head:{width:'100%',height:'120px',display:'block',backgroundColor:'#29B6F6',textAlign:'center',paddingTop:'40px'},
     head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
-    head_num:{fontSize:'26px',color:'#ffffff'},
+    head_num:{fontSize:'36px',color:'#ffffff'},
     bill:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
     bill_remark:{fontSize:'14px',color:'#999999',paddingTop:'5px'},
     main:{margin:'10px'},
-    income:{color:'#009900',fontSize:'20px'},
-    expenses:{color:'#990000',fontSize:'20px'},
+    income:{color:'#009900',fontSize:'20px',float:'right'},
+    expenses:{color:'#990000',fontSize:'20px',float:'right'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
     a:{color:'#009988'},
@@ -51,8 +52,8 @@ function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
 }
 
-
-
+let companyBillUid='0';
+let Balance=0;
 //代理商、经销商的财务管理
 class App extends Component {
     constructor(props,context){
@@ -63,7 +64,6 @@ class App extends Component {
         this.data={
             balance:0,
         }
-        this.companyBillUid='0';
         
         this.toBill = this.toBill.bind(this);
         this.billBack = this.billBack.bind(this);
@@ -72,11 +72,15 @@ class App extends Component {
     
     componentDidMount() {
         Wapi.user.get(res=>{
-            this.companyBillUid=res.data.objectId;
+            companyBillUid=res.data.objectId;
             this.data.balance=res.data.balance;
-            console.log('get customer bill account,companyBillUid='+this.companyBillUid);
+            Balance=res.data.balance;
+            console.log('get customer bill account,companyBillUid='+companyBillUid);
             this.forceUpdate();
-        },{mobile:_user.customer.objectId});
+        },{
+            mobile:_user.customer.objectId,
+            account_type:2
+        });
 
         Wapi.pay.checkWxPay(res=>{
             this.forceUpdate();
@@ -94,10 +98,22 @@ class App extends Component {
     }
 
     toRecharge(){
+        if(companyBillUid=='0'){//如果当前账户信息尚未获取到，则延迟500ms执行
+            setTimeout(e=>{
+                this.toRecharge();
+            }, 500);
+            return;
+        }
         thisView.goTo('#recharge');
     }
 
     toWithdraw(){
+        if(companyBillUid=='0'){
+            setTimeout(e=>{
+                this.toWithdraw();
+            }, 500);
+            return;
+        }
         thisView.goTo('#withdraw');
     }
 
@@ -111,11 +127,7 @@ class App extends Component {
                     <div onTouchTap={this.toBill} style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
                 </div>
 
-                <Recharge/>
-
-                <Withdraw balance={this.data.balance}/>
-
-                {/*<div onTouchTap={this.toRecharge} style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
+                <div onTouchTap={this.toRecharge} style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
                     <div style={{float:'right'}}><NavigationChevronRight /></div>
                     <div>{___.recharge}</div>
                 </div>
@@ -123,10 +135,10 @@ class App extends Component {
                 <div onTouchTap={this.toWithdraw} style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
                     <div style={{float:'right'}}><NavigationChevronRight /></div>
                     <div>{___.withdraw_cash}</div>
-                </div>*/}
+                </div>
 
                 <SonPage open={this.state.show_bill} back={this.billBack} title={___.bill_details}>
-                    <BillPage companyBillUid={this.companyBillUid}/>
+                    <BillPage companyBillUid={companyBillUid}/>
                 </SonPage>
 
             </div>
@@ -136,228 +148,36 @@ class App extends Component {
 }
 export default App;
 
-class Recharge extends Component {
+class RechargePage extends Component {
     constructor(props,context){
         super(props,context);
-        this.state={
-            isInputRecharge:false,
-        }
         this.amount=0;
-        this.inputRecharge = this.inputRecharge.bind(this);
-        this.closeInputRecharge = this.closeInputRecharge.bind(this);
         this.rechargeChange = this.rechargeChange.bind(this);
         this.toRecharge = this.toRecharge.bind(this);
-    }
-    inputRecharge(){
-        this.setState({isInputRecharge:true,});
-    }
-    closeInputRecharge(){
-        this.setState({isInputRecharge:false,});
     }
     rechargeChange(e,value){
         this.amount=value;
     }
     toRecharge(){
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-        if(!reg.test(this.amount)){
+        if(!reg.test(this.amount)||this.amout==0){
             alert(___.amount_error);
             return;
         }
-        this.setState({isInputAmount:false});
-
-        history.replaceState('home','home','home.html');
-        Wapi.pay.wxPay({
-            uid:this.companyBillUid,
+        let pay_data={
+            uid:companyBillUid,
             order_type:2,
             remark:'充值',
             amount:this.amount,
             title:'充值',
             uidType:1,
             // isCust:1,
-        },'wxPay_recharge',location.href);
-    }
-    render() {
-        return (
-            <div style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
-                <div onTouchTap={this.inputRecharge}>
-                    <div style={{float:'right'}}><NavigationChevronRight /></div>
-                    <div>{___.recharge}</div>
-                </div>
-                
-                {/*输入充值金额*/}
-                <Dialog 
-                    open={this.state.isInputRecharge} 
-                    actions={
-                        [<FlatButton
-                            label={___.cancel}
-                            primary={true}
-                            onClick={this.closeInputRecharge}
-                        />,
-                        <FlatButton
-                            label={___.ok}
-                            primary={true}
-                            onClick={this.toRecharge}
-                        />]
-                    } >
-
-                    <Input
-                        floatingLabelText={___.input_recharge_amount}
-                        onChange={this.rechargeChange}
-                    />
-
-                </Dialog>
-            </div>
-        );
-    }
-}
-
-class Withdraw extends Component {
-    constructor(props,context){
-        super(props,context);
-        this.state={
-            sty:{padding:'1em',borderBottom:'1px solid #cccccc'},
-            isInputRecharge:false,
-            isInputPsw:false,
-            isInputWithdraw:false,
         }
-        this.amount=0;
-
-        this.inputPsw = this.inputPsw.bind(this);
-        this.closeInputPsw = this.closeInputPsw.bind(this);
-        this.pswChange = this.pswChange.bind(this);
-
-        this.inputWithdraw = this.inputWithdraw.bind(this);
-        this.closeInputWithdraw = this.closeInputWithdraw.bind(this);
-        this.withdrawChange = this.withdrawChange.bind(this);
-
-        this.toWithdraw = this.toWithdraw.bind(this);
-    }
-
-    inputPsw(){
-        this.setState({isInputPsw:true});
-    }
-    closeInputPsw(){
-        this.setState({isInputPsw:false});
-    }
-    pswChange(e,value){
-        this.psw=value;
-    }
-
-    inputWithdraw(){
-        this.setState({
-            isInputPsw:false,
-            isInputWithdraw:true
-        });
-    }
-    closeInputWithdraw(){
-        this.setState({isInputWithdraw:false});
-    }
-    withdrawChange(e,value){
-        this.amount=value;
-    }
-
-    confirmPhone(){
-        console.log('confirm phone');
-        thisView.goTo('#checkPhone');
-    }
-
-    toWithdraw(){
-        //验证输入，转到提现
-        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-        if(!reg.test(this.amount)){
-            alert(___.amount_error);
-            return;
-        }
-        if(this.amount>this.props.balance){
-            alert(___.balance_not_enough);
-            return;
-        }
-        this.setState({isInputAmount:false});
-
-        history.replaceState('home','home','home.html');
-        Wapi.pay.wxPay({
-            uid:this.companyBillUid,
-            order_type:3,
-            remark:'提现',
-            amount:this.amount,
-            title:'提现',
-            psw:this.psw,
-            uidType:1,
-            // isCust:1,
-        },'wxPay_withdraw',location.href);
-    }
-    render() {
-        return (
-            <div style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
-                <div onTouchTap={this.inputPsw}>
-                    <div style={{float:'right'}}><NavigationChevronRight /></div>
-                    <div>{___.withdraw_cash}</div>
-                </div>
-
-                {/*输入用户密码*/}
-                <Dialog 
-                    open={this.state.isInputPsw} 
-                    actions={
-                        [<FlatButton
-                            label={___.cancel}
-                            primary={true}
-                            onClick={this.closeInputPsw}
-                        />,
-                        <FlatButton
-                            label={___.ok}
-                            primary={true}
-                            onClick={this.inputWithdraw}
-                        />]
-                    } >
-                    <Input
-                        floatingLabelText={___.input_admin_psw}
-                        onChange={this.pswChange}
-                        type="password"
-                    />
-                </Dialog>
-
-                {/*输入提现金额*/}
-                <Dialog 
-                    open={this.state.isInputWithdraw} 
-                    actions={
-                        [<FlatButton
-                            label={___.cancel}
-                            primary={true}
-                            onClick={this.closeInputWithdraw}
-                        />,
-                        <FlatButton
-                            label={___.ok}
-                            primary={true}
-                            onClick={this.toWithdraw}
-                        />]
-                    } >
-                    
-                    <Input
-                        floatingLabelText={___.input_withdraw_amount}
-                        onChange={this.withdrawChange}
-                    />
-                    <div style={{fontSize:'0.6em'}}>
-                        {___.withdraw_alert}
-                    </div>
-
-                </Dialog>
-                
-            </div>
-        );
-    }
-}
-
-class RechargePage extends Component {
-    constructor(props,context){
-        super(props,context);
-        this.toCheckPhone = this.toCheckPhone.bind(this);
-    }
-    rechargeChange(){
-        console.log('rechargeChange');
-    }
-    toCheckPhone(){
-        console.log('checkphone');
-        this.setState({isInputAmount:false});
+        console.log('wxpay_recharge');
+        console.log(pay_data);
+        W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});
+        // history.replaceState('home','home','home.html');
+        // Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
     }
     render() {
         return (
@@ -372,7 +192,7 @@ class RechargePage extends Component {
                             <Input name='withdraw' style={{height:'30px',width:'100px'}} inputStyle={{height:'20px'}} onChange={this.rechargeChange}/>
                         </span>
                     </div>
-                    <RaisedButton onTouchTap={this.toCheckPhone} label={___.ok} primary={true}/>
+                    <RaisedButton onClick={this.toRecharge} label={___.ok} primary={true}/>
                 </div>
 
             </div>
@@ -387,26 +207,45 @@ class WithdrawPage extends Component {
         this.state={
             isInputAmount:true
         }
+        this.amount=0;
+        this.withdrawChange = this.withdrawChange.bind(this);
         this.toCheckPhone = this.toCheckPhone.bind(this);
+        this.toWithdraw = this.toWithdraw.bind(this);
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
-            console.log('show this view');
             if(!this.state.isInputAmount){
                 this.setState({isInputAmount:true});
             }
         })
     }
-        
-    withDrawChange(){
-        console.log('rechargeChange');
+    withdrawChange(e,value){
+        this.amount=value;
     }
     toCheckPhone(){
-        console.log('checkphone');
+        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+        if(!reg.test(this.amount)||this.amount==0){
+            alert(___.amount_error);
+            return;
+        }
+        if(this.amount>Balance){
+            alert(___.balance_not_enough);
+            return;
+        }
         this.setState({isInputAmount:false});
     }
-    submit(){
-        console.log('withdraw submit');
+    toWithdraw(){
+        history.replaceState('home','home','home.html');
+        Wapi.pay.wxPay({
+            uid:companyBillUid,
+            order_type:3,
+            remark:'提现',
+            amount:this.amount,
+            title:'提现',
+            psw:this.psw,
+            uidType:1,
+            // isCust:1,
+        },'wxPay_withdraw',location.href);
     }
     render() {
         return (
@@ -418,43 +257,21 @@ class WithdrawPage extends Component {
                     <div style={styles.inputGroup}>
                         <span>{___.input_withdraw_amount}</span>
                         <span style={{paddingLeft:'1em'}}>
-                            <Input name='withdraw' style={{height:'30px',width:'100px'}} inputStyle={{height:'20px'}} onChange={this.withDrawChange}/>
+                            <Input name='withdraw' style={{height:'30px',width:'100px'}} inputStyle={{height:'20px'}} onChange={this.withdrawChange}/>
                         </span>
                     </div>
                     <p style={{fontSize:'0.8em',color:'#666666'}}>{___.withdraw_alert}</p>
-                    <RaisedButton onTouchTap={this.toCheckPhone} label={___.ok} primary={true}/>
+                    <RaisedButton style={{marginTop:'1em'}} onClick={this.toCheckPhone} label={___.ok} primary={true}/>
                 </div>
 
                 <div style={this.state.isInputAmount ? {display:'none'} : styles.sonpage_main}>
                     <p style={{fontSize:'0.8em'}}>{___.need_check_phone}</p>
-                    <div>
-                        check phone component
+                    <div style={{width:'90%',marginLeft:'5%'}}>
+                        <MobileChecker mobile={_user.customer.tel} onSuccess={this.submit}/>
                     </div>
-                    <RaisedButton onTouchTap={this.submit} label={___.ok} primary={true}/>
+                    <RaisedButton onClick={this.toWithdraw} label={___.ok} primary={true}/>
                 </div>
 
-            </div>
-            </ThemeProvider>
-        );
-    }
-}
-
-class CheckPhoneApp extends Component {
-    submit(){
-        console.log('submit');
-    }
-    render() {
-        return (
-            <ThemeProvider>
-            <div>
-                <AppBar title={___.withdraw_cash}/>
-                <div style={{padding:'1em',textAlign:'center'}}>
-                    <p>{___.need_check_phone}</p>
-                    <div>
-                        check phone
-                    </div>
-                    <RaisedButton onTouchTap={this.submit} label={___.ok} primary={true}/>
-                </div>
             </div>
             </ThemeProvider>
         );
@@ -526,7 +343,7 @@ class DList extends React.Component{
         let items=this.props.data.map((ele)=>
             <div key={ele.objectId} style={styles.bill}>
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
-                    {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
+                    {(ele.amount>=0) ? ('+' + ele.amount.toFixed(2)) : (ele.amount.toFixed(2))}
                 </div>
                 <div style={styles.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
                 <div style={styles.bill_remark}>{decodeURIComponent(ele.remark)}</div>
@@ -545,10 +362,5 @@ let Alist=AutoList(DList);
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }

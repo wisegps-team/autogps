@@ -81,14 +81,14 @@ const sty={
 
 function checkWallet(){
     Wapi.user.get(res=>{//检查是否有公司钱包
-        if(res.status_code!=0){//如果没有，则用公司的objectId作为mobile和password创建一个use作为公司账户
+        if(res.status_code!=0||res.data.balance==-1){//如果没有，则用公司的objectId作为mobile和password创建一个user作为公司账户
             Wapi.user.add(re=>{
                 return;
             },{
                 mobile:_user.customer.objectId,
                 password:_user.customer.objectId,
                 objectId:_user.customer.objectId,
-                account_type:2
+                account_type:2  //1为个人账户（默认），2为公司账户
             });
         }
     },{

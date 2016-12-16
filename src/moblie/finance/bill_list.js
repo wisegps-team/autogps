@@ -69,7 +69,7 @@ class App extends Component {
     }
     toDetail(bill){
         console.log('to detail');
-        // thisView.goTo('bill_detail.js',bill);
+        thisView.goTo('bill_detail.js',bill);
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{

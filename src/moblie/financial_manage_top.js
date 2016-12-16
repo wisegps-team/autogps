@@ -11,7 +11,7 @@ thisView.addEventListener('load',function(){
 const styles={
     head:{width:'100%',height:'120px',display:'block',backgroundColor:'#29B6F6',textAlign:'center',paddingTop:'40px'},
     head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
-    head_num:{fontSize:'26px',color:'#ffffff'},
+    head_num:{fontSize:'36px',color:'#ffffff'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
     a:{color:'#009988'},
@@ -117,10 +117,5 @@ class FinanceTop extends Component {
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }
