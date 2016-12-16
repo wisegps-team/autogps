@@ -513,7 +513,6 @@ class From extends Component{
 class App2 extends Component{
     constructor(props, context) {
         super(props, context);
-        W.native=true;
         this.state={
             action:(W.native?1:0)
         };
