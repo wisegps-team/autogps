@@ -12,6 +12,7 @@ import {ThemeProvider} from './_theme/default';
 import Input from './_component/base/input';
 import PhoneInput from './_component/base/PhoneInput';
 import VerificationCode from './_component/base/verificationCode';
+import MobileChecker from './_component/base/mobileChecker';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
@@ -26,17 +27,24 @@ import Checkbox from 'material-ui/Checkbox';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
-    ReactDOM.render(<App/>,thisView);
+    if(_g.bookingId){
+        if(_g.openid)
+            ReactDOM.render(<App3/>,thisView);
+        else 
+            ReactDOM.render(<App2/>,thisView);
+    }else
+        ReactDOM.render(<App/>,thisView);
 });
 let ACT;
-Wapi.activity.get(function(res){
-    if(!res.data||!res.data.status)
-        W.alert({title:_g.title,text:___.activity_stop},e=>history.back());
-    else
-        ACT=res.data;
-},{
-    objectId:_g.activityId
-});
+if(_g.activityId)
+    Wapi.activity.get(function(res){
+        if(!res.data||!res.data.status)
+            W.alert({title:_g.title,text:___.activity_stop},e=>history.back());
+        else
+            ACT=res.data;
+    },{
+        objectId:_g.activityId
+    });
 
 const sty={
     p:{
@@ -77,6 +85,13 @@ const sty={
     c:{
         marginLeft: '9px',
         marginTop: '1em'
+    },
+    qr:{
+        padding:'10px',
+        textAlign:'center'
+    },
+    color:{
+        color:'#2196f3'
     }
 }
 
@@ -103,7 +118,6 @@ class App extends Component {
 
     componentDidMount() {
         let that=this;
-        // alert('等一下');
         Wapi.pay.checkWxPay(function(res){
             let booking=W.ls('booking');
             that.setState(that._state);
@@ -113,9 +127,6 @@ class App extends Component {
                 booking.payStatus=0;
             }else{
                 booking.orderId=res.orderId;
-                W.alert(___.pay_success,e=>{
-                    that.getQrcode(booking);
-                });
                 Wapi.booking.update(e=>console.log(e),{
                     _objectId:booking.objectId,
                     orderId:booking.orderId,
@@ -124,6 +135,7 @@ class App extends Component {
                     receiptDate:W.dateToString(new Date())
                 });
             }
+            that.getQrcode(booking);
             that.sendToSeller(booking);
         },location.href);
     }
@@ -227,12 +239,8 @@ class App extends Component {
     }
 
     setQr(res,scene){
-        let booking_qr=___.booking_qr;
         this._state={
-            confirm_text:[
-                <div key='booking_qr'>{booking_qr.replace('<%%>',res.name)}</div>,
-                <img style={sty.img} src={res.url} key='qr'/>
-            ],
+            confirm_text:(<QrBox url={res.url}/>),
             no_t:null,
             confirm_open:true
         };
@@ -248,45 +256,44 @@ class App extends Component {
         let pay=___.not_pay;
         if(booking['payStatus']){
             if(booking['payStatus']==1)
-                pay=___._deposit+'：'+booking['payMoney'];
+                pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
             else if(booking['payStatus']==2)
-                pay=___.all_price+'：'+booking['payMoney'];
+                pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
+                    +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
         }
+
+        let title='订单ID：'+booking.objectId;
         Wapi.serverApi.sendWeixinByTemplate(function(res){
             console.log(res);
         },{
             openId:_g.seller_open_id,
             uid:_g.uid,
             type:1,
-            templateId:'OPENTM407674335',
+            templateId:'OPENTM408168978',//预订成功模板消息'
             link:'#',
             data:{
                 "first": {//标题
-                    "value": ACT.name,
+                    "value": title,
                     "color": "#173177"
                 },
                 "keyword1": {//预订时间
                     "value": W.dateToString(new Date()).slice(0,16),
                     "color": "#173177"
                 },
-                "keyword2": {//预订人
-                    "value": booking.name+'/'+booking.mobile,
+                "keyword2": {//预订产品
+                    "value": ACT.product+'/￥'+parseFloat(ACT.price).toFixed(2),
                     "color": "#173177"
                 },
-                "keyword3": {//客户
-                    "value": booking.userName+'/'+booking.userMobile,
-                    "color": "#173177"
-                },
-                "keyword4": {//产品型号
-                    "value": ACT.product+'(￥'+ACT.price+')，'+___.install_price+'：￥'+ACT.installationFee,
-                    "color": "#173177"
-                },
-                "keyword5": {//预付款
+                "keyword3": {//预付款项
                     "value": pay,
                     "color": "#173177"
                 },
+                "keyword4": {//车主信息
+                    "value": booking.userName+'/'+booking.userMobile,
+                    "color": "#173177"
+                },
                 "remark": {
-                    "value": '',
+                    "value": '预订人：'+booking.name+'/'+booking.mobile,
                     "color": "#173177"
                 }
             }
@@ -317,7 +324,7 @@ class App extends Component {
                 </div>);
         let dialog=(<Dialog
                     key='confirm'                    
-                    title={_g.title}
+                    title={___.pay_gitf}
                     actions={actions}
                     open={this.state.confirm_open}
                     contentStyle={sty.con}
@@ -326,9 +333,7 @@ class App extends Component {
                 </Dialog>);
         //显示二维码
         if(!actions&&this.state.confirm_open){
-            box=(<div style={sty.p}>
-                {this.state.confirm_text}
-            </div>);
+            box=this.state.confirm_text;
             dialog=null;
         }
         return (
@@ -499,6 +504,121 @@ class From extends Component{
                     {___.please_consult+___.phone+": "}
                     <a href={'tel:'+_g.mobile}>{_g.mobile}</a>
                 </div>
+            </div>
+        );
+    }
+}
+
+//提醒预订人分享给车主，如果是车主就验证车主手机后展示二维码
+class App2 extends Component{
+    constructor(props, context) {
+        super(props, context);
+        W.native=true;
+        this.state={
+            action:(W.native?1:0)
+        };
+    }
+    componentDidMount() {
+        if(this.state.action==0)
+            window.addEventListener('nativeSdkReady',()=>this.setState({action:1}));
+    }
+    
+    render() {
+        let content=this.state.action?([
+            <p key="p" style={{textAlign:'center'}}>
+                {'将此页面分享给'+_g.userName}<br/>
+                好友即可获取预订信息
+            </p>,
+            <img src='img/shareTo.jpg' key="img" style={{width:'100%'}}/>
+        ]):"正在准备分享";
+        return (
+            <ThemeProvider>
+                {content}
+            </ThemeProvider>
+        );
+    }
+}
+
+class App3 extends Component{
+    constructor(props, context) {
+        super(props, context);
+        this.state={
+            booking:null,
+            success:false
+        }
+        this.success = this.success.bind(this);
+    }
+    componentDidMount() {
+        Wapi.booking.get(res=>this.setState({booking:res.data}),{
+            objectId:_g.bookingId
+        })
+    }
+    
+    success(){
+        W.loading(true);
+        Wapi.booking.update(res=>{
+            this.setState({success:true});
+            W.loading();
+        },{
+            _objectId:this.state.booking.objectId,
+            userOpenId:_g.openid
+        })
+    }
+
+    render() {
+        let content=this.state.booking?(<CheckBox onSuccess={this.success} data={this.state.booking}/>):"正在获取预订信息";
+        if(this.state.success)
+            content=(<QrBox url={this.state.booking.carType.qrUrl}/>);
+        return (
+            <ThemeProvider>
+                <div style={{padding:'24px'}}>
+                    {content}
+                </div>
+            </ThemeProvider>
+        );
+    }
+}
+
+class CheckBox extends Component {
+    constructor(props, context) {
+        super(props, context);
+        this.submit = this.submit.bind(this);
+        this.success = this.success.bind(this);
+    }
+    
+    success(val,name){
+        this.code=val;
+    }
+
+    submit(){
+        if(this.code){
+            this.props.onSuccess();
+        }else{
+            W.alert(___.code_err);
+        }
+    }
+
+    render() {
+        let date=W.dateToString(W.date(this.props.data.createdAt)).slice(0,-3);
+        return (
+            <div>
+                <p><span style={sty.color}>{this.props.data.name}</span> 于 <span style={sty.color}>{date}</span> 为您预订了智能车联网产品，为保障信息安全，请短信验证后了解详情！</p>,
+                <MobileChecker mobile={this.props.data.userMobile} onSuccess={this.success}/>
+                <div style={sty.b}>
+                    <RaisedButton label={___.ok} primary={true} onClick={this.submit}/>
+                </div>
+            </div>
+        );
+    }
+}
+
+class QrBox extends Component{
+    render() {
+        return (
+            <div style={sty.qr}>
+                <img style={sty.img} src={this.props.url}/>,
+                <p>{'[ '+___.press+' ]'}</p>,
+                <h4>{___.booking_qr}</h4>,
             </div>
         );
     }
