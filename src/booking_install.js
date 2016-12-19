@@ -157,7 +157,10 @@ class App extends Component {
             Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName),e=>{wx.closeWindow();});
+                    W.alert({
+                        title:___.booking_install_title,
+                        text:___.sendWeixinToSeller_success.replace('xxx',this.installName)
+                    },e=>{wx.closeWindow();});
                 }
             },{
                 openId:this.seller_open_id,   //安装网点的openid
@@ -169,7 +172,7 @@ class App extends Component {
                 link:'http://wx.autogps.cn/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 data:{
                     "first": {//标题
-                        "value": ___.bookingId+' '+_g.bookingId,
+                        "value": ___.bookingId+'：'+_g.bookingId,
                         "color": "#173177"
                     },
                     "keyword1": {//预订时间
@@ -177,7 +180,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword2": {//预订产品
-                        "value": ACT.product+'/￥'+ACT.price,
+                        "value": ACT.product+'/￥'+parseFloat(ACT.price).toFixed(2),
                         "color": "#173177"
                     },
                     "keyword3": {//设备款项

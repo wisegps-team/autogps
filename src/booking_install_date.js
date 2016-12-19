@@ -96,7 +96,10 @@ class App extends Component {
             Wapi.serverApi.sendWeixinByTemplate(re=>{   //发送给车主
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.install_time_success,e=>{wx.closeWindow();});
+                    W.alert({
+                        title:___.booking_date_title,
+                        text:___.install_time_success
+                    },e=>{wx.closeWindow();});
                 }
             },{
                 openId:_g.cust_open_id,   //车主的openid

@@ -378,10 +378,10 @@ window.___={
 	'booking_install_date':'安装日期',
 	'select_install_date':'请选择安装日期',
 	'select_install_time':'请选择安装时间',
-	'install_time_success':'安装时间已设置成功',
+	'install_time_success':'已发送预约安装信息给车主',
 	'sendWeixinToSeller_success':'已发送预约信息给xxx，工作人员将联系你确认车型和安装时间。',
 	'sendWeixinByTemplate_success':'安装时间已设置。',
-	'sendWeixinToInstall_remark':'请联系车主确认车型和安装时间后点击详情回复预约通知',
+	'sendWeixinToInstall_remark':'请联系车主确认车型和安装时间后点击详情回复',
 	'edit_name':'修改名称',
 	'input_menu_name':'请输入菜单名称',
 	'input_menu_url':'请填入菜单链接',
@@ -445,4 +445,6 @@ window.___={
 	'install_pay':'安装费',
 	'carowner_info':'车主信息',
 	'need_check_phone':'为确保你的账户资金安全，需要验证你的手机号码。',
+	'booking_install_title':'预约通知',
+	'booking_date_title':'预约成功通知'
 }
