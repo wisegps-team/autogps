@@ -46,6 +46,7 @@ for(let i=5;i--;){
     _customers.push(c);
 }
 
+let sellerCust={tel:''};
 let ACT=null;
 let booking=null;
 let submited=false;
@@ -58,7 +59,8 @@ class App extends Component {
             installId:0,
             install:'',
         }
-        this.canSelect=true;
+
+        this.canSelectInstall=true;
 
         this.installs=[];
         this.visibleInstalls=[];
@@ -71,30 +73,42 @@ class App extends Component {
         this.submit = this.submit.bind(this);
     }
     componentDidMount() {
+        let flag=0;
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
             if(booking.installId){
-                W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{wx.closeWindow();});
-                this.canSelect=false;
+                //W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{wx.closeWindow();});
+                W.alert(___.sendWeixinToSeller_success,e=>{wx.closeWindow();});
             }
             let {uid,activityId}=res.data;
 
+            //获取活动信息
             Wapi.activity.get(r=>{
                 ACT=r.data;
-
-                Wapi.serverApi.getInstallByUid(re=>{
-                    this.installs=re.data;//正式用
-                    this.visibleInstalls=re.data;
-                    // this.installs=_customers;//测试用
-                    this.forceUpdate();
-                },{
-                    uid:uid,
-                    // uid:"781687274311127000"//测试用 这里的uid其实是objectId，
-                },{
-                    limit:999
-                });
-
+                flag++;
+                if(flag==3)this.forceUpdate();
             },{objectId:activityId});
+
+            //获取活动发布者的信息
+            Wapi.customer.get(json=>{
+                sellerCust=json.data;
+                flag++;
+                if(flag==3)this.forceUpdate();
+            },{objectId:uid});
+
+            //获取安装网点
+            Wapi.serverApi.getInstallByUid(re=>{
+                this.installs=re.data;//正式用
+                this.visibleInstalls=re.data;
+                // this.installs=_customers;//测试用
+                flag++;
+                if(flag==3)this.forceUpdate();
+            },{
+                uid:uid,
+                // uid:"781687274311127000"//测试用 这里的uid其实是父级的objectId，
+            },{
+                limit:999
+            });
 
         },{objectId:_g.bookingId});
 
@@ -104,6 +118,13 @@ class App extends Component {
     }
     areaSelect(key,value){
         console.log(key,value);
+        
+        //因为onTouchTap事件会在350ms之后再触发一次，所以会错误地触发installChange，所以设置360ms之内installChange方法不继续执行
+        this.canSelectInstall=false;
+        setTimeout(()=>{
+            this.canSelectInstall=true;
+        }, 360);
+
         if(value==-1){
             this.visibleInstalls=this.installs;
         }else{
@@ -112,21 +133,23 @@ class App extends Component {
         this.forceUpdate();
     }
     installChange(data){
+        if(!this.canSelectInstall)return;
+
         this.data.installId=data.objectId;
         this.data.install=data.name;
         this.installName=data.name;
 
+        this.forceUpdate();
+        
         Wapi.serverApi.getUserOpenId(res=>{    //根据customer信息查找user的Openid
             this.seller_open_id=res.data;
-            this.forceUpdate();
+            W.confirm(___.confirm_install.replace('xxx',data.name),b=>{
+                if(b)this.submit();
+            });
         },{objectId:data.uid});
         
     }
     submit(){
-        if(!this.canSelect){
-            W.alert(___.selected_install.replace('xxx',_g.bookingId));
-            return;
-        }
         if(this.data.installId==0){ //信息是否完整
             W.alert(___.please_select_install);
             return;
@@ -137,27 +160,17 @@ class App extends Component {
             return;
         }
         submited=true;
-        console.log(this.data);
 
         this.data.userOpenId=_g.openid;
         
         let pay=booking.payMoney?parseFloat(booking.payMoney).toFixed(2):'0.00';
-        
-        // let pay=___.not_pay;
-        // if(booking['payStatus']){
-        //     if(booking['payStatus']==1)
-        //         pay=___._deposit+' '+parseFloat(booking.payMoney).toFixed(2);
-        //     else if(booking['payStatus']==2)
-        //         pay=___.device_price+' '+parseFloat(booking.product.price).toFixed(2)+'，'
-        //             +___.install_price+' '+parseFloat(booking.product.installationFee).toFixed(2);
-        // }
         
         Wapi.booking.update(res=>{
             
             Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.sendWeixinToSeller_success.replace('xxx',this.installName),e=>{wx.closeWindow();});
+                    W.alert(___.sendWeixinToSeller_success,e=>{wx.closeWindow();});
                 }
             },{
                 openId:this.seller_open_id,   //安装网点的openid
@@ -210,7 +223,7 @@ class App extends Component {
                 primaryText={ele.name} 
                 data={ele} 
                 selected={ele.objectId==this.data.installId}
-                onClick={()=>this.installChange(ele)}
+                onTouchTap={()=>this.installChange(ele)}
             />
         );
         return (
@@ -221,14 +234,15 @@ class App extends Component {
                         <AreaSelect name='area' onChange={this.areaChange} selectModel={true} select={this.areaSelect}/>
                     </div>
                     {items}
-                    <div style={styles.bottom_btn}>
+                    <div style={styles.bottom_btn}>{___.more_install.replace('xxx',sellerCust.tel)}</div>
+                    {/*<div style={styles.bottom_btn}>
                         <RaisedButton
                             label={___.ok}
                             primary={true}
-                            onClick={this.submit}
+                            onTouchTap={this.submit}
                             disabled={submited}
                         />
-                    </div>
+                    </div>*/}
                 </div>
             </ThemeProvider>
         );
@@ -242,21 +256,17 @@ class InstallShop extends Component {
     render() {
         let data=this.props.data;
         let sty=styles.card;
-        // let sty_icon={display:'none'};
         let box=<div style={{float:'right'}}><ToggleCheckBoxOutlineBlank/></div>;
         if(this.props.selected){
             sty=styles.card_select;
-            // sty_icon={float:'right'};
             box=<div style={{float:'right'}}><ToggleCheckBox/></div>;
         }
         return (
-            <div style={sty} onClick={this.props.onClick}>
-                {/*<div style={sty_icon}><ToggleCheckBox/></div>*/}
+            <div style={sty} onTouchTap={this.props.onTouchTap}>
                 {box}
                 <div>{data.name}</div>
-                <div>{data.province+' '+data.city+' '+data.area +' '+(data.address||'')}</div>
-                {/*<div>{data.contact}</div>
-                <div>{data.tel}</div>*/}
+                {/*<div>{data.province+' '+data.city+' '+data.area +' '+(data.address||'')}</div>*/}
+                <div>{data.address||data.area}</div>
             </div>
         );
     }

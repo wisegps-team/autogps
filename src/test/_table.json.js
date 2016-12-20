@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=77;//版本号
+let version=79;//版本号
 
 //地区表
 export const area={
@@ -2469,11 +2469,112 @@ export const activityProduct={
     ]
 }
 
+//二维码批号表，显示已分配的某一批二维码的信息
+export const qrDistribution={
+    name: 'qrDistribution',             //表名
+    desc: '二维码分配表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'id',
+            'desc': '数据id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'name',
+            'desc': '名称',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'uid',
+            'desc': '所属公司的objectId',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'type',
+            'desc': '二维码类型',//营销，移车卡等
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'num',
+            'desc': '数量',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'max',
+            'desc': '最大编号',//当前批次二维码的最大编号
+            'type': 'String',
+            'query': true, 
+        },{
+            'name': 'min',
+            'desc': '最小编号',//当前批次二维码的最小编号
+            'type': 'Number',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+
+//二维码与活动映射表
+export const qrLink={
+    name: 'qrLink',             //表名
+    desc: '二维码与活动映射表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'id',
+            'desc': '二维码id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'url',
+            'desc': '分享链接',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'sellerId',
+            'desc': '营销人员id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'act',
+            'desc': '活动id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'i',
+            'desc': '数据id',
+            'type': 'Number',
+            'default':'@AutoInc',
+            'query': true, 
+        },{
+            'name': 'type',
+            'desc': '类型',//营销，移车卡等，同一个批次的二维码type相同
+            'type': 'Number',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+
+
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin,qrData,activityProduct
+    weixin,qrData,activityProduct,qrDistribution,qrLink
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
