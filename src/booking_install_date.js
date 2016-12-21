@@ -12,7 +12,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 
 const styles = {
-    main:{width:'90%',marginLeft:'5%'},
+    main:{width:'90%',marginLeft:'5%',textAlign:'center',marginTop:'20px'},
     bottom_btn:{display:'block',textAlign:'center',paddingTop:'20px',paddingBottom:'20px'},
 };
 
@@ -130,7 +130,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword5": {//地址
-                        "value": _user.customer.province + _user.customer.city + _user.customer.area + (_user.customer.address||''),
+                        "value": (_user.customer.address||_user.customer.area), 
                         "color": "#173177"
                     },
                     "remark": {

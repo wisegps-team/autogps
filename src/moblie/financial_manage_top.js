@@ -105,10 +105,10 @@ class FinanceTop extends Component {
                     <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
                     <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
                 </div>
-                <div style={styles.line}>
+                {/*<div style={styles.line}>
                     <div style={combineStyle(['line_right','a'])} onTouchTap={this.toCounterFeeList}>{toMoneyFormat(this.counterFee)}</div>
                     <div >{___.counter_fee}</div>
-                </div>
+                </div>*/}
             </div>
         );
     }
