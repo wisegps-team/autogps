@@ -20,7 +20,7 @@ thisView.addEventListener('show',function(){
 });
 
 const domain=[
-    'user.autogps.cn',
+    WiStorm.config.domain.user,
     location.hostname
 ]
 
