@@ -54,7 +54,7 @@ class VerificationCode extends Component {
     }
     getCode(){
         if(!this.props.account){
-            W.alert(___.phone_empty);
+            W.alert(___.phone_err);
             return;
         }
         let that=this;

@@ -24,7 +24,7 @@ class Alert extends Component {
     constructor(props, context) {
         super(props, context);
         this.state={
-            title:___.app_name,
+            title:'',
             alert:'默认文本',
             confirm:'带取消的确认框',
             prompt:'带输入框的确认框',
@@ -159,7 +159,7 @@ class Alert extends Component {
             <div>
                 <Dialog
                     key='alert'
-                    title={this.state.title}
+                    title={''}
                     actions={<FlatButton
                         label={___.ok}
                         primary={true}
@@ -172,7 +172,7 @@ class Alert extends Component {
                 </Dialog>
                 <Dialog
                     key='confirm'                    
-                    title={this.state.title}
+                    title={''}
                     actions={actions}
                     open={this.state.confirm_open}
                     contentStyle={con}
@@ -181,7 +181,7 @@ class Alert extends Component {
                 </Dialog>
                 <Dialog
                     key='prompt'
-                    title={this.state.title}
+                    title={''}
                     actions={actions}
                     open={this.state.prompt_open}
                     contentStyle={con}
