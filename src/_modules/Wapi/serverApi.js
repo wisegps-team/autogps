@@ -70,6 +70,11 @@ class ServerApi{
 		data.method='setMenu';
 		this.get(data,callback);
 	}
+
+	getBrand(callback,data){
+		data.method='getBrand';
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;
