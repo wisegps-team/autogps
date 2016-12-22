@@ -170,7 +170,10 @@ class App extends Component {
             Wapi.serverApi.sendWeixinByTemplate(re=>{
                 console.log(re);
                 if(!re.status_code){
-                    W.alert(___.sendWeixinToSeller_success,e=>{wx.closeWindow();});
+                    W.alert({
+                        title:___.booking_install_title,
+                        text:___.sendWeixinToSeller_success
+                    },e=>{W.native.close();});
                 }
             },{
                 openId:this.seller_open_id,   //安装网点的openid
@@ -179,10 +182,10 @@ class App extends Component {
                 templateId:'OPENTM408168978',
                 type:'1',
                 // link:'http://192.168.3.201:8081/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
-                link:'http://wx.autogps.cn/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
+                link:'http://'+WiStorm.config.domain.wx+'/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 data:{
                     "first": {//标题
-                        "value": ___.bookingId+' '+_g.bookingId,
+                        "value": ___.bookingId+'：'+_g.bookingId,
                         "color": "#173177"
                     },
                     "keyword1": {//预订时间
@@ -190,7 +193,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword2": {//预订产品
-                        "value": ACT.product+'/￥'+ACT.price,
+                        "value": ACT.product+'/￥'+parseFloat(ACT.price).toFixed(2),
                         "color": "#173177"
                     },
                     "keyword3": {//设备款项

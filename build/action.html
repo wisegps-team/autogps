@@ -18,14 +18,14 @@
 				var g=Object.assign({},_g);
 				delete g.action;
 				g.needOpenId='true';
-				var url='http://user.autogps.cn/?location=%2Fautogps%2Fbooking.html';
+				var url='http://'+WiStorm.config.domain.user+'/?location=%2Fautogps%2Fbooking.html';
 				for(var k in g){
 					url+='&'+k+'='+g[k];
 				}
 				location=url;
 			}
 			window.onload=function(){
-				new Image().src='http://user.autogps.cn/autogps/src/booking.js';
+				new Image().src='http://'+WiStorm.config.domain.user+'/autogps/src/booking.js';
 			}
 			window.addEventListener('nativeSdkReady',function(){
 				var op={

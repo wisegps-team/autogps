@@ -111,6 +111,15 @@ const sty={
     },
     color:{
         color:'#2196f3'
+    },
+    vc:{
+        position: 'absolute',
+        top: '50%',
+        marginTop: '-50%',
+        width:'100%',
+        textAlign:'center',
+        left: '0',
+        boxSizing: 'border-box'
     }
 }
 
@@ -495,7 +504,7 @@ class From extends Component{
             <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={false}/>
         </div>):(<div style={sty.r}>
             <HardwareSmartphone style={sty.i}/>
-            <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change}/>
+            <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change} type='tel'/>
         </div>);
         return (
             <div style={sty.f}>
@@ -533,6 +542,7 @@ class From extends Component{
 class App2 extends Component{
     constructor(props, context) {
         super(props, context);
+        W.native=true
         this.state={
             action:(W.native?1:0)
         };
@@ -552,7 +562,9 @@ class App2 extends Component{
         ]):"正在准备分享";
         return (
             <ThemeProvider>
-                {content}
+                <div style={sty.vc}>
+                    {content}
+                </div>
             </ThemeProvider>
         );
     }
@@ -633,11 +645,12 @@ class CheckBox extends Component {
 
 class QrBox extends Component{
     render() {
+        let s=Object.assign(sty.qr,sty.vc);
         return (
-            <div style={sty.qr}>
-                <img style={sty.img} src={this.props.url}/>,
-                <p>{'[ '+___.press+' ]'}</p>,
-                <h4>{___.booking_qr}</h4>,
+            <div style={s}>
+                <img style={sty.img} src={this.props.url}/>
+                <p>{'[ '+___.press+' ]'}</p>
+                <h4>{___.booking_qr}</h4>
             </div>
         );
     }
