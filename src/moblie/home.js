@@ -258,14 +258,14 @@ class App extends Component {
                     <Tab
                         className='tab'
                         icon={<ActionWork/>}
-                        label={___.to_do}
+                        label={___.message}
                         value={'to_do'}
                         onActive={this.go}
                     />
                     <Tab
                         className='tab'                    
                         icon={<ActionAccountCircle/>}
-                        label={___.my_account}
+                        label={___.user}
                         value={'my_account'}
                         onActive={this.go}
                     />

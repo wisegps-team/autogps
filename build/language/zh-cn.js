@@ -456,4 +456,6 @@ window.___={
 	'bind_num':'绑定数',
 	'bind_count':'绑定统计',
 	'scan_count':'扫描统计',
+	'message':'消息',
+	
 }
