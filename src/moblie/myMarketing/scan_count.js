@@ -15,17 +15,8 @@ thisView.addEventListener('load',function(){
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    appbody:{padding:'10px'},
-    card:{margin:'1em',padding:'0px 0.5em 0.5em'},
-    td_left:{whiteSpace:'nowrap'},
-    td_right:{paddingLeft:'1em'},
-    line:{marginTop:'0.5em'},
-    top_btn_right:{width:'100%',display:'block',textAlign:'right'},
-    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
+    listItem:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
     count:{marginRight:'1em'},
-    link:{color:'#009688'},
-    table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'5px'},
-    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -34,13 +25,24 @@ function combineStyle(arr){
 class App extends Component {
     constructor(props,context){
         super(props,context);
+        this.data=[];
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
-            console.log(e.params);
+            if(e.params){
+                console.log('show scan count, act = '+e.params);
+            }
         });
+        this.data=[1,2,3,4,5];
+        this.forceUpdate();
     }
     render() {
+        let items=this.data.map((ele,i)=>
+            <div key={i} style={styles.listItem}>
+                <span style={{marginRight:'1em'}}>用户</span>
+                <span>扫描时间</span>
+            </div>
+        );
         return (
             <ThemeProvider>
             <div>
@@ -49,7 +51,7 @@ class App extends Component {
                     style={{position:'fixed',top:'0px'}}
                 />
                 <div style={styles.main}>
-                    scan count
+                    {items}
                 </div>
             </div>
             </ThemeProvider>

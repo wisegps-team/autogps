@@ -46,7 +46,7 @@ for(let i=5;i--;){
     _customers.push(c);
 }
 
-let sellerCust={tel:''};
+let sellerTel='';
 let ACT=null;
 let booking=null;
 let submited=false;
@@ -77,24 +77,25 @@ class App extends Component {
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
             if(booking.installId){
-                //W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{wx.closeWindow();});
-                W.alert(___.sendWeixinToSeller_success,e=>{wx.closeWindow();});
+                //W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{W.native.close();});
+                W.alert(___.sendWeixinToSeller_success,e=>{W.native.close();});
             }
             let {uid,activityId}=res.data;
 
             //获取活动信息
             Wapi.activity.get(r=>{
                 ACT=r.data;
+                sellerTel=ACT.tel||'';
                 flag++;
-                if(flag==3)this.forceUpdate();
+                if(flag==2)this.forceUpdate();
             },{objectId:activityId});
 
             //获取活动发布者的信息
-            Wapi.customer.get(json=>{
-                sellerCust=json.data;
-                flag++;
-                if(flag==3)this.forceUpdate();
-            },{objectId:uid});
+            // Wapi.customer.get(json=>{
+            //     sellerTel=json.data.tel;
+            //     flag++;
+            //     if(flag==3)this.forceUpdate();
+            // },{objectId:uid});
 
             //获取安装网点
             Wapi.serverApi.getInstallByUid(re=>{
@@ -102,7 +103,7 @@ class App extends Component {
                 this.visibleInstalls=re.data;
                 // this.installs=_customers;//测试用
                 flag++;
-                if(flag==3)this.forceUpdate();
+                if(flag==2)this.forceUpdate();
             },{
                 uid:uid,
                 // uid:"781687274311127000"//测试用 这里的uid其实是父级的objectId，
@@ -237,7 +238,7 @@ class App extends Component {
                         <AreaSelect name='area' onChange={this.areaChange} selectModel={true} select={this.areaSelect}/>
                     </div>
                     {items}
-                    <div style={styles.bottom_btn}>{___.more_install.replace('xxx',sellerCust.tel)}</div>
+                    <div style={styles.bottom_btn}>{___.more_install.replace('xxx',sellerTel)}</div>
                     {/*<div style={styles.bottom_btn}>
                         <RaisedButton
                             label={___.ok}

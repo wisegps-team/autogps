@@ -20,17 +20,8 @@ thisView.addEventListener('load',function(){
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    appbody:{padding:'10px'},
     card:{margin:'1em',padding:'0px 0.5em 0.5em'},
-    td_left:{whiteSpace:'nowrap'},
-    td_right:{paddingLeft:'1em'},
-    line:{marginTop:'0.5em'},
-    top_btn_right:{width:'100%',display:'block',textAlign:'right'},
-    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     count:{marginRight:'1em'},
-    link:{color:'#009688'},
-    table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'5px'},
-    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -38,21 +29,21 @@ function combineStyle(arr){
 
 let qrLinks=[
     {
-        name:'一个活动',
+        name:'一个二维码',
         act:'806314613238009900',
         sellerId:'001',
         url:'http://www.baidu.com',
         bind:10,
         scan:9,
     },{
-        name:'二个活动',
+        name:'二个二维码',
         act:'805974631000444900',
         sellerId:'002',
         url:'http://www.qq.com',
         bind:10,
         scan:9,
     },{
-        name:'三个活动',
+        name:'三个二维码',
         act:'803863722111144000',
         sellerId:'003',
         url:'http://www.sina.com',
@@ -83,7 +74,7 @@ class App extends Component {
         thisView.goTo('bind_count.js',data);
     }
     scanCount(data){
-        thisView.goTo('scan_count.js',data);
+        thisView.goTo('scan_count.js',data.act);
     }
     scanToBind(){
         console.log('scan to bind');

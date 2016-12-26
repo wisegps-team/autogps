@@ -454,5 +454,6 @@ window.___={
 	'more_install':'致电xxx获取更多安装网点信息！',
 	'confirm_install':'是否发送服务预约给：xxx',
 	'bind_num':'绑定数',
+	'bind_count':'绑定统计',
 	'scan_count':'扫描统计',
 }

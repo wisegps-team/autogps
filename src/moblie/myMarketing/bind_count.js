@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../../_theme/default';
 import AppBar from '../../_component/base/appBar';
+import Card from 'material-ui/Card';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -16,17 +17,9 @@ thisView.addEventListener('load',function(){
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    appbody:{padding:'10px'},
     card:{margin:'1em',padding:'0px 0.5em 0.5em'},
-    td_left:{whiteSpace:'nowrap'},
-    td_right:{paddingLeft:'1em'},
-    line:{marginTop:'0.5em'},
-    top_btn_right:{width:'100%',display:'block',textAlign:'right'},
-    bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
+    line:{paddingTop:'0.5em'},
     count:{marginRight:'1em'},
-    link:{color:'#009688'},
-    table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'5px'},
-    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -35,29 +28,40 @@ function combineStyle(arr){
 class App extends Component {
     constructor(props,context){
         super(props,context);
+        this.data=[];
         this.toScan = this.toScan.bind(this);
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
-            console.log(e.params);
+            if(e.params){
+                console.log('show bind count, act = ' + e.params.act);
+            }
         });
+        this.data=[1,2,3,5];
+        this.forceUpdate();
     }
-    toScan(){
-        thisView.goTo('scan_count.js','sth');
+    toScan(data){
+        thisView.goTo('scan_count.js',data);
     }
     render() {
+        let items=this.data.map((ele,i)=>
+            <Card key={i} style={styles.card}>
+                <div style={styles.line}>{i+1}个营销人员</div>
+                <div style={styles.line}>
+                    <span onClick={()=>this.toScan(ele)} style={{marginRight:'1em'}}>扫描统计</span>
+                    <span>解除绑定</span>
+                </div>
+            </Card>
+        )
         return (
             <ThemeProvider>
             <div>
                 <AppBar 
-                    title={___.bind_num} 
+                    title={___.bind_count} 
                     style={{position:'fixed',top:'0px'}}
                 />
                 <div style={styles.main}>
-                    bind count
-                    <div onClick={this.toScan}>
-                        scan count
-                    </div>
+                    {items}
                 </div>
             </div>
             </ThemeProvider>

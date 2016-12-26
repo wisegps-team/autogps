@@ -10,20 +10,28 @@ import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
+import IconMenu from 'material-ui/IconMenu';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import MenuItem from 'material-ui/MenuItem';
 
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
 import {getOpenIdKey} from '../_modules/tool';
+
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    card:{margin:'1em',padding:'0.5em'},
+    appbody:{padding:'10px'},
+    card:{margin:'1em',padding:'0px 0.5em 0.5em'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
     line:{marginTop:'0.5em'},
+    top_btn_right:{width:'100%',display:'block',textAlign:'right'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     count:{marginRight:'1em'},
     link:{color:'#009688'},
+    table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'3px'},
+    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -35,6 +43,7 @@ var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     thisView.prefetch('booking_list.js',2);
+    thisView.prefetch('./myMarketing/marketing_data.js',2);
 });
 
 class App extends Component {
@@ -242,6 +251,7 @@ class App extends Component {
 App.childContextTypes={
     edit:React.PropTypes.func
 }
+export default App;
 
 let strStatus=[___.terminated,___.ongoing];
 let strBoolean=[___.no,___.yes];
@@ -252,6 +262,7 @@ class DList extends Component{
         super(props,context);
         this.toActivityPage = this.toActivityPage.bind(this);
         this.toCountPage = this.toCountPage.bind(this);
+        this.activityData = this.activityData.bind(this);
     }
     toActivityPage(data){
         history.replaceState('home.html','home.html','home.html');
@@ -321,11 +332,30 @@ class DList extends Component{
         }
 
     }
+    activityData(data){
+        thisView.goTo('./myMarketing/marketing_data.js',data);
+    }
     render() {
         let data=this.props.data;
         let items=data.map((ele,i)=>
             <Card key={i} style={styles.card}>
-                <table>
+                {/*<div style={{float:'right'}}>
+                    <IconMenu
+                        iconButtonElement={
+                            <IconButton>
+                                <MoreVertIcon/>
+                            </IconButton>
+                        }
+                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                        style={styles.icon}
+                    >
+                        <MenuItem key='0' onTouchTap={()=>this.context.edit(ele)}>{___.act_detail}</MenuItem>
+                        <MenuItem key='1' onTouchTap={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
+                    </IconMenu>
+                </div>
+                <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div> 新的标题和右上角菜单*/}
+                <table style={styles.table}>
                     <tbody>
                         <tr >
                             <td style={styles.td_left}>{___.activity_name}</td>
@@ -338,20 +368,22 @@ class DList extends Component{
                         {/*<tr >
                             <td style={styles.td_left}>{___.activity_type}</td>
                             <td style={styles.td_right}>{activityType[ele.type]}</td>
-                        </tr>*/}
+                        </tr> 活动类型*/}
                         <tr style={styles.line}>
                             <td style={styles.td_left}>{___.start_date}</td>
                             <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
                         </tr>
                     </tbody>
                 </table>
-                <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
+                <div style={styles.spans}>
                     <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
                     <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
-                    {/*<span style={styles.count} >{___.click +' '+ ele.status1}</span>
-                    <span style={styles.count} >{___.share +' '+ ele.status1}</span>
-                    <span style={styles.count} >{___.scan +' '+ ele.status1}</span>*/}
                 </div>
+                {/*<div style={styles.spans}>
+                    <span style={styles.count} >{___.click +' '+ ele.status1}</span>
+                    <span style={styles.count} >{___.share +' '+ ele.status1}</span>
+                    <span style={styles.count} >{___.scan +' '+ ele.status1}</span>
+                </div>点击/分享/扫描 统计*/}
                 <div style={styles.bottom_btn_right}>
                     <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />
                     <FlatButton label={___.share} primary={true} onClick={()=>this.share(ele)} />
@@ -370,5 +402,3 @@ DList.contextTypes={
 let Alist=AutoList(DList);
 
 
-
-export default App;
