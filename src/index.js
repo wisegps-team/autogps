@@ -172,7 +172,7 @@ class App extends Component {
         });
     }
     bindSuccess(user){//绑定微信成功
-        history.back(-2);
+        history.go(-2);
         // W.toast(___.update_su);
         // if(this._user){//继续
         //     this.getUserData(user);
