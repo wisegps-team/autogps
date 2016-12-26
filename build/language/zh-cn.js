@@ -453,7 +453,6 @@ window.___={
 	'service_booking':'服务预约',
 	'more_install':'致电xxx获取更多安装网点信息！',
 	'confirm_install':'是否发送服务预约给：xxx',
-<<<<<<< HEAD
 	'learn_detail':'了解详情',
 	'booking_product':'预订产品',
 	'prepayments':'预付款项',
