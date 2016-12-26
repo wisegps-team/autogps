@@ -35,12 +35,15 @@ class ProductName extends Component {
             name='act_url' 
             close={this.toggleIframe}
         />:null;
+        let a_sty={color:'rgb(33, 150, 243)'};
+        if(this.props.noDetail)
+            a_sty.display='none';
         return (
             <p>
                 {___.booking_product+"："}
                 <span style={sty.color}>
                     {name}
-                    <a style={{color:'rgb(33, 150, 243)'}} onClick={this.toggleIframe}>{___.learn_detail}</a>
+                    <a style={a_sty} onClick={this.toggleIframe}>{___.learn_detail}</a>
                 </span>
                 {iframe}
             </p>

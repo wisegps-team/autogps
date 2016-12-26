@@ -20,9 +20,6 @@ const styles = {
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
 thisView.addEventListener('load',function(e){
-    if(!_user){
-        location='index.html?loginLocation='+location.href;
-    }
     ReactDOM.render(<App/>,thisView);
 });
 
@@ -47,7 +44,15 @@ class App extends Component {
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
             let {uid,activityId,installId}=res.data;
-
+            if(!_user){
+                Wapi.serverApi.getWeixinKey(r=>{
+                    let loc=encodeURIComponent(location.href);
+                    W.alert(___.ask_to_login,e=>location='index.html?loginLocation='+loc+"&wx_app_id="+r.data.wxAppKey);
+                },{
+                    uid,
+                    type:1
+                });
+            }
             Wapi.activity.get(r=>{
                 ACT=r.data;
                 this.forceUpdate();
@@ -77,14 +82,6 @@ class App extends Component {
         let date=W.dateToString(this.data.date).slice(0,10);
         let time=W.dateToString(this.data.time).slice(10);
         console.log(date+time);
-        
-        let pay=___.not_pay;
-        if(booking['payStatus']){
-            if(booking['payStatus']==1)
-                pay=___._deposit+'：'+booking['payMoney'];
-            else if(booking['payStatus']==2)
-                pay=___.all_price+'：'.booking['payMoney'];
-        }
         
         let par={
             _objectId:_g.bookingId,

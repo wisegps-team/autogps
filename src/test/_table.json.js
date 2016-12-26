@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=80;//版本号
+let version=81;//版本号
 
 //地区表
 export const area={
@@ -2180,6 +2180,11 @@ export const booking={
         },{
             'name': 'managerId',
             'desc': '客户经理id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'userId',
+            'desc': '预订人user表objectId',
             'type': 'String',
             'query': true,
         }

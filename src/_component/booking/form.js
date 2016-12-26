@@ -57,11 +57,13 @@ class Form extends Component {
             openId:_g.openid,
             activityId:_g.activityId||'0',
             payStatus:0,
-            payMoney:0
+            payMoney:0,
+            carType:{
+                qrStatus:'0'
+            }
         }
         this.change = this.change.bind(this);
         this.changeVerifi=this.changeVerifi.bind(this);
-        this.changeCarName = this.changeCarName.bind(this);
         this.submit = this.submit.bind(this);
         this.mobileChange = this.mobileChange.bind(this);
     }
@@ -97,9 +99,6 @@ class Form extends Component {
     changeVerifi(val){
         this.valid=true;
         this._valid=val;
-    }
-    changeCarName(e,val){
-        this.data.carType={car_num:val};
     }
     submit(){
         if(!this.valid){
@@ -142,6 +141,7 @@ class Form extends Component {
         let _this=this;
         Wapi.user.register(function(user){
             let uid=user.uid;
+            submit_data.userId=uid;
             Wapi.booking.add(function(res){
                 submit_data.objectId=res.objectId;
                 _this.props.onSuccess(submit_data,uid);

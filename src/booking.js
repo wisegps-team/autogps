@@ -18,6 +18,7 @@ import ShareApp from './_component/booking/share_app';
 import CheckApp from './_component/booking/check_app';
 import QrBox from './_component/booking/qr_box';
 import PayBox from './_component/booking/pay_box';
+import ErrorBox from './_component/booking/error_box';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -63,11 +64,12 @@ class App extends Component {
         this.success = this.success.bind(this);
         this.setSelf = this.setSelf.bind(this);
         this.cancelPay = this.cancelPay.bind(this);
+        this.errorCall = this.errorCall.bind(this);
     }
 
     componentDidMount() {
         let that=this;
-        Wapi.pay.checkWxPay(function(res){
+        let isPay=Wapi.pay.checkWxPay(function(res){
             let booking=W.ls('booking');
             let newState={action:2};
             if(res.status_code){
@@ -91,6 +93,23 @@ class App extends Component {
             that.setState(newState);
             that.getQrcode(booking);
         },_g.activityId);
+        if(!isPay)//如果不是支付之后的返回
+            Wapi.booking.get(r=>{//检测一下有没有异常订单
+                if(r.data){//有异常
+                    this.data.booking=r.data;
+                    this.data.uid=r.data.userId;
+                    if(r.data.payMoney){//已经支付,直接显示二维码
+                        this.getQrcode(this.data.booking);
+                        this.setState({action:2});
+                    }else //未支付，提示选择重新预订或者继续预订
+                        this.setState({action:3});
+                    
+                }
+            },{
+                openId:_g.openid,
+                activityId:ACT.objectId,
+                'carType.qrStatus':0   //未扫码的订单
+            });
     }
 
     success(booking,uid){
@@ -108,7 +127,7 @@ class App extends Component {
 
     getQrcode(booking){
         let scene=booking.objectId;
-        let qrRes=W.ls(scene);
+        let qrRes=W.ls(scene)||((booking.carType&&booking.carType.qrUrl)?{url:booking.carType.qrUrl}:null);
         if(qrRes){//是否已经获取过了(应付支付后返回的情况)
             this.setQr(qrRes,scene,booking);
             return;
@@ -149,6 +168,17 @@ class App extends Component {
         //不要赠品
         this.setState({action:2});
     }
+
+    //有异常订单，返回处理方式，0：重新预订，1：继续预订
+    errorCall(i){
+        if(i){//继续预订
+            this.success(this.data.booking,this.data.uid);
+        }else{//重新预订
+            Wapi.booking.delete(res=>this.setState({action:0}),{
+                objectId:this.data.booking.objectId
+            });
+        }
+    }
     render() {
         let boxs=[
             (<Form self={this.state.self} onSuccess={this.success} setSelf={this.setSelf} act={ACT}/>),
@@ -159,7 +189,11 @@ class App extends Component {
                 onCancel={this.cancelPay}
                 self={this.state.self}
             />),
-            this._qrbox
+            this._qrbox,
+            (<ErrorBox
+                booking={this.data.booking}
+                callback={this.errorCall}
+            />)
         ];
         return (
             <AppBox>

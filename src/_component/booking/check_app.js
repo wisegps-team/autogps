@@ -92,7 +92,7 @@ class CheckBox extends Component {
                 <p style={{textIndent:'2em'}}>
                     <span style={sty.color}>{this.props.data.name}</span>
                     {" 于 "}
-                    <span style={sty.color}>{date}</span>
+                    <span>{date}</span>
                     {___.b_des.replace('xxx',mobile.replace(mobile.slice(-8,-4),'****'))}
                 </p>
                 <MobileChecker mobile={mobile} onSuccess={this.success}/>
