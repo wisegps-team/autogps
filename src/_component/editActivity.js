@@ -44,6 +44,7 @@ function getInitData(){
         getCard:false,  //客户经理开卡
         status:1,       //活动状态（1进行中/0已终止）
         wxAppKey:_user.customer.wxAppKey||'',   //配置公众号才有此项目
+        tel:'',//咨询电话
     };
     return initData;
 }
@@ -310,6 +311,8 @@ class EditActivity extends Component {
 
                 {/*活动链接*/}
                 <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={noEdit} />
+
+                <Input name='tel' floatingLabelText={___.support_hotline} value={this.data.tel} onChange={this.dataChange} disabled={noEdit} />
                 
                 {/*客户经理开卡*/}
                 <div style={styles.input_group}>

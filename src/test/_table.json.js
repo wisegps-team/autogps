@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=79;//版本号
+let version=81;//版本号
 
 //地区表
 export const area={
@@ -2182,6 +2182,11 @@ export const booking={
             'desc': '客户经理id',
             'type': 'String',
             'query': true,
+        },{
+            'name': 'userId',
+            'desc': '预订人user表objectId',
+            'type': 'String',
+            'query': true,
         }
     ],
     indexDefine: [
@@ -2315,6 +2320,11 @@ export const activity={
             'name': 'count',
             'desc': '计算提成',
             'type': 'Boolean',
+            'query': true
+        },{
+            'name': 'tel',
+            'desc': '咨询电话',
+            'type': 'String',
             'query': true
         }
     ],

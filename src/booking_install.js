@@ -89,14 +89,6 @@ class App extends Component {
                 flag++;
                 if(flag==2)this.forceUpdate();
             },{objectId:activityId});
-
-            //获取活动发布者的信息
-            // Wapi.customer.get(json=>{
-            //     sellerTel=json.data.tel;
-            //     flag++;
-            //     if(flag==3)this.forceUpdate();
-            // },{objectId:uid});
-
             //获取安装网点
             Wapi.serverApi.getInstallByUid(re=>{
                 this.installs=re.data;//正式用

@@ -99,7 +99,9 @@ class WPayApi extends WiStormAPI {
 		//测试用
 		WiStorm.config.wxAppKey='wxa5c196f7ec4b5df9';
 		let url='http://'+WiStorm.config.domain.user+'/order.php?key='+encodeURIComponent(key);
-		
+		localStorage.setItem(key,JSON.stringify({
+			err_msg :"get_brand_wcpay_request:cancel"
+		}));//默认设置为未支付
 		if(link)url+='&callback='+encodeURIComponent(link);
 		if(data.psw)data.psw=this.md5(data.psw);
 		for(let k in data){

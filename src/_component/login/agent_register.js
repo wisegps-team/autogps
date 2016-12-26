@@ -269,7 +269,11 @@ function customerCheck(user,that,nullCallback){
         }else{//如果没有，则是完善资料流程
             nullCallback?nullCallback():null;
         }
-    },{uid:user.uid,access_token:user.access_token});
+    },{
+        uid:user.uid,
+        access_token:user.access_token,
+        appId:WiStorm.config.objectId
+    });
 }
 
 function getCustType(){
