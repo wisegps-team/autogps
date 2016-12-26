@@ -12,6 +12,7 @@ import Login from './_component/login';
 import Forget from './_component/login/forget';
 import AgentShowBox from './_component/login/agent_register';
 import VerificationCode from './_component/base/verificationCode';
+import BindBox from './_component/login/bindBox';
 
 import CONFIG from './_modules/config';
 import sty from './_component/login/style';
@@ -23,7 +24,6 @@ window.addEventListener('load',function(){
     ReactDOM.render(<App/>,W('#main'));
 });
 
-
 class App extends Component {
     constructor(props, context) {
         super(props, context);
@@ -34,6 +34,7 @@ class App extends Component {
         this.forgetSuccess = this.forgetSuccess.bind(this);
         this.registerCallback = this.registerCallback.bind(this);
         this.bindSuccess = this.bindSuccess.bind(this);
+        this.showBind = this.showBind.bind(this);
     }
 
     getUserData(user){
@@ -163,26 +164,36 @@ class App extends Component {
             }
         }
     }
+    showBind(){
+        W.confirm(___.ask_change_openId,res=>{
+            if(res){
+                this.setState({active:3});
+            }
+        });
+    }
     bindSuccess(user){//绑定微信成功
-        W.toast(___.update_su);
-        if(this._user){//继续
-            this.getUserData(user);
-            this._user=undefined;
-        }
-        this.setState({active:0});
+        history.back(-2);
+        // W.toast(___.update_su);
+        // if(this._user){//继续
+        //     this.getUserData(user);
+        //     this._user=undefined;
+        // }
+        // this.setState({active:0});
     }
     render() {
         let _sty=this.state.active==1?{padding:'10px'}:null;
+        let login_sty=WiStorm.agent.weixin?{
+            display:'none'
+        }:null;
         let actives=[
-            <Login onSuccess={this.loginSuccess}/>,
+            <Login onSuccess={this.loginSuccess} style={login_sty} ssoLoginFail={this.showBind}/>,
             <AgentShowBox success={this.registerCallback} parentId={_g.parentId}/>,
             <Forget onSuccess={this.forgetSuccess} user={this._res?this._res.data:null}/>,
-            <BindBox onSuccess={this.bindSuccess} user={this._user||null}/>
+            <BindBox onSuccess={this.bindSuccess} openId={_g.openid}/>
         ]
-        let buttons=[
-            <FlatButton label={___.login} primary={true} onClick={()=>this.setState({active:0})} key='login'/>,null,
-            // <FlatButton label={___.register} primary={true} onClick={()=>this.setState({active:1})} key='register'/>,
-            <FlatButton label={___.forget_pwd} primary={true} onClick={()=>this.setState({active:2})} key='forget_pwd'/>];
+        let buttons=(this.state.active&&this.state.active!=3)?
+            (<FlatButton label={___.login} primary={true} onClick={()=>this.setState({active:0})} key='login'/>)
+            :null;
         return (
             <ThemeProvider>
                 <div className='login' style={_sty}>
@@ -192,7 +203,7 @@ class App extends Component {
                         marginTop: '10px'
                         }}
                     >
-                        {buttons.filter((e,i)=>i!=this.state.active)}
+                        {buttons}
                     </div>
                 </div>
             </ThemeProvider>
@@ -200,50 +211,4 @@ class App extends Component {
     }
 }
 
-
-class BindBox extends Component{
-    constructor(props, context) {
-        super(props, context);
-        this.submit = this.submit.bind(this);
-        this.change = this.change.bind(this);
-    }
-
-    change(val,name){
-        this.code=name;
-    }
-
-    submit(){
-        if(!this.code){
-            W.alert(___.code_err);
-            return;
-        }
-        let user=this.props.user;
-        let key='authData.'+getOpenIdKey();
-        let data={
-            access_token:user.access_token,
-            _sessionToken:user.session_token
-        };
-        data[key]=_g.openid;
-        Wapi.user.updateMe(res=>{
-            let d={};
-            d[getOpenIdKey()]=_g.openid;
-            user.authData=Object.assign(user.authData,d);
-            this.props.onSuccess(user);
-        },data);
-    }
-    render() {
-        return (
-            <div>
-                <VerificationCode 
-                    name='valid_code'
-                    type={1}
-                    account={this.props.user.mobile} 
-                    onSuccess={this.change}
-                />
-
-                <RaisedButton label={___.ok} primary={true} style={sty.but} onClick={this.submit}/>
-            </div>
-        );
-    }
-}
 
