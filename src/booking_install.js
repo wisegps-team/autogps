@@ -46,7 +46,7 @@ for(let i=5;i--;){
     _customers.push(c);
 }
 
-let sellerCust={tel:''};
+let sellerTel='';
 let ACT=null;
 let booking=null;
 let submited=false;
@@ -85,11 +85,10 @@ class App extends Component {
             //获取活动信息
             Wapi.activity.get(r=>{
                 ACT=r.data;
-                sellerCust.tel=ACT.tel||'';
+                sellerTel=ACT.tel||'';
                 flag++;
                 if(flag==2)this.forceUpdate();
             },{objectId:activityId});
-
             //获取安装网点
             Wapi.serverApi.getInstallByUid(re=>{
                 this.installs=re.data;//正式用
@@ -231,7 +230,7 @@ class App extends Component {
                         <AreaSelect name='area' onChange={this.areaChange} selectModel={true} select={this.areaSelect}/>
                     </div>
                     {items}
-                    <div style={styles.bottom_btn}>{___.more_install.replace('xxx',sellerCust.tel)}</div>
+                    <div style={styles.bottom_btn}>{___.more_install.replace('xxx',sellerTel)}</div>
                     {/*<div style={styles.bottom_btn}>
                         <RaisedButton
                             label={___.ok}

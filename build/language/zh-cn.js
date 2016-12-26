@@ -453,6 +453,7 @@ window.___={
 	'service_booking':'服务预约',
 	'more_install':'致电xxx获取更多安装网点信息！',
 	'confirm_install':'是否发送服务预约给：xxx',
+<<<<<<< HEAD
 	'learn_detail':'了解详情',
 	'booking_product':'预订产品',
 	'prepayments':'预付款项',
@@ -465,4 +466,7 @@ window.___={
 	'book_again':'重新预订',
 	'continue_book':'继续预订',
 	'ask_to_login':'你还没有登录，请登录',
+	'bind_num':'绑定数',
+	'bind_count':'绑定统计',
+	'scan_count':'扫描统计',
 }

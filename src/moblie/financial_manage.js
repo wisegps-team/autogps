@@ -45,11 +45,14 @@ const styles={
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
     a:{color:'#009988'},
-    sonpage_main:{padding:'1em',textAlign:'center'},
+    sonpage_main:{marginLeft:'10px',marginRight:'10px',textAlign:'center'},
     inputGroup:{display:'block',paddingTop:'1em',paddingBottom:'1em'},
 }
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
+}
+function vmiddle(num,sty){
+    return Object.assign({marginTop:((window.innerHeight-num)/2-50)+'px'},sty);
 }
 
 let companyBillUid='0';
@@ -161,7 +164,7 @@ class RechargePage extends Component {
     toRecharge(){
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)||this.amout==0){
-            alert(___.amount_error);
+            W.alert(___.amount_error);
             return;
         }
         let pay_data={
@@ -175,9 +178,9 @@ class RechargePage extends Component {
         }
         console.log('wxpay_recharge');
         console.log(pay_data);
-        W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});
-        // history.replaceState('home','home','home.html');
-        // Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
+        // W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});//测试用，弹出uid
+        history.replaceState('home','home','home.html');
+        Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
     }
     render() {
         return (
@@ -185,7 +188,7 @@ class RechargePage extends Component {
             <div>
                 <AppBar title={___.recharge}/>
 
-                <div style={styles.sonpage_main}>
+                <div style={ vmiddle(130,styles.sonpage_main) }>
                     <div style={styles.inputGroup}>
                         <span >{___.input_recharge_amount}</span>
                         <span style={{paddingLeft:'1em'}}>
@@ -225,11 +228,11 @@ class WithdrawPage extends Component {
     toCheckPhone(){
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)||this.amount==0){
-            alert(___.amount_error);
+            W.alert(___.amount_error);
             return;
         }
         if(this.amount>Balance){
-            alert(___.balance_not_enough);
+            W.alert(___.balance_not_enough);
             return;
         }
         this.setState({isInputAmount:false});
@@ -253,7 +256,7 @@ class WithdrawPage extends Component {
             <div>
                 <AppBar title={___.withdraw_cash}/>
 
-                <div style={this.state.isInputAmount ? styles.sonpage_main : {display:'none'}}>
+                <div style={this.state.isInputAmount ? vmiddle(180,styles.sonpage_main) : {display:'none'}}>
                     <div style={styles.inputGroup}>
                         <span>{___.input_withdraw_amount}</span>
                         <span style={{paddingLeft:'1em'}}>
@@ -264,12 +267,12 @@ class WithdrawPage extends Component {
                     <RaisedButton style={{marginTop:'1em'}} onClick={this.toCheckPhone} label={___.ok} primary={true}/>
                 </div>
 
-                <div style={this.state.isInputAmount ? {display:'none'} : styles.sonpage_main}>
+                <div style={this.state.isInputAmount ? {display:'none'} : vmiddle(200,styles.sonpage_main)}>
                     <p style={{fontSize:'0.8em'}}>{___.need_check_phone}</p>
                     <div style={{width:'90%',marginLeft:'5%'}}>
                         <MobileChecker mobile={_user.customer.tel} onSuccess={this.submit}/>
                     </div>
-                    <RaisedButton onClick={this.toWithdraw} label={___.ok} primary={true}/>
+                    <RaisedButton style={{marginTop:'1em'}} onClick={this.toWithdraw} label={___.ok} primary={true}/>
                 </div>
 
             </div>

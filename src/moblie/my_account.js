@@ -231,11 +231,13 @@ class WalletApp extends Component {
         console.log(this.amount);
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
         if(!reg.test(this.amount)){
-            alert(___.amount_error);
+            this.setState({isInputAmount:false});
+            W.alert(___.amount_error);
             return;
         }
         if(this.amount>_user.balance){
-            alert(___.balance_not_enough);
+            this.setState({isInputAmount:false});
+            W.alert(___.balance_not_enough);
             return;
         }
         this.setState({isInputAmount:false});

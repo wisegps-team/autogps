@@ -96,7 +96,7 @@ class App extends Component {
                     W.alert({
                         title:___.booking_date_title,
                         text:___.install_time_success
-                    },e=>{wx.closeWindow();});
+                    },e=>{W.native.close();});
                 }
             },{
                 openId:_g.cust_open_id,   //车主的openid
