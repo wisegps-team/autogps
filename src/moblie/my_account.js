@@ -13,6 +13,7 @@ import Avatar from 'material-ui/Avatar';
 
 import ActionLock from 'material-ui/svg-icons/action/lock';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
+import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import ActionFace from 'material-ui/svg-icons/action/face';
 import ActionAccountBox from 'material-ui/svg-icons/action/account-box';
 import ContentClear from 'material-ui/svg-icons/content/clear';
@@ -30,10 +31,14 @@ import Dialog from 'material-ui/Dialog';
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+
     let view=thisView.prefetch('#forget',3);
     ReactDOM.render(<ForgetApp/>,view);
+
     let walletView=thisView.prefetch('#wallet',3);
     ReactDOM.render(<WalletApp/>,walletView);
+    
+    thisView.prefetch('booking_list.js',2);
 });
 
 const sty={
@@ -110,7 +115,7 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.my_account}/>
+                <AppBar title={___.user}/>
                 <div style={sty.p}>
                     {box}
                 </div>
@@ -424,7 +429,17 @@ class ShowBox extends Component{
             W.logout('&logout=true&needOpenId=true');
         }
     }
-    
+    recommend(){
+        thisView.goTo('my_marketing.js');
+    }
+    toBillList(){
+        //这里的‘我的订单’是指的什么？sellerId为当前用户的订单？
+        let par={
+            sellerId:_user.objectId,
+            status:0
+        }
+        thisView.goTo('booking_list.js',par);
+    }
     render() {
         const actions = [
             <FlatButton
@@ -441,6 +456,7 @@ class ShowBox extends Component{
         ];
 
         let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
+        console.log((_user));
         return (
             <Paper zDepth={1} style={sty.p}>
                 <List>
@@ -452,13 +468,32 @@ class ShowBox extends Component{
                 </List>
                 <Divider/>
                 <List>
-                    <ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>
-                    <ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>
+                    {/*<ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>*/}
+                    {/*<ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>*/}
+                    <ListItem 
+                        primaryText={___.my_order} 
+                        onClick={this.toBillList}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>2</span>}
+                        rightIcon={<NavigationChevronRight />}
+                        style={{borderBottom:'1px solid #dddddd'}}
+                    />
                     <ListItem 
                         primaryText={___.my_wallet} 
-                        leftIcon={<ActionAccountBalanceWallet/>} 
                         onClick={this.wallet}
-                        rightAvatar={<span style={{marginTop:'13px'}}>{toMoneyFormat(_user.balance)}</span>}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(_user.balance)}</span>}
+                        rightIcon={<NavigationChevronRight />}
+                        style={{borderBottom:'1px solid #dddddd'}}
+                    />
+                    <ListItem 
+                        primaryText={___.recommend} 
+                        onClick={this.recommend}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(_user.balance)}</span>}
+                        rightIcon={<NavigationChevronRight />}
+                        style={{borderBottom:'1px solid #dddddd'}}
+                    />
+                    <ListItem 
+                        primaryText={___.system_set} 
+                        rightIcon={<NavigationChevronRight />}
                     />
                 </List>
                 <Divider/>
@@ -476,6 +511,17 @@ class ShowBox extends Component{
         );
     }
 }
+
+class EditBox extends Component {
+    render() {
+        return (
+            <div>
+                edit
+            </div>
+        );
+    }
+}
+
 
 class Logo extends Component{
     constructor(props, context) {

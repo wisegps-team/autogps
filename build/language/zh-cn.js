@@ -471,4 +471,12 @@ window.___={
 	'qr_list_null':'你还没有创建二维码',
 	'print_qr':'印刷二维码',
 	'enabled_num':'启用数量',
+	'message':'消息',
+	'my_order':'我的订单',
+	'recommend':'推荐有礼',
+	'system_set':'系统设置',
+	'send_to_chat':'发送给好友',
+	'share_on_moments':'分享朋友圈',
+	'order_id':'订单编号',
+	'read':'阅读',
 }

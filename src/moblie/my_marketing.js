@@ -1,4 +1,4 @@
-//我的营销
+//我的营销,20161227改名为'推荐有礼'
 "use strict";
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
@@ -18,6 +18,7 @@ import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
 import {getOpenIdKey} from '../_modules/tool';
+import Iframe from '../_component/base/iframe';
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
@@ -28,10 +29,10 @@ const styles = {
     line:{marginTop:'0.5em'},
     top_btn_right:{width:'100%',display:'block',textAlign:'right'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
-    count:{marginRight:'1em'},
+    count:{marginRight:'1em',float:'left'},
     link:{color:'#009688'},
     table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'3px'},
-    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px'},
+    spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px',marginBottom:'15px',display:'block',width:'100%'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -111,7 +112,7 @@ class App extends Component {
                 status:1,
                 type:3
             }
-            Wapi.activity.list(res=>{//type=0 车主营销的活动
+            Wapi.activity.list(res=>{//type=3 渠道营销
                 this.total=res.total;
                 let activities=res.data;
                 
@@ -140,8 +141,7 @@ class App extends Component {
                 limit:-1,
             });
 
-        }
-        if(_user.customer.custTypeId==5){//如果是代理商账号，显示员工营销活动；
+        }else if(_user.customer.custTypeId==5){//如果是代理商账号，显示type=2，员工营销；
             
             let par2={
                 uid:_user.customer.objectId,
@@ -170,6 +170,43 @@ class App extends Component {
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par2,{
+                sorts:'-createdAt',
+                limit:-1,
+            });
+
+        }else if(_user.customer.custTypeId==7){//车主账号，显示上一级所属经销商及其上级代理商创建的车主营销活动。
+            
+            let parents=_user.customer.parentId.join('|');
+            let par1={
+                uid:_user.customer.objectId + '|' + parents,
+                status:1,
+                type:0
+            }
+            Wapi.activity.list(res=>{//type=0 车主营销的活动
+                this.total=res.total;
+                let activities=res.data;
+                
+                activities.forEach(ele=>{
+                    let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                    if(_user.customer.wxAppKey){
+                        ele.wxAppKey=_user.customer.wxAppKey;
+                        ele.uid=_user.customer.objectId;
+                    }
+                });
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            },par1,{
                 sorts:'-createdAt',
                 limit:-1,
             });
@@ -221,7 +258,7 @@ class App extends Component {
             <ThemeProvider>
                 <div>
                     <AppBar 
-                        title={___.my_marketing}
+                        title={___.recommend}
                         style={{position:'fixed'}}
                     />
                     <div name='list' style={styles.main}>
@@ -260,19 +297,28 @@ let activityType=[___.carowner_seller,___.group_marketing,___.employee_marketing
 class DList extends Component{
     constructor(props,context){
         super(props,context);
+        this.activityUrl='';
+        this.state={
+            iframe:false
+        };
         this.toActivityPage = this.toActivityPage.bind(this);
         this.toCountPage = this.toCountPage.bind(this);
         this.activityData = this.activityData.bind(this);
+        this.toggleIframe = this.toggleIframe.bind(this);
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-            +'&uid='+_user.customer.objectId
-            +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        this.activityUrl=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
             +'&title='+encodeURIComponent(data.name)
+            +'&uid='+_user.customer.objectId
+            +'&seller_name='+encodeURIComponent(data._seller)
+            +'&sellerId='+data._sellerId
+            +'&mobile='+data._sellerTel
             +'&agent_tel='+_user.customer.tel
-            +'&seller_name='+encodeURIComponent(___.noBooking)
             +'&timerstamp='+Number(new Date());
+            
+        this.setState({iframe:true});
     }
     toCountPage(page,data){
         let par={
@@ -291,9 +337,9 @@ class DList extends Component{
             return;
         }
         function setShare(){
-            let _seller=_user.employee?_user.employee.name:_user.customer.contact;
-            let _sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
-            let _sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+            data._seller=_user.employee?_user.employee.name:_user.customer.contact;
+            data._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
+            data._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
             
             let strOpenId='';
             let idKey=getOpenIdKey();
@@ -304,13 +350,13 @@ class DList extends Component{
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
                 link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-                    +'&uid='+data.uid
-                    +'&sellerId='+_sellerId
-                    +'&mobile='+_sellerTel
                     +'&title='+encodeURIComponent(data.name)
+                    +'&uid='+data.uid
+                    +'&seller_name='+encodeURIComponent(data._seller)
+                    +'&sellerId='+data._sellerId
+                    +'&mobile='+data._sellerTel
                     +'&agent_tel='+_user.customer.tel
-                    +'&seller_name='+encodeURIComponent(_seller)
-                    +'&wx_app_id='+data.wxAppKey
+                    +'&wxAppKey='+data.wxAppKey
                     +'&activityId='+data.objectId
                     +strOpenId
                     +'&timerstamp='+Number(new Date()),
@@ -321,7 +367,7 @@ class DList extends Component{
             wx.onMenuShareTimeline(op);
             wx.onMenuShareAppMessage(op);
             setShare=null;
-            W.alert(___.share_activity);
+            // W.alert(___.share_activity);
         }
         if(W.native){
             setShare();
@@ -330,16 +376,25 @@ class DList extends Component{
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }
-
+        this.toActivityPage(data); 
     }
     activityData(data){
         thisView.goTo('./myMarketing/marketing_data.js',data);
     }
+    toggleIframe(){
+        this.setState({iframe:!this.state.iframe});
+    }
     render() {
+        let iframe=this.state.iframe?<Iframe 
+            src={this.activityUrl} 
+            name='act_url' 
+            close={this.toggleIframe}
+        />:null;
         let data=this.props.data;
         let items=data.map((ele,i)=>
             <Card key={i} style={styles.card}>
-                {/*<div style={{float:'right'}}>
+                {/* 新的标题和右上角菜单*/}
+                <div style={{float:'right'}}>
                     <IconMenu
                         iconButtonElement={
                             <IconButton>
@@ -354,44 +409,39 @@ class DList extends Component{
                         <MenuItem key='1' onTouchTap={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
                     </IconMenu>
                 </div>
-                <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div> 新的标题和右上角菜单*/}
-                <table style={styles.table}>
-                    <tbody>
-                        <tr >
-                            <td style={styles.td_left}>{___.activity_name}</td>
-                            <td style={combineStyle(['td_right','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.activity_status}</td>
-                            <td style={styles.td_right}>{strStatus[ele.status]}</td>
-                        </tr>
-                        {/*<tr >
-                            <td style={styles.td_left}>{___.activity_type}</td>
-                            <td style={styles.td_right}>{activityType[ele.type]}</td>
-                        </tr> 活动类型*/}
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.start_date}</td>
-                            <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style={combineStyle(['table','link'])} onClick={()=>this.share(ele)}>{ele.name}</div>
+                
                 <div style={styles.spans}>
-                    <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
-                    <span style={combineStyle(['count','link'])} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
+                    <div style={styles.count} >
+                        <span>{___.send_to_chat +' '}</span>
+                        <span style={styles.link}>{ele.send||0}</span>
+                    </div>
+                    <div >
+                        <span>{___.share_on_moments +' '}</span>
+                        <span style={styles.link}>{ele.share||0}</span>
+                    </div>
                 </div>
-                {/*<div style={styles.spans}>
-                    <span style={styles.count} >{___.click +' '+ ele.status1}</span>
-                    <span style={styles.count} >{___.share +' '+ ele.status1}</span>
-                    <span style={styles.count} >{___.scan +' '+ ele.status1}</span>
-                </div>点击/分享/扫描 统计*/}
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />
-                    <FlatButton label={___.share} primary={true} onClick={()=>this.share(ele)} />
+
+                <div style={styles.spans}>
+                    <div style={styles.count} >
+                        <span>{___.read +' '}</span>
+                        <span style={styles.link}>{ele.read||0}</span>
+                    </div>
+                    <div style={styles.count} onClick={()=>this.toCountPage('booking',ele)}>
+                        <span>{___.bookingNum +' '}</span>
+                        <span style={styles.link}>{ele.status0}</span>
+                    </div>
+                    <div onClick={()=>this.toCountPage('registe',ele)}>
+                        <span>{___.register +' '}</span>
+                        <span style={styles.link}>{ele.status1}</span>
+                    </div>
                 </div>
+                
             </Card>);
         return(
             <div>
                 {items}
+                {iframe}
             </div>
         )
     }
