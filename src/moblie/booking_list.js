@@ -53,7 +53,7 @@ class App extends React.Component {
         this.state={
             books:[],
             total:0,
-            bookData:false
+            bookData:null
         }
         this.page=1;
         this._data={};
@@ -100,7 +100,7 @@ class App extends React.Component {
 
     toList(){
         this.setState({
-            bookData:false
+            bookData:null
         });
     }
     render(){
@@ -119,7 +119,7 @@ class App extends React.Component {
                     />
                 </div>
                 
-                <SonPage title={___.details} open={this.state.bookData} back={this.toList}>
+                <SonPage title={___.details} open={this.state.bookData!=null} back={this.toList}>
                     <DetailBox data={this.state.bookData}/>
                 </SonPage>
             </ThemeProvider>
@@ -199,18 +199,42 @@ class DetailBox extends Component{
     
     render() {
         let d=this.state.data||{};
+        console.log(d);
         let resTime=d.status?<h4>{___.register_date+'：'+W.dateToString(W.date(d.resTime))}</h4>:null;
         return (
             <div style={styles.p}>
+                <h4>{___.order_id+'：'+d.objectId}</h4>
+                <h4>{___.submit_booking+'：'+W.dateToString(W.date(d.createdAt))}</h4>
+                <h4>{___.booker+'：'+d.name+'/'+d.mobile}</h4>
+                <h4>{___.carowner_info+'：'+d.userName+'/'+d.userMobile}</h4>
+                <h4>{___.booking_product+'：'+(d.product||___.loading)}</h4>
+                <h4>{___.product_price+'：'+(d.price||___.loading)}</h4>
+                {/*付款时间*/}
+                {/*付款金额*/}
+                {/*付款方式*/}
+                {/*预约安装*/}
+                {/*预约门店*/}
+                {/*门店电话*/}
+                {/*预约确认*/}
+                {/*预约时间*/}
+                {/*安装注册*/}
+                {/*注册车主*/}
+                {/*注册产品*/}
+                {/*货款结算*/}
+                {/*支付金额*/}
+                {/*佣金结算*/}
+                {/*支付金额*/}
+
                 <h4>{___.recommender+'：'+d.sellerName}</h4>
-                <h4>{___.book_date+'：'+W.dateToString(W.date(d.createdAt))}</h4>
-                <h4>{___.booker+'：'+d.name}</h4>
-                <h4>{___.booking_phone+'：'+d.mobile}</h4>
-                <h4>{___.product_type+'：'+(d.product||___.loading)}</h4>
-                <h4>{___.device_price+'：'+(d.price||___.loading)}</h4>
                 <h4>{___.install_price+'：'+(d.installationFee||___.loading)}</h4>
                 {resTime}
             </div>
         );
     }
+}
+
+
+//工具方法 金额转字符
+function toMoneyFormat(money){
+    return '￥' + money.toFixed(2);
 }

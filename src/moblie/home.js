@@ -202,11 +202,11 @@ const _pages=[//所有的页面
         name:___.company_info,
         icon:<ActionInfoOutline style={sty.icon}/>
     },
-    {   /*我的营销 */
-        href:'my_marketing',
-        name:___.my_marketing,
-        icon:<ActionTrendingUp style={sty.icon}/>
-    },
+    // {   /*我的营销 20161227改名为‘推荐有礼’，并放入‘我的’菜单下*/
+    //     href:'my_marketing',
+    //     name:___.my_marketing,
+    //     icon:<ActionTrendingUp style={sty.icon}/>
+    // },
     {   /*二维码管理 */
         href:'qrcode',
         name:___.qrcode_manage,

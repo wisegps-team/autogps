@@ -469,5 +469,11 @@ window.___={
 	'bind_count':'绑定统计',
 	'scan_count':'扫描统计',
 	'message':'消息',
-	
+	'my_order':'我的订单',
+	'recommend':'推荐有礼',
+	'system_set':'系统设置',
+	'send_to_chat':'发送给好友',
+	'share_on_moments':'分享朋友圈',
+	'order_id':'订单编号',
+	'read':'阅读',
 }
