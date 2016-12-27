@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=81;//版本号
+let version=82;//版本号
 
 //地区表
 export const area={
@@ -2507,17 +2507,17 @@ export const qrDistribution={
         },{
             'name': 'type',
             'desc': '二维码类型',//营销，移车卡等
-            'type': 'String',
+            'type': 'Number',
             'query': true,
         },{
             'name': 'num',
             'desc': '数量',
-            'type': 'String',
+            'type': 'Number',
             'query': true,
         },{
             'name': 'max',
             'desc': '最大编号',//当前批次二维码的最大编号
-            'type': 'String',
+            'type': 'Number',
             'query': true, 
         },{
             'name': 'min',

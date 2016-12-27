@@ -411,6 +411,24 @@ class ShowBox extends Component{
     wallet(){
         thisView.goTo('#wallet');
     }
+
+    logout(){
+        W.loading('退出登录');
+        if(_user.customer.wxAppKey)
+            W.logout('&logout=true&needOpenId=true&wx_app_id='+_user.customer.wxAppKey);
+        else if(_user.customer.parentId&&_user.customer.parentId.length){
+            Wapi.customer.get(res=>{
+                if(res.data.wxAppKey)
+                    W.logout('&logout=true&needOpenId=true&wx_app_id='+(res.data.wxAppKey||''));
+                else
+                    W.logout('&logout=true&needOpenId=true');
+            },{
+                objectId:_user.customer.parentId[0]
+            });
+        }else{
+            W.logout('&logout=true&needOpenId=true');
+        }
+    }
     recommend(){
         thisView.goTo('my_marketing.js');
     }
@@ -480,7 +498,7 @@ class ShowBox extends Component{
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
-                    <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={W.logout}/>                    
+                    <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={this.logout}/>                    
                 </List>
                 <Dialog
                     title={___.edit_user_name}

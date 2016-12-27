@@ -32,8 +32,8 @@ class Login extends Component {
     componentDidMount() {
         // if(this.formData.password&&this.formData.account)
         //     this.submit();
-        if(_g.sso_login){//后台微信登录返回
-            if(_g.access_token){//登录成功了
+        if(WiStorm.agent.weixin){//后台微信登录返回
+            if(_g.sso_login&&_g.access_token){//登录成功了
                 this.loginSuccess({
                     access_token:_g.access_token,
                     expire_in:_g.expire_in,
@@ -43,6 +43,8 @@ class Login extends Component {
                     uid:_g.uid,
                     user_type:_g.user_type
                 });
+            }else if(_g.sso_login||_g.logout){
+                this.props.ssoLoginFail?this.props.ssoLoginFail():null;
             }
         }
     }

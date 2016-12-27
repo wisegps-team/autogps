@@ -79,6 +79,11 @@ class ServerApi{
 		data.method='getWeixinKey';
 		this.get(data,callback);
 	}
+	bindOpenId(callback,data){
+		data.method='bindOpenId';
+		data.host=location.host;
+		this.get(data,callback);
+	}
 }
 
 export default ServerApi;
