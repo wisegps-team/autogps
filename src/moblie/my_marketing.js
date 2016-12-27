@@ -33,6 +33,9 @@ const styles = {
     link:{color:'#009688'},
     table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'3px'},
     spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px',marginBottom:'15px',display:'block',width:'100%'},
+    share_page:{width:'100%',height:window.innerHeight+'px',display:'block',backgroundColor:'#ffffff',position:'fixed',top:'0px',left:'0px'},
+    share_content:{width:'90%',marginLeft:'5%',marginTop:'20px'},
+    hide:{display:'none'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -269,7 +272,7 @@ class App extends Component {
                 <div>
                     <AppBar 
                         title={___.recommend}
-                        style={{position:'fixed'}}
+                        style={this.state.isShare ? styles.hide : {position:'fixed'}}
                     />
                     <div name='list' style={styles.main}>
                         {/*items*/}
@@ -291,9 +294,14 @@ class App extends Component {
                         />
                     </SonPage>
                     
-                    <SonPage title={___.act_share} open={this.state.isShare} back={this.shareBack}>
+                    {/*<SonPage title={___.act_share} open={this.state.isShare} back={this.shareBack}>
                         <SharePage/>
-                    </SonPage>
+                    </SonPage>*/}
+
+                    <div style={this.state.isShare ? styles.share_page : styles.hide} onClick={this.shareBack}>
+                        <SharePage/>
+                    </div>
+                    
                 </div>
             </ThemeProvider>
         );
@@ -474,7 +482,7 @@ let Alist=AutoList(DList);
 class SharePage extends Component {
     render() {
         return (
-            <div style={{width:'90%',marginLeft:'5%',marginTop:'20px'}}>
+            <div style={styles.share_content}>
                 {___.share_detail}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
             </div>
