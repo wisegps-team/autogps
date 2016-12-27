@@ -52,6 +52,7 @@ class App extends Component {
         super(props,context);
         this.state={
             isEdit:false,
+            isShare:false,
             curActivity:null,
             isCarownerSeller:false,
             noEdit:true,
@@ -67,13 +68,16 @@ class App extends Component {
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
+        this.share = this.share.bind(this);
+        this.shareBack = this.shareBack.bind(this);
         this.edit = this.edit.bind(this);
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
     }
     getChildContext(){
         return {
-            edit:this.edit
+            edit:this.edit,
+            share:this.share
         };
     }
     componentDidMount() {
@@ -224,6 +228,12 @@ class App extends Component {
         this.activities.unshift(activity);
         history.back();
     }
+    share(activity){
+        this.setState({isShare:true});
+    }
+    shareBack(){
+        this.setState({isShare:false});
+    }
     edit(activity){
         let isCarownerSeller=false;
         if(activity.type==0){
@@ -280,13 +290,18 @@ class App extends Component {
                             addSubmit={this.addSubmit}
                         />
                     </SonPage>
+                    
+                    <SonPage title={___.act_share} open={this.state.isShare} back={this.shareBack}>
+                        <SharePage/>
+                    </SonPage>
                 </div>
             </ThemeProvider>
         );
     }
 }
 App.childContextTypes={
-    edit:React.PropTypes.func
+    edit:React.PropTypes.func,
+    share: React.PropTypes.func
 }
 export default App;
 
@@ -307,9 +322,13 @@ class DList extends Component{
         this.toggleIframe = this.toggleIframe.bind(this);
     }
     toActivityPage(data){
-        // history.replaceState('home.html','home.html','home.html');
-        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-        this.activityUrl=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        data._seller=_user.employee?_user.employee.name:_user.customer.contact;
+        data._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
+        data._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+
+        history.replaceState('home.html','home.html','home.html');
+        window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+        // this.activityUrl=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
             +'&title='+encodeURIComponent(data.name)
             +'&uid='+_user.customer.objectId
             +'&seller_name='+encodeURIComponent(data._seller)
@@ -318,7 +337,7 @@ class DList extends Component{
             +'&agent_tel='+_user.customer.tel
             +'&timerstamp='+Number(new Date());
             
-        this.setState({iframe:true});
+        // this.setState({iframe:true});
     }
     toCountPage(page,data){
         let par={
@@ -376,7 +395,7 @@ class DList extends Component{
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }
-        this.toActivityPage(data); 
+        this.context.share();
     }
     activityData(data){
         thisView.goTo('./myMarketing/marketing_data.js',data);
@@ -405,20 +424,20 @@ class DList extends Component{
                         targetOrigin={{horizontal: 'right', vertical: 'top'}}
                         style={styles.icon}
                     >
-                        <MenuItem key='0' onTouchTap={()=>this.context.edit(ele)}>{___.act_detail}</MenuItem>
+                        <MenuItem key='0' onTouchTap={()=>this.share(ele)}>{___.act_share}</MenuItem>
                         <MenuItem key='1' onTouchTap={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
                     </IconMenu>
                 </div>
-                <div style={combineStyle(['table','link'])} onClick={()=>this.share(ele)}>{ele.name}</div>
+                <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div>
                 
                 <div style={styles.spans}>
                     <div style={styles.count} >
                         <span>{___.send_to_chat +' '}</span>
-                        <span style={styles.link}>{ele.send||0}</span>
+                        <span style={styles.link}>{ele.sended||0}</span>
                     </div>
                     <div >
                         <span>{___.share_on_moments +' '}</span>
-                        <span style={styles.link}>{ele.share||0}</span>
+                        <span style={styles.link}>{ele.shared||0}</span>
                     </div>
                 </div>
 
@@ -447,8 +466,19 @@ class DList extends Component{
     }
 }
 DList.contextTypes={
-    edit: React.PropTypes.func
+    edit: React.PropTypes.func,
+    share: React.PropTypes.func
 };
 let Alist=AutoList(DList);
 
+class SharePage extends Component {
+    render() {
+        return (
+            <div style={{width:'90%',marginLeft:'5%',marginTop:'20px'}}>
+                {___.share_detail}
+                <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
+            </div>
+        );
+    }
+}
 
