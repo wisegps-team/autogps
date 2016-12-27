@@ -465,7 +465,10 @@ window.___={
 	'book_again':'重新预订',
 	'continue_book':'继续预订',
 	'ask_to_login':'你还没有登录，请登录',
-	'bind_num':'绑定数',
+	'bind_num':'绑定数量',
 	'bind_count':'绑定统计',
 	'scan_count':'扫描统计',
+	'qr_list_null':'你还没有创建二维码',
+	'print_qr':'印刷二维码',
+	'enabled_num':'启用数量',
 }

@@ -15,8 +15,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Card from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 
+import AutoList from '../_component/base/autoList';
 import AppBar from '../_component/base/appBar';
 import Input from '../_component/base/input';
+import {randomStr} from '../_modules/tool';
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
@@ -27,6 +29,11 @@ thisView.addEventListener('load',function(){
     ReactDOM.render(<AddQrCode/>,addView);
 });
 
+const EVENT={
+    ADDED:randomStr()
+}
+const S_URL='http://autogps.cn/?s=';
+
 const styles = {
     appBody:{paddingTop:'50px'},
     main:{padding:'10px'},
@@ -35,62 +42,102 @@ const styles = {
     card:{margin:'10px',padding:'10px'},
     span:{marginRight:'1em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
+    h2:{
+        color:'#ccc',
+        textAlign:'center'
+    },
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
 }
 
-let codes=[];
-let code={
-    objectId:1,
-    name:'业务用',
-    openNum:9,
-    bindNum:6,
-    scanNum:5,
-}
-for(let i=5;i--;){
-    let c=Object.assign({},code);
-    c.objectId+=i;
-    codes.push(c);
-}
+class Dlist extends Component{
+        render() {
+            let data=this.props.data
+            let items=data.map(ele=>
+                <Card key={ele.objectId} style={styles.card}>
+                    <div style={{marginLeft:'3px',marginBottom:'10px'}}>{ele.name}</div>
+                    <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
+                        <span style={styles.span}>{___.enabled_num+'：'+(ele.openNum||0)}</span>
+                        <span style={styles.span}>{___.bind_count+'：'+(ele.bindNum||0)}</span>
+                        <span style={styles.span}>{___.scan_count+'：'+(ele.scanNum||0)}</span>
+                    </div>
+                    <div style={styles.bottom_btn_right}>
+                        <FlatButton label={___.print_qr} primary={true} onClick={e=>W.alert(S_URL+ele.min+'-'+ele.max)}/>
+                    </div>
+                </Card>
+            );
+            return (
+                <div style={styles.main}>
+                    {items}
+                </div>
+            );
+        }
+    }
+let Alist=AutoList(Dlist);
 
 class App extends Component {
     constructor(props,context){
         super(props,context);
         this.add = this.add.bind(this);
+        this.state={
+            total:0,
+            data:null
+        };
+        this.op={//控制排序字段与页数
+            page:'objectId',
+            sorts:'objectId',
+            page_no:1
+        };
+        this._data={//筛选条件
+            uid:_user.customer.objectId
+        };
+
+        this.next = this.next.bind(this);
+        this.added = this.added.bind(this);
+    }
+    componentDidMount() {
+        Wapi.qrDistribution.list(res=>this.setState(res),this._data);
+        window.addEventListener(EVENT.ADDED,this.added); 
+    }
+    componentWillUnmount() {
+        window.removeEventListener(EVENT.ADDED,this.added);
+    }
+    added(e){//添加了一个
+        let item=e.params;
+        this.setState({
+            total:this.state.total+1,
+            data:this.state.data.concat([item])
+        });
+    }
+    next(){//加载下一页
+        this.op.page_no++;
+        Wapi.customer.list(res=>{
+            let data=this.state.data.concat(res.data);
+            res.data=data;
+            this.setState(res);
+        },this._data,this.op);
     }
     add(){
         thisView.goTo('#add');
     }
     render() {
-        let data=codes;
-        let items=data.map(ele=>
-            <Card key={ele.objectId} style={styles.card}>
-                <div style={{marginLeft:'3px',marginBottom:'10px'}}>{ele.name}</div>
-                <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
-                    <span style={styles.span}>{'启用' +' '+ ele.openNum}</span>
-                    <span style={styles.span}>{'绑定' +' '+ ele.bindNum}</span>
-                    <span style={styles.span}>{'扫描' +' '+ ele.scanNum}</span>
-                </div>
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.ok} primary={true}/>
-                </div>
-            </Card>
-        );
+        let list=(this.state.data&&this.state.data.length)?(<Alist 
+                max={this.state.total} 
+                limit={20} 
+                data={this.state.data} 
+                next={this.next} 
+            />):(<h2 style={styles.h2}>{___.qr_list_null}</h2>);
         return (
             <ThemeProvider>
-            <div>
                 <AppBar 
                     title={___.qrcode_manage}
                     style={{position:'fixed',top:'0px'}}
                     iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                 />
                 <div style={styles.appBody}>
-                    <div style={styles.main}>
-                        {items}
-                    </div>
+                    {list}
                 </div>
-            </div>
             </ThemeProvider>
         );
     }
@@ -111,27 +158,41 @@ class AddQrCode extends Component {
         this.submit = this.submit.bind(this);
     }
     typeChange(e,k,value){
-        console.log(value);
         this.setState({type:value});
     }
     nameChange(e,value){
-        console.log(value);
         this.setState({name:value});
     }
     numChange(e,value){
-        console.log(value);
         this.setState({num:value});
     }
     submit(){
-        if(this.data.name==''){
+        if(this.state.name==''){
             W.alert('name empty');
             return;
         }
-        if(this.data.num==''){
+        if(this.state.num==''){
             W.alert('num empty');
             return;
         }
-        console.log('submit');
+        let data=Object.assign({},this.state);
+        data.uid=_user.customer.objectId;
+        Wapi.qrDistribution.list(res=>{//获取最后一条记录
+            let min=res.data.length?res.data[0].max+1:0;
+            data.min=min;
+            data.max=min+data.num-1;
+            Wapi.qrDistribution.add(res=>{
+                data.objectId=res.objectId;
+                W.emit(window,EVENT.ADDED,data);
+                history.back();
+            },data);
+        },{
+            objectId:'>0'
+        },{
+            sorts:'-objectId',
+            page:'objectId',
+            limit:1
+        });
     }
     render() {
         return (
@@ -148,8 +209,8 @@ class AddQrCode extends Component {
                             <span >{___.type}</span>
                             <span style={{paddingLeft:'1em',paddingTop:'20px'}}>
                                 <SelectField name='type' value={this.state.type} onChange={this.typeChange} style={{width:'200px',textAlign:'left'}} labelStyle={{top:'0px'}}>
-                                    <MenuItem value={1} primaryText="营销资料" />
-                                    <MenuItem value={2} primaryText="移车卡" />
+                                    <MenuItem value={1} primaryText={___.act_data} />
+                                    {/*<MenuItem value={2} primaryText="移车卡" />*/}
                                 </SelectField>
                             </span>
                         </div>
@@ -162,7 +223,14 @@ class AddQrCode extends Component {
                         <div style={styles.inputGroup}>
                             <span >{___.num}</span>
                             <span style={{paddingLeft:'1em'}}>
-                                <Input name='num' value={this.state.num} onChange={this.numChange} style={{height:'30px',width:'200px'}} inputStyle={{height:'20px'}}/>
+                                <Input 
+                                    name='num' 
+                                    value={this.state.num} 
+                                    onChange={this.numChange} 
+                                    style={{height:'30px',width:'200px'}} 
+                                    inputStyle={{height:'20px'}}
+                                    type="tel"
+                                />
                             </span>
                         </div>
 
