@@ -165,20 +165,13 @@ class App extends Component {
         }
     }
     showBind(){
-        W.confirm(___.ask_change_openId,res=>{
-            if(res){
-                this.setState({active:3});
-            }
-        });
+        this.setState({active:3});
     }
     bindSuccess(user){//绑定微信成功
-        history.go(-2);
-        // W.toast(___.update_su);
-        // if(this._user){//继续
-        //     this.getUserData(user);
-        //     this._user=undefined;
-        // }
-        // this.setState({active:0});
+        let p='';
+        if(_g.wx_app_id)
+            p='/?wx_app_id='+_g.wx_app_id;
+        location=location.origin+p;
     }
     render() {
         let _sty=this.state.active==1?{padding:'10px'}:null;
