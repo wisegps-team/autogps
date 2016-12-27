@@ -108,8 +108,10 @@ class App extends Component {
     }
     componentDidMount() {
         Wapi.weixin.list(res=>{
-            let data=[res.data.find(e=>e.type==0),res.data.find(e=>e.type==1)];
-            this.setState({data});
+            if(res.data&&res.data.length){
+                let data=[res.data.find(e=>e.type==0),res.data.find(e=>e.type==1)];
+                this.setState({data});
+            }
         },{
             uid:_user.customer.objectId
         },{
@@ -158,6 +160,7 @@ class App extends Component {
 
     getUrl(type){
         let wxAppKey,wxAppSecret;
+        if(!this.state.data||!this.state.data.length)return;
         if(type<2){//营销号
             if(this.state.data[1]){
                 wxAppKey=this.state.data[1].wxAppKey;
@@ -208,7 +211,7 @@ class App extends Component {
     }
 
     goPush(i){
-        let wx=this.state.data[i];
+        let wx=this.state.data?this.state.data[i]:null;
         if(!wx)
             W.alert(i?___.wx_server_null:___.wx_seller_null);
 
@@ -283,7 +286,7 @@ class App extends Component {
                     <Wxbox type={this.state.type} onSuccess={this.configSuccess}/>
                 </SonPage>
                 <SonPage open={this.state.show_menu} back={this.goMenu}>
-                    <MenuBox data={this.state.data?this.state.data[0].menu:null}/>
+                <MenuBox data={(this.state.data&&this.state.data.length&&this.state.data[0])?this.state.data[0].menu:null}/>
                 </SonPage>
             </ThemeProvider>
         );

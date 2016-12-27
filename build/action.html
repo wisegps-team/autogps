@@ -16,6 +16,8 @@
 		<script>
 			function booking(){
 				var g=Object.assign({},_g);
+				g.wx_app_id=g.wxAppKey;
+				delete g.wxAppKey;
 				delete g.action;
 				g.needOpenId='true';
 				var url='http://'+WiStorm.config.domain.user+'/?location=%2Fautogps%2Fbooking.html';
