@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=82;//版本号
+let version=84;//版本号
 
 //地区表
 export const area={
@@ -2506,7 +2506,7 @@ export const qrDistribution={
             'query': true,
         },{
             'name': 'type',
-            'desc': '二维码类型',//营销，移车卡等
+            'desc': '二维码类型',//0普通短链接，1营销资料，2移车卡等
             'type': 'Number',
             'query': true,
         },{
@@ -2569,9 +2569,19 @@ export const qrLink={
             'query': true, 
         },{
             'name': 'type',
-            'desc': '类型',//营销，移车卡等，同一个批次的二维码type相同
+            'desc': '类型',//0普通短链接，1营销资料，2移车卡，同一个批次的二维码type相同
             'type': 'Number',
             'query': true,
+        },{
+            'name':'batchId',
+            'desc':'批次id',
+            'type':'String',
+            'query':true
+        },{
+            'name':'status',//已绑定为1，未绑定为0，方便统计
+            'desc':'状态',//统计用
+            'type':'Number',
+            'query':true
         }
     ],
     indexDefine: [

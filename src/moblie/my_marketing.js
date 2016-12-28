@@ -60,6 +60,7 @@ class App extends Component {
             isCarownerSeller:false,
             noEdit:true,
             activityName:'',
+            reward:0,
         }
         this.limit=20;
         this.page_no=1;
@@ -276,9 +277,15 @@ class App extends Component {
         history.back();
     }
     share(activity){
-        this.setState({isShare:true});
+        this._share_time=new Date()*1;
+        this.setState({
+            isShare:true,
+            reward:activity.reward||0
+        });
     }
     shareBack(){
+        let now=new Date()*1;
+        if(now-this._share_time<3000)return;//3秒后才可以关闭
         this.setState({isShare:false});
     }
     edit(activity){
@@ -343,7 +350,7 @@ class App extends Component {
                     </SonPage>*/}
 
                     <div style={this.state.isShare ? styles.share_page : styles.hide} onClick={this.shareBack}>
-                        <SharePage/>
+                        <SharePage reward={this.state.reward}/>
                     </div>
                     
                 </div>
@@ -407,6 +414,7 @@ class DList extends Component{
             W.alert(___.wx_server_null);
             return;
         }
+        let that=this;
         function setShare(){
             data._seller=_user.employee?_user.employee.name:_user.customer.contact;
             data._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
@@ -438,6 +446,7 @@ class DList extends Component{
             wx.onMenuShareTimeline(op);
             wx.onMenuShareAppMessage(op);
             setShare=null;
+            that.context.share(data);
             // W.alert(___.share_activity);
         }
         if(W.native){
@@ -447,7 +456,6 @@ class DList extends Component{
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }
-        this.context.share();
     }
     activityData(data){
         thisView.goTo('./myMarketing/marketing_data.js',data);
@@ -476,7 +484,7 @@ class DList extends Component{
                         targetOrigin={{horizontal: 'right', vertical: 'top'}}
                         style={styles.icon}
                     >
-                        <MenuItem key='0' onClick={()=>this.share(ele)}>{___.act_share}</MenuItem>
+                        <MenuItem key='0' onTouchTap={()=>this.share(ele)}>{___.act_share}</MenuItem>
                         {/*<MenuItem key='1' onClick={()=>this.activityData(ele)}>{___.act_data}</MenuItem>*/}
                     </IconMenu>
                 </div>
@@ -527,7 +535,7 @@ class SharePage extends Component {
     render() {
         return (
             <div style={styles.share_content}>
-                {___.share_detail}
+                {___.share_detail.replace('xxx',this.props.reward)}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
             </div>
         );
