@@ -134,7 +134,7 @@ class App extends Component {
     }
     next(){//加载下一页
         this.op.page_no++;
-        Wapi.customer.list(res=>{
+        Wapi.qrDistribution.list(res=>{
             let data=this.state.data.concat(res.data);
             res.data=data;
             this.setState(res);

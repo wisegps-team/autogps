@@ -17,15 +17,18 @@ function AutoList(ShowComponent){
             this.setPage();
             this.scroll = this.scroll.bind(this);
         }
-        componentDidMount() {
+        onListener() {
             if(this._scrollEvent)return;
             document.addEventListener('scroll',this.scroll);
             this._scrollEvent=true;
         }
-        componentWillUnmount() {
+        offListener() {
             if(!this._scrollEvent)return;
             document.removeEventListener('scroll',this.scroll);
             this._scrollEvent=false;
+        }
+        componentWillUnmount(){
+            this.offListener();
         }
         componentWillReceiveProps(nextProps) {
             let waiting = this.state.waiting&&(nextProps.data.length==this.props.data.length);
@@ -57,9 +60,9 @@ function AutoList(ShowComponent){
         
         render() {
             if(this.props.max>=0&&this.props.max<=this.props.data.length){
-                this.componentWillUnmount();
+                this.offListener();
             }else{
-                this.componentDidMount();
+                this.onListener();
             }
             let pages=[];
             for(let i=0;i<this.state.page;i++)
