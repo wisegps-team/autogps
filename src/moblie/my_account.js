@@ -463,10 +463,7 @@ class ShowBox extends Component{
                     {/*<ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>*/}
                     {/*修改密码*/}
                     {/*<ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>*/}
-<<<<<<< HEAD
                     {/*我的订单*/}
-=======
->>>>>>> d30875eb9a28d898fbd54c1622daea8f931ef7a9
                     {/*<ListItem 
                         primaryText={___.my_order} 
                         onClick={this.toBillList}
@@ -488,10 +485,7 @@ class ShowBox extends Component{
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
-<<<<<<< HEAD
                     {/*系统设置*/}
-=======
->>>>>>> d30875eb9a28d898fbd54c1622daea8f931ef7a9
                     {/*<ListItem 
                         primaryText={___.system_set} 
                         rightIcon={<NavigationChevronRight />}
