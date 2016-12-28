@@ -25,6 +25,7 @@ import Forget from '../_component/login/forget';
 import UserNameInput from '../_component/base/userNameInput';
 import AppBar from '../_component/base/appBar';
 import AutoList from '../_component/base/autoList';
+import {getOpenIdKey} from '../_modules/tool';
 
 import Dialog from 'material-ui/Dialog';
 
@@ -413,21 +414,13 @@ class ShowBox extends Component{
     }
 
     logout(){
-        W.loading('退出登录');
-        if(_user.customer.wxAppKey)
-            W.logout('&logout=true&needOpenId=true&wx_app_id='+_user.customer.wxAppKey);
-        else if(_user.customer.parentId&&_user.customer.parentId.length){
-            Wapi.customer.get(res=>{
-                if(res.data.wxAppKey)
-                    W.logout('&logout=true&needOpenId=true&wx_app_id='+(res.data.wxAppKey||''));
-                else
-                    W.logout('&logout=true&needOpenId=true');
-            },{
-                objectId:_user.customer.parentId[0]
-            });
-        }else{
+        W.loading('正在退出');
+        let key=getOpenIdKey();
+        let wxId=_user.authData[key+'_wx'];//上次登录的公众号id
+        if(wxId)
+            W.logout('&logout=true&needOpenId=true&wx_app_id='+wxId);
+        else
             W.logout('&logout=true&needOpenId=true');
-        }
     }
     recommend(){
         thisView.goTo('my_marketing.js');
@@ -470,13 +463,13 @@ class ShowBox extends Component{
                 <List>
                     {/*<ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>*/}
                     {/*<ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>*/}
-                    <ListItem 
+                    {/*<ListItem 
                         primaryText={___.my_order} 
                         onClick={this.toBillList}
                         rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>2</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
-                    />
+                    />*/}
                     <ListItem 
                         primaryText={___.my_wallet} 
                         onClick={this.wallet}
@@ -491,10 +484,10 @@ class ShowBox extends Component{
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
-                    <ListItem 
+                    {/*<ListItem 
                         primaryText={___.system_set} 
                         rightIcon={<NavigationChevronRight />}
-                    />
+                    />*/}
                 </List>
                 <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
