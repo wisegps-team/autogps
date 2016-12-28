@@ -111,13 +111,13 @@ class App extends Component {
         // this.getData();
     }
     getData(){
-        if(_user.employee && _user.employee.departId=='-1'){//兼职营销账号，显示所属公司的集团营销活动。
+        if(_user.employee && _user.employee.type==1){//兼职营销账号，显示所属公司的集团营销活动。
 
             let par0={
                 uid:_user.employee.companyId,
+                sellerTypeId:_user.employee.departId,
                 status:1,
                 type:1,
-                // sellerTypeId:_user.customer.objectId,
             }
             Wapi.activity.list(res=>{
                 this.total=res.total;
@@ -144,8 +144,7 @@ class App extends Component {
                 limit:-1,
             });
 
-        }
-        if(_user.customer.custTypeId==8){//经销商账号，显示上一级代理商创建的渠道营销活动。
+        }else if(_user.customer.custTypeId==8){//经销商账号，显示上一级代理商创建的渠道营销活动。
 
             let parents=_user.customer.parentId.join('|');
             let par1={

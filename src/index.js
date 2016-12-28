@@ -97,7 +97,6 @@ class App extends Component {
                     user.pages=page.data;
                     W._loginSuccess(user);
                     let loginLocation=_g.loginLocation||"src/moblie/home.html";
-                    if(user.employee&&user.employee.type==1)loginLocation='src/moblie/partTime_count.html';
                     if(loginLocation.indexOf('.html')==-1)//需要到home.html跳转
                         loginLocation="src/moblie/home.html?loginLocation="+_g.loginLocation;
                     top.location=loginLocation;
