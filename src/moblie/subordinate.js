@@ -218,8 +218,8 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
-                <MenuItem style={styOpenCS} onClick={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>
-                <MenuItem style={stySetIS} onClick={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
+                <MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>
+                <MenuItem style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
             </IconMenu>
         );
     }

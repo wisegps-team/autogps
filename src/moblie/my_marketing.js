@@ -111,6 +111,40 @@ class App extends Component {
         // this.getData();
     }
     getData(){
+        if(_user.employee && _user.employee.departId=='-1'){//兼职营销账号，显示所属公司的集团营销活动。
+
+            let par0={
+                uid:_user.employee.companyId,
+                status:1,
+                type:1,
+                // sellerTypeId:_user.customer.objectId,
+            }
+            Wapi.activity.list(res=>{
+                this.total=res.total;
+                let activities=res.data;
+                
+                activities.forEach(ele=>{
+                    let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                    if(booking){
+                        ele.status0=booking.status0;
+                        ele.status1=booking.status1;
+                        ele.status2=booking.status2;
+                        ele.status3=booking.status3;
+                    }else{
+                        ele.status0=0;
+                        ele.status1=0;
+                        ele.status2=0;
+                        ele.status3=0;
+                    }
+                });
+                this.activities=this.activities.concat(activities);
+                this.forceUpdate();
+            },par0,{
+                sorts:'-createdAt',
+                limit:-1,
+            });
+
+        }
         if(_user.customer.custTypeId==8){//经销商账号，显示上一级代理商创建的渠道营销活动。
 
             let parents=_user.customer.parentId.join('|');
@@ -183,41 +217,51 @@ class App extends Component {
 
         }else if(_user.customer.custTypeId==7){//车主账号，显示上一级所属经销商及其上级代理商创建的车主营销活动。
             
-            let parents=_user.customer.parentId.join('|');
-            let par1={
-                uid:_user.customer.objectId + '|' + parents,
-                status:1,
-                type:0
-            }
-            Wapi.activity.list(res=>{//type=0 车主营销的活动
-                this.total=res.total;
-                let activities=res.data;
-                
-                activities.forEach(ele=>{
-                    let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
-                    if(booking){
-                        ele.status0=booking.status0;
-                        ele.status1=booking.status1;
-                        ele.status2=booking.status2;
-                        ele.status3=booking.status3;
-                    }else{
-                        ele.status0=0;
-                        ele.status1=0;
-                        ele.status2=0;
-                        ele.status3=0;
-                    }
-                    if(_user.customer.wxAppKey){
-                        ele.wxAppKey=_user.customer.wxAppKey;
-                        ele.uid=_user.customer.objectId;
-                    }
-                });
-                this.activities=this.activities.concat(activities);
-                this.forceUpdate();
-            },par1,{
-                sorts:'-createdAt',
-                limit:-1,
-            });
+            let parents=_user.customer.parentId;
+            let i=parents.length;
+            parents.forEach(ele=>{//获取当前用户的所以上级id，并查找所有的上上级id
+                Wapi.customer.get(re=>{
+                    parents=re.data.parentId && parents.concat(re.data.parentId);
+                    i--;
+                    if(i==0){//当查找玩所有上上级的时候 获取所有parents的活动
+                        let strParents=parents.join('|');
+                        let par3={
+                            uid:_user.customer.objectId + '|' + strParents,
+                            status:1,
+                            type:0
+                        }
+                        Wapi.activity.list(res=>{//type=0 车主营销的活动
+                            this.total=res.total;
+                            let activities=res.data;
+                            
+                            activities.forEach(ele=>{
+                                let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
+                                if(booking){
+                                    ele.status0=booking.status0;
+                                    ele.status1=booking.status1;
+                                    ele.status2=booking.status2;
+                                    ele.status3=booking.status3;
+                                }else{
+                                    ele.status0=0;
+                                    ele.status1=0;
+                                    ele.status2=0;
+                                    ele.status3=0;
+                                }
+                                if(_user.customer.wxAppKey){
+                                    ele.wxAppKey=_user.customer.wxAppKey;
+                                    ele.uid=_user.customer.objectId;
+                                }
+                            });
+                            this.activities=this.activities.concat(activities);
+                            this.forceUpdate();
+                        },par3,{
+                            sorts:'-createdAt',
+                            limit:-1,
+                        });
 
+                    }
+                },{objectId:ele});
+            });
         }
     }
     add(){
@@ -432,8 +476,8 @@ class DList extends Component{
                         targetOrigin={{horizontal: 'right', vertical: 'top'}}
                         style={styles.icon}
                     >
-                        <MenuItem key='0' onTouchTap={()=>this.share(ele)}>{___.act_share}</MenuItem>
-                        <MenuItem key='1' onTouchTap={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
+                        <MenuItem key='0' onClick={()=>this.share(ele)}>{___.act_share}</MenuItem>
+                        {/*<MenuItem key='1' onClick={()=>this.activityData(ele)}>{___.act_data}</MenuItem>*/}
                     </IconMenu>
                 </div>
                 <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div>

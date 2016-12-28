@@ -111,13 +111,13 @@ class App extends Component {
         this.setState({edit:false});
     }
     render() {
-        let box=this.state.edit?(<EditBox back={this.back}/>):(<ShowBox edit={this.edit}/>);
+        // let box=this.state.edit?(<EditBox back={this.back}/>):(<ShowBox edit={this.edit}/>);
         return (
             <ThemeProvider>
             <div>
                 <AppBar title={___.user}/>
                 <div style={sty.p}>
-                    {box}
+                    <ShowBox/>
                 </div>
             </div>
             </ThemeProvider>
@@ -459,24 +459,25 @@ class ShowBox extends Component{
         console.log((_user));
         return (
             <Paper zDepth={1} style={sty.p}>
-                <List>
-                    <ListItem
-                        primaryText={_user.username}
-                        leftAvatar={<Logo style={sty.logo}/>}
-                        secondaryText={_user.mobile}
-                    />
-                </List>
+                <div style={{textAlign:'center',padding:'10px 0px 20px'}}>
+                    <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
+                    <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
+                    <div>{_user.mobile}</div>
+                </div>
                 <Divider/>
                 <List>
+                    {/*修改用户名*/}
                     {/*<ListItem primaryText={___.edit_user_name} leftIcon={<ActionAccountBox/>} onClick={this.userName}/>*/}
+                    {/*修改密码*/}
                     {/*<ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>*/}
-                    <ListItem 
+                    {/*我的订单*/}
+                    {/*<ListItem 
                         primaryText={___.my_order} 
                         onClick={this.toBillList}
                         rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>2</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
-                    />
+                    />*/}
                     <ListItem 
                         primaryText={___.my_wallet} 
                         onClick={this.wallet}
@@ -491,12 +492,12 @@ class ShowBox extends Component{
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
-                    <ListItem 
+                    {/*系统设置*/}
+                    {/*<ListItem 
                         primaryText={___.system_set} 
                         rightIcon={<NavigationChevronRight />}
-                    />
+                    />*/}
                 </List>
-                <Divider/>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
                     <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={this.logout}/>                    
                 </List>
