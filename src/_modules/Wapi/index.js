@@ -642,7 +642,7 @@ makeGetOp('booking','userId,activityId,mobile,sellerId,sellerName,uid,status,sta
 makeGetOp('activity','creator,objectId,uid,type,name,url,status,reward,pay,deposit,offersDesc,price,installationFee,getCard,principal,principalId,principalTel,sellerType,sellerTypeId,product,productId,wxAppKey,count,tel,createdAt,updatedAt');
 makeGetOp('qrData','objectId,id,data');
 makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
-makeGetOp('qrLink','objectId,id,url,act,sellerId,i,type');
+makeGetOp('qrLink','objectId,id,url,act,sellerId,i,type,batchId,status');
 
 
 

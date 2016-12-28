@@ -52,28 +52,50 @@ function combineStyle(arr){
 }
 
 class Dlist extends Component{
-        render() {
-            let data=this.props.data
-            let items=data.map(ele=>
-                <Card key={ele.objectId} style={styles.card}>
-                    <div style={{marginLeft:'3px',marginBottom:'10px'}}>{ele.name}</div>
-                    <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
-                        <span style={styles.span}>{___.enabled_num+'：'+(ele.openNum||0)}</span>
-                        <span style={styles.span}>{___.bind_count+'：'+(ele.bindNum||0)}</span>
-                        <span style={styles.span}>{___.scan_count+'：'+(ele.scanNum||0)}</span>
-                    </div>
-                    <div style={styles.bottom_btn_right}>
-                        <FlatButton label={___.print_qr} primary={true} onClick={e=>W.alert(S_URL+ele.min+'-'+ele.max)}/>
-                    </div>
-                </Card>
-            );
-            return (
-                <div style={styles.main}>
-                    {items}
-                </div>
-            );
-        }
+    componentDidMount() {
+        //绑定统计
+        Wapi.qrLink.aggr(res=>{
+            res.data.forEach(ele=>this.props.data.find(e=>e.objectId==ele._id.batchId).bindNum=ele.bindNum);
+            this.forceUpdate();
+        },{
+            "group":{
+                "_id":{
+                    "batchId":"$batchId",
+                    "type":"$type",
+                },
+                "bindNum":{
+                    "$sum":"$status"
+                }
+            },
+            "sorts":"batchId",
+            "batchId":this.props.data.map(e=>e.objectId).join('|')
+        });
+
+        //扫描统计（未完成）
     }
+    
+    render() {
+        let data=this.props.data
+        let items=data.map(ele=>
+            <Card key={ele.objectId} style={styles.card}>
+                <div style={{marginLeft:'3px',marginBottom:'10px'}}>{ele.name}</div>
+                <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
+                    <span style={styles.span}>{___.enabled_num+'：'+(ele.num||0)}</span>
+                    <span style={styles.span}>{___.bind_count+'：'+(ele.bindNum||0)}</span>
+                    <span style={styles.span}>{___.scan_count+'：'+(ele.scanNum||0)}</span>
+                </div>
+                <div style={styles.bottom_btn_right}>
+                    <FlatButton label={___.print_qr} primary={true} onClick={e=>W.alert(S_URL+ele.min+'-'+ele.max)}/>
+                </div>
+            </Card>
+        );
+        return (
+            <div style={styles.main}>
+                {items}
+            </div>
+        );
+    }
+}
 let Alist=AutoList(Dlist);
 
 class App extends Component {
@@ -167,15 +189,21 @@ class AddQrCode extends Component {
         this.setState({num:value});
     }
     submit(){
-        if(this.state.name==''){
+        if(!this.state.name||this.state.name==''){
             W.alert('name empty');
             return;
         }
-        if(this.state.num==''){
+        if(!this.state.num||this.state.num==''){
             W.alert('num empty');
             return;
         }
+        let num=parseInt(this.state.num);
+        if(isNaN(num)){
+            W.alert('请输入正确的数量');
+            return;
+        }
         let data=Object.assign({},this.state);
+        data.num=num;
         data.uid=_user.customer.objectId;
         Wapi.qrDistribution.list(res=>{//获取最后一条记录
             let min=res.data.length?res.data[0].max+1:0;
@@ -185,6 +213,10 @@ class AddQrCode extends Component {
                 data.objectId=res.objectId;
                 W.emit(window,EVENT.ADDED,data);
                 history.back();
+                this.setState({
+                    name:'',
+                    num:''
+                });
             },data);
         },{
             objectId:'>0'
