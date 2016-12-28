@@ -30,6 +30,7 @@ class App extends Component {
         this.state={
             active:(_g.register=='true'&&_g.parentId)?1:0 //0,登录；1，注册；2，忘记密码；3，更改绑定openid
         }
+        // this.state.active=0;
         this.loginSuccess = this.loginSuccess.bind(this);
         this.forgetSuccess = this.forgetSuccess.bind(this);
         this.registerCallback = this.registerCallback.bind(this);
@@ -175,6 +176,7 @@ class App extends Component {
     }
     render() {
         let _sty=this.state.active==1?{padding:'10px'}:null;
+        // WiStorm.agent.weixin=false;
         let login_sty=WiStorm.agent.weixin?{
             display:'none'
         }:null;
