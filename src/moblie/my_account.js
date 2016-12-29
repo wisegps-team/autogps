@@ -451,7 +451,7 @@ class ShowBox extends Component{
         let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
         console.log((_user));
         return (
-            <Paper zDepth={1} style={sty.p}>
+            <div>
                 <div style={{textAlign:'center',padding:'10px 0px 20px'}}>
                     <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
                     <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
@@ -501,7 +501,7 @@ class ShowBox extends Component{
                 >
                     <UserNameInput onChange={this.changeName} value={_user.userName} floatingLabelText={___.input_user_name}/>
                 </Dialog>
-            </Paper>
+            </div>
         );
     }
 }

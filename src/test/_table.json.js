@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=84;//版本号
+let version=85;//版本号
 
 //地区表
 export const area={
@@ -2575,6 +2575,11 @@ export const qrLink={
         },{
             'name':'batchId',
             'desc':'批次id',
+            'type':'String',
+            'query':true
+        },{
+            'name':'batchName',
+            'desc':'批次名称',
             'type':'String',
             'query':true
         },{
