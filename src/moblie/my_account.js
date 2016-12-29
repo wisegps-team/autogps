@@ -425,6 +425,11 @@ class ShowBox extends Component{
     recommend(){
         thisView.goTo('my_marketing.js');
     }
+
+    systemSet(){
+        thisView.goTo('system_set.js');
+    }
+
     toBillList(){
         //这里的‘我的订单’是指的什么？sellerId为当前用户的订单？
         let par={
@@ -451,7 +456,7 @@ class ShowBox extends Component{
         let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
         console.log((_user));
         return (
-            <Paper zDepth={1} style={sty.p}>
+            <div>
                 <div style={{textAlign:'center',padding:'10px 0px 20px'}}>
                     <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
                     <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
@@ -486,10 +491,12 @@ class ShowBox extends Component{
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
                     {/*系统设置*/}
-                    {/*<ListItem 
+                    <ListItem 
                         primaryText={___.system_set} 
+                        onClick={this.systemSet}
                         rightIcon={<NavigationChevronRight />}
-                    />*/}
+                        style={{borderBottom:'1px solid #dddddd'}}
+                    />
                 </List>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
                     <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={this.logout}/>                    
@@ -501,7 +508,7 @@ class ShowBox extends Component{
                 >
                     <UserNameInput onChange={this.changeName} value={_user.userName} floatingLabelText={___.input_user_name}/>
                 </Dialog>
-            </Paper>
+            </div>
         );
     }
 }
