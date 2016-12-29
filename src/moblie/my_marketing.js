@@ -484,7 +484,7 @@ class DList extends Component{
                         style={styles.icon}
                     >
                         <MenuItem key='0' onTouchTap={()=>this.share(ele)}>{___.act_share}</MenuItem>
-                        {/*<MenuItem key='1' onClick={()=>this.activityData(ele)}>{___.act_data}</MenuItem>*/}
+                        <MenuItem key='1' onClick={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
                     </IconMenu>
                 </div>
                 <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div>

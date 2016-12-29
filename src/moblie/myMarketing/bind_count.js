@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../../_theme/default';
 import AppBar from '../../_component/base/appBar';
-import Card from 'material-ui/Card';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -17,9 +16,10 @@ thisView.addEventListener('load',function(){
 
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
-    card:{margin:'1em',padding:'0px 0.5em 0.5em'},
+    card:{margin:'10px',padding:'0px 10px 10px',borderBottom:'1px solid #cccccc'},
     line:{paddingTop:'0.5em'},
     count:{marginRight:'1em'},
+    link:{color:'#009688',marginRight:'1em'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -43,15 +43,18 @@ class App extends Component {
     toScan(data){
         thisView.goTo('scan_count.js',data);
     }
+    removeBind(data){
+        console.log('remove bind');
+    }
     render() {
         let items=this.data.map((ele,i)=>
-            <Card key={i} style={styles.card}>
-                <div style={styles.line}>{i+1}个营销人员</div>
+            <div key={i} style={styles.card}>
+                <div style={styles.line}>二维码id</div>
                 <div style={styles.line}>
-                    <span onClick={()=>this.toScan(ele)} style={{marginRight:'1em'}}>扫描统计</span>
-                    <span>解除绑定</span>
+                    <span onClick={()=>this.toScan(ele)} style={styles.link}>{___.scan_count}11</span>
+                    <span onClick={()=>this.removeBind(ele)} style={styles.link}>{___.remove_bind}</span>
                 </div>
-            </Card>
+            </div>
         )
         return (
             <ThemeProvider>
