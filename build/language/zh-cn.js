@@ -481,6 +481,7 @@ window.___={
 	'read':'阅读',
 	'act_share':'分享活动',
 	'share_detail':'将此页面发送给朋友或分享到朋友圈，好友预订安装后您即可获得xxx元红包，您的好友安装后同样可以获得免单和赚钱机会。(轻触可退出当前分享页面)',
+	'system_set':'系统设置',
 	'employee':'人员',
 	'public_number':'公众号',
 	'qrcode_bound':'该二维码已被绑定',
@@ -488,5 +489,7 @@ window.___={
 	'qrcode_unknown':'无法识本平台以外的二维码',
 	'remove_bind':'解除绑定',
 	'bind_success':'绑定成功',
+	'personal_info':'个人信息',
+	'logined_bind':'登录绑定',
 
 }

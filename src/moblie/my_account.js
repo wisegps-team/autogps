@@ -409,6 +409,11 @@ class ShowBox extends Component{
         }
     }
 
+    personalInfo(){
+        thisView.goTo('personal_info.js');
+    }
+
+
     wallet(){
         thisView.goTo('#wallet');
     }
@@ -457,7 +462,9 @@ class ShowBox extends Component{
         console.log((_user));
         return (
             <div>
-                <div style={{textAlign:'center',padding:'10px 0px 20px'}}>
+                <div 
+                onClick={this.personalInfo}
+                style={{textAlign:'center',padding:'10px 0px 20px'}}>
                     <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
                     <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
                     <div>{_user.mobile}</div>
