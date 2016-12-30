@@ -34,24 +34,48 @@ class App extends Component {
     componentDidMount() {
         thisView.addEventListener('show',e=>{
             if(e.params){
-                console.log('show bind count, act = ' + e.params.act);
+                let batchId=e.params._id.batchId;
+                Wapi.qrLink.list(res=>{
+                    console.log(res);
+                    this.data=res.data;
+                    this.forceUpdate();
+                },{
+                    batchId:batchId,
+                    status:1,
+                    sellerId:_user.objectId,
+                });
             }
         });
-        this.data=[1,2,3,5];
-        this.forceUpdate();
     }
     toScan(data){
-        thisView.goTo('scan_count.js',data);
+        // thisView.goTo('scan_count.js',data);
     }
     removeBind(data){
         console.log('remove bind');
+        let _data={
+            _objectId:data.objectId,
+            id:data.id,
+            url:'',
+            sellerId:'',
+            act:'',
+            i:data.i,
+            type:data.type,
+            batchId:data.batchId,
+            batchName:data.batchName,
+            status:0
+        }
+        Wapi.qrLink.update(res=>{
+            W.alert(___.remove_bind_success);
+            this.data=this.data.filter(ele=>ele.id!=data.id);
+            this.forceUpdate();
+        },_data);
     }
     render() {
         let items=this.data.map((ele,i)=>
             <div key={i} style={styles.card}>
-                <div style={styles.line}>二维码id</div>
+                <div style={styles.line}>{___.qrcode_num +' '+ ele.id}</div>
                 <div style={styles.line}>
-                    <span onClick={()=>this.toScan(ele)} style={styles.link}>{___.scan_count}11</span>
+                    <span onClick={()=>this.toScan(ele)} style={styles.link}>{___.scan_count}0</span>
                     <span onClick={()=>this.removeBind(ele)} style={styles.link}>{___.remove_bind}</span>
                 </div>
             </div>

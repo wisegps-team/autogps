@@ -488,5 +488,6 @@ window.___={
 	'qrcode_unknown':'无法识本平台以外的二维码',
 	'remove_bind':'解除绑定',
 	'bind_success':'绑定成功',
-
+	'qrcode_num':'二维码编号',
+	'remove_bind_success':'解除绑定成功',
 }

@@ -85,7 +85,9 @@ class App extends Component {
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
-            this.activity=e.params;
+            if(e.params){
+                this.activity=e.params;
+            }
             this.getData();
         });
     }
@@ -111,7 +113,7 @@ class App extends Component {
         });
     }
     bindCount(data){
-        // thisView.goTo('bind_count.js',data);
+        thisView.goTo('bind_count.js',data); 
     }
     scanCount(data){
         // thisView.goTo('scan_count.js',data.act);
