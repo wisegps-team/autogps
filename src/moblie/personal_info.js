@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
 
-import Paper from 'material-ui/Paper';
 import {List, ListItem} from 'material-ui/List';
 
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
@@ -43,7 +42,7 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.system_set}/>
+                <AppBar title={___.personal_info}/>
                 <div style={sty.p}>
                     <ShowBox/>
                 </div>
@@ -56,33 +55,8 @@ class App extends Component {
 class ShowBox extends Component{
     constructor(props, context) {
         super(props, context);
-		this.companyInfo = this.companyInfo.bind(this);
-		this.roleManage = this.roleManage.bind(this);
-		this.department = this.department.bind(this);
-		this.employee = this.employee.bind(this);
-		this.wxConfig = this.wxConfig.bind(this);
+		
     }
-	
-	companyInfo(){
-		thisView.goTo('company_info.js')
-	}
-	
-	roleManage(){
-		thisView.goTo('role_manage.js')
-	}
-	
-	department(){
-		thisView.goTo('department.js')
-	}
-	
-	employee(){
-		thisView.goTo('employee.js')
-	}
-	
-	wxConfig(){
-		thisView.goTo('wx_config.js')
-	}
-	
 	
     render() {
        
@@ -90,32 +64,19 @@ class ShowBox extends Component{
             <div>
                 <List>
                     <ListItem 
-                        primaryText={___.company_info} 
-						onClick={this.companyInfo}
+                        primaryText={___.person_name}
+						rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{_user.customer.name}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
                     <ListItem 
-                        primaryText={___.role} 
-						onClick={this.roleManage}
+                        primaryText={___.sex} 
+						rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{_user.customer.sex==1?"男":"女"}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
                     <ListItem 
-                        primaryText={___.department}
-						onClick={this.department}
-                        rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
-                    />
-					<ListItem 
-                        primaryText={___.employee} 
-						onClick={this.employee}
-                        rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
-                    />
-					<ListItem 
-                        primaryText={___.public_number} 
-						onClick={this.wxConfig}
+                        primaryText={___.logined_bind}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
