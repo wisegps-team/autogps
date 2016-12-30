@@ -35,7 +35,7 @@ function combineStyle(arr){
 //     scanner:{
 //         start:function(callback){
 //             setTimeout(function(){
-//                 callback('http://autogps.cn/?s=3');
+//                 callback('http://autogps.cn/?s=15');
 //             },100);
 //         }
 //     }
@@ -117,6 +117,7 @@ class App extends Component {
         // thisView.goTo('scan_count.js',data.act);
     }
     scanToBind(){
+        history.replaceState('home.html','home.html','../home.html');
         if(isWxSdk){
             W.native.scanner.start(link=>{//扫码
                 console.log(link);
@@ -191,7 +192,7 @@ class App extends Component {
                             data._objectId=res.data.objectId;
                             Wapi.qrLink.update(r=>{//更新二维码
                                 console.log(r);
-                                W.alert('bind success');
+                                W.alert(___.bind_success);
 
                                 data.objectId=data._objectId;
                                 delete data._objectId;
@@ -200,7 +201,7 @@ class App extends Component {
                         }else{
                             Wapi.qrLink.add(r=>{
                                 console.log(r);
-                                W.alert('add success');
+                                W.alert(___.bind_success);
 
                                 this.getData();
                             },data);
@@ -213,8 +214,8 @@ class App extends Component {
                     });
 
                 },{
-                    max:'>'+code,
-                    min:'<'+code
+                    max:'>='+code,
+                    min:'<='+code
                 });
             });
         }else{
