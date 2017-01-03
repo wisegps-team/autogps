@@ -60,7 +60,7 @@ class App extends Component {
                     if(target){
                         ele.name=target.contact||___.no_name;
                     }
-                })
+                });
                 this.data=this.data.concat(_data);
                 this.forceUpdate();
             },{uid:strUids})
@@ -68,7 +68,7 @@ class App extends Component {
         },{
             account_type:1,
             page:this.page,
-            limit:20
+            limit:20,
         });
     }
     toBill(company){

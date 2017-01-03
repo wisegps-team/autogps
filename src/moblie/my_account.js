@@ -33,11 +33,11 @@ const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 
-    let view=thisView.prefetch('#forget',3);
-    ReactDOM.render(<ForgetApp/>,view);
+    // let view=thisView.prefetch('#forget',3);
+    // ReactDOM.render(<ForgetApp/>,view);
 
-    let walletView=thisView.prefetch('#wallet',3);
-    ReactDOM.render(<WalletApp/>,walletView);
+    // let walletView=thisView.prefetch('#wallet',3);
+    // ReactDOM.render(<WalletApp/>,walletView);
     
     thisView.prefetch('booking_list.js',2);
 });
@@ -49,7 +49,7 @@ const sty={
     },
     main:{
         padding:'10px',
-        marginTop:'50px',
+        // marginTop:'50px',
     },
     p:{
         padding: '10px',
@@ -73,15 +73,17 @@ const sty={
     },
     income:{
         color:'#009900',
-        fontSize:'20px'
+        fontSize:'20px',
+        float:'right'
     },
     expenses:{
         color:'#990000',
-        fontSize:'20px'
+        fontSize:'20px',
+        float:'right'        
     },
     bill:{
         padding:'5px 10px',
-        borderBottom:'1px solid #cccccc'
+        borderTop:'1px solid #cccccc'
     },
     bill_remark:{
         fontSize:'14px',
@@ -205,6 +207,7 @@ class WalletApp extends Component {
         this.amountChange = this.amountChange.bind(this);
 
         this.withdrawCash = this.withdrawCash.bind(this);
+        this.toRecharge = this.toRecharge.bind(this);
     }
     componentDidMount() {
         this.getRecords();
@@ -276,6 +279,26 @@ class WalletApp extends Component {
             psw:this.psw,
             // isCust:1,
         },'wxPay_withdraw',location.href);
+    }
+    toRecharge(){
+        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+        if(!reg.test(this.amount)||this.amout==0){
+            W.alert(___.amount_error);
+            return;
+        }
+        let pay_data={
+            uid:_user.uid,
+            order_type:2,
+            remark:'充值',
+            amount:this.amount,
+            title:'充值',
+            // isCust:1,
+        }
+        console.log('wxpay_recharge');
+        console.log(pay_data);
+        // W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});//测试用，弹出uid
+        history.replaceState('home','home','home.html');
+        Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
     }
 
     render() {
@@ -396,8 +419,7 @@ class ShowBox extends Component{
     }
 
     reset(){
-        // this.setState({resetPwd:true});
-        thisView.goTo('#forget');
+        thisView.goTo('./myAccount/forget.js');
     }
 
     userName(){
@@ -435,12 +457,12 @@ class ShowBox extends Component{
     }
 
     personalInfo(){
-        thisView.goTo('personal_info.js');
+        thisView.goTo('./myAccount/personal_info.js');
     }
 
 
     wallet(){
-        thisView.goTo('#wallet');
+        thisView.goTo('./myAccount/wallet.js');
     }
 
     logout(){
@@ -457,7 +479,7 @@ class ShowBox extends Component{
     }
 
     systemSet(){
-        thisView.goTo('system_set.js');
+        thisView.goTo('./myAccount/system_set.js');
     }
 
     toBillList(){
@@ -518,7 +540,7 @@ class ShowBox extends Component{
                     <ListItem 
                         primaryText={___.recommend} 
                         onClick={this.recommend}
-                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(_user.balance)}</span>}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(0)}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />

@@ -69,7 +69,7 @@ class App extends Component {
                     if(target){
                         ele.name=target.name||___.no_name;
                     }
-                })
+                });
                 this.data=this.data.concat(_data);
                 this.forceUpdate();
             },{objectId:strUids})
@@ -77,7 +77,7 @@ class App extends Component {
         },{
             account_type:2,
             page:this.page,
-            limit:20
+            limit:20,
         });
     }
     toBill(company){

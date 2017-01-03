@@ -232,7 +232,14 @@ class WithdrawPage extends Component {
         }
         this.setState({isInputAmount:false});
     }
+    success(val,name){
+        this.code=val;
+    }
     toWithdraw(){
+        if(!this.code){
+            W.alert(___.code_err);
+            return;
+        }
         history.replaceState('home','home','home.html');
         Wapi.pay.wxPay({
             uid:companyBillUid,
