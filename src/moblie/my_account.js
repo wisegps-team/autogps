@@ -88,6 +88,24 @@ const sty={
         color:'#666666',
         paddingTop:'5px'
     },
+    head:{
+        width:'100%',
+        height:'120px',
+        display:'block',
+        textAlign:'center',
+        paddingTop:'70px'
+    },
+    head_str:{
+        fontSize:'14px',
+        marginBottom:'5px'
+    },
+    head_num:{
+        fontSize:'36px',
+        marginBottom:'10px'
+    },
+    a:{
+        color:'#009988'
+    },
 }
 
 class App extends Component {
@@ -265,13 +283,20 @@ class WalletApp extends Component {
         return (
             <ThemeProvider>
             <div>
+
                 <AppBar 
                     style={sty.appbar}
                     title={___.my_wallet} 
-                    iconElementRight={
-                        <FlatButton label={___.withdraw_cash} onClick={this.inputPsw}/>
-                    }
                 />
+
+                <div style={sty.head}>
+                    <div style={sty.head_str}>{___.balance}</div>
+                    <div style={sty.head_num}>{toMoneyFormat(_user.balance)}</div>
+                    <div>
+                        <a style={sty.a} onTouchTap={this.inputPsw}>{___.withdraw_cash}</a>
+                    </div>
+                </div>
+
                 <div style={sty.main}>
                     <Alist 
                         max={this.total} 
@@ -284,17 +309,17 @@ class WalletApp extends Component {
                 <Dialog
                     open={this.state.isInputPsw}
                     actions={[
-                                <FlatButton
-                                    label={___.cancel}
-                                    primary={true}
-                                    onClick={this.closeInputPsw}
-                                />,
-                                <FlatButton
-                                    label={___.ok}
-                                    primary={true}
-                                    onClick={this.inputAmount}
-                                />
-                            ]}
+                        <FlatButton
+                            label={___.cancel}
+                            primary={true}
+                            onClick={this.closeInputPsw}
+                        />,
+                        <FlatButton
+                            label={___.ok}
+                            primary={true}
+                            onClick={this.inputAmount}
+                        />
+                    ]}
                 >
                     
                     <Input
@@ -308,17 +333,17 @@ class WalletApp extends Component {
                 <Dialog
                     open={this.state.isInputAmount}
                     actions={[
-                                <FlatButton
-                                    label={___.cancel}
-                                    primary={true}
-                                    onClick={this.closeInputAmount}
-                                />,
-                                <FlatButton
-                                    label={___.ok}
-                                    primary={true}
-                                    onClick={this.withdrawCash}
-                                />
-                            ]}
+                        <FlatButton
+                            label={___.cancel}
+                            primary={true}
+                            onClick={this.closeInputAmount}
+                        />,
+                        <FlatButton
+                            label={___.ok}
+                            primary={true}
+                            onClick={this.withdrawCash}
+                        />
+                    ]}
                 >
                     
                     <Input
@@ -588,10 +613,5 @@ class Logo extends Component{
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }

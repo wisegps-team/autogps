@@ -396,6 +396,7 @@ window.___={
 	'recharge':'充值',
 	'withdraw_cash':'提现',
 	'financial_manage':'财务管理',
+	'top_account':'顶级账户',
 	'selling_product':'营销产品',
 	'add_selling_product':'添加营销产品',
 	'pay_success':'支付成功',

@@ -151,10 +151,5 @@ let Alist=AutoList(DList);
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }
