@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
+import {ThemeProvider} from '../_theme/default';
+import AppBar from '../_component/base/appBar';
+
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 
 thisView.addEventListener('load',function(){
@@ -9,9 +12,8 @@ thisView.addEventListener('load',function(){
 });
 
 const styles={
-    head:{width:'100%',height:'120px',display:'block',backgroundColor:'#29B6F6',textAlign:'center',paddingTop:'40px'},
-    head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
-    head_num:{fontSize:'36px',color:'#ffffff'},
+    appbar:{position:'fixed',top:'0px'},
+    main:{paddingTop:'55px'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
     a:{color:'#009988'},
@@ -88,28 +90,39 @@ class FinanceTop extends Component {
     }
     render() {
         return (
+            <ThemeProvider>
             <div>
-                <div style={styles.head}>
-                    <div style={styles.head_str}>{___.balance}</div>
-                    <div style={styles.head_num}>{toMoneyFormat(this.totalBalance)}</div>
+                <AppBar 
+                    title={___.financial_manage + '(' + ___.top_account + ')'} 
+                    style={styles.appbar}
+                />
+
+                <div style={styles.main}>
+
+                    <div style={styles.line}>
+                        <div style={styles.line_right}>{toMoneyFormat(this.totalBalance)}</div>
+                        <div >{___.account_balance}</div>
+                    </div>
+                    <div style={styles.line}>
+                        <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>{toMoneyFormat(this.tempBalance)}</div>
+                        <div >{___.temp_money}</div>
+                    </div>
+                    <div style={styles.line}>
+                        <div style={styles.line_right}>{toMoneyFormat(this.companyBalance)}</div>
+                        <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}>{' '+this.companyNumber}</span></div>
+                    </div>
+                    <div style={styles.line}>
+                        <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
+                        <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
+                    </div>
+                    <div style={styles.line}>
+                        <div style={combineStyle(['line_right','a'])} onTouchTap={this.toCounterFeeList}>{toMoneyFormat(this.counterFee)}</div>
+                        <div >{___.counter_fee}</div>
+                    </div>
                 </div>
-                <div style={styles.line}>
-                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toListBillList}>{toMoneyFormat(this.tempBalance)}</div>
-                    <div >{___.temp_money}</div>
-                </div>
-                <div style={styles.line}>
-                    <div style={styles.line_right}>{toMoneyFormat(this.companyBalance)}</div>
-                    <div >{___.company_account}<span style={styles.a} onTouchTap={this.toCompanyAccount}>{' '+this.companyNumber}</span></div>
-                </div>
-                <div style={styles.line}>
-                    <div style={styles.line_right}>{toMoneyFormat(this.personalBalance)}</div>
-                    <div >{___.personal_account}<span style={styles.a} onTouchTap={this.toPersonalAccount}>{' '+this.personNumber}</span></div>
-                </div>
-                {/*<div style={styles.line}>
-                    <div style={combineStyle(['line_right','a'])} onTouchTap={this.toCounterFeeList}>{toMoneyFormat(this.counterFee)}</div>
-                    <div >{___.counter_fee}</div>
-                </div>*/}
+
             </div>
+            </ThemeProvider>
         );
     }
 }

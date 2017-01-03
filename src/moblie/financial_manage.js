@@ -34,10 +34,11 @@ thisView.addEventListener('load',function(){
 });
 
 const styles={
-    head:{width:'100%',height:'120px',display:'block',backgroundColor:'#29B6F6',textAlign:'center',paddingTop:'40px'},
-    head_str:{fontSize:'14px',color:'#ffffff',marginBottom:'5px'},
-    head_num:{fontSize:'36px',color:'#ffffff'},
-    bill:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
+    appbar:{position:'fixed',top:'0px'},
+    head:{width:'100%',height:'120px',display:'block',textAlign:'center',paddingTop:'70px'},
+    head_str:{fontSize:'14px',marginBottom:'5px'},
+    head_num:{fontSize:'36px',marginBottom:'10px'},
+    bill:{padding:'5px 10px',borderTop:'1px solid #cccccc'},
     bill_remark:{fontSize:'14px',color:'#999999',paddingTop:'5px'},
     main:{margin:'10px'},
     income:{color:'#009900',fontSize:'20px',float:'right'},
@@ -61,14 +62,10 @@ let Balance=0;
 class App extends Component {
     constructor(props,context){
         super(props,context);
-        this.state={
-            show_bill:false,
-        }
         this.data={
             balance:0,
         }
         
-        this.toBill = this.toBill.bind(this);
         this.billBack = this.billBack.bind(this);
 
     }
@@ -93,9 +90,6 @@ class App extends Component {
         },'wxPay_withdraw');
     }
 
-    toBill(){
-        this.setState({show_bill:true});
-    }
     billBack(){
         this.setState({show_bill:false});
     }
@@ -124,25 +118,26 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
+                <AppBar 
+                    title={___.company_account} 
+                    style={styles.appbar}
+                />
 
                 <div style={styles.head}>
                     <div style={styles.head_str}>{___.balance}</div>
-                    <div onTouchTap={this.toBill} style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
+                    <div style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
+                    <div>
+                        <span style={{marginRight:'20px'}}>
+                            <a style={styles.a} onTouchTap={this.toRecharge}>{___.recharge}</a>
+                        </span>
+                        <span>
+                            <a style={styles.a} onTouchTap={this.toWithdraw}>{___.withdraw_cash}</a>
+                        </span>
+                    </div>
                 </div>
+                
+                <BillPage companyBillUid={companyBillUid}/>
 
-                <div onTouchTap={this.toRecharge} style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
-                    <div style={{float:'right'}}><NavigationChevronRight /></div>
-                    <div>{___.recharge}</div>
-                </div>
-
-                <div onTouchTap={this.toWithdraw} style={{padding:'1em',borderBottom:'1px solid #cccccc'}}>
-                    <div style={{float:'right'}}><NavigationChevronRight /></div>
-                    <div>{___.withdraw_cash}</div>
-                </div>
-
-                <SonPage open={this.state.show_bill} back={this.billBack} title={___.bill_details}>
-                    <BillPage companyBillUid={companyBillUid}/>
-                </SonPage>
 
             </div>
             </ThemeProvider>

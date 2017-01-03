@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../../_theme/default';
 
+import AppBar from '../../_component/base/appBar';
 import AutoList from '../../_component/base/autoList';
 
 
@@ -12,6 +13,8 @@ thisView.addEventListener('load',function(){
 
 
 const styles={
+    appbar:{position:'fixed',top:'0px'},
+    main:{paddingTop:'55px'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
 };
@@ -83,14 +86,22 @@ class App extends Component {
     }
     render() {
         return (
+            <ThemeProvider>
             <div>
-                <Alist 
-                    max={this.total} 
-                    limit={20} 
-                    data={this.data} 
-                    next={this.nextPage} 
+                <AppBar 
+                    style={styles.appbar}
+                    title={___.company_account}
                 />
+                <div style={styles.main}>
+                    <Alist 
+                        max={this.total} 
+                        limit={20} 
+                        data={this.data} 
+                        next={this.nextPage} 
+                    />
+                </div>
             </div>
+            </ThemeProvider>
         );
     }
 }
