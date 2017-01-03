@@ -59,13 +59,13 @@ class ShowBox extends Component{
     }
 	
     render() {
-       
+        
         return (
             <div>
                 <List>
                     <ListItem 
                         primaryText={___.person_name}
-						rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{_user.customer.name}</span>}
+						rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{_user.employee?_user.employee.name:_user.customer.contact}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
