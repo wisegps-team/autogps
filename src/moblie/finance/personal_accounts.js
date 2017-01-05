@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../../_theme/default';
 
+import AppBar from '../../_component/base/appBar';
 import AutoList from '../../_component/base/autoList';
 
 
@@ -12,6 +13,8 @@ thisView.addEventListener('load',function(){
 
 
 const styles={
+    appbar:{position:'fixed',top:'0px'},
+    main:{paddingTop:'55px'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
 };
@@ -57,7 +60,7 @@ class App extends Component {
                     if(target){
                         ele.name=target.contact||___.no_name;
                     }
-                })
+                });
                 this.data=this.data.concat(_data);
                 this.forceUpdate();
             },{uid:strUids})
@@ -65,7 +68,7 @@ class App extends Component {
         },{
             account_type:1,
             page:this.page,
-            limit:20
+            limit:20,
         });
     }
     toBill(company){
@@ -74,14 +77,22 @@ class App extends Component {
     }
     render() {
         return (
+            <ThemeProvider>
             <div>
-                <Alist 
-                    max={this.total} 
-                    limit={20} 
-                    data={this.data} 
-                    next={this.nextPage} 
+                <AppBar 
+                    style={styles.appbar}
+                    title={___.personal_account}
                 />
+                <div style={styles.main}>
+                    <Alist 
+                        max={this.total} 
+                        limit={20} 
+                        data={this.data} 
+                        next={this.nextPage} 
+                    />
+                </div>
             </div>
+            </ThemeProvider>
         );
     }
 }

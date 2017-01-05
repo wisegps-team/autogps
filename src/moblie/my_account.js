@@ -33,11 +33,11 @@ const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 
-    let view=thisView.prefetch('#forget',3);
-    ReactDOM.render(<ForgetApp/>,view);
+    // let view=thisView.prefetch('#forget',3);
+    // ReactDOM.render(<ForgetApp/>,view);
 
-    let walletView=thisView.prefetch('#wallet',3);
-    ReactDOM.render(<WalletApp/>,walletView);
+    // let walletView=thisView.prefetch('#wallet',3);
+    // ReactDOM.render(<WalletApp/>,walletView);
     
     thisView.prefetch('booking_list.js',2);
 });
@@ -49,7 +49,7 @@ const sty={
     },
     main:{
         padding:'10px',
-        marginTop:'50px',
+        // marginTop:'50px',
     },
     p:{
         padding: '10px',
@@ -73,20 +73,40 @@ const sty={
     },
     income:{
         color:'#009900',
-        fontSize:'20px'
+        fontSize:'20px',
+        float:'right'
     },
     expenses:{
         color:'#990000',
-        fontSize:'20px'
+        fontSize:'20px',
+        float:'right'        
     },
     bill:{
         padding:'5px 10px',
-        borderBottom:'1px solid #cccccc'
+        borderTop:'1px solid #cccccc'
     },
     bill_remark:{
         fontSize:'14px',
         color:'#666666',
         paddingTop:'5px'
+    },
+    head:{
+        width:'100%',
+        height:'120px',
+        display:'block',
+        textAlign:'center',
+        paddingTop:'70px'
+    },
+    head_str:{
+        fontSize:'14px',
+        marginBottom:'5px'
+    },
+    head_num:{
+        fontSize:'36px',
+        marginBottom:'10px'
+    },
+    a:{
+        color:'#009988'
     },
 }
 
@@ -187,6 +207,7 @@ class WalletApp extends Component {
         this.amountChange = this.amountChange.bind(this);
 
         this.withdrawCash = this.withdrawCash.bind(this);
+        this.toRecharge = this.toRecharge.bind(this);
     }
     componentDidMount() {
         this.getRecords();
@@ -259,19 +280,46 @@ class WalletApp extends Component {
             // isCust:1,
         },'wxPay_withdraw',location.href);
     }
+    toRecharge(){
+        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+        if(!reg.test(this.amount)||this.amout==0){
+            W.alert(___.amount_error);
+            return;
+        }
+        let pay_data={
+            uid:_user.uid,
+            order_type:2,
+            remark:'充值',
+            amount:this.amount,
+            title:'充值',
+            // isCust:1,
+        }
+        console.log('wxpay_recharge');
+        console.log(pay_data);
+        // W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});//测试用，弹出uid
+        history.replaceState('home','home','home.html');
+        Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
+    }
 
     render() {
         const actions = 1;
         return (
             <ThemeProvider>
             <div>
+
                 <AppBar 
                     style={sty.appbar}
                     title={___.my_wallet} 
-                    iconElementRight={
-                        <FlatButton label={___.withdraw_cash} onClick={this.inputPsw}/>
-                    }
                 />
+
+                <div style={sty.head}>
+                    <div style={sty.head_str}>{___.balance}</div>
+                    <div style={sty.head_num}>{toMoneyFormat(_user.balance)}</div>
+                    <div>
+                        <a style={sty.a} onTouchTap={this.inputPsw}>{___.withdraw_cash}</a>
+                    </div>
+                </div>
+
                 <div style={sty.main}>
                     <Alist 
                         max={this.total} 
@@ -284,17 +332,17 @@ class WalletApp extends Component {
                 <Dialog
                     open={this.state.isInputPsw}
                     actions={[
-                                <FlatButton
-                                    label={___.cancel}
-                                    primary={true}
-                                    onClick={this.closeInputPsw}
-                                />,
-                                <FlatButton
-                                    label={___.ok}
-                                    primary={true}
-                                    onClick={this.inputAmount}
-                                />
-                            ]}
+                        <FlatButton
+                            label={___.cancel}
+                            primary={true}
+                            onClick={this.closeInputPsw}
+                        />,
+                        <FlatButton
+                            label={___.ok}
+                            primary={true}
+                            onClick={this.inputAmount}
+                        />
+                    ]}
                 >
                     
                     <Input
@@ -308,17 +356,17 @@ class WalletApp extends Component {
                 <Dialog
                     open={this.state.isInputAmount}
                     actions={[
-                                <FlatButton
-                                    label={___.cancel}
-                                    primary={true}
-                                    onClick={this.closeInputAmount}
-                                />,
-                                <FlatButton
-                                    label={___.ok}
-                                    primary={true}
-                                    onClick={this.withdrawCash}
-                                />
-                            ]}
+                        <FlatButton
+                            label={___.cancel}
+                            primary={true}
+                            onClick={this.closeInputAmount}
+                        />,
+                        <FlatButton
+                            label={___.ok}
+                            primary={true}
+                            onClick={this.withdrawCash}
+                        />
+                    ]}
                 >
                     
                     <Input
@@ -371,8 +419,7 @@ class ShowBox extends Component{
     }
 
     reset(){
-        // this.setState({resetPwd:true});
-        thisView.goTo('#forget');
+        thisView.goTo('./myAccount/forget.js');
     }
 
     userName(){
@@ -409,8 +456,13 @@ class ShowBox extends Component{
         }
     }
 
+    personalInfo(){
+        thisView.goTo('./myAccount/personal_info.js');
+    }
+
+
     wallet(){
-        thisView.goTo('#wallet');
+        thisView.goTo('./myAccount/wallet.js');
     }
 
     logout(){
@@ -425,6 +477,11 @@ class ShowBox extends Component{
     recommend(){
         thisView.goTo('my_marketing.js');
     }
+
+    systemSet(){
+        thisView.goTo('./myAccount/system_set.js');
+    }
+
     toBillList(){
         //这里的‘我的订单’是指的什么？sellerId为当前用户的订单？
         let par={
@@ -451,8 +508,10 @@ class ShowBox extends Component{
         let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
         console.log((_user));
         return (
-            <Paper zDepth={1} style={sty.p}>
-                <div style={{textAlign:'center',padding:'10px 0px 20px'}}>
+            <div>
+                <div 
+                onClick={this.personalInfo}
+                style={{textAlign:'center',padding:'10px 0px 20px'}}>
                     <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
                     <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
                     <div>{_user.mobile}</div>
@@ -481,15 +540,17 @@ class ShowBox extends Component{
                     <ListItem 
                         primaryText={___.recommend} 
                         onClick={this.recommend}
-                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(_user.balance)}</span>}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(0)}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
                     {/*系统设置*/}
-                    {/*<ListItem 
+                    <ListItem 
                         primaryText={___.system_set} 
+                        onClick={this.systemSet}
                         rightIcon={<NavigationChevronRight />}
-                    />*/}
+                        style={{borderBottom:'1px solid #dddddd'}}
+                    />
                 </List>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
                     <RaisedButton label={___.logout} fullWidth={true} secondary={true} style={sty.lo} onClick={this.logout}/>                    
@@ -501,7 +562,7 @@ class ShowBox extends Component{
                 >
                     <UserNameInput onChange={this.changeName} value={_user.userName} floatingLabelText={___.input_user_name}/>
                 </Dialog>
-            </Paper>
+            </div>
         );
     }
 }
@@ -574,10 +635,5 @@ class Logo extends Component{
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    let str=money.toString();
-    if(str.includes('.')){
-        return '￥' + str;
-    }else{
-        return '￥' + str +'.00';
-    }
+    return '￥' + money.toFixed(2);
 }

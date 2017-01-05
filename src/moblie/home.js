@@ -130,16 +130,16 @@ const _pages=[//所有的页面
         name:___.device_manage,
         icon:<HardwareKeyboard style={sty.icon}/>
     },
-    {
-        href:'department',
-        name:___.department_manage,
-        icon:<ActionTurnedInNot style={sty.icon}/>
-    },
-    {
-        href:'employee',
-        name:___.employee_manage,
-        icon:<ActionAssignmentInd style={sty.icon}/>
-    },
+    // {
+    //     href:'department',
+    //     name:___.department_manage,
+    //     icon:<ActionTurnedInNot style={sty.icon}/>
+    // },
+    // {
+    //     href:'employee',
+    //     name:___.employee_manage,
+    //     icon:<ActionAssignmentInd style={sty.icon}/>
+    // },
     {
         href:'brand_manage',
         name:___.brand_manage,
@@ -157,11 +157,11 @@ const _pages=[//所有的页面
     //     icon:<CommunicationContacts style={sty.icon}/>
     // },
     
-    {   /*角色管理链接 */
-        href:'role_manage',
-        name:___.role_manage,
-        icon:<ActionFace style={sty.icon}/>
-    },
+    // {   /*角色管理链接 */
+    //     href:'role_manage',
+    //     name:___.role_manage,
+    //     icon:<ActionFace style={sty.icon}/>
+    // },
     // {   /*注册信息链接 */
     //     href:'register_info',
     //     name:___.register_info,
@@ -192,16 +192,16 @@ const _pages=[//所有的页面
         name:___.marketing_personnel,
         icon:<ActionRecordVoiceOver style={sty.icon}/>
     },
-    {   /*公众号配置 */
-        href:'wx_config',
-        name:___.config_wx,
-        icon:<ImageHdrStrong style={sty.icon}/>
-    },
-    {   /*公司信息 */
-        href:'company_info',
-        name:___.company_info,
-        icon:<ActionInfoOutline style={sty.icon}/>
-    },
+    // {   /*公众号配置 */
+    //     href:'wx_config',
+    //     name:___.config_wx,
+    //     icon:<ImageHdrStrong style={sty.icon}/>
+    // },
+    // {   /*公司信息 */
+    //     href:'company_info',
+    //     name:___.company_info,
+    //     icon:<ActionInfoOutline style={sty.icon}/>
+    // },
     // {   /*我的营销 20161227改名为‘推荐有礼’，并放入‘我的’菜单下*/
     //     href:'my_marketing',
     //     name:___.my_marketing,
