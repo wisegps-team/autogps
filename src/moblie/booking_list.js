@@ -32,7 +32,7 @@ const EVENT=makeRandomEvent({
 const styles={
     appbar:{position:'fixed',top:'0px'},
     main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
-    card:{marginTop:'1em',padding:'0.5em',lineHeight: '30px'},
+    card:{marginTop:'5px',padding:'10px',lineHeight: '30px',borderBottom:'solid 1px #999999'},
     w:{
         width:'50%',
         display:'inline-block'
@@ -107,7 +107,7 @@ class App extends React.Component {
         return(
             <ThemeProvider>
                 <AppBar 
-                    title={'预约客户'} 
+                    title={___.booked_cust} 
                     style={styles.appbar}
                 />
                 <div style={styles.main}>
@@ -139,7 +139,7 @@ class DumbList extends React.Component{
             let colors=['#8BC34A','#00BFA5'];
             let i=ele.status;
             return(
-                <Card key={index} style={styles.card}>
+                <div key={index} style={styles.card}>
                     <div>
                         <span style={styles.w}>{___.recommender+'：'+ele.sellerName}</span>
                         <span style={styles.w}>{___.booker+'：'+ele.name}</span>
@@ -149,7 +149,7 @@ class DumbList extends React.Component{
                         {___.status+'：'+___.booking_status[i]}
                         <a style={styles.a} onClick={e=>this.open(ele)}>{___.details}</a>
                     </div>
-                </Card>
+                </div>
             )
         })
         return(
@@ -203,11 +203,17 @@ class DetailBox extends Component{
         let resTime=d.status?<h4>{___.register_date+'：'+W.dateToString(W.date(d.resTime))}</h4>:null;
         return (
             <div style={styles.p}>
-                <h4>{___.order_id+'：'+d.objectId}</h4>
+                {/*订单提交时间*/}
                 <h4>{___.submit_booking+'：'+W.dateToString(W.date(d.createdAt))}</h4>
+                {/*客户姓名*/}
                 <h4>{___.booker+'：'+d.name+'/'+d.mobile}</h4>
+                {/*订单号*/}
+                <h4>{___.order_id+'：'+d.objectId}</h4>
+                {/*车主姓名*/}
                 <h4>{___.carowner_info+'：'+d.userName+'/'+d.userMobile}</h4>
+                {/*产品型号*/}
                 <h4>{___.booking_product+'：'+(d.product||___.loading)}</h4>
+                {/*产品价格*/}
                 <h4>{___.product_price+'：'+(d.price||___.loading)}</h4>
                 {/*付款时间*/}
                 {/*付款金额*/}

@@ -73,7 +73,7 @@ class ShowBox extends Component{
             }
         }
         return (
-            <Paper zDepth={1} style={sty.p}>
+            <div style={sty.p}>
                 <h2>{cust.name}</h2>
                 <p>{___.cust_type+'：'+cust.custType}</p>
                 <p>{___.value_added_service+'：'+strVa}</p>
@@ -83,7 +83,7 @@ class ShowBox extends Component{
                 <div style={{textAlign:'right',marginTop:'15px'}}>
                     {button}
                 </div>
-            </Paper>
+            </div>
         );
     }
 }
@@ -129,7 +129,7 @@ class EditBox extends Component{
             areaId:cust.areaId
         }
         return (
-            <Paper zDepth={1} style={sty.p}>
+            <div style={sty.p}>
                 <Input value={cust.name} name='name' onChange={this.change} hintText={___.name}/>
                 <p>{___.cust_type+'：'+cust.custType}</p>
                 <Input value={cust.contact} name='contact' onChange={this.change} hintText={___.person}/>
@@ -140,7 +140,7 @@ class EditBox extends Component{
                     <FlatButton label={___.cancel} onClick={this.props.back} default={true} />                
                     <FlatButton label={___.save} onClick={this.save} primary={true} />
                 </div>
-            </Paper>
+            </div>
         );
     }
     

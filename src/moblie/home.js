@@ -100,21 +100,11 @@ function checkWallet(){
 checkWallet();
 
 const _pages=[//所有的页面
-    // {
-    //     href:'brand_trader',
-    //     name:___.brand_trader,
-    //     icon:<ActionRecordVoiceOver style={sty.icon}/>
-    // },
     {
         href:'superior',
         name:___.superior,
         icon:<ActionSupervisorAccount style={sty.icon}/>
     },
-    // {
-    //     href:'dealer_agent',
-    //     name:___.agent,
-    //     icon:<ActionSupervisorAccount style={sty.icon}/>
-    // },
     {
         href:'subordinate',
         name:___.subordinate,
@@ -130,16 +120,6 @@ const _pages=[//所有的页面
         name:___.device_manage,
         icon:<HardwareKeyboard style={sty.icon}/>
     },
-    // {
-    //     href:'department',
-    //     name:___.department_manage,
-    //     icon:<ActionTurnedInNot style={sty.icon}/>
-    // },
-    // {
-    //     href:'employee',
-    //     name:___.employee_manage,
-    //     icon:<ActionAssignmentInd style={sty.icon}/>
-    // },
     {
         href:'brand_manage',
         name:___.brand_manage,
@@ -150,63 +130,21 @@ const _pages=[//所有的页面
         name:___.activity_agent,
         icon:<ToggleStar style={sty.icon}/>
     },
-
-    // {//原本的营销推广
-    //     href:'partTime_sellers',
-    //     name:___.partTime_sellers,
-    //     icon:<CommunicationContacts style={sty.icon}/>
-    // },
-    
-    // {   /*角色管理链接 */
-    //     href:'role_manage',
-    //     name:___.role_manage,
-    //     icon:<ActionFace style={sty.icon}/>
-    // },
-    // {   /*注册信息链接 */
-    //     href:'register_info',
-    //     name:___.register_info,
-    //     icon:<AvFeaturedPlayList style={sty.icon}/>
-    // },
     {   /*营销产品 */
         href:'selling_product',
         name:___.selling_product,
         icon:<ActionShopTwo style={sty.icon}/>
     },
-    // {   /*车主营销链接 */
-    //     href:'carowner_seller',
-    //     name:___.carowner_seller,
-    //     icon:<AvRecentActors style={sty.icon}/>
-    // },
     {   /*营销活动链接 */
         href:'seller_activity',
         name:___.seller_activity,
         icon:<ActionEvent style={sty.icon}/>
     },
-    // { //营销统计
-    //     href:'partTime_count',
-    //     name:___.sell_count,
-    //     icon:<ContentSort style={sty.icon}/>
-    // },
     {   /*营销人员 */
         href:'marketing_personnel',
         name:___.marketing_personnel,
         icon:<ActionRecordVoiceOver style={sty.icon}/>
     },
-    // {   /*公众号配置 */
-    //     href:'wx_config',
-    //     name:___.config_wx,
-    //     icon:<ImageHdrStrong style={sty.icon}/>
-    // },
-    // {   /*公司信息 */
-    //     href:'company_info',
-    //     name:___.company_info,
-    //     icon:<ActionInfoOutline style={sty.icon}/>
-    // },
-    // {   /*我的营销 20161227改名为‘推荐有礼’，并放入‘我的’菜单下*/
-    //     href:'my_marketing',
-    //     name:___.my_marketing,
-    //     icon:<ActionTrendingUp style={sty.icon}/>
-    // },
     {   /*二维码管理 */
         href:'qrcode',
         name:___.qrcode_manage,

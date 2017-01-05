@@ -32,12 +32,6 @@ import Dialog from 'material-ui/Dialog';
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
-
-    // let view=thisView.prefetch('#forget',3);
-    // ReactDOM.render(<ForgetApp/>,view);
-
-    // let walletView=thisView.prefetch('#wallet',3);
-    // ReactDOM.render(<WalletApp/>,walletView);
     
     thisView.prefetch('booking_list.js',2);
 });
@@ -169,240 +163,6 @@ class ForgetApp extends Component{
     }
 }
 
-let record={
-    objectId:1,
-    money:233,
-    remark:'remark',
-    income:true,
-}
-let records=[];
-for(let i=5;i--;){
-    let r=Object.assign({},record);
-    r.objectId=i;
-    r.income=!(i%2);
-    records[i]=r;
-}
-class WalletApp extends Component {
-    constructor(props,context){
-        super(props,context);
-        this.state={
-            isInputPsw:false,
-            isInputAmount:false,
-        }
-        this.data=[];
-        this.psw='';
-        this.amount=0;
-        this.page_no=1;
-        this.total=0;
-
-        this.loadNextPage = this.loadNextPage.bind(this);
-        this.getRecords = this.getRecords.bind(this);
-
-        this.inputPsw = this.inputPsw.bind(this);
-        this.closeInputPsw = this.closeInputPsw.bind(this);
-        this.pswChange = this.pswChange.bind(this);
-
-        this.inputAmount = this.inputAmount.bind(this);
-        this.closeInputAmount = this.closeInputAmount.bind(this);
-        this.amountChange = this.amountChange.bind(this);
-
-        this.withdrawCash = this.withdrawCash.bind(this);
-        this.toRecharge = this.toRecharge.bind(this);
-    }
-    componentDidMount() {
-        this.getRecords();
-    }
-    loadNextPage(){
-        this.page_no++;
-        this.getRecords();
-    }
-    getRecords(){
-        Wapi.user.getBillList(res=>{
-            this.tota=res.total;
-            let _data=res.data.reverse();
-            this.data=this.data.concat(_data);
-            this.forceUpdate();
-        },{
-            uid:_user.objectId,
-            start_time:'2016-01-01',
-            end_time:'2026-12-12',
-        });
-    }
-
-    inputPsw(){
-        this.setState({isInputPsw:true});
-    }
-    closeInputPsw(){
-        this.setState({isInputPsw:false});
-    }
-    pswChange(e,value){
-        this.psw=value;
-    }
-
-    inputAmount(){
-        this.setState({
-            isInputPsw:false,
-            isInputAmount:true
-        });
-    }
-    closeInputAmount(){
-        this.setState({isInputAmount:false});
-    }
-    amountChange(e,value){
-        this.amount=value;
-    }
-
-    withdrawCash(){
-        console.log('wxPay_withdraw');
-        console.log(this.psw);
-        console.log(this.amount);
-        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-        if(!reg.test(this.amount)){
-            this.setState({isInputAmount:false});
-            W.alert(___.amount_error);
-            return;
-        }
-        if(this.amount>_user.balance){
-            this.setState({isInputAmount:false});
-            W.alert(___.balance_not_enough);
-            return;
-        }
-        this.setState({isInputAmount:false});
-        
-        history.replaceState('home','home','home.html');
-        Wapi.pay.wxPay({
-            uid:_user.uid,
-            order_type:3,
-            remark:'提现',
-            amount:this.amount,
-            title:'提现',
-            psw:this.psw,
-            // isCust:1,
-        },'wxPay_withdraw',location.href);
-    }
-    toRecharge(){
-        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-        if(!reg.test(this.amount)||this.amout==0){
-            W.alert(___.amount_error);
-            return;
-        }
-        let pay_data={
-            uid:_user.uid,
-            order_type:2,
-            remark:'充值',
-            amount:this.amount,
-            title:'充值',
-            // isCust:1,
-        }
-        console.log('wxpay_recharge');
-        console.log(pay_data);
-        // W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});//测试用，弹出uid
-        history.replaceState('home','home','home.html');
-        Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
-    }
-
-    render() {
-        const actions = 1;
-        return (
-            <ThemeProvider>
-            <div>
-
-                <AppBar 
-                    style={sty.appbar}
-                    title={___.my_wallet} 
-                />
-
-                <div style={sty.head}>
-                    <div style={sty.head_str}>{___.balance}</div>
-                    <div style={sty.head_num}>{toMoneyFormat(_user.balance)}</div>
-                    <div>
-                        <a style={sty.a} onTouchTap={this.inputPsw}>{___.withdraw_cash}</a>
-                    </div>
-                </div>
-
-                <div style={sty.main}>
-                    <Alist 
-                        max={this.total} 
-                        limit={20} 
-                        data={this.data} 
-                        next={this.loadNextPage} 
-                    />
-                </div>
-                
-                <Dialog
-                    open={this.state.isInputPsw}
-                    actions={[
-                        <FlatButton
-                            label={___.cancel}
-                            primary={true}
-                            onClick={this.closeInputPsw}
-                        />,
-                        <FlatButton
-                            label={___.ok}
-                            primary={true}
-                            onClick={this.inputAmount}
-                        />
-                    ]}
-                >
-                    
-                    <Input
-                        floatingLabelText={___.input_user_psw}
-                        onChange={this.pswChange}
-                        type="password"
-                    />
-
-                </Dialog>
-
-                <Dialog
-                    open={this.state.isInputAmount}
-                    actions={[
-                        <FlatButton
-                            label={___.cancel}
-                            primary={true}
-                            onClick={this.closeInputAmount}
-                        />,
-                        <FlatButton
-                            label={___.ok}
-                            primary={true}
-                            onClick={this.withdrawCash}
-                        />
-                    ]}
-                >
-                    
-                    <Input
-                        floatingLabelText={___.input_withdraw_amount}
-                        onChange={this.amountChange}
-                    />
-
-                </Dialog>
-            </div>
-            </ThemeProvider>
-        );
-    }
-}
-
-class DList extends React.Component{
-    constructor(props,context){
-        super(props,context);
-    }
-    render() {
-        let items=this.props.data.map((ele)=>
-            <div key={ele.objectId} style={sty.bill}>
-                <div style={(ele.amount>=0) ? sty.income : sty.expenses}>
-                    {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
-                </div>
-                <div style={sty.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
-                <div style={sty.bill_remark}>{decodeURIComponent(ele.remark)}</div>
-            </div>
-        );
-        return(
-            <div>
-                {items}
-            </div>
-        )
-    }
-}
-let Alist=AutoList(DList);
 
 class ShowBox extends Component{
     constructor(props, context) {
@@ -410,6 +170,7 @@ class ShowBox extends Component{
         this.state={
             userName:false
         }
+        this.orderNum=0;
         this.reset = this.reset.bind(this);
         this.userName = this.userName.bind(this);
         this.close = this.close.bind(this);
@@ -417,6 +178,13 @@ class ShowBox extends Component{
         this.saveName = this.saveName.bind(this);
         this.wallet = this.wallet.bind(this);
     }
+    componentDidMount() {
+        Wapi.booking.list(res=>{
+            this.orderNum=res.total;
+            this.forceUpdate();
+        },{mobile:_user.mobile});
+    }
+    
 
     reset(){
         thisView.goTo('./myAccount/forget.js');
@@ -460,7 +228,6 @@ class ShowBox extends Component{
         thisView.goTo('./myAccount/personal_info.js');
     }
 
-
     wallet(){
         thisView.goTo('./myAccount/wallet.js');
     }
@@ -483,12 +250,7 @@ class ShowBox extends Component{
     }
 
     toBillList(){
-        //这里的‘我的订单’是指的什么？sellerId为当前用户的订单？
-        let par={
-            sellerId:_user.objectId,
-            status:0
-        }
-        thisView.goTo('booking_list.js',par);
+        thisView.goTo('./myAccount/my_order.js');
     }
     render() {
         const actions = [
@@ -506,7 +268,6 @@ class ShowBox extends Component{
         ];
 
         let forget=this.state.resetPwd?sty.p:Object.assign({},sty.p,{display:'none'});
-        console.log((_user));
         return (
             <div>
                 <div 
@@ -523,13 +284,13 @@ class ShowBox extends Component{
                     {/*修改密码*/}
                     {/*<ListItem primaryText={___.reset_pwd} leftIcon={<ActionLock/>} onClick={this.reset}/>*/}
                     {/*我的订单*/}
-                    {/*<ListItem 
+                    <ListItem 
                         primaryText={___.my_order} 
                         onClick={this.toBillList}
-                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>2</span>}
+                        rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{this.orderNum}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
-                    />*/}
+                    />
                     <ListItem 
                         primaryText={___.my_wallet} 
                         onClick={this.wallet}

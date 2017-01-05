@@ -41,7 +41,7 @@ const styles={
     bill:{padding:'5px 10px',borderTop:'1px solid #cccccc'},
     bill_remark:{fontSize:'14px',color:'#999999',paddingTop:'5px'},
     main:{margin:'10px'},
-    income:{color:'#009900',fontSize:'20px',float:'right'},
+    income:{fontSize:'20px',float:'right'},
     expenses:{color:'#990000',fontSize:'20px',float:'right'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
@@ -348,7 +348,7 @@ class DList extends React.Component{
         let items=this.props.data.map((ele)=>
             <div key={ele.objectId} style={styles.bill}>
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
-                    {(ele.amount>=0) ? ('+' + ele.amount.toFixed(2)) : (ele.amount.toFixed(2))}
+                    {(ele.amount>=0) ? (ele.amount.toFixed(2)) : (Math.abs(ele.amount).toFixed(2))}
                 </div>
                 <div style={styles.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
                 <div style={styles.bill_remark}>{decodeURIComponent(ele.remark)}</div>
@@ -367,5 +367,5 @@ let Alist=AutoList(DList);
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    return '￥' + money.toFixed(2);
+    return money.toFixed(2);
 }
