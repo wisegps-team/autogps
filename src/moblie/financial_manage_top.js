@@ -130,5 +130,6 @@ class FinanceTop extends Component {
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    return '￥' + money.toFixed(2);
+    // return '￥' + money.toFixed(2);
+    return money.toFixed(2);
 }

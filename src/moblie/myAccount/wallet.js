@@ -49,12 +49,14 @@ const styles={
         height: '100%'
     },
     income:{
-        color:'#009900',
-        fontSize:'20px'
+        // color:'#009900',
+        fontSize:'20px',
+        float:'right'
     },
     expenses:{
         color:'#990000',
-        fontSize:'20px'
+        fontSize:'20px',
+        float:'right'
     },
     bill:{
         padding:'5px 10px',
@@ -283,7 +285,7 @@ class DList extends React.Component{
         let items=this.props.data.map((ele)=>
             <div key={ele.objectId} style={styles.bill}>
                 <div style={(ele.amount>=0) ? styles.income : styles.expenses}>
-                    {(ele.amount>=0) ? ('+'+ele.amount) : (ele.amount)}
+                    {(ele.amount>=0) ? (ele.amount.toFixed(2)) : (Math.abs(ele.amount).toFixed(2))}
                 </div>
                 <div style={styles.bill_remark}>{W.dateToString(new Date(ele.createdAt))}</div>
                 <div style={styles.bill_remark}>{decodeURIComponent(ele.remark)}</div>
@@ -386,5 +388,5 @@ class WithdrawPage extends Component {
 
 //工具方法 金额转字符
 function toMoneyFormat(money){
-    return '￥' + money.toFixed(2);
+    return money.toFixed(2);
 }

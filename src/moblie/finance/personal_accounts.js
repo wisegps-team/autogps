@@ -54,16 +54,21 @@ class App extends Component {
             Wapi.customer.list(re=>{
                 console.log('get customer info');
                 let custs=re.data;
+
+                let arr=[];
                 _data.map(ele=>{
                     ele.name=___.deleted;
                     let target=custs.find(item=>item.uid==ele.uid);
                     if(target){
                         ele.name=target.contact||___.no_name;
                     }
+                    if(ele.balance!=0)arr.push(ele);
                 });
+                console.log(arr);
                 this.data=this.data.concat(_data);
+
                 this.forceUpdate();
-            },{uid:strUids})
+            },{uid:strUids},{limit:-1})
             
         },{
             account_type:1,
