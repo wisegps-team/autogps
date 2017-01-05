@@ -4,6 +4,7 @@ import AppBox from './app_box';
 import MobileChecker from '../base/mobileChecker';
 import RaisedButton from 'material-ui/RaisedButton';
 import QrBox from './qr_box';
+import {bonkingRegister} from './form';
 
 const sty={
     color:{
@@ -74,6 +75,8 @@ class CheckBox extends Component {
     
     success(val,name){
         this.code=val;
+        let booking=this.props.data;
+        bonkingRegister(booking.userMobile,val,booking.userName,_g.openid,e=>e);//注册车主
     }
 
     submit(){

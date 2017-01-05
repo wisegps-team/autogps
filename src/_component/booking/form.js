@@ -10,6 +10,7 @@ import Checkbox from 'material-ui/Checkbox';
 import Input from '../base/input';
 import PhoneInput from '../base/PhoneInput';
 import VerificationCode from '../base/verificationCode';
+import {getOpenIdKey} from '../../_modules/tool';
 
 const sty={
     f:{
@@ -138,19 +139,16 @@ class Form extends Component {
         if(ACT.count)
             submit_data.managerId=ACT.principalId;//活动负责人id
 
+        W.loading(true,___.booking_now);
         let _this=this;
-        Wapi.user.register(function(user){
+        bonkingRegister(submit_data.mobile,this._valid,submit_data.name,submit_data.openId,function(user){
             let uid=user.uid;
             submit_data.userId=uid;
             Wapi.booking.add(function(res){
                 submit_data.objectId=res.objectId;
+                W.loading();
                 _this.props.onSuccess(submit_data,uid);
             },submit_data);
-        },{
-            mobile:submit_data.mobile,
-            valid_code:this._valid,
-            password:submit_data.mobile.slice(-6),
-            valid_type:1
         });
     }
     render() {
@@ -211,3 +209,53 @@ class Form extends Component {
 }
 
 export default Form;
+
+export function bonkingRegister(mobile,valid_code,name,openId,callback){
+    let password=mobile.slice(-6);
+    Wapi.user.register(function(user){
+        if(user.status_code&&user.status_code!=8){
+            W.errorCode(user);
+            return;
+        }
+        Wapi.user.login(lo=>{
+            if(lo.status_code){
+                W.errorCode(lo);
+                return;
+            }
+            let uid=lo.uid;
+            let access_token=lo.access_token;
+            let data={
+                _objectId:uid,
+                access_token
+            };
+            data['authData.'+getOpenIdKey()]=openId;
+            Wapi.user.update(null,data);//更新登录的openId
+            Wapi.customer.get(cust=>{
+                if(!cust.data){
+                    Wapi.customer.add(null,{
+                        uid,
+                        appId:WiStorm.config.objectId,
+                        access_token,
+                        name,
+                        tel:mobile,
+                        custType:'私家车主',
+                        custTypeId:7
+                    });
+                }
+            },{
+                uid,
+                appId:WiStorm.config.objectId,
+                access_token
+            });
+            callback(lo);
+        },{
+            password,
+            account:mobile
+        });
+    },{
+        mobile,
+        valid_code,
+        password,
+        valid_type:1
+    });
+}

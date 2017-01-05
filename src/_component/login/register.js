@@ -37,6 +37,12 @@ class Register extends Component {
             W.errorCode(res);
     }
     submit(){
+        if(this.formData.mobile&&this.formData.mobile.length==11){
+            this.formData.password=this.formData.mobile.slice(-6);
+        }else{
+            W.alert(___.phone_err);
+            return;
+        }
         for(let k in this.formData){
             if(!this.formData[k]){
                 W.alert(k+___.not_null);
@@ -76,10 +82,10 @@ class Register extends Component {
                     onSuccess={this.change}
                     onChange={this.change}
                 />
-                <PasswordRepeat 
+                {/*<PasswordRepeat 
                     onChange={this.change}
                     name='password'
-                />
+                />*/}
                 <RaisedButton label={___.register} primary={true} style={sty.but} onClick={this.submit}/>
             </div>
         );
