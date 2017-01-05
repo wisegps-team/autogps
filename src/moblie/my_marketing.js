@@ -85,27 +85,27 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        let par={
-            "group":{
-                "_id":{"activityId":"$activityId"},
-                "status0":{"$sum":"$status0"},
-                "status1":{"$sum":"$status1"},
-                "status2":{"$sum":"$status2"},
-                "status3":{"$sum":"$status3"}
-            },
-            "sorts":"activityId",
-            sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
-        }
-        Wapi.booking.aggr(resAggr=>{
-            this.booking=resAggr.data;
-            Wapi.customer.list(res=>{
-                this._parents=res.data||[];
-                this.getData();
-            },{
-                objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
-            });
-        },par);
-        
+        // let par={
+        //     "group":{
+        //         "_id":{"activityId":"$activityId"},
+        //         "status0":{"$sum":"$status0"},
+        //         "status1":{"$sum":"$status1"},
+        //         "status2":{"$sum":"$status2"},
+        //         "status3":{"$sum":"$status3"}
+        //     },
+        //     "sorts":"activityId",
+        //     sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
+        // }
+        // Wapi.booking.aggr(resAggr=>{
+        //     this.booking=resAggr.data;
+        //     Wapi.customer.list(res=>{
+        //         this._parents=res.data||[];
+        //         this.getData();
+        //     },{
+        //         objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
+        //     });
+        // },par);
+        this.getData();
     }
     nextPage(){
         // this.page_no++;
