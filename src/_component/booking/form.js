@@ -66,32 +66,8 @@ class Form extends Component {
         this.change = this.change.bind(this);
         this.changeVerifi=this.changeVerifi.bind(this);
         this.submit = this.submit.bind(this);
-        this.mobileChange = this.mobileChange.bind(this);
     }
     
-    mobileChange(val,err,userMobile){
-        let that=this;
-        if(err){
-            if(err!=___.phone_err&&err!=___.phone_empty){
-                if(userMobile||this.props.self){
-                    W.alert(___.not_allow);
-                    return;
-                } 
-            }else
-                return;
-        }
-        Wapi.booking.get(function(res){
-            if(res.data){
-                W.alert(___.booked);
-            }else{
-                userMobile?that.data.userMobile=val:that.data.mobile=val;
-                that.forceUpdate();
-            }
-        },{
-            userMobile:val,
-            activityId:_g.activityId
-        });
-    }
     change(e,val){
         this.data[e.target.name]=val;
         if(e.target.name=='mobile')
@@ -161,16 +137,9 @@ class Form extends Component {
             </div>,
             <div style={sty.r} key={'carowner_phone'}>
                 <HardwareSmartphone style={sty.i}/>
-                <PhoneInput name='userMobile' floatingLabelText={___.carowner_phone} onChange={(val,err)=>this.mobileChange(val,err,true)} needExist={false}/>
+                <Input name='userMobile' floatingLabelText={___.carowner_phone} onChange={this.change} type='tel'/>
             </div>
         ];
-        let mobile=this.props.self?(<div style={sty.r}>
-            <HardwareSmartphone style={sty.i}/>
-            <PhoneInput name='mobile' floatingLabelText={___.booking_phone} onChange={this.mobileChange} needExist={false}/>
-        </div>):(<div style={sty.r}>
-            <HardwareSmartphone style={sty.i}/>
-            <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change} type='tel'/>
-        </div>);
         let ps={
             color:'#ccc',
             marginLeft: '11px'
@@ -185,7 +154,10 @@ class Form extends Component {
                     <ActionAccountBox style={sty.i}/>
                     <Input name='name' floatingLabelText={___.booking_name} onChange={this.change}/>
                 </div>
-                {mobile}
+                <div style={sty.r}>
+                    <HardwareSmartphone style={sty.i}/>
+                    <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change} type='tel'/>
+                </div>
                 <div style={sty.r}>
                     <ActionVerifiedUser style={sty.i}/>
                     <VerificationCode 
