@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=85;//版本号
+let version=87;//版本号
 
 //地区表
 export const area={
@@ -2166,6 +2166,11 @@ export const booking={
             'name': 'receiptId',//与上面销售商ID重复，已删除
             'desc': '货款收款id',//销售商ID
             'type': 'String',
+            'query': true,
+        },{
+            'name': 'commissionDate',
+            'desc': '支付佣金时间',
+            'type': 'Date',
             'query': true,
         },{
             'name': 'commission',

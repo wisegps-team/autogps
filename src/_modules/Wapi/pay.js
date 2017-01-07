@@ -8,6 +8,8 @@ import config from'./config';
 class WPayApi extends WiStormAPI {
     constructor(token) {
         super('pay',token,config.app_key,config.app_secret,{devKey:config.dev_key});
+		WiStorm.config.wxAppKey='wxa5c196f7ec4b5df9';
+		this.wxAppKey=WiStorm.config.wxAppKey;
     }
 
     /**
@@ -97,7 +99,6 @@ class WPayApi extends WiStormAPI {
 // let url=location.origin+'/order.php?key='+encodeURIComponent(key);
 
 		//测试用
-		WiStorm.config.wxAppKey='wxa5c196f7ec4b5df9';
 		let url='http://'+WiStorm.config.domain.user+'/order.php?key='+encodeURIComponent(key);
 		localStorage.setItem(key,JSON.stringify({
 			err_msg :"get_brand_wcpay_request:cancel"
@@ -108,7 +109,7 @@ class WPayApi extends WiStormAPI {
 			url+='&'+k+'='+encodeURIComponent(data[k]);
 		}
 		
-		top.location="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+WiStorm.config.wxAppKey+"&redirect_uri="+encodeURIComponent(url)+"&response_type=code&scope=snsapi_base&state=state#wechat_redirect";
+		top.location="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+this.wxAppKey+"&redirect_uri="+encodeURIComponent(url)+"&response_type=code&scope=snsapi_base&state=state#wechat_redirect";
     }
 
 	/**
