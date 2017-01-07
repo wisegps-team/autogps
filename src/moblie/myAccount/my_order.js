@@ -485,7 +485,7 @@ class DetailBox extends Component{
         let time4 = d.confirmTime ? W.dateToString(W.date(d.confirmTime)) : '' ;
         let time5 = d.resTime ? W.dateToString(W.date(d.resTime)) : '' ;
         let time6 = d.payTime ? W.dateToString(W.date(d.payTime)) : '' ;
-        let time7 = time6;
+        let time7 = d.commissionDate ? W.dateToString(W.date(d.commissionDate)) : '' ;
 
         if(this.user.booker||this.user.carowner){
             time6='';
