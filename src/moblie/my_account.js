@@ -291,6 +291,7 @@ class ShowBox extends Component{
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
+                    {/*我的钱包*/}
                     <ListItem 
                         primaryText={___.my_wallet} 
                         onClick={this.wallet}
@@ -298,6 +299,7 @@ class ShowBox extends Component{
                         rightIcon={<NavigationChevronRight />}
                         style={{borderBottom:'1px solid #dddddd'}}
                     />
+                    {/*推荐有礼*/}
                     <ListItem 
                         primaryText={___.recommend} 
                         onClick={this.recommend}

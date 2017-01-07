@@ -58,6 +58,7 @@ class App extends Component {
             _objectId:_g.bookingId,
             installId:0,
             install:'',
+            selectInstallDate:'',
         }
 
         this.canSelectInstall=true;
@@ -154,9 +155,10 @@ class App extends Component {
         }
         submited=true;
 
-        this.data.userOpenId=_g.openid;
-        
         let pay=booking.payMoney?parseFloat(booking.payMoney).toFixed(2):'0.00';
+
+        this.data.userOpenId=_g.openid;
+        this.data.selectInstallDate=W.dateToString(new Date());
         
         Wapi.booking.update(res=>{
             
