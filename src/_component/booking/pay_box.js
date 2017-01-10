@@ -16,6 +16,7 @@ class PayBox extends Component {
     constructor(props, context) {
         super(props, context);
         this.pay = this.pay.bind(this);
+        this.cancel = this.cancel.bind(this);
     }
     
     pay(){
@@ -41,6 +42,16 @@ class PayBox extends Component {
         W.setLS('booking',booking);
         Wapi.pay.wxPay(payData,_g.activityId);
     }
+    cancel(){//选择不要赠品
+        W.loading(true,___.loading);
+        Wapi.booking.update(res=>{
+            W.loading();
+            this.props.onCancel();
+        },{
+            _objectId:this.props.booking.objectId,
+            'carType.noPay':'1'
+        });
+    }
     render() {
         let act=this.props.act;
         let booking=this.props.booking;
@@ -56,7 +67,7 @@ class PayBox extends Component {
                 </p>
                 <p style={{textIndent: '2em'}}>{des}</p>
                 <div style={{textAlign:'center'}}>
-                    <FlatButton label={___.not_gifts} primary={true} onClick={this.props.onCancel}/>
+                    <FlatButton label={___.not_gifts} primary={true} onClick={this.cancel}/>
                     <FlatButton label={___.wxPay} primary={true} onClick={this.pay}/>
                 </div>
                 <div style={sty.ex}>

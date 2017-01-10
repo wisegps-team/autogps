@@ -513,7 +513,7 @@ window.___={
 	'order_payment_settlement':'货款结算',
 	'order_commission_settlement':'佣金结算',
 	'paid_amount':'支付金额',
-	'confirm_delete_booking':'确认取消该订单吗',
+	'confirm_delete_booking':'确认取消该订单吗？',
 	'sendWeixinToBooker_bookSuccess':'点击详情选择授权安装网点',
 	'no_change_step3':'你于time已预约服务，如install工作人员2小时内未联系你确认车型和安装时间，你可更换安装网点！',
 	'no_change_step4':'你已预约time安装设备，如在约定时间内未安装注册，你可更换安装网点！',
@@ -522,5 +522,7 @@ window.___={
 	'confirm_book_line2':'车主预付款项payMoney元，该款项在安装注册时同步划转到您的企业账号。',
 	'confirm_book_line3':'此订单需支付佣金commission元，安装注册后自动从您的企业账户划转到营销人员账户，如划转佣金时余额不足，请在车主注册后24小时内通过营销平台支付佣金。',
 	'confirm_book_line4':'请联系车主确认车型和安装时间后回复服务预约。',
-	'confirm_book_line4':'time前未预约确认，车主可以更换安装网点。'
+	'confirm_book_line4':'time前未预约确认，车主可以更换安装网点。',
+	'order_delete_success':'订单已取消！',
+	'cancel_order':'取消订单',
 }
