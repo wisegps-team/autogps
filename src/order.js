@@ -110,42 +110,42 @@ class DetailBox extends Component{
     
     getData() {
         // if(nextProps.data&&this.props.data!=nextProps.data){
-            //_user.mobile//当前用户电话
-            //nextProps.data.userMobile//车主电话
-            //nextProps.data.mobile//预定人电话
+        //_user.mobile//当前用户电话
+        //nextProps.data.userMobile//车主电话
+        //nextProps.data.mobile//预定人电话
 
-            if(this.booking.mobile==_user.mobile){
-                this.user.booker=true;
-            }
-            if(this.booking.userMobile==_user.mobile){
-                this.user.carowner=true;
-            }
+        if(this.booking.mobile==_user.mobile){
+            this.user.booker=true;
+        }
+        if(this.booking.userMobile==_user.mobile){
+            this.user.carowner=true;
+        }
 
-            let that=this;
-            if(this.booking.activityId){//获取活动信息，因为活动信息没有直接放在Booking里面
-                Wapi.activity.get(function(res){
-                    if(res.data){
-                        that.act=res.data;
-                        
-                        if(res.data.installId){
-                            Wapi.customer.get(function(re){//获取安装网点电话
-                                if(re.data){
-                                    that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
-                                    that.setStep();
-                                }
-                            },{
-                                objectId:res.data.installId
-                            });
-                        }else{
-                            that.setStep();
-                        }
-
+        let that=this;
+        if(this.booking.activityId){//获取活动信息，因为活动信息没有直接放在Booking里面
+            Wapi.activity.get(function(res){
+                if(res.data){
+                    that.act=res.data;
+                    
+                    if(res.data.installId){
+                        Wapi.customer.get(function(re){//获取安装网点电话
+                            if(re.data){
+                                that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
+                                that.setStep();
+                            }
+                        },{
+                            objectId:res.data.installId
+                        });
+                    }else{
+                        that.setStep();
                     }
-                },{
-                    objectId:this.booking.activityId
-                });
-            }
-        // }  
+
+                }
+            },{
+                objectId:this.booking.activityId
+            });
+        }
+        // } 
     }
     setStep(){
         let data=this.booking;
@@ -184,7 +184,7 @@ class DetailBox extends Component{
         W.confirm(___.confirm_delete_booking,b=>{
             if(b){
                 Wapi.booking.delete(res=>{
-                    W.alert('delete success',e=>{history.back()});
+                    W.alert(___.order_delete_success,e=>{history.back()});
                 },{objectId:this.booking.objectId});
             }
         });
@@ -197,11 +197,10 @@ class DetailBox extends Component{
         
         let booking=this.booking;
         Wapi.customer.get(res=>{
-            location.href='http://'+WiStorm.config.domain.wx+'/autogps/booking.html?intent=logout'
+            location.href='http://'+WiStorm.config.domain.user+'/autogps/booking.html?intent=logout'
                 +'&bookingId='+booking.objectId
-                +'&wxAppKey='+this.act.wxAppKey
-                +'&name='+booking.name
-                +'&userName='+booking.userName;
+                +'&activityId='+this.act.objectId;
+                // +'&wx_app_id='+this.act.wxAppKey;
         },{objectId:this.act.uid});
     }
     sendToBooker(){//carowner
@@ -212,7 +211,7 @@ class DetailBox extends Component{
         let booking=this.booking;
         
         Wapi.customer.get(res=>{
-            location.href='http://'+WiStorm.config.domain.wx+'/autogps/booking.html?intent=logout'
+            location.href='http://'+WiStorm.config.domain.user+'/autogps/booking.html?intent=logout'
                 +'&bookingId='+booking.objectId
                 +'&wxAppKey='+this.act.wxAppKey
                 +'&name='+booking.name
@@ -226,7 +225,7 @@ class DetailBox extends Component{
         console.log('selectInstall ');
     
         let booking=this.booking;
-        location.href='http://'+WiStorm.config.domain.wx+'/autogps/booking_install.html?intent=logout'
+        location.href='http://'+WiStorm.config.domain.user+'/autogps/booking_install.html?intent=logout'
             +'&needOpenId=true'
             +'&bookingId='+booking.objectId
             +'&wx_app_id='+_user.customer.wxAppKey
@@ -272,7 +271,7 @@ class DetailBox extends Component{
                 W.alert(str);
             }
         }else{
-            location.href='http://'+WiStorm.config.domain.wx+'/autogps/booking_install.html?intent=logout'
+            location.href='http://'+WiStorm.config.domain.user+'/autogps/booking_install.html?intent=logout'
                 +'&needOpenId=true'
                 +'&bookingId='+booking.objectId
                 +'&wx_app_id='+_user.customer.wxAppKey
@@ -286,7 +285,7 @@ class DetailBox extends Component{
 
         let booking=this.booking;
 
-        let _url='http://'+WiStorm.config.domain.wx+'/autogps/commission.php'
+        let _url='http://'+WiStorm.config.domain.user+'/autogps/commission.php'
             +'?bookingId='+booking.objectId
             +'&cid='+_user.customer.objectId
             +'&receipt='+this.act.price
@@ -345,8 +344,8 @@ class DetailBox extends Component{
                     </div>
 
                     <div name='step1' style={this.state.step==1 ? show : hide}>
-                        {/*客户姓名*/}
-                        <div style={styles.childLine}>{___.booker+'：'+d.name+'/'+d.mobile}</div>
+                        {/*客户姓名
+                        <div style={styles.childLine}>{___.booker+'：'+d.name+'/'+d.mobile}</div>*/}
                         {/*车主姓名*/}
                         <div style={styles.childLine}>{___.carowner_info+'：'+d.userName+'/'+d.userMobile}</div>
                         {/*产品型号*/}
@@ -357,8 +356,8 @@ class DetailBox extends Component{
 
                     <div style={(time1 && !time2) ? {} : hide}>
                         <div style={this.user.booker ? btns : hide}>
-                            <RaisedButton label="取消订单" onTouchTap={this.cancelBook} backgroundColor='#ff9900' labelColor='#ffffff' />
-                            <RaisedButton label="继续预定" onTouchTap={this.payBook} primary={true} style={{marginLeft:'10px'}}/>
+                            <RaisedButton label={___.cancel_order} onTouchTap={this.cancelBook} backgroundColor='#ff9900' labelColor='#ffffff' />
+                            <RaisedButton label={___.pay_now} onTouchTap={this.payBook} primary={true} style={{marginLeft:'10px'}}/>
                         </div>
                     </div>
 
