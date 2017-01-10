@@ -517,4 +517,10 @@ window.___={
 	'sendWeixinToBooker_bookSuccess':'点击详情选择授权安装网点',
 	'no_change_step3':'你于time已预约服务，如install工作人员2小时内未联系你确认车型和安装时间，你可更换安装网点！',
 	'no_change_step4':'你已预约time安装设备，如在约定时间内未安装注册，你可更换安装网点！',
+	'str_order_status':['已预订待付款','待选择安装网点','已选择安装网点待回复','已预约待安装','已完成'],
+	'confirm_book_line1':'客户name预约product，该终端统一售价price，专用支架及安装收费installationFee。',
+	'confirm_book_line2':'车主预付款项payMoney元，该款项在安装注册时同步划转到您的企业账号。',
+	'confirm_book_line3':'此订单需支付佣金commission元，安装注册后自动从您的企业账户划转到营销人员账户，如划转佣金时余额不足，请在车主注册后24小时内通过营销平台支付佣金。',
+	'confirm_book_line4':'请联系车主确认车型和安装时间后回复服务预约。',
+	'confirm_book_line4':'time前未预约确认，车主可以更换安装网点。'
 }

@@ -14,6 +14,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 const styles = {
     main:{width:'90%',marginLeft:'5%',textAlign:'center',marginTop:'20px'},
     bottom_btn:{display:'block',textAlign:'center',paddingTop:'20px',paddingBottom:'20px'},
+    line:{marginTop:'15px'},
+    hide:{display:'none'},
 };
 
 
@@ -35,6 +37,10 @@ class App extends Component {
             time:new Date(),
         }
         this.cust_open_id='';
+        this.strLine1=___.confirm_book_line1;
+        this.strLine2=___.confirm_book_line2;
+        this.strLine3=___.confirm_book_line3;
+        this.strLine4=___.confirm_book_line4;
 
         this.dateChange = this.dateChange.bind(this);
         this.timeChange = this.timeChange.bind(this);
@@ -42,7 +48,13 @@ class App extends Component {
     }
     componentDidMount() {
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
+            console.log(res);
             booking=res.data;
+
+            this.strLine1=this.strLine1.replace('name',booking.name);
+            this.strLine1=this.strLine1.replace('product',booking.product&&booking.product.name);
+            this.strLine2=this.strLine2.replace('payMoney',booking.payMoney?booking.payMoney.toFixed(2):'0.00');
+
             let {uid,activityId,installId}=res.data;
             if(!_user){
                 Wapi.serverApi.getWeixinKey(r=>{
@@ -55,6 +67,9 @@ class App extends Component {
             }
             Wapi.activity.get(r=>{
                 ACT=r.data;
+                this.strLine1=this.strLine1.replace('price',ACT.price.toFixed(2));
+                this.strLine1=this.strLine1.replace('installationFee',ACT.installationFee.toFixed(2));
+                this.strLine3=this.strLine3.replace('commission',ACT.reward?ACT.reward.toFixed(2):'0.00');
                 this.forceUpdate();
             },{objectId:activityId});
 
@@ -140,10 +155,21 @@ class App extends Component {
         },par);
     }
     render() {
-        console.log('render');
         return (
             <ThemeProvider>
                 <div style={styles.main}>
+                    {/*<div style={styles.line}>
+                        {this.strLine1}
+                    </div>
+                    <div style={booking&&booking.payMoney ? styles.line : styles.hide}>
+                        {this.strLine2}
+                    </div>
+                    <div style={styles.line}>
+                        {this.strLine3}
+                    </div>
+                    <div style={styles.line}>
+                        {this.strLine4}
+                    </div>*/}
                     <DatePicker
                         floatingLabelText={___.select_install_date}
                         defaultDate={this.data.date}

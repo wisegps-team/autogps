@@ -29,17 +29,6 @@ function tapTimer(){
 
 
 const styles={
-    appbar:{position:'fixed',top:'0px'},
-    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
-    card:{marginTop:'5px',padding:'10px',lineHeight: '30px',borderBottom:'solid 1px #999999'},
-    w:{
-        width:'50%',
-        display:'inline-block'
-    },
-    a:{
-        color: 'rgb(26, 140, 255)',
-        marginLeft: '2em'
-    },
     p:{
         'padding': '0 1em'
     },
@@ -110,41 +99,44 @@ class DetailBox extends Component{
     
     getData() {
         // if(nextProps.data&&this.props.data!=nextProps.data){
-            //_user.mobile//当前用户电话
-            //nextProps.data.userMobile//车主电话
-            //nextProps.data.mobile//预定人电话
+        //_user.mobile//当前用户电话
+        //nextProps.data.userMobile//车主电话
+        //nextProps.data.mobile//预定人电话
 
-            if(this.booking.mobile==_user.mobile){
-                this.user.booker=true;
-            }
-            if(this.booking.userMobile==_user.mobile){
-                this.user.carowner=true;
-            }
+        if(this.booking.mobile==_user.mobile){
+            this.user.booker=true;
+        }
+        if(this.booking.userMobile==_user.mobile){
+            this.user.carowner=true;
+        }
+        if(this.booking.installId==_user.customer.objectId){
+            this.user.installer=true;
+        }
 
-            let that=this;
-            if(this.booking.activityId){//获取活动信息，因为活动信息没有直接放在Booking里面
-                Wapi.activity.get(function(res){
-                    if(res.data){
-                        that.act=res.data;
-                        
-                        if(res.data.installId){
-                            Wapi.customer.get(function(re){//获取安装网点电话
-                                if(re.data){
-                                    that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
-                                    that.setStep();
-                                }
-                            },{
-                                objectId:res.data.installId
-                            });
-                        }else{
-                            that.setStep();
-                        }
-
+        let that=this;
+        if(this.booking.activityId){//获取活动信息，因为活动信息没有直接放在Booking里面
+            Wapi.activity.get(function(res){
+                if(res.data){
+                    that.act=res.data;
+                    
+                    if(res.data.installId){
+                        Wapi.customer.get(function(re){//获取安装网点电话
+                            if(re.data){
+                                that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
+                                that.setStep();
+                            }
+                        },{
+                            objectId:res.data.installId
+                        });
+                    }else{
+                        that.setStep();
                     }
-                },{
-                    objectId:this.booking.activityId
-                });
-            }
+
+                }
+            },{
+                objectId:this.booking.activityId
+            });
+        }
         // }  
     }
     setStep(){
@@ -358,7 +350,7 @@ class DetailBox extends Component{
                     <div style={(time1 && !time2) ? {} : hide}>
                         <div style={this.user.booker ? btns : hide}>
                             <RaisedButton label="取消订单" onTouchTap={this.cancelBook} backgroundColor='#ff9900' labelColor='#ffffff' />
-                            <RaisedButton label="继续预定" onTouchTap={this.payBook} primary={true} style={{marginLeft:'10px'}}/>
+                            <RaisedButton label="支付货款" onTouchTap={this.payBook} primary={true} style={{marginLeft:'10px'}}/>
                         </div>
                     </div>
 
