@@ -210,6 +210,15 @@ class App extends Component {
                 }
             });
 
+            // Wapi.comm.sendSMS(r=>{
+            //     W.alert('sendSMS success');
+            // },{
+            //     mobile:sth,
+            //     type:0,
+            //     content:___.booking_install_success,
+            //     content_type:2,
+            // })
+
         },this.data);
     }
     render() {

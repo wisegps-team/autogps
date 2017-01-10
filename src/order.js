@@ -13,10 +13,17 @@ import NavigationExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import NavigationExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import RaisedButton from 'material-ui/RaisedButton';
 
+import SonPage from './_component/base/sonPage';
+import AppBox from './_component/booking/app_box';
+import PayBox from './_component/booking/pay_box';
+
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+const payView=thisView.prefetch('#pay',3);
 thisView.addEventListener('load',function(e){
     ReactDOM.render(<DetailBox/>,thisView);
+    
+    ReactDOM.render(<Pay/>,payView);
 });
 
 let noTap=false;
@@ -61,6 +68,9 @@ const styles={
     },
 }
 
+let _booking={};
+let _act={};
+let _url=location.href;
 //详细信息
 class DetailBox extends Component{
     constructor(props) {
@@ -76,6 +86,8 @@ class DetailBox extends Component{
             carowner:false,
             installer:false
         };
+        this.payPage=false;
+
         this.getData = this.getData.bind(this);
 
         this.setStep = this.setStep.bind(this);
@@ -88,6 +100,7 @@ class DetailBox extends Component{
         this.confirmInstall = this.confirmInstall.bind(this);
         this.contactInstall = this.contactInstall.bind(this);
         this.changeInstall = this.changeInstall.bind(this);
+        this.payBack = this.payBack.bind(this);
     }    
     componentDidMount() {
         Wapi.booking.get(res=>{
@@ -123,13 +136,14 @@ class DetailBox extends Component{
                         Wapi.customer.get(function(re){//获取安装网点电话
                             if(re.data){
                                 that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
-                                that.setStep();
+                                that.checkpay();
                             }
                         },{
                             objectId:res.data.installId
                         });
                     }else{
-                        that.setStep();
+                        that.checkpay();
+                        
                     }
 
                 }
@@ -137,6 +151,30 @@ class DetailBox extends Component{
                 objectId:this.booking.activityId
             });
         }
+    }
+    checkpay(){
+        let that=this;
+        let isPay=Wapi.pay.checkWxPay(function(res){
+            let booking=W.ls('booking');
+            if(res.status_code){
+                W.alert(___.pay_fail);
+                booking.payMoney=0;
+                booking.payStatus=0;
+                that.setStep();
+            }else{
+                booking.orderId=res.orderId;
+                Wapi.booking.update(e=>console.log(e),{
+                    _objectId:booking.objectId,
+                    orderId:booking.orderId,
+                    payMoney:booking.payMoney,
+                    payStatus:booking.payStatus,
+                    receiptDate:W.dateToString(new Date())
+                });
+                that.booking=Object.assign({},booking);
+                that.setStep();
+            }
+        },this.act.objectId);
+        if(!isPay)this.setStep();
     }
     setStep(){
         let data=this.booking;
@@ -185,14 +223,21 @@ class DetailBox extends Component{
         if(noTap)return;
         tapTimer();
         console.log('payBook');
-        
-        let booking=this.booking;
-        Wapi.customer.get(res=>{
-            location.href='http://'+WiStorm.config.domain.user+'/autogps/booking.html?intent=logout'
-                +'&bookingId='+booking.objectId
-                +'&activityId='+this.act.objectId;
-                // +'&wx_app_id='+this.act.wxAppKey;
-        },{objectId:this.act.uid});
+
+        _booking=this.booking;
+        _act=this.act;
+        thisView.goTo('#pay');
+
+        // this.payPage=true;
+        // this.forceUpdate();
+
+        // let booking=this.booking;
+        // Wapi.customer.get(res=>{
+        //     location.href='http://'+WiStorm.config.domain.user+'/autogps/booking.html?intent=logout'
+        //         +'&bookingId='+booking.objectId
+        //         +'&activityId='+this.act.objectId;
+        //         // +'&wx_app_id='+this.act.wxAppKey;
+        // },{objectId:this.act.uid});
     }
     sendToBooker(){//carowner
         //发送给好友，跳转到booking.html
@@ -292,6 +337,10 @@ class DetailBox extends Component{
             +'&response_type=code&scope=snsapi_base&state=state#wechat_redirect';
         
         location.href=url;
+    }
+    payBack(){
+        this.payPage=false;
+        this.forceUpdate();
     }
     render() {
         let d=this.booking||{};
@@ -495,12 +544,49 @@ class DetailBox extends Component{
 
                 <div style={styles.hide}>{___.recommender+'：'+d.sellerName}</div>
                 <div style={styles.hide}>{___.install_price+'：'+(a.installationFee||'--')}</div>
+
+                <SonPage open={this.payPage} back={this.payBack} >
+                    <Pay booking={this.booking} act={this.act}/>
+                </SonPage>                
             </div>
             </ThemeProvider>
         );
     }
 }
 
+class Pay extends Component {
+    constructor(props,context){
+        super(props,context);
+    }
+    componentDidMount() {
+        payView.addEventListener('show',e=>{
+            history.replaceState('','',_url);
+            this.forceUpdate();
+        })
+    }
+    cancelPay(){
+        history.back();
+    }
+    render() {
+        let booking=_booking;
+        let act=_act;
+        let main=<div></div>;
+        if(booking.objectId){
+            main=<PayBox 
+                    booking={booking} 
+                    uid={booking.userId}
+                    act={act} 
+                    onCancel={this.cancelPay}
+                    self={booking.type==0}
+                />;
+        }
+        return (
+            <AppBox>
+                {main}
+            </AppBox>
+        );
+    }
+}
 
 
 //工具方法 金额转字符
