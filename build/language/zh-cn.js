@@ -525,4 +525,5 @@ window.___={
 	'confirm_book_line4':'time前未预约确认，车主可以更换安装网点。',
 	'order_delete_success':'订单已取消！',
 	'cancel_order':'取消订单',
+	'booking_install_success':'尊敬的合作伙伴，你有新的服务预约，请及时回复。',
 }
