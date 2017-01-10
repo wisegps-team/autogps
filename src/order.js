@@ -29,17 +29,6 @@ function tapTimer(){
 
 
 const styles={
-    appbar:{position:'fixed',top:'0px'},
-    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
-    card:{marginTop:'5px',padding:'10px',lineHeight: '30px',borderBottom:'solid 1px #999999'},
-    w:{
-        width:'50%',
-        display:'inline-block'
-    },
-    a:{
-        color: 'rgb(26, 140, 255)',
-        marginLeft: '2em'
-    },
     p:{
         'padding': '0 1em'
     },
@@ -120,6 +109,9 @@ class DetailBox extends Component{
         if(this.booking.userMobile==_user.mobile){
             this.user.carowner=true;
         }
+        if(this.booking.installId==_user.customer.objectId){
+            this.user.installer=true;
+        }
 
         let that=this;
         if(this.booking.activityId){//获取活动信息，因为活动信息没有直接放在Booking里面
@@ -145,7 +137,6 @@ class DetailBox extends Component{
                 objectId:this.booking.activityId
             });
         }
-        // } 
     }
     setStep(){
         let data=this.booking;
