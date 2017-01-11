@@ -39,7 +39,7 @@ class App extends Component{
     render() {
         return (
             <ThemeProvider>
-                <AppBar title={___.superior} />
+                {/*<AppBar title={___.superior} />*/}
                 <CustList data={this._data}/>
             </ThemeProvider>
         );

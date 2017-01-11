@@ -57,8 +57,8 @@ class App extends Component{
     render() {
         return (
             <ThemeProvider>
-                <AppBar title={___.subordinate} iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>
-                <CustList data={this._data}/>
+                {/*<AppBar title={___.subordinate} iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>*/}
+                <CustList data={this._data} add={this.tip}/>
             </ThemeProvider>
         );
     }

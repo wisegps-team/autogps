@@ -12,7 +12,8 @@ import Paper from 'material-ui/Paper';
 
 const sty={
     main:{
-        position: 'relative'
+        position: 'relative',
+        flex: '1 1'
     },
     menu:{
         position: 'absolute',
