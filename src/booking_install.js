@@ -77,10 +77,28 @@ class App extends Component {
         let flag=0;
         Wapi.booking.get(res=>{ //通过bookingId获取活动id和uid
             booking=res.data;
-            if(booking.installId){
-                //W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{W.native.close();});
-                W.alert(___.sendWeixinToSeller_success,e=>{W.native.close();});
+            // if(booking.installId){
+            //     //W.alert(___.selected_install.replace('xxx',_g.bookingId),e=>{W.native.close();});
+            //     W.alert(___.sendWeixinToSeller_success,e=>{W.native.close();});
+            // }
+            if(booking.selectInstallDate){
+                let expire = (booking.installDate ? Number(new Date(booking.installDate)) : Number(new Date(booking.selectInstallDate))+1000*60*60*2);
+                let now=Number(new Date());
+                        
+                if(expire>now){
+                    if(booking.installDate){
+                        let str=___.no_change_step4;
+                        str=str.replace('time',W.dateToString(new Date(booking.installDate)));
+                        W.alert(str,e=>{W.native.close();});
+                    }else{
+                        let str=___.no_change_step3;
+                        str=str.replace('time',W.dateToString(new Date(booking.selectInstallDate)));
+                        str=str.replace('install',booking.install);
+                        W.alert(str,e=>{W.native.close();});
+                    }
+                }
             }
+            
             let {uid,activityId}=res.data;
 
             //获取活动信息
@@ -210,14 +228,14 @@ class App extends Component {
                 }
             });
 
-            // Wapi.comm.sendSMS(r=>{
-            //     W.alert('sendSMS success');
-            // },{
-            //     mobile:sth,
-            //     type:0,
-            //     content:___.booking_install_success,
-            //     content_type:2,
-            // })
+            Wapi.comm.sendSMS(r=>{
+                console.log('sendSMS success');
+            },{
+                mobile:sth,
+                type:0,
+                content:___.booking_install_success,
+                content_type:2,
+            })
 
         },this.data);
     }

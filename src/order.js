@@ -179,7 +179,7 @@ class DetailBox extends Component{
     setStep(){
         let data=this.booking;
         let s=1;
-        if(data.receiptDate){
+        if(data.receiptDate||(data.carType&&(data.carType.noPay==1))){
             s=2;
         }
         if(data.selectInstallDate){
@@ -356,7 +356,7 @@ class DetailBox extends Component{
         let time1 = W.dateToString(W.date(d.createdAt));
         let time2 = d.receiptDate ? W.dateToString(W.date(d.receiptDate)) : '' ;
         if(d.carType&&(d.carType.noPay==1)){
-            time2='--';
+            time2='未支付';
         }
         let time3 = d.selectInstallDate ? W.dateToString(W.date(d.selectInstallDate)) : '' ;
         let time4 = d.confirmTime ? W.dateToString(W.date(d.confirmTime)) : '' ;
@@ -408,11 +408,11 @@ class DetailBox extends Component{
                     <div name='time2' onClick={()=>this.changeStep(2)}>
                         {/*付款时间*/}
                         {this.state.step==2 ? less : more}
-                        <div style={styles.line}>{___.order_pay_date+'：'+time2}</div>
+                        <div style={styles.line}>{___.order_pay_booking+'：'+time2}</div>
                     </div>
 
                     <div name='step2' style={this.state.step==2 ? show : hide}>
-                        {time2=='--'?
+                        {time2=='未支付'?
                             <div style={styles.childLine}>零元预定</div>
                         :[  
                             /*付款金额*/

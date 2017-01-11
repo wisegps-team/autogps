@@ -499,7 +499,7 @@ window.___={
 	'order_status':'订单状态',
 	'order_detail':'订单详情',
 	'order_submit_date':'提交预订',
-	'order_pay_date':'付款时间',
+	'order_pay_booking':'支付款项',
 	'order_pay_amount':'付款金额',
 	'order_pay_type':'付款方式',
 	'order_book_install':'预约安装',
