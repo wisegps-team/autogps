@@ -1001,12 +1001,6 @@ if(_g.needUser&&!_g.openid){
 }else if(_g.needOpenId=="true"){
 	if(!_g.openid){
 		W.getOpenId();
-		// var pi=W.ls('_useropenid',true);
-		// if(!pi)
-		// 	W.getOpenId();
-		// else _g.openid=pi;
-	}else{
-		W.setLS('_useropenid',_g.openid,true);
 	}
 }
 if(!W._login&&location.pathname.indexOf("index.html")<0&&_g.intent!="logout"){
