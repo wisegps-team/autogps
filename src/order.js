@@ -17,6 +17,9 @@ import SonPage from './_component/base/sonPage';
 import AppBox from './_component/booking/app_box';
 import PayBox from './_component/booking/pay_box';
 
+if(!(_user&&_user.mobile)){
+    W.alert(___.close_login,e=>W.native.close());
+}
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 const payView=thisView.prefetch('#pay',3);
@@ -114,7 +117,7 @@ class DetailBox extends Component{
         // if(nextProps.data&&this.props.data!=nextProps.data){
         //_user.mobile//当前用户电话
         //nextProps.data.userMobile//车主电话
-        //nextProps.data.mobile//预定人电话
+        //nextProps.data.mobile//预订人电话
 
         if(this.booking.mobile==_user.mobile){
             this.user.booker=true;
@@ -132,18 +135,32 @@ class DetailBox extends Component{
                 if(res.data){
                     that.act=res.data;
                     
-                    if(res.data.installId){
+                    let flag=0;
+                    Wapi.product.get(res_product=>{
+                        that.act.product = res_product.data.brand+' '+res_product.data.name;
+                        flag++;
+                        if(flag==2){
+                            that.checkpay();
+                        }
+                    },{objectId:that.act.productId});
+                    
+                    if(that.booking.installId){
                         Wapi.customer.get(function(re){//获取安装网点电话
                             if(re.data){
                                 that.booking=Object.assign({},that.booking,{installTel:re.data.tel});
-                                that.checkpay();
+                                flag++;
+                                if(flag==2){
+                                    that.checkpay();
+                                }
                             }
                         },{
-                            objectId:res.data.installId
+                            objectId:that.booking.installId
                         });
                     }else{
-                        that.checkpay();
-                        
+                        flag++;
+                        if(flag==2){
+                            that.checkpay();
+                        }
                     }
 
                 }
@@ -156,6 +173,7 @@ class DetailBox extends Component{
         let that=this;
         let isPay=Wapi.pay.checkWxPay(function(res){
             let booking=W.ls('booking');
+            W.setLs('booking','');
             if(res.status_code){
                 W.alert(___.pay_fail);
                 booking.payMoney=0;
@@ -219,7 +237,7 @@ class DetailBox extends Component{
         });
     }
     payBook(){//booker
-        //继续预定，跳转到booking.html
+        //继续预订，跳转到booking.html
         if(noTap)return;
         tapTimer();
         console.log('payBook');
@@ -373,7 +391,7 @@ class DetailBox extends Component{
             <ThemeProvider>
             <div style={styles.p}>
                 {/*订单号*/}
-                <div style={styles.line}>{___.order_id+'：'+d.objectId}</div>
+                <div style={styles.line}>{___.order_id+'：'+_g.bookingId}</div>
 
                 <div>
 
@@ -391,7 +409,7 @@ class DetailBox extends Component{
                         {/*产品型号*/}
                         <div style={styles.childLine}>{___.booking_product+'：'+(a.product||'--')}</div>
                         {/*产品价格*/}
-                        <div style={styles.childLine}>{___.product_price+'：'+(a.price||'--')}</div>
+                        <div style={styles.childLine}>{___.product_price+'：'+(a.price ? a.price.toFixed(2) : '--')}</div>
                     </div>
 
                     <div style={(time1 && !time2) ? {} : hide}>
@@ -408,33 +426,26 @@ class DetailBox extends Component{
                     <div name='time2' onClick={()=>this.changeStep(2)}>
                         {/*付款时间*/}
                         {this.state.step==2 ? less : more}
-                        <div style={styles.line}>{___.order_pay_booking+'：'+time2}</div>
+                        <div style={styles.line}>{___.order_pay_date+'：'+time2}</div>
                     </div>
 
                     <div name='step2' style={this.state.step==2 ? show : hide}>
                         {time2=='未支付'?
-                            <div style={styles.childLine}>零元预定</div>
+                            <div style={styles.childLine}>零元预订</div>
                         :[  
                             /*付款金额*/
-                            <div style={styles.childLine} key={1}>{___.order_pay_amount+'：'+(d.payMoney||'--')}</div>,
+                            <div style={styles.childLine} key={1}>{___.order_pay_amount+'：'+(d.payMoney ? d.payMoney.toFixed(2) : '--')}</div>,
                             /*付款方式*/
                             <div style={styles.childLine} key={2}>{___.order_pay_type+'：'+(d.payMoney ? ___.wxPay : '--')}</div>
                         ]}
                     </div>
 
                     <div style={(time2 && !time3) ? {} : hide}>
-                        <div style={d.carType&&(d.carType.qrStatus=='0') ? {} : hide}>
-                            <div style={this.user.booker ? btns : hide}>
-                                <RaisedButton label="继续预定" onTouchTap={this.payBook} primary={true} />
-                            </div>
+                        <div style={(this.user.booker && !this.user.carowner) ? btns : hide}>
+                            <RaisedButton label="发送预订信息给好友" onTouchTap={this.sendToBooker} primary={true} />
                         </div>
-                        <div style={d.carType&&(d.carType.qrStatus=='1') ? {} : hide}>
-                            <div style={(this.user.carowner && !this.user.booker) ? btns : hide}>
-                                <RaisedButton label="发送预订信息给XX" onTouchTap={this.sendToBooker} primary={true} />
-                            </div>
-                            <div style={this.user.booker ? btns : hide}>
-                                <RaisedButton label="选择安装网点" onTouchTap={this.selectInstall} primary={true} />
-                            </div>
+                        <div style={this.user.carowner ? btns : hide}>
+                            <RaisedButton label="选择安装网点" onTouchTap={this.selectInstall} primary={true} />
                         </div>
                     </div>
 
@@ -516,7 +527,7 @@ class DetailBox extends Component{
 
                     <div name='step6' style={this.state.step==6 ? show : hide}>
                         {/*支付金额*/}
-                        <div style={styles.childLine}>{___.paid_amount+'：'+(d.money||'--')}</div>
+                        <div style={styles.childLine}>{___.paid_amount+'：'+(d.money ? d.money.toFixed(2) : '--')}</div>
                     </div>
 
                     <div style={(time6 && !time7) ? {} : hide}>
@@ -537,7 +548,7 @@ class DetailBox extends Component{
 
                     <div name='step7' style={this.state.step==7 ? show : hide}>
                         {/*支付金额*/}
-                        <div style={styles.childLine}>{___.paid_amount+'：'+(d.commission||'--')}</div>
+                        <div style={styles.childLine}>{___.paid_amount+'：'+(d.commission ? d.commission.toFixed(2) : '--')}</div>
                     </div>
 
                 </div>

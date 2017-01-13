@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
-import AppBar from '../_component/base/appBar';
+// import AppBar from '../_component/base/appBar';
 import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
@@ -20,22 +20,25 @@ import EditActivity from '../_component/editActivity';
 import {getOpenIdKey} from '../_modules/tool';
 import Iframe from '../_component/base/iframe';
 
+
 const styles = {
-    main:{paddingTop:'50px',paddingBottom:'20px'},
+    main:{paddingTop:'0px',paddingBottom:'0px'},
     appbody:{padding:'10px'},
-    card:{margin:'1em',padding:'0px 0.5em 0.5em'},
+    card:{margin:'5px',padding:'10px',borderBottom:'1px solid #cccccc'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
     line:{marginTop:'0.5em'},
     top_btn_right:{width:'100%',display:'block',textAlign:'right'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     count:{marginRight:'1em',float:'left'},
-    link:{color:'#009688'},
+    variable:{color:'#009688'},
+    link:{color:'#0000cc'},
     table:{paddingTop:'12px',paddingBottom:'10px',paddingLeft:'3px',marginRight:'120px'},
     spans:{marginBottom:'10px',fontSize:'0.8em',paddingLeft:'5px',marginBottom:'15px',display:'block',width:'100%',height:'15px'},
     share_page:{width:'100%',height:window.innerHeight+'px',display:'block',backgroundColor:'#ffffff',position:'fixed',top:'0px',left:'0px'},
     share_content:{width:'90%',marginLeft:'5%',marginTop:'20px'},
     hide:{display:'none'},
+    detail:{float:'right',paddingTop:'12px',paddingRight:'12px',color:'#0000cc'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -43,7 +46,7 @@ function combineStyle(arr){
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.recommend);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     thisView.prefetch('booking_list.js',2);
@@ -320,10 +323,10 @@ class App extends Component {
         return (
             <ThemeProvider>
                 <div>
-                    <AppBar 
+                    {/*<AppBar 
                         title={___.recommend}
                         style={this.state.isShare ? styles.hide : {position:'fixed'}}
-                    />
+                    />*/}
                     <div name='list' style={styles.main}>
                         {/*items*/}
                         <Alist 
@@ -470,52 +473,49 @@ class DList extends Component{
         />:null;
         let data=this.props.data;
         let items=data.map((ele,i)=>
-            <Card key={i} style={styles.card}>
-                {/* 新的标题和右上角菜单*/}
-                <div style={{float:'right'}}>
-                    <IconMenu
-                        iconButtonElement={
-                            <IconButton>
-                                <MoreVertIcon/>
-                            </IconButton>
-                        }
-                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        style={styles.icon}
-                    >
-                        <MenuItem key='0' onTouchTap={()=>this.share(ele)}>{___.act_share}</MenuItem>
-                        <MenuItem key='1' onTouchTap={()=>this.activityData(ele)}>{___.act_data}</MenuItem>
-                    </IconMenu>
-                </div>
-                <div style={combineStyle(['table','link'])} onClick={()=>this.toActivityPage(ele)}>{ele.name}</div>
+            <div key={i} style={styles.card}>
+                <div style={styles.detail} onClick={()=>this.toActivityPage(ele)}>{___.act_detail}</div>
+                <div style={combineStyle(['table','variable'])}>{ele.name}</div>
                 
                 <div style={styles.spans}>
                     <div style={styles.count} >
-                        <span>{___.send_to_chat +' '}</span>
-                        <span style={styles.link}>{ele.sended||0}</span>
+                        <span style={styles.variable}>{ele.principal}</span>
+                        <span>{' '+___.publish}</span>
                     </div>
                     <div >
-                        <span>{___.share_on_moments +' '}</span>
-                        <span style={styles.link}>{ele.shared||0}</span>
+                        <span>每单红包奖励 </span>
+                        <span style={styles.variable}>{ele.reward}</span>
+                        <span> 元</span>
                     </div>
                 </div>
 
                 <div style={styles.spans}>
-                    <div style={styles.count} >
-                        <span>{___.read +' '}</span>
-                        <span style={styles.link}>{ele.read||0}</span>
+                    <div style={{float:'right',marginRight:'16px'}}>
+                        <img 
+                            src='../../img/share.png' 
+                            style={{width:'20px',height:'20px',marginRight:'15px'}} 
+                            onClick={()=>this.share(ele)}
+                        />
+                        <img 
+                            src='../../img/qrcode.png' 
+                            style={{width:'20px',height:'20px'}} 
+                            onClick={()=>this.activityData(ele)}
+                        />
                     </div>
                     <div style={styles.count} onClick={()=>this.toCountPage('booking',ele)}>
-                        <span>{___.bookingNum +' '}</span>
+                        <span>已有 </span>
                         <span style={styles.link}>{ele.status0}</span>
+                        <span> 位好友预订,</span>
                     </div>
-                    <div style={styles.count} onClick={()=>this.toCountPage('registe',ele)}>
-                        <span>{___.register +' '}</span>
-                        <span style={styles.link}>{ele.status1}</span>
+                    <div style={styles.count}>
+                        <span>收获红包 </span>
+                        <span style={styles.variable}>{300}</span>
+                        <span> 元</span>
                     </div>
                 </div>
                 
-            </Card>);
+
+            </div>);
         return(
             <div>
                 {items}
@@ -534,10 +534,13 @@ class SharePage extends Component {
     render() {
         return (
             <div style={styles.share_content}>
-                {___.share_detail.replace('xxx',this.props.reward)}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
+                <div style={{textAlign:'center',marginTop:'15px'}}>
+                    {___.share_detail}
+                </div>
             </div>
         );
     }
 }
+
 

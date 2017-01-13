@@ -12,7 +12,7 @@ import {reCode,getOpenIdKey} from '../../_modules/tool';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.act_data);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     thisView.prefetch('bind_count.js',2);
@@ -20,11 +20,31 @@ thisView.addEventListener('load',function(){
 });
 
 const styles = {
-    main:{paddingTop:'50px',paddingBottom:'20px'},
-    card:{margin:'10px',padding:'0px 10px 10px',borderBottom:'1px solid #cccccc'},
-    count:{marginRight:'1em'},
-    line:{paddingTop:'0.5em'},
-    link:{color:'#009688',marginRight:'1em'},
+    main:{
+        // paddingTop:'50px',
+        paddingBottom:'20px'
+    },
+    card:{
+        margin:'10px',
+        padding:'0px 10px 10px',
+        borderBottom:'1px solid #cccccc'
+    },
+    count:{
+        marginRight:'1em'
+    },
+    line:{
+        paddingTop:'0.5em'
+    },
+    link:{
+        color:'#009688',
+        marginRight:'1em'
+    },
+    hide:{
+        display:'none',
+    },
+    content:{
+        margin:'15px'
+    }
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -79,6 +99,8 @@ class App extends Component {
         super(props,context);
         this.activity={};
         this.data=[];
+        this.countrywide=false;
+        this.gotData = false;
         this.getData = this.getData.bind(this);
         this.bindCount = this.bindCount.bind(this);
         this.scanToBind = this.scanToBind.bind(this);
@@ -87,13 +109,20 @@ class App extends Component {
         thisView.addEventListener('show',e=>{
             if(e.params){
                 this.activity=e.params;
+                this.gotData=true;
+                console.log(e.params);
+                // Wapi.customer.get(res=>{
+                //     if(res.data.custTypeId==1){
+                //         this.countrywide=true;
+                //         this.getData();
+                //     }
+                // },{objectId:e.params.uid});
             }
             this.getData();
         });
     }
     getData(){
         Wapi.qrLink.aggr(res=>{
-            console.log(res);
             this.data=res.data;
             this.forceUpdate();
         },{
@@ -233,17 +262,23 @@ class App extends Component {
                     <span onClick={()=>this.scanCount(ele)} style={styles.link}>{___.scan_count+(ele.scan||0)}</span>
                 </div>
             </div>
-        )
+        );
+        let noBinded=<div style={(this.data.length==0&&this.gotData) ? styles.content : styles.hide}>{___.no_bind}</div>
         return (
             <ThemeProvider>
-            <div>
-                <AppBar 
+            <div style={styles.main}>
+                {/*<AppBar 
                     title={___.act_data} 
                     style={{position:'fixed',top:'0px'}}
                     iconElementRight={<IconButton onClick={this.scanToBind}><ContentAdd/></IconButton>}
-                />
-                <div style={styles.main}>
+                />*/}
+                <div style={{width:'100%',display:'none'}}>
+                    <div style={{float:'right',marginRight:'15px'}} onClick={this.scanToBind} ><ContentAdd/></div>
+                    <div style={{marginLeft:'15px',marginTop:'15px'}}>search box</div>
+                </div>
+                <div>
                     {items}
+                    {noBinded}
                 </div>
             </div>
             </ThemeProvider>
