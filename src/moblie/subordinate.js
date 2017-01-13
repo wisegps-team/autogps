@@ -39,7 +39,7 @@ Wapi.qrLink.get(function(res) {
     }else{
         let data=Object.assign({},qrLinkData);
         let custType=(_user.customer.custTypeId==1)?5:8;
-        data.url=location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name);
+        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name);
         Wapi.qrLink.add(res=>{
             Wapi.qrLink.get(r=>{
                 let id=changeToLetter(r.data.i);
