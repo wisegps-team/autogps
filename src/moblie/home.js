@@ -55,14 +55,12 @@ function loadDictionary(){
 loadDictionary();
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(_user.customer.name);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     if(_g.loginLocation){
         thisView.goTo(_g.loginLocation+'.js');
     }
-});
-thisView.addEventListener('show',function(){
-    document.title=_user.customer.name;
 });
 
 
