@@ -29,6 +29,7 @@ function getInitData(){
         pay:0,      //佣金支付方式
         deposit:'',     //订金标准
         offersDesc:'',  //预定优惠
+        brand:'',       //产品品牌
         product:'',     //产品型号
         productId:0,    //产品型号Id
         price:0,        //终端价格
@@ -151,6 +152,7 @@ class EditActivity extends Component {
     productChange(e,v,key){
         let target=this.products.find(ele=>ele.productId==key);
         this.data.productId=target.productId;
+        this.data.brand=target.brand;
         this.data.product=target.name;
         this.data.price=target.price;
         this.data.installationFee=target.installationFee;

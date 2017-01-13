@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=87;//版本号
+let version=88;//版本号
 
 //地区表
 export const area={
@@ -2139,7 +2139,7 @@ export const booking={
             'query': true,
         },{
             'name': 'product',
-            'desc':'预订产品信息',//name名称，id产品id，price设备款，installationFee安装费，reward佣金
+            'desc':'预订产品信息',//name名称，id产品id，brand品牌，price设备款，installationFee安装费，reward佣金
             'type':'Object',
             'query':true
         },{
@@ -2304,6 +2304,11 @@ export const activity={
         },{
             'name': 'sellerTypeId',
             'desc': '销售类别Id',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'brand',
+            'desc': '产品品牌',
             'type': 'String',
             'query': true
         },{

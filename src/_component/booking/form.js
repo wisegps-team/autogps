@@ -105,6 +105,7 @@ class Form extends Component {
         //补上数据
         submit_data.activityType=ACT.type;
         submit_data.product={
+            brand:ACT.brand,
             name:ACT.product,
             id:ACT.productId,
             price:ACT.price,
