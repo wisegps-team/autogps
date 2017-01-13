@@ -67,6 +67,7 @@ class App extends Component {
         this.visibleInstalls=[];
         this.seller_open_id='';
         this.installName='';
+        this.installTel='';
 
         this.areaChange = this.areaChange.bind(this);
         this.areaSelect = this.areaSelect.bind(this);
@@ -105,8 +106,13 @@ class App extends Component {
             Wapi.activity.get(r=>{
                 ACT=r.data;
                 sellerTel=ACT.tel||'';
-                flag++;
-                if(flag==2)this.forceUpdate();
+                //获取活动产品的品牌
+                Wapi.product.get(res_product=>{
+                    ACT.product = res_product.data.brand+' '+res_product.data.name;
+                    flag++;
+                    if(flag==2)this.forceUpdate();
+                },{objectId:ACT.productId});
+
             },{objectId:activityId});
             //获取安装网点
             Wapi.serverApi.getInstallByUid(re=>{
@@ -150,14 +156,23 @@ class App extends Component {
         this.data.installId=data.objectId;
         this.data.install=data.name;
         this.installName=data.name;
+        this.installTel=data.tel;
 
         this.forceUpdate();
         
         Wapi.serverApi.getUserOpenId(res=>{    //根据customer信息查找user的Openid
             this.seller_open_id=res.data;
-            W.confirm(___.confirm_install.replace('xxx',data.name),b=>{
+            W.confirm({
+                text:<div>
+                    {___.confirm_install}<br/>
+                    {data.name}
+                </div>
+            },b=>{
                 if(b)this.submit();
             });
+            // W.confirm(___.confirm_install.replace('xxx',data.name),b=>{
+            //     if(b)this.submit();
+            // });
         },{objectId:data.uid});
         
     }
@@ -177,17 +192,27 @@ class App extends Component {
 
         this.data.userOpenId=_g.openid;
         this.data.selectInstallDate=W.dateToString(new Date());
-        
-        Wapi.booking.update(res=>{
-            
-            Wapi.serverApi.sendWeixinByTemplate(re=>{
+        // console.log(this.installTel);
+        // return;
+        Wapi.booking.update(res=>{//更新booking信息
+            let flag=0;
+            Wapi.serverApi.sendWeixinByTemplate(re=>{//发送微信推送
                 console.log(re);
-                if(!re.status_code){
+             
+                Wapi.comm.sendSMS(r=>{//发送语音短信
+                    console.log(r);
+                    //完成后退出
                     W.alert({
                         title:___.booking_install_title,
                         text:___.sendWeixinToSeller_success
                     },e=>{W.native.close();});
-                }
+                },{
+                    mobile:this.installTel,
+                    type:0,
+                    content:___.booking_install_success,
+                    content_type:2,
+                })
+
             },{
                 openId:this.seller_open_id,   //安装网点的openid
                 // uid:'798351359882694700',   //booking的uid
@@ -195,7 +220,8 @@ class App extends Component {
                 templateId:'OPENTM408168978',
                 type:'1',
                 // link:'http://192.168.3.201:8081/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
-                link:'http://'+WiStorm.config.domain.wx+'/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
+                // link:'http://'+WiStorm.config.domain.wx+'/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
+                link:'http://'+WiStorm.config.domain.wx+'/wo365_user/order.html?intent=logout&bookingId='+_g.bookingId,
                 data:{
                     "first": {//标题
                         "value": ___.bookingId+'：'+_g.bookingId,
@@ -206,7 +232,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword2": {//预订产品
-                        "value": ACT.product+'/￥'+parseFloat(ACT.price).toFixed(2),
+                        "value": ACT.product,
                         "color": "#173177"
                     },
                     "keyword3": {//设备款项
@@ -222,20 +248,12 @@ class App extends Component {
                     //     "color": "#173177"
                     // },
                     "remark": {
-                        "value": ___.sendWeixinToInstall_remark,
+                        "value": ___.sendWeixinToInstall_remark2,
                         "color": "#173177"
                     }
                 }
             });
-
-            Wapi.comm.sendSMS(r=>{
-                console.log('sendSMS success');
-            },{
-                mobile:sth,
-                type:0,
-                content:___.booking_install_success,
-                content_type:2,
-            })
+                   
 
         },this.data);
     }
