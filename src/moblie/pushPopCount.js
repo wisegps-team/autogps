@@ -14,11 +14,12 @@ import AutoList from '../_component/base/autoList';
 const styles = {
     main:{paddingTop:'50px',paddingBottom:'20px'},
     // list_item:{marginTop:'15px',padding:'10px',borderBottom:'1px solid #999999'},
-    card:{margin:'15px',padding:'10px'},
+    card:{margin:'15px',padding:'10px',borderBottom: '1px solid #ccc'},
     a:{color:'#00bbbb',borderBottom:'solid 1px'},
     hide:{display:'none'},
     line:{marginTop:'0.5em'},
     bold:{fontWeight:'bold'},
+    right:{float:'right'}
 };
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -35,15 +36,16 @@ class Dlist extends Component{
         
     render() {
         let items=this.props.data.map((ele,i)=>
-            <Card key={i} style={styles.card} ref={'card'+i}>
-                <div>{ele.brand+' '+ele.model}</div>
-                <div style={ele.fromName=='0' ? styles.hide : styles.line}>
-                    {ele.type==1 ? ___.fromName+' '+ele.fromName : ___.toName+' '+ele.toName}
+            <div key={i} style={styles.card} ref={'card'+i}>
+                <div>
+                    {ele.brand+' '+ele.model}
+                    <span style={styles.right}>
+                        {ele.did.length+' '}
+                        <a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a>
+                    </span>
                 </div>
-                <div style={styles.line}>{___.time+' '+W.dateToString(W.date(ele.createdAt))}</div>
-                <div style={styles.line}>{___.num+' '+ele.did.length}</div>
-                <div style={styles.line}><a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a></div>
-            </Card>);
+                <div style={styles.line}>{W.dateToString(W.date(ele.createdAt))}</div>
+            </div>);
         return(
             <div ref='list'>
                 {items}
@@ -192,10 +194,7 @@ class DidList extends Component {
         let items=this.state.data.did.map((ele,i)=><p key={i}>{ele}</p>);
         return (
             <div style={styles.card}>
-                <div><span style={styles.bold}>{___.time}</span>{' '+W.dateToString(W.date(data.createdAt))}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.num}</span>{' '+data.did.length}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.device_id}</span></div>
-                <div style={{textAlign:'center'}}>{items}</div>
+                {items}
             </div>
         );
     }

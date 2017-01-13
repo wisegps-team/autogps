@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=87;//版本号
+let version=88;//版本号
 
 //地区表
 export const area={
@@ -2574,8 +2574,8 @@ export const qrLink={
             'query': true, 
         },{
             'name': 'type',
-            'desc': '类型',//0普通短链接，1营销资料，2移车卡，同一个批次的二维码type相同
-            'type': 'Number',
+            'desc': '类型',//0普通短链接，1营销资料，2移车卡，3活动分享链接，4渠道注册链接，5人员注册链接
+            'type': 'Number',//同一个批次的二维码type相同
             'query': true,
         },{
             'name':'batchId',
@@ -2591,6 +2591,11 @@ export const qrLink={
             'name':'status',//已绑定为1，未绑定为0，方便统计
             'desc':'状态',//统计用
             'type':'Number',
+            'query':true
+        },{
+            'name':'uid',
+            'desc':'所属客户',
+            'type':'String',
             'query':true
         }
     ],
