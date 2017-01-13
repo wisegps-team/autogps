@@ -14,14 +14,70 @@ import {List, ListItem} from 'material-ui/List';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import AppBar from '../_component/base/appBar';
+import QrImg from '../_component/base/qrImg';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
+import {changeToLetter} from '../_modules/tool';
+
+
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
+let sUrl='';
+let qrLinkData={
+    uid:_user.customer.objectId,
+    type:4
+};
+Wapi.qrLink.get(function(res) {
+    if(res.data){
+        setUrl(res.data.id);
+    }else{
+        let data=Object.assign({},qrLinkData);
+        let custType=(_user.customer.custTypeId==1)?5:8;
+        data.url=location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name);
+        Wapi.qrLink.add(res=>{
+            Wapi.qrLink.get(r=>{
+                let id=changeToLetter(r.data.i);
+                setUrl(id);
+                Wapi.qrLink.update(null,{
+                    _objectId:res.objectId,
+                    id
+                });
+            },{objectId:res.objectId});
+        },data);
+    }
+},qrLinkData);
+
+function setUrl(id){
+    sUrl='http://autogps.cn/?s='+id;
+    W.emit(thisView,'sUrlIsReady');//触发事件
+}
+
+function askSetShare() {
+    if(sUrl){
+        setShare();
+    }else{
+        thisView.addEventListener('sUrlIsReady',setShare);
+    }
+}
+
+function setShare(){
+    var op={
+        title: ___.invitation_url, // 分享标题
+        desc: _user.customer.name, // 分享描述
+        link: sUrl, // 分享链接
+        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+        success: function(){},
+        cancel: function(){}
+    }
+    wx.onMenuShareTimeline(op);
+    wx.onMenuShareAppMessage(op);
+    W.emit(thisView,'setShareOver');
+}
 
 
 class App extends Component{
@@ -32,33 +88,36 @@ class App extends Component{
             custTypeId:'5|8',
             appId:WiStorm.config.objectId
         };
+        this.state={
+            active:0
+        };
+        this.showQr = this.showQr.bind(this);
+        this.hideQr = this.hideQr.bind(this);
     }
     getChildContext(){
         return{
             'VIEW':thisView
         }
     }
-    tip(){
-        if(W.native)
-            W.alert({
-                title:___.invitation_url,
-                text:___.prompt_share
-            });
-        else{
-            W.toast(___.ready_url);
-            window.addEventListener('nativeSdkReady',function(){
-                W.alert({
-                    title:___.invitation_url,
-                    text:___.prompt_share
-                });
-            });
-        }
+    
+    showQr(){
+        this.setState({active:1});
+        this._timeout=false;
+        setTimeout(e=>this._timeout=true,2000);
+    }
+    hideQr(){
+        if(this._timeout)
+            this.setState({active:0});
     }
     render() {
+        let show=this.state.active==1;
+        let dis=show?{display:'none'}:null;
         return (
             <ThemeProvider>
-                {/*<AppBar title={___.subordinate} iconElementRight={<IconButton onClick={this.tip}><ContentAdd/></IconButton>}/>*/}
-                <CustList data={this._data} add={this.tip}/>
+                <div style={dis}>
+                    <CustList data={this._data} add={this.showQr}/>
+                </div>
+                <QrBox show={show} onClick={this.hideQr}/>
             </ThemeProvider>
         );
     }
@@ -227,29 +286,73 @@ class RightIconMenu extends Component{
 
 let CustList=CustListHC(UserItem);
 
+class QrBox extends Component{
+    constructor(props, context) {
+        super(props, context);
+        this.state={
+            active:0,
+            url:sUrl
+        }
 
-function setShare(){
-    let custType=(_user.customer.custTypeId==1)?5:8;
-    var op={
-        title: ___.invitation_url, // 分享标题
-        desc: _user.customer.name, // 分享描述
-        link: location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name), // 分享链接
-        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-        success: function(){},
-        cancel: function(){}
+        this.hide = this.hide.bind(this);
     }
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
-    setShare=null;
+    componentDidMount() {
+        if(!this.state.url){
+            thisView.addEventListener('sUrlIsReady',e=>this.setState({url:sUrl}));
+        }
+        thisView.addEventListener('setShareOver',e=>{
+            this.setState({active:1});
+            this._timeout=false;
+            setTimeout(e=>{this._timeout=true},2000);
+        });
+    }
+
+    tip(e){
+        e.nativeEvent.stopPropagation();
+        if(W.native)
+            askSetShare();
+        else{
+            W.toast(___.ready_url);
+            window.addEventListener('nativeSdkReady',askSetShare);
+        }
+    }
+    hide(e){
+        e.nativeEvent.stopPropagation();
+        if(this._timeout)
+            this.setState({active:0})
+    }
+    render() {
+        let dis=this.props.show?{}:{display:'none'};
+        dis.textAlign='center';
+
+        let imgSty={};
+        if(this.state.active)imgSty.display='none';
+        return (
+            <div style={dis}>
+                <div style={imgSty} {...this.props} show={null}>
+                    <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
+                    <br/><span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>
+                    <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
+                </div>
+                <SharePage show={this.state.active} onClick={this.hide}/>
+            </div>
+        );
+    }
 }
-
-if(W.native)
-    setShare()
-else
-    window.addEventListener('nativeSdkReady',setShare);
-
-
-
+class SharePage extends Component {
+    render() {
+        let sty={width:'90%',marginLeft:'5%',marginTop:'20px',display:'none'};
+        if(this.props.show)sty.display='block';
+        return (
+            <div style={sty} {...this.props} show={null}>
+                {___.share_page}<br/>
+                {___.can_regist}
+                <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
+                <span style={{color:'#ccc'}}>{___.touch_back}</span>
+            </div>
+        );
+    }
+}
 
 function setRole(cust,callback,add){
     let rid='795552341104398300';

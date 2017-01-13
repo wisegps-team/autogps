@@ -526,4 +526,8 @@ window.___={
 	'order_delete_success':'订单已取消！',
 	'cancel_order':'取消订单',
 	'booking_install_success':'尊敬的合作伙伴，你有新的服务预约，请及时回复。',
+	'invite_regist':'邀约注册',
+	'share_page':'将此页面发送给朋友',
+	'can_regist':'即可注册',
+	'touch_back':'轻触返回'
 }
