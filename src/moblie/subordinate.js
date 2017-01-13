@@ -24,6 +24,7 @@ import {changeToLetter} from '../_modules/tool';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(___.subordinate);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
@@ -66,8 +67,9 @@ function askSetShare() {
 }
 
 function setShare(){
+    let name=_user.employee?_user.employee.name:_user.customer.contact;
     var op={
-        title: ___.invitation_url, // 分享标题
+        title: name+'的'+___.invite_regist, // xxx的邀约注册
         desc: _user.customer.name, // 分享描述
         link: sUrl, // 分享链接
         imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
@@ -104,10 +106,13 @@ class App extends Component{
         this.setState({active:1});
         this._timeout=false;
         setTimeout(e=>this._timeout=true,2000);
+        thisView.setTitle(___.scan_regist);
     }
     hideQr(){
-        if(this._timeout)
+        if(this._timeout){
             this.setState({active:0});
+            thisView.setTitle(___.subordinate);
+        }
     }
     render() {
         let show=this.state.active==1;
@@ -304,11 +309,12 @@ class QrBox extends Component{
             this.setState({active:1});
             this._timeout=false;
             setTimeout(e=>{this._timeout=true},2000);
+            thisView.setTitle(___.invite_regist);     
         });
     }
 
     tip(e){
-        e.nativeEvent.stopPropagation();
+        e.stopPropagation();
         if(W.native)
             askSetShare();
         else{
@@ -317,9 +323,11 @@ class QrBox extends Component{
         }
     }
     hide(e){
-        e.nativeEvent.stopPropagation();
-        if(this._timeout)
-            this.setState({active:0})
+        e.stopPropagation();
+        if(this._timeout){
+            this.setState({active:0});
+            thisView.setTitle(___.scan_regist);            
+        }  
     }
     render() {
         let dis=this.props.show?{}:{display:'none'};
