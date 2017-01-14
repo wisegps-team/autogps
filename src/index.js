@@ -16,7 +16,7 @@ import BindBox from './_component/login/bindBox';
 
 import CONFIG from './_modules/config';
 import sty from './_component/login/style';
-import {getOpenIdKey} from './_modules/tool';
+import {getOpenIdKey,setTitle} from './_modules/tool';
 
 require('./_sass/index.scss');//包含css
 
@@ -30,12 +30,24 @@ class App extends Component {
         this.state={
             active:(_g.register=='true'&&_g.parentId)?1:0 //0,登录；1，注册；2，忘记密码；3，更改绑定openid
         }
-        // this.state.active=0;
+        // this.state.active=4;
         this.loginSuccess = this.loginSuccess.bind(this);
         this.forgetSuccess = this.forgetSuccess.bind(this);
         this.registerCallback = this.registerCallback.bind(this);
         this.bindSuccess = this.bindSuccess.bind(this);
         this.showBind = this.showBind.bind(this);
+    }
+
+    componentDidMount() {
+        this.setTitle(this.state.active);
+    }
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.active!=this.state.active)
+            this.setTitle(this.state.active);
+    }
+    setTitle(i){
+        let titles=[___.login,___.invite_regist,___.forget_pwd,___.logined_bind,___.invite_regist];
+        setTitle(titles[i]);
     }
 
     getUserData(user){
@@ -65,6 +77,7 @@ class App extends Component {
             this.getCustomer(user);
     }
     getCustomer(user){
+        let that=this;
         let token=user.access_token;
         let cust_data={
             access_token:token,
@@ -96,11 +109,7 @@ class App extends Component {
                     }
                     user.pages=page.data;
                     W._loginSuccess(user);
-                    let home="src/moblie/home.html";
-                    let loginLocation=_g.loginLocation||home;
-                    if(loginLocation.indexOf('.html')==-1)//需要到home.html跳转
-                        loginLocation=home+"?loginLocation="+encodeURIComponent(_g.loginLocation);
-                    top.location=loginLocation;
+                    that.finishLogin();
                 },{
                     access_token:token,
                     ACL:acl,
@@ -113,15 +122,35 @@ class App extends Component {
         },cust_data);
     }
 
+    finishLogin(){//最终登录成功，决定跳转还是去做其他
+        if(_g.register=='true'&&_g.parentId){//如果是过来注册
+            this.setState({active:1});
+            return;
+        }
+        let home="src/moblie/home.html";
+        let loginLocation=_g.loginLocation||home;
+        if(loginLocation.indexOf('.html')==-1)//需要到home.html跳转
+            loginLocation=home+"?loginLocation="+encodeURIComponent(_g.loginLocation);
+        top.location=loginLocation;
+    }
+
+    showBind(){
+        if(_g.register=='true'&&_g.parentId){//如果是过来注册
+            this.setState({active:1});
+            return;
+        }
+        this.setState({active:3});
+    }
+
     loginSuccess(res){
         let min=-Math.floor((W.date(res.data.expire_in).getTime()-new Date().getTime())/60000);
         W.setCookie("access_token", res.data.access_token,min);
         let user=res.data;
-        if(!user.mobileVerified){//未通过手机验证
-            W.alert(___.please_verification);
-            this._res=res;//先暂存,重置密码成功之后会再调用loginSuccess传递进来
-            this.setState({active:2});
-        }else{
+        // if(!user.mobileVerified){//未通过手机验证
+        //     W.alert(___.please_verification);
+        //     this._res=res;//先暂存,重置密码成功之后会再调用loginSuccess传递进来
+        //     this.setState({active:2});
+        // }else{
             let openIdKey=getOpenIdKey();
             if((!user.authData||!user.authData[openIdKey])&&_g.openid){//没有绑定的，进行绑定
                 let u={
@@ -137,7 +166,7 @@ class App extends Component {
                 },u);
             }else
                 this.getUserData(user);
-        }
+        // }
     }
     forgetSuccess(res){
         W.toast(___.reset_pwd+___.success);
@@ -149,7 +178,7 @@ class App extends Component {
     }
     registerCallback(res){
         if(!res._code){//注册成功
-            W.alert(___.register_success,()=>this.setState({active:0}));
+            this.setState({active:4});
         }else{
             switch (res._code) {
                 case 1:
@@ -165,9 +194,7 @@ class App extends Component {
             }
         }
     }
-    showBind(){
-        this.setState({active:3});
-    }
+    
     bindSuccess(user){//绑定微信成功
         let p='';
         if(_g.wx_app_id)
@@ -184,7 +211,8 @@ class App extends Component {
             <Login onSuccess={this.loginSuccess} style={login_sty} ssoLoginFail={this.showBind}/>,
             <AgentShowBox success={this.registerCallback} parentId={_g.parentId}/>,
             <Forget onSuccess={this.forgetSuccess} user={this._res?this._res.data:null}/>,
-            <BindBox onSuccess={this.bindSuccess} openId={_g.openid}/>
+            <BindBox onSuccess={this.bindSuccess} openId={_g.openid}/>,
+            <QrBox />
         ]
         let buttons=(this.state.active&&this.state.active!=3)?
             (<FlatButton label={___.login} primary={true} onClick={()=>this.setState({active:0})} key='login'/>)
@@ -198,7 +226,6 @@ class App extends Component {
                         marginTop: '10px'
                         }}
                     >
-                        {buttons}
                     </div>
                 </div>
             </ThemeProvider>
@@ -206,4 +233,46 @@ class App extends Component {
     }
 }
 
-
+const qrsty={
+    img:{
+        width:window.screen.width*0.75-48+'px',
+        height:window.screen.width*0.75-48+'px'
+    },
+    qr:{
+        padding:'10px',
+        textAlign:'center',
+        margin: 'auto'
+    },
+}
+class QrBox extends Component{
+    constructor(props, context) {
+        super(props, context);
+        this.state={
+            url:''
+        }
+    }
+    
+    componentDidMount() {
+        Wapi.serverApi.getAnyQrcode(res=>{//获取二维码
+            if(res.status_code){
+                W.alert(res.err_msg);
+                return;
+            }
+            this.setState({url:res.url});
+        },{
+            type:999,//扫码之后不做任何处理的类型
+            data:'scene',
+            wxAppKey:_g.wx_app_id
+        });
+    }
+    
+    render() {
+        return (
+            <div style={qrsty.qr}>
+                <img style={qrsty.img} src={this.state.url}/>
+                <p>{'[ '+___.press+' ]'}</p>
+                <h4>{___.reg_des}</h4>
+            </div>
+        );
+    }
+}

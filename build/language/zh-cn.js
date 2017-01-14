@@ -539,4 +539,8 @@ window.___={
 	'mobile_phone':'手机',
 	'publish':'发布',
 	'no_bind':'扫描营销资料二维码绑定当前营销活动后，有意向的车主无需通过微信好友分享，扫码即可了解活动详情并预订！',
+	'scan_regist':'扫码注册',
+	'accept_invite':'接受邀约',
+	'pls_input_company_name':'请填写企业名称',
+	'reg_des':'注册成功，关注公众号后登录平台完善企业和个人信息！'
 }

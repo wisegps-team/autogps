@@ -37,19 +37,29 @@ Wapi.qrLink.get(function(res) {
     if(res.data){
         setUrl(res.data.id);
     }else{
-        let data=Object.assign({},qrLinkData);
-        let custType=(_user.customer.custTypeId==1)?5:8;
-        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name);
-        Wapi.qrLink.add(res=>{
-            Wapi.qrLink.get(r=>{
-                let id=changeToLetter(r.data.i);
-                setUrl(id);
-                Wapi.qrLink.update(null,{
-                    _objectId:res.objectId,
-                    id
-                });
-            },{objectId:res.objectId});
-        },data);
+        Wapi.weixin.get(wei=>{
+            if(!wei.data){
+                W.alert('请先配置公众号，才能邀约下级');
+                return;
+            }
+            let wx_app_id=wei.data.wxAppKey;
+            let data=Object.assign({},qrLinkData);
+            let custType=(_user.customer.custTypeId==1)?5:8;
+            data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+            Wapi.qrLink.add(res=>{
+                Wapi.qrLink.get(r=>{
+                    let id=changeToLetter(r.data.i);
+                    setUrl(id);
+                    Wapi.qrLink.update(null,{
+                        _objectId:res.objectId,
+                        id
+                    });
+                },{objectId:res.objectId});
+            },data);
+        },{
+            uid:_user.customer.objectId,
+            type:1
+        });
     }
 },qrLinkData);
 

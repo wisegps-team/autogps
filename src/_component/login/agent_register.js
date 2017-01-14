@@ -10,6 +10,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import IconButton from 'material-ui/IconButton';
 
+import VerificationCode from '../base/verificationCode';
 import Register from './register';
 import Login from './index';
 import AreaSelect from '../base/areaSelect';
@@ -38,7 +39,6 @@ class AgentRegisterBox extends Component{
             sex:1
         };
 
-        this.change = this.change.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.registerSuccess = this.registerSuccess.bind(this);
@@ -123,12 +123,10 @@ class AgentRegisterBox extends Component{
 
             if(user.status_code==8){//如果是之前就已经注册过用户则先校验一下有没有添加过客户表
                 customerCheck(user,that,function(){
-                    W.loading();
-                    that.setState({stepIndex:1});
+                    that.registerSuccess();
                 });
             }else{
-                W.loading();
-                that.setState({stepIndex:1});
+                that.registerSuccess();
             } 
         },{
             account:user.mobile,
@@ -139,104 +137,60 @@ class AgentRegisterBox extends Component{
     nameChange(e,val){
         this.data[e.target.name]=val;
     }
-    change(val,name){
-        if(name){
-            Object.assign(this.data,val);
-        }else{
-            this.data.sex=val;
-        }
+    beforRegister(){
+        if(this.data.name){
+            return true;
+        }else
+            W.alert(___.pls_input_company_name);
     }
     render() {
         return (
-            <Stepper activeStep={this.state.stepIndex} orientation="vertical">
-                <Step>
-                    <StepLabel>{___.verification_phone}</StepLabel>
-                    <StepContent>
-                        <Register onSuccess={this.handleNext}/>
-                    </StepContent>
-                </Step>
-                <Step>
-                    <StepLabel>{___.add_data}</StepLabel>
-                    <StepContent>
-                        <form>
-                            <Input name='name' floatingLabelText={___.company_name} onChange={this.nameChange}/>
-                            <AreaSelect name='area' onChange={this.change}/>
-                            <Input name='contact' floatingLabelText={___.person} onChange={this.nameChange}/>
-                            <SexRadio onChange={this.change} style={{margin:'10px 0'}}/>
-                        </form>
-                        <RaisedButton
-                            label={___.finish_register}
-                            disableTouchRipple={true}
-                            disableFocusRipple={true}
-                            primary={true}
-                            onTouchTap={this.registerSuccess}
-                        />
-                    </StepContent>
-                </Step>
-            </Stepper>
+            <div>
+                <Input name='name' floatingLabelText={___.company} onChange={this.nameChange}/>
+                <Register onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
+            </div>
         );
     }
 }
 
 class AgentShowBox extends Component{
+    render(){
+        let box=_user?<JoinBox success={this.props.success}/>:<AgentRegisterBox success={this.props.success} parentId={this.props.parentId} key='register' />;
+        return box
+    }
+}
+
+//验证手机然后加入其下级
+class JoinBox extends Component{
     constructor(props, context) {
         super(props, context);
-        this.state={
-            action:0
-        }
-        this.loginSuccess = this.loginSuccess.bind(this);
-        this.back = this.back.bind(this);
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        return (nextState.action!=this.state.action);
+        this.submit = this.submit.bind(this);
+        this.change = this.change.bind(this);
     }
     
-    componentDidMount() {
-        document.title=_g.name;
+    change(code){
+        this._code=code;
     }
-
-    back(){
-        setTimeout(()=>{
-            if(this.state.action>0)
-                this.setState({action:0});
-        },300);
+    submit(){
+        customerCheck(_user,this);
     }
-
-    loginSuccess(res){
-        let user=res.data;
-        user.access_token;
-        customerCheck(user,this);
-    }
-    
-    render(){
-        let box=[
-            <h4 key='h4'>{'[ '+_g.name+' ] '+___.invite_desc}</h4>
-        ];
-        if(!this.state.action)
-            box=box.concat([
-                <div style={{marginBottom:'20px'}} key='toLogin'>
-                    {___.have_account}<RaisedButton label={___.join_now} primary={true} onClick={e=>this.setState({action:1})} />
-                </div>,
-                <div key='toRegister'>
-                    {___.no_account}<RaisedButton label={___.sign_now} primary={true} onClick={e=>this.setState({action:2})} />
+    render() {
+        return (
+            <div>
+                <label>{___.account+'：'}</label>
+                <span>{_user.mobile}</span>
+                <VerificationCode 
+                    name='valid_code'
+                    type={1}
+                    account={_user.mobile} 
+                    onSuccess={this.change}
+                    onChange={this.change}
+                />
+                <div style={{textAlign:'center'}}>
+                    <RaisedButton label={___.accept_invite} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>
                 </div>
-            ]);
-        else{
-            box.unshift(<IconButton key='back' onClick={this.back}>
-                <NavigationArrowBack />
-            </IconButton>);
-            if(this.state.action==1){
-                box.push(<Login onSuccess={this.loginSuccess} key='login' />);
-            }else{
-                box.push(<AgentRegisterBox success={this.props.success} parentId={this.props.parentId} key='register' />);
-            }
-        }
-        
-        return(
-                <div>
-                    {box}
-                </div>
-            );
+            </div>
+        );
     }
 }
 

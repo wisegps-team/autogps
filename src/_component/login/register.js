@@ -82,11 +82,10 @@ class Register extends Component {
                     onSuccess={this.change}
                     onChange={this.change}
                 />
-                {/*<PasswordRepeat 
-                    onChange={this.change}
-                    name='password'
-                />*/}
-                <RaisedButton label={___.register} primary={true} style={sty.but} onClick={this.submit}/>
+
+                <div style={{textAlign:'center'}}>
+                    <RaisedButton label={___.register} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>
+                </div>
             </div>
         );
     }
