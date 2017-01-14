@@ -9,26 +9,43 @@ import AppBar from '../_component/base/appBar';
 import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Card from 'material-ui/Card';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
+import Input from '../_component/base/input';
 
 
 const styles = {
-    main:{paddingTop:'50px',paddingBottom:'20px'},
-    card:{margin:'1em',padding:'0.5em'},
+    main:{paddingBottom:'20px'},
+    card:{margin:'10px',padding:'0px 10px 10px',borderBottom:'1px solid #cccccc'},
     td_left:{whiteSpace:'nowrap'},
     td_right:{paddingLeft:'1em'},
     line:{marginTop:'0.5em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     a:{marginRight:'1em',color:'#009688'},
+    no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
+    hide:{display:'none'},
+    to:{horizontal: 'right', vertical: 'top'},
+    menu_item:{height:'40px'},
+    variable:{color:'#009688'},
+    link:{color:'#0000cc'},
+    warn:{color:'#ff9900'},
+    search_head:{width:'100%',display:'block',borderBottom:'1px solid #cccccc'},
+    add_icon:{float:'right',marginRight:'15px'},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
 };
+function combineStyle(arr){
+    return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
+}
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.seller_activity);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     thisView.prefetch('booking_list.js',2);
@@ -42,12 +59,18 @@ class App extends Component {
             curActivity:null,
             activityName:'',
             noEdit:false,
+
+            keyword:'',
         }
-        this.limit=20;
+        this.limit=99;
         this.page_no=1;
         this.total=-1;
+        this.originalActivities=[];
         this.activities=[];
         this.booking=[];
+        this.gotData=false;
+
+        this.search = this.search.bind(this);
 
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
@@ -57,28 +80,34 @@ class App extends Component {
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
     }
+    search(e,value){
+        this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
+        this.setState({keyword:value});
+    }
     getChildContext(){
         return {
             delete:this.delete,
-            edit:this.edit
+            edit:this.edit,
+            url:this.url,
         };
     }
     componentDidMount() {
-        let par={
-            "group":{
-                "_id":{"activityId":"$activityId"},
-                "status0":{"$sum":"$status0"},
-                "status1":{"$sum":"$status1"},
-                "status2":{"$sum":"$status2"},
-                "status3":{"$sum":"$status3"}
-            },
-            "sorts":"objectId",
-            "uid":_user.customer.objectId,
-        }
-        Wapi.booking.aggr(resAggr=>{
-            this.booking=resAggr.data;
-            this.getData();
-        },par);
+        // let par={
+        //     "group":{
+        //         "_id":{"activityId":"$activityId"},
+        //         "status0":{"$sum":"$status0"},
+        //         "status1":{"$sum":"$status1"},
+        //         "status2":{"$sum":"$status2"},
+        //         "status3":{"$sum":"$status3"}
+        //     },
+        //     "sorts":"objectId",
+        //     "uid":_user.customer.objectId,
+        // }
+        // Wapi.booking.aggr(resAggr=>{
+        //     this.booking=resAggr.data;
+        //     this.getData();
+        // },par);
+        this.getData();
     }
     nextPage(){
         this.page_no++;
@@ -103,7 +132,9 @@ class App extends Component {
                     ele.status3=0;
                 }
             });
+            this.originalActivities=this.activities.concat(activities);
             this.activities=this.activities.concat(activities);
+            this.gotData=true;
             this.forceUpdate();
         },{
             uid:_user.customer.objectId,
@@ -183,15 +214,35 @@ class App extends Component {
         this.forceUpdate();
         history.back();
     }
+    url(acitivity){
+        window.location=acitivity.url;
+    }
     render() {
         return (
             <ThemeProvider>
                 <div>
-                    <AppBar 
+                    {/*<AppBar 
                         title={___.seller_activity}
                         style={{position:'fixed'}}
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
-                    />
+                    />*/}
+                    <div style={styles.search_head}>
+                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <div style={styles.search_box}>
+                            <Input 
+                                style={{height:'36px'}}
+                                inputStyle={{height:'30px'}}
+                                onChange={this.search} 
+                                hintText={___.search}
+                                value={this.state.keyword}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={(this.gotData && this.activities.length==0) ? styles.no_data : styles.hide}>
+                        点击右上角＋创建营销活动！
+                    </div>
+
                     <div name='list' style={styles.main}>
                         <Alist 
                             max={this.total} 
@@ -201,7 +252,7 @@ class App extends Component {
                         />
                     </div>
                     
-                    <SonPage title={___.seller_activity} open={this.state.isEdit} back={this.editBack}>
+                    <SonPage title={___.edit_seller_activity} open={this.state.isEdit} back={this.editBack}>
                         <EditActivity 
                             isCarownerSeller={false}
                             data={this.state.curActivity} 
@@ -217,7 +268,8 @@ class App extends Component {
 }
 App.childContextTypes={
     delete:React.PropTypes.func,
-    edit:React.PropTypes.func
+    edit:React.PropTypes.func,
+    url:React.PropTypes.func
 }
 
 let strStatus=[___.terminated,___.ongoing];
@@ -257,48 +309,56 @@ class DList extends Component{
     render() {
         let data=this.props.data;
         let items=data.map((ele,i)=>
-            <Card key={i} style={styles.card}>
-                <table>
-                    <tbody>
-                        <tr >
-                            <td style={styles.td_left}>{___.activity_name}</td>
-                            <td style={styles.td_right} onClick={()=>this.toActivityPage(ele)}>{ele.name}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.activity_status}</td>
-                            <td style={styles.td_right}>{strStatus[ele.status]}</td>
-                        </tr>
-                        <tr >
-                            <td style={styles.td_left}>{___.activity_type}</td>
-                            <td style={styles.td_right}>{activityType[ele.type]}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.start_date}</td>
-                            <td style={styles.td_right}>{ele.createdAt.slice(0,10)}</td>
-                        </tr>
-                        {/*<tr style={styles.line}>
-                            <td style={styles.td_left}>{___.activity_reward}</td>
-                            <td style={styles.td_right}>{ele.reward}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.project_manager}</td>
-                            <td style={styles.td_right}>{ele.principal}</td>
-                        </tr>
-                        <tr style={styles.line}>
-                            <td style={styles.td_left}>{___.seller}</td>
-                            <td style={styles.td_right}>{ele.sellerType}</td>
-                        </tr>*/}
-                    </tbody>
-                </table>
-                <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
-                    <span style={styles.a} onClick={()=>this.toCountPage('booking',ele)}>{___.bookingNum +' '+ ele.status0}</span>
-                    <span style={styles.a} onClick={()=>this.toCountPage('registe',ele)}>{___.register +' '+ ele.status1}</span>
+            <div key={i} style={styles.card}>
+                <IconMenu
+                    style={{float:'right'}}
+                    iconButtonElement={
+                        <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+                            <MoreVertIcon/>
+                        </IconButton>
+                    }
+                    targetOrigin={styles.to}
+                    anchorOrigin={styles.to}
+                    >
+                    <MenuItem 
+                        style={styles.menu_item} 
+                        primaryText={___.preview} 
+                        onTouchTap={()=>this.context.url(ele)}
+                    />
+                    <MenuItem 
+                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
+                        primaryText={___.edit} 
+                        onTouchTap={()=>this.context.edit(ele)}
+                    />
+                    <MenuItem 
+                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide}
+                        primaryText={___.delete} 
+                        onTouchTap={()=>this.context.delete(ele)}
+                    />
+                </IconMenu>
+                <div style={combineStyle(['variable','line'])}>
+                    {ele.name}
                 </div>
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.delete} primary={true} onClick={()=>this.context.delete(ele)} />
-                    <FlatButton label={___.details} primary={true} onClick={()=>this.context.edit(ele)} />
+                <div style={combineStyle(['variable','line'])}>
+                    {activityType[ele.type]+'/'
+                    +ele.sellerType
+                    +(ele.count?'/计算提成':'')}
+                    <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>            
                 </div>
-            </Card>);
+                <div style={styles.line}>
+                    {___.regional_marketing+' '}
+                    <span style={styles.variable}>{(ele.brand||'')+ele.product}</span>
+                </div>
+                <div style={styles.line}>
+                    {___.support_hotline+' '}
+                    <span style={styles.variable}>{ele.tel}</span>
+                </div>
+                <div style={styles.line}>
+                    {___.offersDesc+' '}
+                    <span style={styles.variable}>{ele.offersDesc}</span>
+                </div>
+            </div>
+        )
         return(
             <div>
                 {items}
@@ -308,7 +368,8 @@ class DList extends Component{
 }
 DList.contextTypes={
     delete: React.PropTypes.func,
-    edit: React.PropTypes.func
+    edit: React.PropTypes.func,
+    url: React.PropTypes.func
 };
 let Alist=AutoList(DList);
 

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import {Provider,connect} from 'react-redux';
 
 import {ThemeProvider} from '../_theme/default';
-import AppBar from '../_component/base/appBar';
+// import AppBar from '../_component/base/appBar';
 import {List,ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -28,31 +28,44 @@ import UserSearch from '../_component/user_search';
 
 
 const styles = {
-    main:{paddingTop:'50px',paddingBottom:'20px'},
+    main:{paddingBottom:'20px'},
     list_item:{marginTop:'1em',padding:'0.5em',borderBottom:'1px solid #999999'},
     card:{margin:'1em',padding:'0.5em'},
     show:{paddingTop:'50px'},
     hide:{display:'none'},
-    a:{
-        position: 'absolute',
-        width:'100%',
-        bottom:'10px'
-    },
-    box:{
-        position:'relative',
-        paddingBottom:'60px'
-    },
+    a:{position: 'absolute',width:'100%',bottom:'10px'},
+    box:{position:'relative',paddingBottom:'60px'},
     product_id:{borderBottom:'solid 1px #999999'},
     ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     w:{width:'100%'},
     to:{horizontal: 'right', vertical: 'top'},
-    c:{color:'#fff'}
+    c:{color:'#fff'},
+    variable:{color:'#009688'},
+    link:{color:'#0000cc'}
 };
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
+var curView=thisView;
+
+var pushPage=thisView.prefetch('#push',3);
+pushPage.setTitle(___.push);
+var popPage=thisView.prefetch('#pop',3);
+popPage.setTitle(___.pop);
+var didsPage=thisView.prefetch('#didList',3);
+
+thisView.setTitle(___.device_manage);
+thisView.addEventListener('load',function(){
+    ReactDOM.render(<AppDeviceManage/>,thisView);
+
+    ReactDOM.render(<DeviceIn/>,pushPage);
+
+    ReactDOM.render(<DeviceOut/>,popPage);
+
+    ReactDOM.render(<DidList/>,didsPage);
+});
 
 // 测试用
 // let testNum=10;
@@ -75,10 +88,6 @@ else
     window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
 
 
-thisView.addEventListener('load',function(){
-    ReactDOM.render(<AppDeviceManage/>,thisView);
-});
-
 class AppDeviceManage extends Component{
     constructor(props,context){
         super(props,context);
@@ -95,13 +104,17 @@ class AppDeviceManage extends Component{
     }
 
     deviceIn(){
-        history.replaceState('home','home','home.html');
-        this.setState({intent:'in'});
+        // history.replaceState('home','home','home.html');
+        // this.setState({intent:'in'});
+        curView=pushPage;
+        thisView.goTo('#push');
     }
 
     deviceOut(){
-        history.replaceState('home','home','home.html');
-        this.setState({intent:'out'});
+        // history.replaceState('home','home','home.html');
+        // this.setState({intent:'out'});
+        curView=popPage;
+        thisView.goTo('#pop');
     }
 
     toList(){
@@ -111,36 +124,32 @@ class AppDeviceManage extends Component{
 
     render(){
         let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
+        // let isBrandSeller=true;//测试用
         let rightIcon=isBrandSeller?
             (<IconMenu
                 iconButtonElement={
-                    <IconButton><MoreVertIcon/></IconButton>
+                    <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+                        <MoreVertIcon/>
+                    </IconButton>
                 }
                 targetOrigin={styles.to}
                 anchorOrigin={styles.to}
                 >
                 <MenuItem primaryText={___.push} onTouchTap={this.deviceIn}/>
                 <MenuItem primaryText={___.pop} onTouchTap={this.deviceOut}/>
-            </IconMenu>):(<MenuItem primaryText={___.pop} style={styles.c} onTouchTap={this.deviceOut}/>);
+            </IconMenu>):(<MoreVertIcon onTouchTap={this.deviceOut}/>);
         let items=this.state.data.map((ele,i)=><ListItem key={i}  style={styles.MenuItem} children={<ItemDevice key={i} data={ele}/>}/>);
         return(
             <ThemeProvider>
                 <div>
-                    <AppBar 
+                    {/*<AppBar 
                         title={___.device_manage} 
                         style={{position:'fixed'}} 
                         iconElementRight={rightIcon}
-                    />
+                    />*/}
                     <div name='list' style={styles.main}>
                         <ProductLogList ref={'list'} isBrandSeller={isBrandSeller} thisView={thisView}/>
                     </div>
-
-                    <SonPage title={___.push} open={this.state.intent=='in'} back={this.toList}>
-                        <DeviceIn toList={this.toList}/>
-                    </SonPage>
-                    <SonPage title={___.pop} open={this.state.intent=='out'} back={this.toList}>
-                        <DeviceOut toList={this.toList}/>
-                    </SonPage>
                 </div>
             </ThemeProvider>
         );
@@ -187,6 +196,11 @@ class DeviceIn extends Component{
         this.addId=this.addId.bind(this);
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
+    }
+    componentDidMount() {
+        popPage.addEventListener('show',e=>{
+            history.replaceState('home','home','home.html');
+        })
     }
     brandChange(value){
         this.setState({
@@ -290,14 +304,16 @@ class DeviceIn extends Component{
 
     render(){
         return(
+            <ThemeProvider>
             <div style={styles.input_page}>
-                <h3>{___.device_in}</h3>
+                {/*<h3>{___.device_in}</h3>*/}
                 <div style={{width:'80%',marginLeft:'10%',textAlign:'left'}}>
                     <h4>{___.device_type}:</h4>
                     <BrandSelect onChange={this.brandChange}/>
                 </div>
                 <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
             </div>
+            </ThemeProvider>
         )
     }
 }
@@ -320,6 +336,11 @@ class DeviceOut extends Component{
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
     }
+    componentDidMount() {
+        popPage.addEventListener('show',e=>{
+            history.replaceState('home','home','home.html');
+        })
+    }    
     custChange(cust){
         this.setState({
             cust_id:cust.objectId,
@@ -478,8 +499,9 @@ class DeviceOut extends Component{
 
     render(){
         return(
+            <ThemeProvider>
             <div style={styles.input_page}>
-                <h3>{___.device_out}</h3>
+                {/*<h3>{___.device_out}</h3>*/}
                 <table style={styles.w}>
                     <tbody>
                         <tr>
@@ -492,14 +514,20 @@ class DeviceOut extends Component{
                 </table>
                 <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
             </div>
+            </ThemeProvider>
         )
     }
 }
 
-
+var _dids=[];
 class ScanGroup extends Component{
     constructor(props,context){
         super(props,context);
+        this.toDidList = this.toDidList.bind(this);
+    }
+    toDidList(){
+        // _dids=this.props.product_ids;
+        // curView.goTo('#didList');
     }
     render(){
         let productItems=[];
@@ -514,13 +542,29 @@ class ScanGroup extends Component{
         }
         return(
             <div style={styles.box}>
-                <h4>{___.num+'：'+len}</h4>
+                <div>{___.num+'：'}<span onClick={this.toDidList} style={styles.variable}>{len}</span></div>
                 {productItems}
                 <div style={styles.a}>
-                    <RaisedButton onClick={this.props.submit} label={___.ok} secondary={true}/>
+                    <RaisedButton onClick={this.props.submit} label={___.ok} secondary={true} style={{marginRight:'10px'}}/>
                     <RaisedButton onClick={this.props.addId} label={___.scan_input} primary={true}/>
                 </div>
             </div>
         )
+    }
+}
+
+
+class DidList extends Component {
+    constructor(props,context){
+        super(props,context);
+    }
+    
+    render() {
+        let items=_dids.map((ele,i)=><p key={i}>{ele}</p>);
+        return (
+            <div>
+                {items}
+            </div>
+        );
     }
 }

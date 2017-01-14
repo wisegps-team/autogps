@@ -4,7 +4,7 @@ import {ThemeProvider} from '../_theme/default';
 
 import {Tabs, Tab} from 'material-ui/Tabs';
 
-import AppBar from '../_component/base/appBar';
+// import AppBar from '../_component/base/appBar';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -21,33 +21,36 @@ import Input from '../_component/base/input';
 import MobileChecker from '../_component/base/mobileChecker';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.company_account);
 
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     
     let rechargeView=thisView.prefetch('#recharge',3);
+    rechargeView.setTitle(___.recharge);
     ReactDOM.render(<RechargePage/>,rechargeView);
     
     let withdrawView=thisView.prefetch('#withdraw',3);
+    withdrawView.setTitle(___.withdraw_cash);
     ReactDOM.render(<WithdrawPage/>,withdrawView);
 });
 
 const styles={
     appbar:{position:'fixed',top:'0px'},
-    head:{width:'100%',height:'120px',display:'block',textAlign:'center',paddingTop:'70px'},
-    head_str:{fontSize:'14px',marginBottom:'5px'},
-    head_num:{fontSize:'36px',marginBottom:'10px'},
-    bill:{padding:'5px 10px',borderTop:'1px solid #cccccc'},
-    bill_remark:{fontSize:'14px',color:'#999999',paddingTop:'5px'},
+    head:{width:'100%',height:'120px',display:'block',textAlign:'center',paddingTop:'40px',backgroundColor:'#33ccee'},
+    head_str:{fontSize:'14px',marginBottom:'5px',color:'#ffffff'},
+    head_num:{fontSize:'36px',marginBottom:'10px',color:'#ffffff'},
+    bill:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
+    bill_remark:{paddingTop:'5px'},
     main:{margin:'10px'},
-    income:{fontSize:'20px',float:'right'},
-    expenses:{color:'#990000',fontSize:'20px',float:'right'},
+    income:{float:'right'},
+    expenses:{color:'#990000',float:'right'},
     line:{margin:'0px 15px',padding:'15px 5px',borderBottom:'1px solid #dddddd'},
     line_right:{float:'right'},
-    a:{color:'#009988'},
+    a:{color:'#FFFF8D'},
     sonpage_main:{marginLeft:'10px',marginRight:'10px',textAlign:'center'},
     inputGroup:{display:'block',paddingTop:'1em',paddingBottom:'1em'},
+    no_record:{width:'100%',textAlign:'center'},
 }
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -118,13 +121,13 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar 
+                {/*<AppBar 
                     title={___.company_account} 
                     style={styles.appbar}
-                />
+                />*/}
 
                 <div style={styles.head}>
-                    <div style={styles.head_str}>{___.balance}</div>
+                    {/*<div style={styles.head_str}>{___.balance}</div>*/}
                     <div style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
                     <div>
                         <span style={{marginRight:'20px'}}>
@@ -181,7 +184,7 @@ class RechargePage extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.recharge}/>
+                {/*<AppBar title={___.recharge}/>*/}
 
                 <div style={ vmiddle(130,styles.sonpage_main) }>
                     <div style={styles.inputGroup}>
@@ -256,7 +259,7 @@ class WithdrawPage extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.withdraw_cash}/>
+                {/*<AppBar title={___.withdraw_cash}/>*/}
 
                 <div style={this.state.isInputAmount ? vmiddle(180,styles.sonpage_main) : {display:'none'}}>
                     <div style={styles.inputGroup}>
@@ -290,6 +293,7 @@ class BillPage extends Component {
         this.data=[];
         this.page_no=1;
         this.total=0;
+        this.gotData=false;
         this.loadNextPage = this.loadNextPage.bind(this);
         this.getRecords = this.getRecords.bind(this);
     }
@@ -316,7 +320,8 @@ class BillPage extends Component {
         console.log('get bill records,companyBillUid='+uid);
         if(uid==0)return;
         Wapi.user.getBillList(res=>{
-            this.tota=res.total;
+            this.gotData=true;
+            this.total=res.total;
             let _data=res.data.reverse();
             this.data=this.data.concat(_data);
             this.forceUpdate();
@@ -329,12 +334,17 @@ class BillPage extends Component {
     render() {
         return (
             <div style={styles.main}>
-                <Alist 
-                    max={this.total} 
-                    limit={20} 
-                    data={this.data} 
-                    next={this.loadNextPage} 
-                />
+                {(this.gotData && this.total!=0) ? (
+                    <div style={styles.no_record}>
+                        {___.no_money_records}
+                    </div>):(
+                    <Alist 
+                        max={this.total} 
+                        limit={20} 
+                        data={this.data} 
+                        next={this.loadNextPage} 
+                    />
+                )}
             </div>
         );
     }

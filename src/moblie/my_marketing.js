@@ -19,6 +19,7 @@ import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
 import {getOpenIdKey} from '../_modules/tool';
 import Iframe from '../_component/base/iframe';
+import Input from '../_component/base/input';
 
 
 const styles = {
@@ -39,6 +40,9 @@ const styles = {
     share_content:{width:'90%',marginLeft:'5%',marginTop:'20px'},
     hide:{display:'none'},
     detail:{float:'right',paddingTop:'12px',paddingRight:'12px',color:'#0000cc'},
+    search_head:{width:'100%',display:'block',borderBottom:'1px solid #cccccc'},
+    add_icon:{float:'right',marginRight:'15px'},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -64,14 +68,18 @@ class App extends Component {
             noEdit:true,
             activityName:'',
             reward:0,
+
+            keyword:''
         }
         this.limit=20;
         this.page_no=1;
         this.total=-1;
+        this.originalActivities=[];
         this.activities=[];
         this.booking=[];
         this.strType='';
 
+        this.search = this.search.bind(this);
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
@@ -81,6 +89,11 @@ class App extends Component {
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
     }
+    search(e,value){
+        console.log(this.activities);
+        this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
+        this.setState({keyword:value});
+    }
     getChildContext(){
         return {
             edit:this.edit,
@@ -88,26 +101,6 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        // let par={
-        //     "group":{
-        //         "_id":{"activityId":"$activityId"},
-        //         "status0":{"$sum":"$status0"},
-        //         "status1":{"$sum":"$status1"},
-        //         "status2":{"$sum":"$status2"},
-        //         "status3":{"$sum":"$status3"}
-        //     },
-        //     "sorts":"activityId",
-        //     sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
-        // }
-        // Wapi.booking.aggr(resAggr=>{
-        //     this.booking=resAggr.data;
-        //     Wapi.customer.list(res=>{
-        //         this._parents=res.data||[];
-        //         this.getData();
-        //     },{
-        //         objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
-        //     });
-        // },par);
         this.getData();
     }
     nextPage(){
@@ -141,6 +134,7 @@ class App extends Component {
                         ele.status3=0;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par0,{
@@ -178,6 +172,7 @@ class App extends Component {
                         ele.uid=_user.customer.objectId;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par1,{
@@ -211,6 +206,7 @@ class App extends Component {
                         ele.status3=0;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par2,{
@@ -255,6 +251,7 @@ class App extends Component {
                                     ele.uid=_user.customer.objectId;
                                 }
                             });
+                            this.originalActivities=this.originalActivities.concat(activities);
                             this.activities=this.activities.concat(activities);
                             this.forceUpdate();
                         },par3,{
@@ -327,6 +324,18 @@ class App extends Component {
                         title={___.recommend}
                         style={this.state.isShare ? styles.hide : {position:'fixed'}}
                     />*/}
+                    <div style={styles.search_head}>
+                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <div style={styles.search_box}>
+                            <Input 
+                                style={{height:'36px'}}
+                                inputStyle={{height:'30px'}}
+                                onChange={this.search} 
+                                hintText={___.search}
+                                value={this.state.keyword}
+                            />
+                        </div>
+                    </div>
                     <div name='list' style={styles.main}>
                         {/*items*/}
                         <Alist 

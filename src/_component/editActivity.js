@@ -25,7 +25,7 @@ const strStatus=[___.terminated,___.ongoing];
 function getInitData(){
     const initData={
         name:'',    //活动名称
-        type:2,     //活动类别 （0，车主营销，1，集团营销，2，员工营销，3渠道营销）
+        type:1,     //活动类别 （0，车主营销，1，集团营销，2，员工营销，3渠道营销）
         pay:0,      //佣金支付方式
         deposit:'',     //订金标准
         offersDesc:'',  //预定优惠
@@ -233,7 +233,8 @@ class EditActivity extends Component {
         }
     }
     render() {
-        let typeItems=[<MenuItem key={2} value={2} primaryText={___.employee_marketing} />];
+        // let typeItems=[<MenuItem key={2} value={2} primaryText={___.employee_marketing} />];   //员工营销
+        let typeItems=[];
         let va='';
         if(_user.customer.other && _user.customer.other.va){
             va=_user.customer.other.va;//判断当前用户权限，添加营销类别选项 va中0,1,2,3分别表示[集团营销，渠道营销，政企业务，车主营销]

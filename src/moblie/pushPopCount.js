@@ -5,16 +5,16 @@ import ReactDOM from 'react-dom';
 
 import {ThemeProvider} from '../_theme/default';
 import Card from 'material-ui/Card';
-import AppBar from '../_component/base/appBar';
+// import AppBar from '../_component/base/appBar';
 
 import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 
 
 const styles = {
-    main:{paddingTop:'50px',paddingBottom:'20px'},
+    main:{paddingBottom:'20px'},
     // list_item:{marginTop:'15px',padding:'10px',borderBottom:'1px solid #999999'},
-    card:{margin:'15px',padding:'10px'},
+    card:{margin:'15px',paddingBottom:'10px',borderBottom:'1px solid #999999'},
     a:{color:'#00bbbb',borderBottom:'solid 1px'},
     hide:{display:'none'},
     line:{marginTop:'0.5em'},
@@ -22,9 +22,22 @@ const styles = {
 };
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+let _from='productlog_list';
 thisView.addEventListener('load',function(e){
     ReactDOM.render(<PushPopCount params={e.params}/>,thisView);
+
+    _from=e.params.page_from;//判断传过来的page，然后删除此属性
+    delete e.params.page_from;
+
+    if(e.params.type==1){
+        thisView.setTitle(___.push_count);
+    }else if(e.params.type==0){
+        thisView.setTitle(___.pop_count);
+    }
+        
+    let didView=thisView.prefetch('#pop',3);
+    didView.setTitle(___.pop);
+    ReactDOM.render(<DidList/>,didView);
 });
 
 
@@ -34,16 +47,28 @@ class Dlist extends Component{
     }
         
     render() {
+        console.log(this.props.data);
+        // let items=this.props.data.map((ele,i)=>
+        //     <Card key={i} style={styles.card} ref={'card'+i}>
+        //         <div>{ele.brand+' '+ele.model}</div>
+        //         <div style={ele.fromName=='0' ? styles.hide : styles.line}>
+        //             {ele.type==1 ? ___.fromName+' '+ele.fromName : ___.toName+' '+ele.toName}
+        //         </div>
+        //         <div style={styles.line}>{___.time+' '+W.dateToString(W.date(ele.createdAt))}</div>
+        //         <div style={styles.line}>{___.num+' '+ele.did.length}</div>
+        //         <div style={styles.line}><a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a></div>
+        //     </Card>);
         let items=this.props.data.map((ele,i)=>
-            <Card key={i} style={styles.card} ref={'card'+i}>
-                <div>{ele.brand+' '+ele.model}</div>
-                <div style={ele.fromName=='0' ? styles.hide : styles.line}>
-                    {ele.type==1 ? ___.fromName+' '+ele.fromName : ___.toName+' '+ele.toName}
+            <div key={i} style={styles.card} ref={'card'+i}>
+                <div style={{float:'right',color:'#0000cc'}} onClick={()=>this.context.toDidList(ele)}>{ele.did.length}</div>
+                <div style={_from=='cust_list' ? styles.line : styles.hide}>
+                    {ele.brand+' '+ele.model}
                 </div>
-                <div style={styles.line}>{___.time+' '+W.dateToString(W.date(ele.createdAt))}</div>
-                <div style={styles.line}>{___.num+' '+ele.did.length}</div>
-                <div style={styles.line}><a onClick={()=>this.context.toDidList(ele)} style={styles.a}>IMEI</a></div>
-            </Card>);
+                <div style={styles.line}>{W.dateToString(W.date(ele.createdAt))}</div>
+                <div style={ele.type==0 ? styles.line : styles.hide}>
+                    {ele.toName}
+                </div>
+            </div>);
         return(
             <div ref='list'>
                 {items}
@@ -86,7 +111,12 @@ class PushPopCount extends Component {
     componentDidMount() {
         thisView.addEventListener('message',(e)=>{
             // console.log('收到"'+e.from+'"post过来的信息'+JSON.stringify(e.data));
+            
+            _from=e.data.page_from;//判断传过来的page，然后删除此属性
+            delete e.data.page_from;
+
             if(e.data){
+                //重置par和op
                 this.par={
                     uid:_user.customer.objectId,
                 }
@@ -95,15 +125,13 @@ class PushPopCount extends Component {
                     limit:20,
                     sorts:'-createdAt',
                 }
-                
-                this.state.data=[];
-
-                // if((this.par.modelId && (e.data.modelId!=this.par.modelId || e.data.type!=this.par.type))
-                //     ||(this.par.from && (this.par.from!=e.data.from || this.par.to!=e.data.to))){
-                //     this.op.page_no=1;
-                //     this.state.data=[];
-                // }
-                
+                console.log('settitle');
+                if(e.data.type==1){//根据传递过来的type修改当前页面的标题（出库或者入库）
+                    thisView.setTitle(___.push_count);
+                }else if(e.data.type==0){
+                    thisView.setTitle(___.pop_count);
+                }
+                this.state.data=[];                
                 this.par=Object.assign(this.par,e.data);
             }
             this.getData();
@@ -149,9 +177,9 @@ class PushPopCount extends Component {
         return (
             <ThemeProvider>
                 <div>
-                    <AppBar 
+                    {/*<AppBar 
                         style={{position:'fixed',top:'0px'}}
-                    />
+                    />*/}
                     <div style={styles.main}>
                         <Alist 
                             ref={'list'}

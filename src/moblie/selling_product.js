@@ -10,12 +10,14 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconMenu from 'material-ui/IconMenu';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import TextField from 'material-ui/TextField';
 
 import Input from '../_component/base/input';
 import AppBar from '../_component/base/appBar';
 import SonPage from '../_component/base/sonPage';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(___.selling_product);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
@@ -27,7 +29,22 @@ const styles = {
     select:{width:'100%',textAlign:'left'},
     list_item:{borderBottom: '1px solid #ccc'},
     icon:{height: '48px',width: '48px',position: 'absolute',right: '0px',top: '0px',bottom: '0px',margin: 'auto'},
+    card:{paddingBottom:'10px',borderBottom:'1px solid #ccc'},
+    to:{horizontal: 'right', vertical: 'top'},
+    variable:{color:'#009688'},
+    link:{color:'#0000cc'},
+    line:{marginTop:'10px'},
+    spans:{marginRight:'15px'},
+    menu_item:{height:'40px'},
+    no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
+    hide:{display:'none'},
+    search_head:{width:'100%',display:'block',borderBottom:'1px solid #cccccc'},
+    add_icon:{float:'right',marginRight:'15px'},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
 };
+function combineStyle(arr){
+    return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
+}
 
 let _product={
     brand:"品牌1",
@@ -52,25 +69,38 @@ class App extends Component {
         super(props,context);
         this.state={
             isEdit:false,
+            keyword:''
         }
         this.curProduct={};
+        this.originalList=[];
         this.list=[];
+        this.gotData=false;
 
+        this.search = this.search.bind(this);
         this.url = this.url.bind(this);
         this.edit = this.edit.bind(this);
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
+        this.delete = this.delete.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
+    }
+    search(e,value){
+        this.list=this.originalList.filter(ele=>ele.name.includes(value)||ele.brand.includes(value));
+        this.setState({keyword:value});
     }
     componentDidMount() {
         // this.list=_list;
         // this.forceUpdate();
         Wapi.activityProduct.list(res=>{
+            this.originalList=res.data;
             this.list=res.data;
+            this.gotData=true;
             this.forceUpdate();
         },{
             uid:_user.customer.objectId
+        },{
+            limit:99
         });
     }
     url(product){
@@ -104,6 +134,16 @@ class App extends Component {
     editBack(){
         this.setState({isEdit:false});
     }
+    delete(product){
+        W.confirm(___.confirm_delete_product,b=>{
+            if(!b)return;
+            Wapi.activityProduct.delete(res=>{
+                console.log(res);
+                this.list=this.list.filter(ele=>ele.objectId!=product.objectId);
+                this.forceUpdate();
+            },{objectId:product.objectId});
+        })
+    }
     add(){
         this.curProduct={};
         this.setState({isEdit:true});
@@ -125,14 +165,29 @@ class App extends Component {
         return (
             <ThemeProvider>
                 <div>
-                    <AppBar 
+                    {/*<AppBar 
                         title={___.selling_product}
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
-                    />
-                    <div>
-                        <ProductList data={this.list} url={this.url} edit={this.edit}/>
+                    />*/}
+                    <div style={styles.search_head}>
+                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <div style={styles.search_box}>
+                            <Input 
+                                style={{height:'36px'}}
+                                inputStyle={{height:'30px'}}
+                                onChange={this.search} 
+                                hintText={___.search}
+                                value={this.state.keyword}
+                            />
+                        </div>
                     </div>
-                    <SonPage title={___.add_selling_product} open={this.state.isEdit} back={this.editBack}>
+                    <div style={(this.gotData && this.list.length==0) ? styles.no_data : styles.hide}>
+                        无营销产品！
+                    </div>
+                    <div>
+                        <ProductList data={this.list} url={this.url} edit={this.edit} delete={this.delete}/>
+                    </div>
+                    <SonPage title={___.edit_selling_product} open={this.state.isEdit} back={this.editBack}>
                         <EditProduct data={this.curProduct} editSubmit={this.editSubmit} addSubmit={this.addSubmit}/>
                     </SonPage>
                 </div>
@@ -145,26 +200,44 @@ export default App;
 class ProductList extends Component {
     render() {
         let data=this.props.data;
-        let items=data.map(ele=>            
-            <ListItem
-                key={ele.productId}
-                primaryText={ele.brand +' '+ ele.name}
-                style={styles.list_item}
-                rightIcon={
-                    <IconMenu
-                        iconButtonElement={
-                            <IconButton>
-                                <MoreVertIcon/>
-                            </IconButton>
-                        }
-                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        style={styles.icon}
+        let items=data.map((ele,i)=>
+            <div key={i} style={styles.card}>
+                <IconMenu
+                    style={{float:'right'}}
+                    iconButtonElement={
+                        <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+                            <MoreVertIcon/>
+                        </IconButton>
+                    }
+                    targetOrigin={styles.to}
+                    anchorOrigin={styles.to}
                     >
-                        <MenuItem key='0' onTouchTap={()=>this.props.url(ele)}>{___.product_url}</MenuItem>
-                        <MenuItem key='1' onTouchTap={()=>this.props.edit(ele)}>{___.edit}</MenuItem>
-                    </IconMenu>}
-            />
+                    <MenuItem 
+                        style={styles.menu_item} 
+                        primaryText={___.preview} 
+                        onTouchTap={()=>this.props.url(ele)}
+                    />
+                    <MenuItem 
+                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
+                        primaryText={___.edit} 
+                        onTouchTap={()=>this.props.edit(ele)}
+                    />
+                    <MenuItem 
+                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide}
+                        primaryText={___.delete} 
+                        onTouchTap={()=>this.props.delete(ele)}
+                    />
+                </IconMenu>
+                <div style={combineStyle(['variable','line'])}>{ele.brand +' '+ ele.name}</div>
+                <div style={styles.line}>
+                    <span style={styles.spans}>{___.marketing_channel+' '} <span style={styles.variable}>{ele.channel||'本地营销'}</span></span>
+                    <span style={styles.spans}>{___.activity_reward+' '}<span style={styles.variable}>{ele.reward.toFixed(2)}</span></span>
+                </div>
+                <div style={styles.line}>
+                    <span style={styles.spans}>{___.device_price+' '}<span style={styles.variable}>{ele.price.toFixed(2)}</span></span>
+                    <span style={styles.spans}>{___.install_paymen+' '} <span style={styles.variable}>{ele.installationFee.toFixed(2)}</span></span>
+                </div>
+            </div>
         );
         return (
             <List style={styles.main}>
