@@ -81,11 +81,13 @@ class AppDeviceManage extends Component{
             data:null,
             showPerson:false,
             depId:0,
-            depName:''
+            depName:'',
+            search:[]
         }
         this.toList=this.toList.bind(this);
         this.openBox = this.openBox.bind(this);
         this.openPerson = this.openPerson.bind(this);
+        this.search = this.search.bind(this);
     }
     componentDidMount() {
         window.addEventListener(EVENT.openAddBox,this.openBox);
@@ -114,22 +116,41 @@ class AppDeviceManage extends Component{
         thisView.setTitle(title);
     }
     
-
+    search(e,val){
+        if(!val){
+            this.setState({search:[]});
+            return;
+        }
+        let data={
+            uid:_user.customer.objectId,
+            type:1
+        };
+        data.name='^'+val;
+        Wapi.department.list(res=>{
+            this.setState({search:res.data});
+        },data);
+    }
     render(){
+        let listDis={};
+        let searchList=null;
+        if(this.state.search.length){
+            searchList=<TypePage data={this.state.search}/>;
+            listDis.display='none';
+        }
         return(
             <ThemeProvider>
                 <div>
-                    <div style={styles.search} ref={e=>this._main=e}>
+                    <div style={styles.search}>
                         <Input 
-                            onChange={e=>e} 
+                            onChange={this.search} 
                             hintText={___.search} 
                         />
                         <IconButton onClick={this.openBox} style={{flex:'0 0'}}><ContentAdd/></IconButton>
                     </div>
-                    <div name='list'>
+                    <div name='list' style={listDis}>
                         <TypeAutoList/>
                     </div>
-
+                    {searchList}
                     <SonPage title={___.register_type} open={this.state.showAdd} back={this.toList}>
                         <AddBox data={this.state.data}/>
                     </SonPage>
@@ -251,6 +272,7 @@ class TypePage extends Component {
         this.state={
             data:this.props.data
         }
+        this.state.data.forEach(d=>d.total=___.loading);
     }
     
     componentDidMount() {
@@ -258,7 +280,7 @@ class TypePage extends Component {
         let totals={};
         data.forEach(d=>totals[d.objectId]=0);
         let depId=data.map(d=>d.objectId).join('|');
-
+        
         Wapi.employee.list(res=>{
             res.data.forEach(e=>totals[e.departId]++);
             data.forEach(d=>d.total=totals[d.objectId]);

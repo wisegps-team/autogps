@@ -54,6 +54,12 @@ class App extends Component {
             roleId:'779209108162220000',
             type:1
         }
+        if(!data.departId||data.departId==0){//部门为0，是普通员工注册，赋予普通员工角色，只有我的营销页面权限
+            data.role='普通员工';
+            data.roleId='820194967434694700';
+            data.type=0;
+        }
+        
         let sty=this.state.active?null:{padding:'10px'};
         let main=this.state.active?<QrBox/>:(
             <EmployeeRegisterBox 

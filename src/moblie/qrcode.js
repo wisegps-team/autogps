@@ -21,12 +21,13 @@ import Input from '../_component/base/input';
 import {randomStr} from '../_modules/tool';
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.qrcode_manage);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     
     let addView=thisView.prefetch('#add',3);
     ReactDOM.render(<AddQrCode/>,addView);
+    addView.setTitle(___.qrcode_manage);
 });
 
 const EVENT={
@@ -39,7 +40,10 @@ const styles = {
     main:{padding:'10px'},
     center:{textAlign:'center'},
     inputGroup:{display:'block',paddingTop:'1em',paddingBottom:'1em'},
-    card:{margin:'10px',padding:'10px'},
+    card:{
+        padding:'10px',
+        borderBottom:'1px solid #ccc'
+    },
     span:{marginRight:'1em'},
     bottom_btn_right:{width:'100%',display:'block',textAlign:'right',paddingTop:'5px'},
     h2:{
@@ -77,17 +81,17 @@ class Dlist extends Component{
     render() {
         let data=this.props.data
         let items=data.map(ele=>
-            <Card key={ele.objectId} style={styles.card}>
-                <div style={{marginLeft:'3px',marginBottom:'10px'}}>{ele.name}</div>
+            <div key={ele.objectId} style={styles.card}>
+                <div style={{marginLeft:'3px',marginBottom:'10px'}}>
+                    {ele.name}<br/>
+                    <span style={{color:'rgb(84, 175, 185)'}}>{S_URL+ele.min+'-'+ele.max}</span>
+                </div>
                 <div style={{marginLeft:'3px',fontSize:'0.8em'}}>
                     <span style={styles.span}>{___.enabled_num+'：'+(ele.num||0)}</span>
                     <span style={styles.span}>{___.bind_count+'：'+(ele.bindNum||0)}</span>
                     <span style={styles.span}>{___.scan_count+'：'+(ele.scanNum||0)}</span>
                 </div>
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.print_qr} primary={true} onClick={e=>W.alert(S_URL+ele.min+'-'+ele.max)}/>
-                </div>
-            </Card>
+            </div>
         );
         return (
             <div style={styles.main}>
@@ -104,7 +108,8 @@ class App extends Component {
         this.add = this.add.bind(this);
         this.state={
             total:0,
-            data:null
+            data:null,
+            search:[]
         };
         this.op={//控制排序字段与页数
             page:'objectId',
@@ -117,6 +122,7 @@ class App extends Component {
 
         this.next = this.next.bind(this);
         this.added = this.added.bind(this);
+        this.search = this.search.bind(this);
     }
     componentDidMount() {
         Wapi.qrDistribution.list(res=>this.setState(res),this._data);
@@ -143,6 +149,17 @@ class App extends Component {
     add(){
         thisView.goTo('#add');
     }
+    search(e,val){
+        if(!val){
+            this.setState({search:[]});
+            return;
+        }
+        let data=Object.assign({},this._data);
+        data.name='^'+val;
+        Wapi.qrDistribution.list(res=>{
+            this.setState({search:res.data});
+        },data);
+    }
     render() {
         let list=(this.state.data&&this.state.data.length)?(<Alist 
                 max={this.state.total} 
@@ -150,16 +167,30 @@ class App extends Component {
                 data={this.state.data} 
                 next={this.next} 
             />):(<h2 style={styles.h2}>{___.qr_list_null}</h2>);
+        let listDis={};
+        let searchList=null;
+        if(this.state.search.length){
+            searchList=<Dlist data={this.state.search}/>;
+            listDis.display='none';
+        }
         return (
             <ThemeProvider>
-                <AppBar 
-                    title={___.qrcode_manage}
-                    style={{position:'fixed',top:'0px'}}
-                    iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
-                />
-                <div style={styles.appBody}>
+                <div style={{
+                    display: 'flex',
+                    paddingLeft: '10px',
+                    paddingRight: '5px',
+                    alignItems: 'center'
+                }}>
+                    <Input 
+                        onChange={this.search} 
+                        hintText={___.search} 
+                    />
+                    <IconButton onClick={this.add} style={{flex:'0 0'}}><ContentAdd/></IconButton>
+                </div>
+                <div style={listDis}>
                     {list}
                 </div>
+                {searchList}
             </ThemeProvider>
         );
     }
@@ -230,11 +261,7 @@ class AddQrCode extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar 
-                    title={___.add}
-                    style={{position:'fixed',top:'0px'}}
-                />
-                <div style={styles.appBody}>
+                <div>
                     <div style={combineStyle(['main','center'])}>
                         
                         <div style={styles.inputGroup}>
