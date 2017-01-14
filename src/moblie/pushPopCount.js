@@ -14,11 +14,12 @@ import AutoList from '../_component/base/autoList';
 const styles = {
     main:{paddingBottom:'20px'},
     // list_item:{marginTop:'15px',padding:'10px',borderBottom:'1px solid #999999'},
-    card:{margin:'15px',paddingBottom:'10px',borderBottom:'1px solid #999999'},
+    card:{margin:'15px',padding:'10px',borderBottom: '1px solid #ccc'},
     a:{color:'#00bbbb',borderBottom:'solid 1px'},
     hide:{display:'none'},
     line:{marginTop:'0.5em'},
     bold:{fontWeight:'bold'},
+    right:{float:'right'}
 };
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -220,10 +221,7 @@ class DidList extends Component {
         let items=this.state.data.did.map((ele,i)=><p key={i}>{ele}</p>);
         return (
             <div style={styles.card}>
-                <div><span style={styles.bold}>{___.time}</span>{' '+W.dateToString(W.date(data.createdAt))}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.num}</span>{' '+data.did.length}</div>
-                <div style={styles.line}><span style={styles.bold}>{___.device_id}</span></div>
-                <div style={{textAlign:'center'}}>{items}</div>
+                {items}
             </div>
         );
     }

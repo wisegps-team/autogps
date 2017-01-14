@@ -12,6 +12,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AutoList from './base/autoList';
 import UserSearch from './user_search';
 import SonPage from '../_component/base/sonPage';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import {blue500} from 'material-ui/styles/colors';
 
 const sty={
     item:{
@@ -29,7 +31,9 @@ const sty={
         display:'block'
     },
     s:{
-        padding:'0 10px'
+        padding:'0 10px',
+        display: 'flex',
+        alignItems: 'center'
     }
 }
 
@@ -135,11 +139,13 @@ export function CustListHC(Com,isList){
         }
         render() {
             let addBut=this.props.label?<RaisedButton label={this.props.label} fullWidth={true} />:null;
+            let add=this.props.add?<IconButton onClick={this.props.add}><ContentAdd color={blue500}/></IconButton>:null;
             return (
                 <div>
                     {addBut}
                     <div style={sty.s}>
                         <UserSearch onData={this.onData} data={this.props.data}/>
+                        {add}
                     </div>
                     <Alist 
                         max={this.state.total} 

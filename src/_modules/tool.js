@@ -69,3 +69,47 @@ export function getOpenIdKey(host){
     host=host.replace(/\./g,'_');
     return host+'_openId';
 }
+
+/**
+ * 输入一个整数，转换为字母串
+ */
+export function changeToLetter(i){
+    const STRING='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    i=parseInt(i);
+    if(isNaN(i))i=0;
+    let arr=intTo(i,52);
+    return arr.reduce((str,b)=>{
+        return str+=STRING[b];
+    },'');
+}
+
+/**
+ * 10进制整数转任意进制
+ * 返回一个数组
+ * @param i 要转换的10进制数字
+ * @param b 目标进制数
+ */
+export function intTo(i,b){
+    let last;
+    if(i>=b){
+        let a=i%b;
+        last=intTo((i-a)/b,b);
+        last.push(a);
+    }else
+        last=[i];
+    return last;
+}
+
+//设置当前页面的Title，兼容ios
+export function setTitle(title){
+	document.title = title;
+	var i = document.createElement('iframe');
+	i.src = 'http://m.baidu.com/favicon.ico';
+	i.style.display = 'none';
+	i.onload = function() {
+		setTimeout(function(){
+			i.remove();
+		}, 9)
+	}
+	document.body.appendChild(i);
+}

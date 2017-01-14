@@ -9,6 +9,8 @@ import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import Checkbox from 'material-ui/Checkbox';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 
@@ -22,7 +24,8 @@ const styles = {
     main:{paddingTop:'50px'},
     card:{padding:'0 10px'},
     box:{
-        borderBottom:'1px solid #ccc'
+        borderBottom:'1px solid #ccc',
+        padding:'10px'
     },
     emp:{
         lineeight:'40px',
@@ -39,6 +42,12 @@ const styles = {
         width:'100%',
         textAlign:'left'
     },
+    search:{
+        display: 'flex',
+        paddingLeft: '10px',
+        paddingRight: '5px',
+        alignItems: 'center'
+    }
 };
 
 const EVENT=makeRandomEvent({
@@ -57,10 +66,11 @@ if(!_user.customer.sellerWxAppKey)
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.group_marketing);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<AppDeviceManage/>,thisView);
     thisView.prefetch('person_list.js',2);
+    thisView.prefetch('share_register.js',2);
 });
 
 class AppDeviceManage extends Component{
@@ -71,11 +81,13 @@ class AppDeviceManage extends Component{
             data:null,
             showPerson:false,
             depId:0,
-            depName:''
+            depName:'',
+            search:[]
         }
         this.toList=this.toList.bind(this);
         this.openBox = this.openBox.bind(this);
         this.openPerson = this.openPerson.bind(this);
+        this.search = this.search.bind(this);
     }
     componentDidMount() {
         window.addEventListener(EVENT.openAddBox,this.openBox);
@@ -99,21 +111,46 @@ class AppDeviceManage extends Component{
     toList(){
         this.setState({showAdd:false,showPerson:false});
     }
-
+    componentDidUpdate(prevProps, prevState) {
+        let title=this.state.showAdd?___.register_type:___.group_marketing;
+        thisView.setTitle(title);
+    }
+    
+    search(e,val){
+        if(!val){
+            this.setState({search:[]});
+            return;
+        }
+        let data={
+            uid:_user.customer.objectId,
+            type:1
+        };
+        data.name='^'+val;
+        Wapi.department.list(res=>{
+            this.setState({search:res.data});
+        },data);
+    }
     render(){
-        let rightIcon=<IconButton onClick={this.openBox}><ContentAdd/></IconButton>;
+        let listDis={};
+        let searchList=null;
+        if(this.state.search.length){
+            searchList=<TypePage data={this.state.search}/>;
+            listDis.display='none';
+        }
         return(
             <ThemeProvider>
                 <div>
-                    <AppBar 
-                        title={___.marketing_personnel} 
-                        style={{position:'fixed'}} 
-                        iconElementRight={rightIcon}
-                    />
-                    <div name='list' style={styles.main}>
+                    <div style={styles.search}>
+                        <Input 
+                            onChange={this.search} 
+                            hintText={___.search} 
+                        />
+                        <IconButton onClick={this.openBox} style={{flex:'0 0'}}><ContentAdd/></IconButton>
+                    </div>
+                    <div name='list' style={listDis}>
                         <TypeAutoList/>
                     </div>
-
+                    {searchList}
                     <SonPage title={___.register_type} open={this.state.showAdd} back={this.toList}>
                         <AddBox data={this.state.data}/>
                     </SonPage>
@@ -132,20 +169,18 @@ class TypeItem extends Component{
         this.getUrl = this.getUrl.bind(this);
         this.update = this.update.bind(this);
         this.getPerson = this.getPerson.bind(this);
+        this.click = this.click.bind(this);
     }
     getUrl(){
         if(!_user.customer.sellerWxAppKey){
             W.alert(___.seller_wx_app_null);
             return;
         }
-        let opt={
-            title:___.invitation_url,
-            text:location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
+        let url=location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
                 +_user.customer.objectId
                 +'&departId='+this.props.data.objectId
                 +'&wx_app_id='+_user.customer.sellerWxAppKey
-        }
-        W.alert(opt);
+        thisView.goTo('share_register.js',url);
     }
     toUpdate(){
         window.addEventListener(EVENT.typeUpdate,this.update);
@@ -156,23 +191,76 @@ class TypeItem extends Component{
         window.removeEventListener(EVENT.typeUpdate,this.update);
         this.forceUpdate();
     }
+    delete(){
+        if(this.props.data.total){
+            W.alert(___.mp_delete);
+            return;
+        }
+        W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
+            e?Wapi.department.delete(res=>{
+                W.alert(___.delete_success);
+            },{
+                objectId:this.props.data.objectId
+            }):null;
+        });
+    }
     getPerson(){
         thisView.goTo('person_list.js',Object.assign({},this.props.data));
-        // W.emit(window,EVENT.getPerson,Object.assign({},this.props.data));
+    }
+    click(i){
+        switch (i) {
+            case 0:
+                this.toUpdate();
+                break;
+            case 1:
+                this.getUrl();
+                break;
+            case 2:
+                this.delete();
+                break;
+            default:
+                break;
+        }
     }
     render() {
         return (
             <div style={styles.box}>
-                <h4>
+                <div style={{marginBottom:'1em'}}>
                     {this.props.data.name}
-                    <FlatButton label={___.edit} onClick={this.toUpdate} primary={true}/>
-                </h4>
+                    <RightIconMenu onClick={this.click}/>
+                </div>
                 <div>
                     <span>{___.register_num+'：'}</span>
                     <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
-                    <FlatButton style={styles.t} label={___.register_url} onClick={this.getUrl} primary={true}/>
                 </div>
             </div>
+        );
+    }
+}
+
+class RightIconMenu extends Component{    
+    render() {
+        return (
+            <IconMenu
+                iconButtonElement={
+                    <IconButton style={{
+                        width: 'auto',
+                        height: 'auto',
+                        padding: 0
+                    }}>
+                        <MoreVertIcon/>
+                    </IconButton>
+                }
+                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                style={{
+                    float: 'right'
+                }}
+            >
+                <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(1)}>{___.invite_regist}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
+            </IconMenu>
         );
     }
 }
@@ -184,6 +272,7 @@ class TypePage extends Component {
         this.state={
             data:this.props.data
         }
+        this.state.data.forEach(d=>d.total=___.loading);
     }
     
     componentDidMount() {
@@ -191,7 +280,7 @@ class TypePage extends Component {
         let totals={};
         data.forEach(d=>totals[d.objectId]=0);
         let depId=data.map(d=>d.objectId).join('|');
-
+        
         Wapi.employee.list(res=>{
             res.data.forEach(e=>totals[e.departId]++);
             data.forEach(d=>d.total=totals[d.objectId]);

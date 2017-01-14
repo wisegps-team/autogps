@@ -18,6 +18,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
+import Input from '../_component/base/input';
 
 import AppBar from '../_component/base/appBar';
 import Fab from '../_component/base/fab';
@@ -29,14 +30,23 @@ import {randomStr,getDepart} from '../_modules/tool';
 import AutoList from '../_component/base/autoList';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(___.employee);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+    thisView.prefetch('share_register.js',2);
 });
 
+if(!_user.customer.sellerWxAppKey)
+    Wapi.weixin.get(function(res){
+        _user.customer.sellerWxAppKey=res.data?res.data.wxAppKey:null;
+    },{
+        uid:_user.customer.objectId,
+        type:1
+    });
 
 const styles={
     appbar:{position:'fixed',top:'0px'},
-    main:{width:'90%',paddingTop:'50px',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
+    main:{width:'90%',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
     // sonpage_main:{width:'90%',paddingBottom:'20px',marginLeft:'5%',marginRight:'5%'},
     sonpage_main:{paddingBottom:'20px',marginLeft:(window.innerWidth-256)/2+'px',marginRight:(window.innerWidth-256)/2+'px'},
     card:{marginTop:'1em',padding:'0.5em 1em'},
@@ -59,6 +69,7 @@ class App extends React.Component {
             show_sonpage:false,
             intent:'add',
             total:0,
+            search:[]
         }
         this.page=1;
         this.getEmployees=this.getEmployees.bind(this);
@@ -67,6 +78,14 @@ class App extends React.Component {
         this.editEmployeeCancel=this.editEmployeeCancel.bind(this);
         this.editEmployeeSubmit=this.editEmployeeSubmit.bind(this);
         this.loadNextPage = this.loadNextPage.bind(this);
+        this.search = this.search.bind(this);
+
+        this._data={
+            companyId:_user.customer.objectId,
+            type:'<>1',
+            isQuit:false
+        };
+        // this._data.companyId='798351359882694700';
     }
     getChildContext(){
         return {
@@ -85,11 +104,7 @@ class App extends React.Component {
                 employees:res.data,
                 total:res.total,
             });
-        },{
-            companyId:_user.customer.objectId,
-            departId:'>0',
-            isQuit:false
-        },{
+        },this._data,{
             fields:'objectId,uid,companyId,name,tel,sex,departId,isQuit,role,roleId',
             limit:20
         });
@@ -97,11 +112,19 @@ class App extends React.Component {
     }
 
     addEmployee(){
-        this.setState({
-            edit_employee:{},
-            show_sonpage:true,
-            intent:'add',
-        });
+        // this.setState({
+        //     edit_employee:{},
+        //     show_sonpage:true,
+        //     intent:'add',
+        // });
+        if(!_user.customer.sellerWxAppKey){
+            W.alert(___.seller_wx_app_null);
+            return;
+        }
+        let url=location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
+                +_user.customer.objectId
+                +'&departId=0&wx_app_id='+_user.customer.sellerWxAppKey
+        thisView.goTo('share_register.js',url);
     }
     showDetails(data){
         this.setState({
@@ -266,38 +289,56 @@ class App extends React.Component {
         this.page++;
         Wapi.employee.list(res=>{
             this.setState({employees:arr.concat(res.data)});
-        },{
-            companyId:_user.customer.objectId,
-            departId:'>0',
-            isQuit:false
-        },{
+        },this._data,{
             fields:'objectId,uid,companyId,name,tel,sex,departId,isQuit,role,roleId',
             limit:20,
             page_no:this.page
         });
     }
-
+    search(e,val){
+        if(!val){
+            this.setState({search:[]});
+            return;
+        }
+        let data=Object.assign({},this._data);
+        data.name='^'+val;
+        Wapi.employee.list(res=>{
+            this.setState({search:res.data});
+        },data);
+    }
     render() {
+        let listDis={};
+        let searchList=null;
+        if(this.state.search.length){
+            searchList=<DumbList data={this.state.search}/>;
+            listDis.display='none';
+        }
         return (
             <ThemeProvider>
-                <div>
-                    <AppBar 
-                        title={___.employee_manage} 
-                        style={styles.appbar}
-                        iconElementRight={
-                            <IconButton onTouchTap={this.addEmployee}><ContentAdd/></IconButton>
-                        }
+                <div style={{
+                    display: 'flex',
+                    paddingLeft: '10px',
+                    paddingRight: '5px',
+                    alignItems: 'center'
+                }}>
+                    <Input 
+                        onChange={this.search} 
+                        hintText={___.search} 
                     />
+                    <IconButton onClick={this.addEmployee} style={{flex:'0 0'}}><ContentAdd/></IconButton>
+                </div>
+                <div style={listDis}>
                     <Alist 
                         max={this.state.total} 
                         limit={20} 
                         data={this.state.employees} 
                         next={this.loadNextPage} 
                     />
-                    <SonPage open={this.state.show_sonpage} back={this.editEmployeeCancel}>
-                        <EditEmployee data={this.state.edit_employee} submit={this.editEmployeeSubmit}/>
-                    </SonPage>
                 </div>
+                {searchList}
+                <SonPage open={this.state.show_sonpage} back={this.editEmployeeCancel}>
+                    <EditEmployee data={this.state.edit_employee} submit={this.editEmployeeSubmit}/>
+                </SonPage>
             </ThemeProvider>
         );
     }

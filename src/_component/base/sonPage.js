@@ -97,6 +97,10 @@ class Sonpage extends Component {
         let w=WiStorm.agent.mobile?window.screen.width:300;
         // let st=this.props.open?sty.main:Object.assign({},sty.main,sty.left);
         // st.width=w+'px';
+        let appBar=this.props.appBar?(<AppBar
+                    title={this.props.title}
+                    iconElementLeft={<IconButton onClick={this.back}><NavigationArrowBack/></IconButton>}
+            />):null;
         return (
             <Drawer
                 width={w} 
@@ -104,10 +108,7 @@ class Sonpage extends Component {
                 open={this.props.open} 
                 {...this.props.drawer}
             >
-                <AppBar
-                    title={this.props.title}
-                    iconElementLeft={<IconButton onClick={this.back}><NavigationArrowBack/></IconButton>}
-                />
+                
                 {this.props.children}
             </Drawer>
         );
