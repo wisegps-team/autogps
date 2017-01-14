@@ -542,5 +542,10 @@ window.___={
 	'scan_regist':'扫码注册',
 	'accept_invite':'接受邀约',
 	'pls_input_company_name':'请填写企业名称',
-	'reg_des':'注册成功，关注公众号后登录平台完善企业和个人信息！'
+	'reg_des':'注册成功，关注公众号后登录平台完善企业和个人信息！',
+	'mp_delete':'该类别下已经有人员，不能删除',
+	'delete_success':'删除成功',
+	'search':'搜索',
+	'per_delete':'该人员已有订单，不能删除',
+	'preparing_share':'正在准备分享，请稍等'
 }
