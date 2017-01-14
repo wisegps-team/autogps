@@ -70,6 +70,11 @@ const sty={
         width: '34px',
         fill:  '#42A5F5'
     },
+    iconActive:{
+        height: '34px',
+        width: '34px',
+        fill:  'rgb(255, 152, 0)'
+    },
     tabs:{
         position: 'fixed',
         width: '100vw',
@@ -114,7 +119,7 @@ const _pages=[//所有的页面
     {
         href:'user_manage',
         name:___.user_manage,
-        icon:<ActionPermIdentity style={sty.icon}/>
+        icon:<ActionPermIdentity style={sty.iconActive}/>
     },
     {
         href:'device_manage',
@@ -134,22 +139,22 @@ const _pages=[//所有的页面
     {   /*营销产品 */
         href:'selling_product',
         name:___.selling_product,
-        icon:<ActionShopTwo style={sty.icon}/>
+        icon:<ActionShopTwo style={sty.iconActive}/>
     },
     {   /*营销活动链接 */
         href:'seller_activity',
         name:___.seller_activity,
-        icon:<ActionEvent style={sty.icon}/>
+        icon:<ActionEvent style={sty.iconActive}/>
     },
     {   /*营销人员 */
         href:'marketing_personnel',
         name:___.marketing_personnel,
-        icon:<ActionRecordVoiceOver style={sty.icon}/>
+        icon:<ActionRecordVoiceOver style={sty.iconActive}/>
     },
     {   /*二维码管理 */
         href:'qrcode',
         name:___.qrcode_manage,
-        icon:<ImageFilterCenterFocus style={sty.icon}/>
+        icon:<ImageFilterCenterFocus style={sty.iconActive}/>
     },
     {   /*代理商，经销商的财务管理 */
         href:'financial_manage',
