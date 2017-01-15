@@ -349,8 +349,12 @@ class QrBox extends Component{
             <div style={dis}>
                 <div style={imgSty} {...this.props} show={null}>
                     <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
-                    <br/><span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>
-                    <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
+                    <br/>
+                    {/*<span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>*/}
+                    <div>
+                        <RaisedButton label={'返回'} secondary={true} style={{marginRight:'10px'}}/>
+                        <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
+                    </div>
                 </div>
                 <SharePage show={this.state.active} onClick={this.hide}/>
             </div>
@@ -359,14 +363,17 @@ class QrBox extends Component{
 }
 class SharePage extends Component {
     render() {
-        let sty={width:'90%',marginLeft:'5%',marginTop:'20px',display:'none'};
+        let sty={width:'90%',marginLeft:'5%',marginTop:(window.innerHeight-280)/2+'px',display:'none'};
         if(this.props.show)sty.display='block';
         return (
             <div style={sty} {...this.props} show={null}>
                 {___.share_page}<br/>
                 {___.can_regist}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
-                <span style={{color:'#ccc'}}>{___.touch_back}</span>
+                {/*<span style={{color:'#ccc'}}>{___.touch_back}</span>*/}
+                <div style={{width:'100px',marginLeft:(window.innerWidth-100)/2+'px',height:'30px',lineHeight:'30px',borderRadius:'4px',border:'solid 1px #ff9900',color:'#ff9900'}}>
+                    返回
+                </div>
             </div>
         );
     }
