@@ -38,7 +38,7 @@ const styles = {
     menu_item:{height:'40px'},
     no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
     hide:{display:'none'},
-    search_head:{width:'100%',display:'block',borderBottom:'1px solid #cccccc'},
+    search_head:{width:'100%',display:'block'},
     add_icon:{float:'right',marginRight:'15px'},
     search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
 };
