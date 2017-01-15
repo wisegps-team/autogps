@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import {reCode,getOpenIdKey} from '../../_modules/tool';
+import Input from '../../_component/base/input';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -50,6 +51,21 @@ const styles = {
     spans:{
         fontSize:'1em',
         marginRight:'1em',
+    },
+    search_head:{
+        width:'100%',
+        display:'block',
+        borderBottom:'1px solid #cccccc'
+    },
+    add_icon:{
+        float:'right',
+        marginRight:'15px'
+    },
+    search_box:{
+        marginLeft:'15px',
+        marginTop:'15px',
+        width:'80%',
+        display:'block'
     }
 };
 function combineStyle(arr){
@@ -103,13 +119,23 @@ let qrLinks=[
 class App extends Component {
     constructor(props,context){
         super(props,context);
+        this.state={
+            keyword:''
+        }
         this.activity={};
+        this.originalData=[];
         this.data=[];
         this.national=false;
         this.gotData = false;
+        this.search = this.search.bind(this);
         this.getData = this.getData.bind(this);
         this.bindCount = this.bindCount.bind(this);
         this.scanToBind = this.scanToBind.bind(this);
+    }
+    search(e,value){
+        console.log(this.data);
+        // this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
+        // this.setState({keyword:value});
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
@@ -129,6 +155,7 @@ class App extends Component {
     }
     getData(){
         Wapi.qrLink.aggr(res=>{
+            this.originalData=res.data;
             this.data=res.data;
             this.forceUpdate();
         },{
@@ -294,9 +321,17 @@ class App extends Component {
                     style={{position:'fixed',top:'0px'}}
                     iconElementRight={<IconButton onClick={this.scanToBind}><ContentAdd/></IconButton>}
                 />*/}
-                <div style={{width:'100%',display:'block',borderBottom:'1px solid #999999'}}>
-                    <div style={{float:'right',marginRight:'15px'}} onClick={this.scanToBind} ><ContentAdd/></div>
-                    <div style={{marginLeft:'15px',marginTop:'15px',width:'80%',height:'30px',display:'block'}}> </div>
+                <div style={styles.search_head}>
+                    <ContentAdd style={styles.add_icon} onClick={this.scanToBind}/>
+                    <div style={styles.search_box}>
+                        <Input 
+                            style={{height:'36px'}}
+                            inputStyle={{height:'30px'}}
+                            onChange={this.search} 
+                            hintText={___.search}
+                            value={this.state.keyword}
+                        />
+                    </div>
                 </div>
                 <div>
                     {items}

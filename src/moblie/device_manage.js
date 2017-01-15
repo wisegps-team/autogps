@@ -124,21 +124,21 @@ class AppDeviceManage extends Component{
 
     render(){
         let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
-        // let isBrandSeller=true;//测试用
-        let rightIcon=isBrandSeller?
-            (<IconMenu
-                iconButtonElement={
-                    <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
-                        <MoreVertIcon/>
-                    </IconButton>
-                }
-                targetOrigin={styles.to}
-                anchorOrigin={styles.to}
-                >
-                <MenuItem primaryText={___.push} onTouchTap={this.deviceIn}/>
-                <MenuItem primaryText={___.pop} onTouchTap={this.deviceOut}/>
-            </IconMenu>):(<MoreVertIcon onTouchTap={this.deviceOut}/>);
-        let items=this.state.data.map((ele,i)=><ListItem key={i}  style={styles.MenuItem} children={<ItemDevice key={i} data={ele}/>}/>);
+        // // let isBrandSeller=true;//测试用
+        // let rightIcon=isBrandSeller?
+        //     (<IconMenu
+        //         iconButtonElement={
+        //             <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+        //                 <MoreVertIcon/>
+        //             </IconButton>
+        //         }
+        //         targetOrigin={styles.to}
+        //         anchorOrigin={styles.to}
+        //         >
+        //         <MenuItem primaryText={___.push} onTouchTap={this.deviceIn}/>
+        //         <MenuItem primaryText={___.pop} onTouchTap={this.deviceOut}/>
+        //     </IconMenu>):(<MoreVertIcon onTouchTap={this.deviceOut}/>);
+        // let items=this.state.data.map((ele,i)=><ListItem key={i}  style={styles.MenuItem} children={<ItemDevice key={i} data={ele}/>}/>);
         return(
             <ThemeProvider>
                 <div>
@@ -148,7 +148,13 @@ class AppDeviceManage extends Component{
                         iconElementRight={rightIcon}
                     />*/}
                     <div name='list' style={styles.main}>
-                        <ProductLogList ref={'list'} isBrandSeller={isBrandSeller} thisView={thisView}/>
+                        <ProductLogList 
+                            ref={'list'} 
+                            isBrandSeller={isBrandSeller} 
+                            thisView={thisView} 
+                            deviceIn={this.deviceIn}
+                            deviceOut={this.deviceOut}
+                        />
                     </div>
                 </div>
             </ThemeProvider>

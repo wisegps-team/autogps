@@ -5,6 +5,10 @@ import React, {Component} from 'react';
 import Card from 'material-ui/Card';
 import AutoList from './base/autoList';
 import Input from './base/input';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 
 const styles = {
@@ -19,7 +23,8 @@ const styles = {
     link:{color:'#0000cc'},
     search_head:{width:'100%',display:'block',borderBottom:'1px solid #cccccc'},
     add_icon:{float:'right',marginRight:'15px'},
-    search_box:{marginLeft:'15px',marginTop:'15px',marginRight:'15px',display:'block'}
+    search_box:{marginLeft:'15px',marginTop:'15px',marginRight:'15px',width:'80%',display:'block'},
+    to:{horizontal: 'right', vertical: 'top'},
 };
 
 
@@ -110,6 +115,22 @@ class ProductLogList extends Component {
         this.props.thisView.goTo('pushPopCount.js',paramsPop);
     }
     render() {
+        let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
+        // let isBrandSeller=true;//测试用
+        let rightIcon=isBrandSeller?
+            (<IconMenu
+                iconButtonElement={
+                    <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+                        <MoreVertIcon/>
+                    </IconButton>
+                }
+                targetOrigin={styles.to}
+                anchorOrigin={styles.to}
+                >
+                <MenuItem primaryText={___.push} onTouchTap={this.props.deviceIn}/>
+                <MenuItem primaryText={___.pop} onTouchTap={this.props.deviceOut}/>
+            </IconMenu>):(<MoreVertIcon onTouchTap={this.props.deviceOut}/>);
+
         let items=this.state.product.map((ele,i)=>
             <div key={i} style={styles.list_item}>
                 <div>
@@ -132,6 +153,7 @@ class ProductLogList extends Component {
         return (
             <div>
                 <div style={styles.search_head}>
+                    <div style={styles.add_icon}>{rightIcon}</div>
                     <div style={styles.search_box}>
                         <Input 
                             style={{height:'36px'}}
