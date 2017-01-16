@@ -30,7 +30,7 @@ import {getOpenIdKey} from '../_modules/tool';
 import Dialog from 'material-ui/Dialog';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
-thisView.setTitle(___.my_account);
+thisView.setTitle(' ');
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     
@@ -105,6 +105,9 @@ const sty={
     a:{
         color:'#009988'
     },
+    item_list:{
+        borderBottom:'1px solid #dddddd'
+    }
 }
 
 class App extends Component {
@@ -292,9 +295,9 @@ class ShowBox extends Component{
                 <div 
                 onClick={this.personalInfo}
                 style={sty.head}>
-                    <div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>
-                    <div style={{marginBottom:'10px'}}>{_user.employee && _user.employee.name}</div>
-                    <div>{_user.mobile}</div>
+                    {/*<div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>*/}
+                    <div style={{marginTop:'20px',fontSize:'18px'}}>{_user.employee ? _user.employee.name : _user.customer.contact}</div>
+                    {/*<div>{_user.mobile}</div>*/}
                 </div>
                 <Divider/>
                 <List>
@@ -308,7 +311,7 @@ class ShowBox extends Component{
                         onClick={this.toBillList}
                         rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{this.orderNum}</span>}
                         rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
+                        style={sty.item_list}
                     />*/}
                     {/*我的钱包*/}
                     <ListItem 
@@ -316,7 +319,7 @@ class ShowBox extends Component{
                         onClick={this.wallet}
                         rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{toMoneyFormat(_user.balance)}</span>}
                         rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
+                        style={sty.item_list}
                     />
                     {/*推荐有礼*/}
                     <ListItem 
@@ -324,14 +327,14 @@ class ShowBox extends Component{
                         onClick={this.recommend}
                         rightAvatar={<span style={{marginTop:'12px',marginRight:'30px'}}>{this.orderNum_seller}</span>}
                         rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
+                        style={sty.item_list}
                     />
                     {/*系统设置*/}
                     <ListItem 
                         primaryText={___.system_set} 
                         onClick={this.systemSet}
                         rightIcon={<NavigationChevronRight />}
-                        style={{borderBottom:'1px solid #dddddd'}}
+                        style={_user.employee ? {display:'none'} : sty.item_list}
                     />
                 </List>
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>

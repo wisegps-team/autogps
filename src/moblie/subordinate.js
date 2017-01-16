@@ -340,17 +340,25 @@ class QrBox extends Component{
         }  
     }
     render() {
+        console.log(sUrl);
         let dis=this.props.show?{}:{display:'none'};
         dis.textAlign='center';
-
+        let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128)/2+'px'};
+        let btnSty={position:'fixed',bottom:'50px',textAlign:'center',display:'block',width:'100%'};
         let imgSty={};
         if(this.state.active)imgSty.display='none';
         return (
             <div style={dis}>
                 <div style={imgSty} {...this.props} show={null}>
-                    <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
-                    <br/><span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>
-                    <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
+                    <div style={qrSty}>
+                        <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
+                    </div>
+                    <br/>
+                    {/*<span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>*/}
+                    <div style={btnSty}>
+                        <RaisedButton label={___.return} secondary={true} style={{marginRight:'10px'}}/>
+                        <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
+                    </div>
                 </div>
                 <SharePage show={this.state.active} onClick={this.hide}/>
             </div>
@@ -359,14 +367,18 @@ class QrBox extends Component{
 }
 class SharePage extends Component {
     render() {
-        let sty={width:'90%',marginLeft:'5%',marginTop:'20px',display:'none'};
+        let sty={width:'90%',marginLeft:'5%',marginTop:(window.innerHeight-280)/2+'px',display:'none'};
+        let styReturn={width:'100px',height:'30px',marginLeft:(window.innerWidth*0.9-100)/2+'px',marginTop:'30px',lineHeight:'30px',borderRadius:'4px',border:'solid 1px #ff9900',color:'#ff9900'};
         if(this.props.show)sty.display='block';
         return (
             <div style={sty} {...this.props} show={null}>
                 {___.share_page}<br/>
                 {___.can_regist}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
-                <span style={{color:'#ccc'}}>{___.touch_back}</span>
+                {/*<span style={{color:'#ccc'}}>{___.touch_back}</span>*/}
+                <div style={styReturn}>
+                    {___.return}
+                </div>
             </div>
         );
     }

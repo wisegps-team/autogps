@@ -4,6 +4,11 @@ import React, {Component} from 'react';
 
 import Card from 'material-ui/Card';
 import AutoList from './base/autoList';
+import Input from './base/input';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 
 const styles = {
@@ -14,6 +19,12 @@ const styles = {
     hide:{display:'none'},
     line:{marginTop:'0.5em'},
     bold:{fontWeight:'bold'},
+    variable:{color:'#009688'},
+    link:{color:'#0000cc'},
+    search_head:{width:'100%',display:'block'},
+    add_icon:{float:'right',marginRight:'15px'},
+    search_box:{marginLeft:'15px',marginTop:'15px',marginRight:'15px',width:'80%',display:'block'},
+    to:{horizontal: 'right', vertical: 'top'},
 };
 
 
@@ -26,11 +37,23 @@ class ProductLogList extends Component {
             push:false,
             pop:false,
             selectProduct:null,
+            keyword:'',
         }
+
+        this.originalProduct=[];
+        this.search = this.search.bind(this);
         
         this.toPushPage = this.toPushPage.bind(this);
         this.toPopPage = this.toPopPage.bind(this);
         this.getProduct = this.getProduct.bind(this);
+    }
+
+    search(e,value){
+        let product=this.originalProduct.filter(ele=>ele._id.brand.includes(value)||ele._id.model.includes(value));
+        this.setState({
+            keyword:value,
+            product:product,
+        });
     }
     
     componentDidMount() {
@@ -66,6 +89,7 @@ class ProductLogList extends Component {
                 ele.outCount=ele.outCount||0;
                 ele.stock=ele.inCount-ele.outCount;
             });
+            this.originalProduct=product;
             this.setState({product});
         },par);
     }
@@ -73,7 +97,9 @@ class ProductLogList extends Component {
     toPushPage(product){        
         let paramsPush={
             type:1,
-            modelId:product._id.modelId
+            modelId:product._id.modelId,
+                    
+            page_from:'productlog_list',//这是传递给pushpopcount.js的，不是用于请求数据的
         }
         this.props.thisView.postMessage('pushPopCount.js',paramsPush);
         this.props.thisView.goTo('pushPopCount.js',paramsPush);
@@ -81,12 +107,30 @@ class ProductLogList extends Component {
     toPopPage(product){
         let paramsPop={
             type:0,
-            modelId:product._id.modelId
+            modelId:product._id.modelId,
+                    
+            page_from:'productlog_list',
         }
         this.props.thisView.postMessage('pushPopCount.js',paramsPop);
         this.props.thisView.goTo('pushPopCount.js',paramsPop);
     }
     render() {
+        let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
+        // let isBrandSeller=true;//测试用
+        let rightIcon=isBrandSeller?
+            (<IconMenu
+                iconButtonElement={
+                    <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
+                        <MoreVertIcon/>
+                    </IconButton>
+                }
+                targetOrigin={styles.to}
+                anchorOrigin={styles.to}
+                >
+                <MenuItem primaryText={___.push} onTouchTap={this.props.deviceIn}/>
+                <MenuItem primaryText={___.pop} onTouchTap={this.props.deviceOut}/>
+            </IconMenu>):(<MoreVertIcon onTouchTap={this.props.deviceOut}/>);
+
         let items=this.state.product.map((ele,i)=>
             <div key={i} style={styles.list_item}>
                 <div>
@@ -94,15 +138,35 @@ class ProductLogList extends Component {
                     <span>{ele._id.model}</span>
                 </div>
                 <div style={{marginTop:'0.5em',fontSize:'0.8em'}}>
-                    <span onClick={()=>this.toPushPage(ele)} style={{marginRight:'1em',color:'#009688'}}>{___.push+' '+ele.inCount||0}</span>
-                    <span onClick={()=>this.toPopPage(ele)} style={{marginRight:'1em',color:'#009688'}}>{' '+___.pop+' '+ele.outCount||0}</span>
+                    <span onClick={()=>this.toPushPage(ele)} style={{marginRight:'1em'}}>
+                        {___.push+' '}
+                        <span style={styles.link}>{ele.inCount||0}</span>
+                    </span>
+                    <span onClick={()=>this.toPopPage(ele)} style={{marginRight:'1em'}}>
+                        {' '+___.pop+' '}
+                        <span style={styles.link}>{ele.outCount||0}</span>
+                    </span>
                     <span>{' '+___.stock_count+' '+ele.stock||0}</span>
                 </div>
             </div>);
 
         return (
-            <div style={styles.main}>
-                {items}
+            <div>
+                <div style={styles.search_head}>
+                    <div style={styles.add_icon}>{rightIcon}</div>
+                    <div style={styles.search_box}>
+                        <Input 
+                            style={{height:'36px'}}
+                            inputStyle={{height:'30px'}}
+                            onChange={this.search} 
+                            hintText={___.search}
+                            value={this.state.keyword}
+                        />
+                    </div>
+                </div>
+                <div style={styles.main}>
+                    {items}
+                </div>
             </div>
         );
     }

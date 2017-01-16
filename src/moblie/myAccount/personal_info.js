@@ -74,7 +74,6 @@ class ShowBox extends Component{
             company_item=<ListItem 
                     primaryText={___.company}
                     rightAvatar={<span style={sty.list_right}>{_user.customer.name}</span>}
-                    rightIcon={<NavigationChevronRight />}
                     style={sty.list_item}
                 />;
         }
@@ -86,7 +85,6 @@ class ShowBox extends Component{
                     <ListItem 
                         primaryText={___.mobile_phone}
 						rightAvatar={<span style={sty.list_right}>{_user.mobile}</span>}
-                        rightIcon={<NavigationChevronRight />}
                         style={sty.list_item}
                     />
                     <ListItem 

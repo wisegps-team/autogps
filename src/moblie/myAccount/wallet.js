@@ -52,13 +52,10 @@ const styles={
         height: '100%'
     },
     income:{
-        // color:'#009900',
-        fontSize:'20px',
         float:'right'
     },
     expenses:{
         color:'#990000',
-        fontSize:'20px',
         float:'right'
     },
     bill:{
@@ -66,8 +63,6 @@ const styles={
         borderBottom:'1px solid #cccccc'
     },
     bill_remark:{
-        fontSize:'14px',
-        color:'#666666',
         paddingTop:'5px'
     },
     head:{
@@ -236,8 +231,8 @@ class WalletApp extends Component {
                 <div style={styles.main}>
                     {(_user.balance==0&&this.total==0) ? (
                         <div style={styles.no_record}>
-                            <div style={styles.line}>钱包空空</div>
-                            <div style={styles.line}>参与推荐有礼活动赢红包吧！</div>
+                            <div style={styles.line}>{___.wallet_empty}</div>
+                            <div style={styles.line}>{___.join_get_redbag}</div>
                         </div>):(
                         <Alist 
                             max={this.total} 

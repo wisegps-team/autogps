@@ -13,6 +13,7 @@ import AppBar from '../../_component/base/appBar';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(___.system_set);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
@@ -43,7 +44,7 @@ class App extends Component {
         return (
             <ThemeProvider>
             <div>
-                <AppBar title={___.system_set}/>
+                {/*<AppBar title={___.system_set}/>*/}
                 <div style={sty.p}>
                     <ShowBox/>
                 </div>

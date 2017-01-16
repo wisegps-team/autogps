@@ -19,6 +19,7 @@ import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
 import {getOpenIdKey} from '../_modules/tool';
 import Iframe from '../_component/base/iframe';
+import Input from '../_component/base/input';
 
 
 const styles = {
@@ -39,6 +40,9 @@ const styles = {
     share_content:{width:'90%',marginLeft:'5%',marginTop:'20px'},
     hide:{display:'none'},
     detail:{float:'right',paddingTop:'12px',paddingRight:'12px',color:'#0000cc'},
+    search_head:{width:'100%',display:'block'},
+    add_icon:{float:'right',marginRight:'15px'},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -64,14 +68,18 @@ class App extends Component {
             noEdit:true,
             activityName:'',
             reward:0,
+
+            keyword:''
         }
         this.limit=20;
         this.page_no=1;
         this.total=-1;
+        this.originalActivities=[];
         this.activities=[];
         this.booking=[];
         this.strType='';
 
+        this.search = this.search.bind(this);
         this.nextPage = this.nextPage.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
@@ -81,6 +89,11 @@ class App extends Component {
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
     }
+    search(e,value){
+        console.log(this.activities);
+        this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
+        this.setState({keyword:value});
+    }
     getChildContext(){
         return {
             edit:this.edit,
@@ -88,26 +101,6 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        // let par={
-        //     "group":{
-        //         "_id":{"activityId":"$activityId"},
-        //         "status0":{"$sum":"$status0"},
-        //         "status1":{"$sum":"$status1"},
-        //         "status2":{"$sum":"$status2"},
-        //         "status3":{"$sum":"$status3"}
-        //     },
-        //     "sorts":"activityId",
-        //     sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
-        // }
-        // Wapi.booking.aggr(resAggr=>{
-        //     this.booking=resAggr.data;
-        //     Wapi.customer.list(res=>{
-        //         this._parents=res.data||[];
-        //         this.getData();
-        //     },{
-        //         objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
-        //     });
-        // },par);
         this.getData();
     }
     nextPage(){
@@ -141,6 +134,7 @@ class App extends Component {
                         ele.status3=0;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par0,{
@@ -178,6 +172,7 @@ class App extends Component {
                         ele.uid=_user.customer.objectId;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par1,{
@@ -211,6 +206,7 @@ class App extends Component {
                         ele.status3=0;
                     }
                 });
+                this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
                 this.forceUpdate();
             },par2,{
@@ -255,6 +251,7 @@ class App extends Component {
                                     ele.uid=_user.customer.objectId;
                                 }
                             });
+                            this.originalActivities=this.originalActivities.concat(activities);
                             this.activities=this.activities.concat(activities);
                             this.forceUpdate();
                         },par3,{
@@ -327,6 +324,18 @@ class App extends Component {
                         title={___.recommend}
                         style={this.state.isShare ? styles.hide : {position:'fixed'}}
                     />*/}
+                    {/*<div style={styles.search_head}>
+                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <div style={styles.search_box}>
+                            <Input 
+                                style={{height:'36px'}}
+                                inputStyle={{height:'30px'}}
+                                onChange={this.search} 
+                                hintText={___.search}
+                                value={this.state.keyword}
+                            />
+                        </div>
+                    </div>*/}
                     <div name='list' style={styles.main}>
                         {/*items*/}
                         <Alist 
@@ -475,21 +484,13 @@ class DList extends Component{
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
                 <div style={styles.detail} onClick={()=>this.toActivityPage(ele)}>{___.act_detail}</div>
-                <div style={combineStyle(['table','variable'])}>{ele.name}</div>
+                <div style={styles.table}>{ele.name}</div>
                 
                 <div style={styles.spans}>
-                    <div style={styles.count} >
+                    {/*<div style={styles.count} >
                         <span style={styles.variable}>{ele.principal}</span>
                         <span>{' '+___.publish}</span>
-                    </div>
-                    <div >
-                        <span>每单红包奖励 </span>
-                        <span style={styles.variable}>{ele.reward}</span>
-                        <span> 元</span>
-                    </div>
-                </div>
-
-                <div style={styles.spans}>
+                    </div>*/}
                     <div style={{float:'right',marginRight:'16px'}}>
                         <img 
                             src='../../img/share.png' 
@@ -502,15 +503,10 @@ class DList extends Component{
                             onClick={()=>this.activityData(ele)}
                         />
                     </div>
-                    <div style={styles.count} onClick={()=>this.toCountPage('booking',ele)}>
-                        <span>已有 </span>
-                        <span style={styles.link}>{ele.status0}</span>
-                        <span> 位好友预订,</span>
-                    </div>
-                    <div style={styles.count}>
-                        <span>收获红包 </span>
-                        <span style={styles.variable}>{300}</span>
-                        <span> 元</span>
+                    <div >
+                        <span>推荐朋友预订安装奖励 </span>
+                        <span style={{color:'#ff9900'}}>{ele.reward}</span>
+                        <span> 元红包</span>
                     </div>
                 </div>
                 
@@ -520,6 +516,15 @@ class DList extends Component{
             <div>
                 {items}
                 {iframe}
+                <div style={{marginTop:'15px',width:'100%',textAlign:'center'}}>
+                    点击
+                    <img 
+                        src='../../img/share.png' 
+                        style={{width:'20px',height:'20px'}} 
+                    />
+                    后按页面提示分享
+                    <p>好友打开链接即可了解活动详情并咨询预订！</p>
+                </div>
             </div>
         )
     }
@@ -533,10 +538,14 @@ let Alist=AutoList(DList);
 class SharePage extends Component {
     render() {
         return (
-            <div style={styles.share_content}>
-                <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
-                <div style={{textAlign:'center',marginTop:'15px'}}>
-                    {___.share_detail}
+            <div style={{marginTop:(window.innerHeight-240)/2+'px'}}>
+                <img src='../../img/shareTo.jpg' style={{width:'100%',display:'block'}}/>
+                <br/>
+                <div style={{textAlign:'center',display:'block',width:'100%'}}>
+                    {/*___.share_detail*/}
+                    <div style={{width:'100px',marginLeft:(window.innerWidth-100)/2+'px',height:'30px',lineHeight:'30px',borderRadius:'4px',border:'solid 1px #ff9900',color:'#ff9900'}}>
+                        返回
+                    </div>
                 </div>
             </div>
         );

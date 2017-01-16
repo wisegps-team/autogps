@@ -103,6 +103,8 @@ export function CustListHC(Com,isList){
                     from:_user.customer.objectId,
                     to:cust.objectId,
                     type:0,
+                    
+                    page_from:'cust_list',//这是传递给pushpopcount.js的，不是用于请求数据的
                 }
                 this.context.VIEW.postMessage('pushPopCount.js',paramsPop);
                 this.context.VIEW.goTo('pushPopCount.js',paramsPop);
@@ -111,6 +113,8 @@ export function CustListHC(Com,isList){
                     from:cust.objectId,
                     to:_user.customer.objectId,
                     type:1,
+                    
+                    page_from:'cust_list',
                 }
                 this.context.VIEW.postMessage('pushPopCount.js',paramsPush);
                 this.context.VIEW.goTo('pushPopCount.js',paramsPush);

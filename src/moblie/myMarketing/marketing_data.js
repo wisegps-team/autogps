@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import {reCode,getOpenIdKey} from '../../_modules/tool';
+import Input from '../../_component/base/input';
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -35,15 +36,35 @@ const styles = {
     line:{
         paddingTop:'0.5em'
     },
+    variable:{
+        color:'#009688'
+    },
     link:{
-        color:'#009688',
-        marginRight:'1em'
+        color:'#0000cc'
     },
     hide:{
         display:'none',
     },
     content:{
         margin:'15px'
+    },
+    spans:{
+        fontSize:'1em',
+        marginRight:'1em',
+    },
+    search_head:{
+        width:'100%',
+        display:'block'
+    },
+    add_icon:{
+        float:'right',
+        marginRight:'15px'
+    },
+    search_box:{
+        marginLeft:'15px',
+        marginTop:'15px',
+        width:'80%',
+        display:'block'
     }
 };
 function combineStyle(arr){
@@ -97,13 +118,23 @@ let qrLinks=[
 class App extends Component {
     constructor(props,context){
         super(props,context);
+        this.state={
+            keyword:''
+        }
         this.activity={};
+        this.originalData=[];
         this.data=[];
-        this.countrywide=false;
+        this.national=false;
         this.gotData = false;
+        this.search = this.search.bind(this);
         this.getData = this.getData.bind(this);
         this.bindCount = this.bindCount.bind(this);
         this.scanToBind = this.scanToBind.bind(this);
+    }
+    search(e,value){
+        console.log(this.data);
+        // this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
+        // this.setState({keyword:value});
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
@@ -111,18 +142,19 @@ class App extends Component {
                 this.activity=e.params;
                 this.gotData=true;
                 console.log(e.params);
-                // Wapi.customer.get(res=>{
-                //     if(res.data.custTypeId==1){
-                //         this.countrywide=true;
-                //         this.getData();
-                //     }
-                // },{objectId:e.params.uid});
+                Wapi.customer.get(res=>{
+                    if(res.data.custTypeId==1){
+                        this.national=true;
+                        this.forceUpdate();
+                    }
+                },{objectId:e.params.uid});
             }
-            this.getData();
+            this.getData();            
         });
     }
     getData(){
         Wapi.qrLink.aggr(res=>{
+            this.originalData=res.data;
             this.data=res.data;
             this.forceUpdate();
         },{
@@ -256,10 +288,26 @@ class App extends Component {
     render() {
         let items=this.data.map((ele,i)=>
             <div key={i} style={styles.card}>
-                <div style={styles.line}>{ele._id.batchName}</div>
+                {/*<div style={styles.line}>{ele._id.batchName}</div>*/}
                 <div style={styles.line}>
-                    <span onClick={()=>this.bindCount(ele)} style={styles.link}>{___.bind_num+(ele.bindNum||0)}</span>
-                    <span onClick={()=>this.scanCount(ele)} style={styles.link}>{___.scan_count+(ele.scan||0)}</span>
+                    <span style={styles.spans}>
+                        {___.bind_num+' '}
+                        <span onClick={()=>this.bindCount(ele)} style={styles.link}>{ele.bindNum||0}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        {___.scan_count+' '}
+                        <span onClick={()=>this.scanCount(ele)} style={styles.variable}>{ele.scan||0}</span>
+                    </span>
+                </div>
+                <div style={styles.line}>
+                    <span style={styles.spans}>
+                        {(this.national ? ___.national_marketing : ___.regional_marketing)+' '}
+                        <span style={styles.variable}>{(this.activity.brand||'')+this.activity.product}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        {___.device_price+' '}
+                        <span style={styles.variable}>{(this.activity.price||0).toFixed(2)}</span>
+                    </span>
                 </div>
             </div>
         );
@@ -272,9 +320,17 @@ class App extends Component {
                     style={{position:'fixed',top:'0px'}}
                     iconElementRight={<IconButton onClick={this.scanToBind}><ContentAdd/></IconButton>}
                 />*/}
-                <div style={{width:'100%',display:'none'}}>
-                    <div style={{float:'right',marginRight:'15px'}} onClick={this.scanToBind} ><ContentAdd/></div>
-                    <div style={{marginLeft:'15px',marginTop:'15px'}}>search box</div>
+                <div style={styles.search_head}>
+                    <ContentAdd style={styles.add_icon} onClick={this.scanToBind}/>
+                    <div style={styles.search_box}>
+                        <Input 
+                            style={{height:'36px'}}
+                            inputStyle={{height:'30px'}}
+                            onChange={this.search} 
+                            hintText={___.search}
+                            value={this.state.keyword}
+                        />
+                    </div>
                 </div>
                 <div>
                     {items}
