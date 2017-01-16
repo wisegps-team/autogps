@@ -563,4 +563,5 @@ window.___={
 	'search':'搜索',
 	'per_delete':'该人员已有订单，不能删除',
 	'preparing_share':'正在准备分享，请稍等',
+	'return':'返回',
 }
