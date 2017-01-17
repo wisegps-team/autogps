@@ -435,7 +435,6 @@ window.___={
 	'no_name':'(未命名)',
 	'pay_gitf':'预付有礼',
 	'press':'长按识别二维码',
-	'device_price':'设备款',
 	'click':'点击',
 	'scan':'扫描',
 	'qrcode_manage':'二维码管理',

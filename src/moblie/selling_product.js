@@ -34,7 +34,7 @@ const styles = {
     variable:{color:'#009688'},
     link:{color:'#0000cc'},
     line:{marginTop:'10px'},
-    spans:{marginRight:'15px'},
+    spans:{width:'140px',display:'table-cell'},
     menu_item:{height:'40px'},
     no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
     hide:{display:'none'},
