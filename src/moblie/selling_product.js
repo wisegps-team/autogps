@@ -39,8 +39,10 @@ const styles = {
     no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
     hide:{display:'none'},
     search_head:{width:'100%',display:'block'},
-    add_icon:{float:'right',marginRight:'15px'},
-    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
+    add_icon:{float:'right',marginRight:'15px',color:"#2196f3"},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'},
+    span_left:{fontSize:'0.8em',color:'#666666'},
+    span_right:{fontSize:'0.8em'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -149,17 +151,27 @@ class App extends Component {
         this.setState({isEdit:true});
     }
     addSubmit(product){
-        Wapi.activityProduct.add(res=>{
-            console.log(res);
-            if(res.status_code!=0){
-                W.alert('添加产品信息失败');
+        Wapi.activityProduct.list(re=>{
+            if(re.total>0){//验证一个型号每个代理商／品牌商只能创建一个营销产品
+                W.alert(___.product_no_repeat);
                 return;
             }
 
-            product.objectId=res.objectId;
-            this.list.unshift(product);
-            history.back();
-        },product);
+            Wapi.activityProduct.add(res=>{
+                console.log(res);
+                if(res.status_code!=0){
+                    W.alert('添加产品信息失败');
+                    return;
+                }
+                product.objectId=res.objectId;
+                this.list.unshift(product);
+                history.back();
+            },product);
+
+        },{
+            uid:product.uid,
+            productId:product.productId
+        })
     }
     render() {
         return (
@@ -228,14 +240,28 @@ class ProductList extends Component {
                         onTouchTap={()=>this.props.delete(ele)}
                     />
                 </IconMenu>
-                <div style={combineStyle(['variable','line'])}>{ele.brand +' '+ ele.name}</div>
                 <div style={styles.line}>
-                    <span style={styles.spans}>{___.marketing_channel+' '} <span style={styles.variable}>{ele.channel||'本地营销'}</span></span>
-                    <span style={styles.spans}>{___.activity_reward+' '}<span style={styles.variable}>{ele.reward.toFixed(2)}</span></span>
+                    {ele.brand +' '+ ele.name}
                 </div>
                 <div style={styles.line}>
-                    <span style={styles.spans}>{___.device_price+' '}<span style={styles.variable}>{ele.price.toFixed(2)}</span></span>
-                    <span style={styles.spans}>{___.install_paymen+' '} <span style={styles.variable}>{ele.installationFee.toFixed(2)}</span></span>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{___.marketing_channel+' : '}</span>
+                        <span style={styles.span_right}>{ele.channel||'本地营销'}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{___.activity_reward+' : '}</span>
+                        <span style={styles.span_right}>{moneyFont(ele.reward)}</span>
+                    </span>
+                </div>
+                <div style={styles.line}>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{___.device_price+' : '}</span>
+                        <span style={styles.span_right}>{moneyFont(ele.price)}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{___.install_paymen+' : '}</span>
+                        <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
+                    </span>
                 </div>
             </div>
         );
@@ -383,4 +409,8 @@ class EditProduct extends Component {
             </div>
         );
     }
+}
+
+function moneyFont(num){
+    return Number(num).toFixed(2);
 }

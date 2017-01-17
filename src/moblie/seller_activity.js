@@ -36,8 +36,10 @@ const styles = {
     link:{color:'#0000cc'},
     warn:{color:'#ff9900'},
     search_head:{width:'100%',display:'block'},
-    add_icon:{float:'right',marginRight:'15px'},
-    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'}
+    add_icon:{float:'right',marginRight:'15px',color:"#2196f3"},
+    search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'},
+    span_left:{fontSize:'0.8em',color:'#666666'},
+    span_right:{fontSize:'0.8em'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -138,7 +140,6 @@ class App extends Component {
             this.forceUpdate();
         },{
             uid:_user.customer.objectId,
-            status:1,
         },{
             limit:this.limit,
             page_no:this.page_no,
@@ -203,16 +204,13 @@ class App extends Component {
     editSubmit(activity){
         for(let i=this.activities.length-1;i>=0;i--){
             if(this.activities[i].objectId==activity.objectId){
-                if(activity.status==0){
-                    this.activities.splice(i,1);
-                }else{
-                    this.activities[i]=activity;
-                }
+                this.activities[i]=activity;
                 break;
             }
         }
         this.forceUpdate();
         history.back();
+        W.loading();
     }
     url(acitivity){
         window.location=acitivity.url;
@@ -336,26 +334,26 @@ class DList extends Component{
                         onTouchTap={()=>this.context.delete(ele)}
                     />
                 </IconMenu>
-                <div style={combineStyle(['variable','line'])}>
+                <div style={styles.line}>
                     {ele.name}
                 </div>
-                <div style={combineStyle(['variable','line'])}>
+                <div style={styles.line}>
                     {activityType[ele.type]+'/'
                     +ele.sellerType
                     +(ele.count?'/计算提成':'')}
                     <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>            
                 </div>
                 <div style={styles.line}>
-                    {___.regional_marketing+' '}
-                    <span style={styles.variable}>{(ele.brand||'')+ele.product}</span>
+                    <span style={styles.span_left}>{___.regional_marketing+' : '}</span>
+                    <span style={styles.span_right}>{(ele.brand||'')+ele.product}</span>
                 </div>
                 <div style={styles.line}>
-                    {___.support_hotline+' '}
-                    <span style={styles.variable}>{ele.tel}</span>
+                    <span style={styles.span_left}>{___.support_hotline+' : '}</span>
+                    <span style={styles.span_right}>{ele.tel}</span>
                 </div>
                 <div style={styles.line}>
-                    {___.offersDesc+' '}
-                    <span style={styles.variable}>{ele.offersDesc}</span>
+                    <span style={styles.span_left}>{___.offersDesc+' : '}</span>
+                    <span style={styles.span_right}>{'现在支付订金'+ele.reward+'元，'+ele.offersDesc}</span>
                 </div>
             </div>
         )
