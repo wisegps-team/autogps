@@ -306,6 +306,7 @@ class DList extends Component{
     }
     render() {
         let data=this.props.data;
+        console.log(data);
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
                 <IconMenu
@@ -338,8 +339,8 @@ class DList extends Component{
                     {ele.name}
                 </div>
                 <div style={styles.line}>
-                    {activityType[ele.type]+'/'
-                    +ele.sellerType
+                    {activityType[ele.type]
+                    +(ele.sellerTypeId==_user.customer.objectId ? '' : ('/'+ele.sellerType))
                     +(ele.count?'/计算提成':'')}
                     <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>            
                 </div>
