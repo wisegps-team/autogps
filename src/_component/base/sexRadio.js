@@ -7,6 +7,9 @@ const sty={
     display:'inline-block',
     marginRight:'15px'
 }
+const labelStyle={
+    width: 'auto'
+}
 
 class SexRadio extends Component {
     constructor(props, context) {
@@ -25,11 +28,13 @@ class SexRadio extends Component {
                 <RadioButton
                     value='1'
                     label={___.man}
+                    labelStyle={labelStyle}
                     style={sty}
                 />
                 <RadioButton
                     value='0'
                     label={___.woman}
+                    labelStyle={labelStyle}
                     style={sty}
                 />
             </RadioButtonGroup>

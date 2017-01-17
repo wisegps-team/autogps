@@ -60,7 +60,7 @@ class App extends Component {
             data.type=0;
         }
         
-        let sty=this.state.active?null:{padding:'10px'};
+        let sty=this.state.active?null:{padding:'0px',background:'#eee'};
         let main=this.state.active?<QrBox/>:(
             <EmployeeRegisterBox 
                 success={this.registerCallback} 
@@ -168,13 +168,18 @@ class EmployeeRegisterBox extends Component{
         this.data.sex=val;
     }
     render() {
+        let des=_g.departId==0?___.employee_register:___.marketing_personnel_register;
         return (
             <div>
-                <form>
-                    <Input name='name' floatingLabelText={___.person_name} onChange={this.nameChange}/>
-                    <SexRadio onChange={this.change}/>
-                </form>
-                <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
+                <h4 style={{textAlign:'center'}}>{_g.name}</h4>
+                <p style={{textAlign:'center'}}>{des}</p>
+                <div>
+                    <form style={{position:'relative',padding:'10px',background:'#fff'}}>
+                        <Input name='name' floatingLabelText={___.person_name} onChange={this.nameChange}/>
+                        <SexRadio onChange={this.change} style={{position:'absolute',right:'0px',top:'32px'}}/>
+                    </form>
+                    <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
+                </div>
             </div>
         );
     }
