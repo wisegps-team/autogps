@@ -68,20 +68,22 @@ class Register extends Component {
     render() {
         return (
             <div {...this.props}>
-                <Input
-                    name='account'
-                    hintText={___.input_account}
-                    floatingLabelText={___.account}
-                    onChange={this.accountChange}
-                    type='tel'
-                />
-                <VerificationCode 
-                    name='valid_code'
-                    type={1}
-                    account={this.state.account} 
-                    onSuccess={this.change}
-                    onChange={this.change}
-                />
+                <div style={{background:'#fff',padding:'0 10px 10px 10px'}}>
+                    <Input
+                        name='account'
+                        hintText={___.input_account}
+                        floatingLabelText={___.account}
+                        onChange={this.accountChange}
+                        type='tel'
+                    />
+                    <VerificationCode 
+                        name='valid_code'
+                        type={1}
+                        account={this.state.account} 
+                        onSuccess={this.change}
+                        onChange={this.change}
+                    />
+                </div>
 
                 <div style={{textAlign:'center'}}>
                     <RaisedButton label={___.register} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>

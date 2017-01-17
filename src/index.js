@@ -203,7 +203,7 @@ class App extends Component {
         location=location.origin+p;
     }
     render() {
-        let _sty=this.state.active==1?{padding:'10px'}:null;
+        let _sty=this.state.active==1?{padding:'0px',background:'#eee'}:null;
         // WiStorm.agent.weixin=false;
         let login_sty=WiStorm.agent.weixin?{
             display:'none'

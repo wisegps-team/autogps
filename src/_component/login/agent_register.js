@@ -146,7 +146,9 @@ class AgentRegisterBox extends Component{
     render() {
         return (
             <div>
-                <Input name='name' floatingLabelText={___.company} onChange={this.nameChange}/>
+                <div style={{padding:'0 10px',background:'#fff'}}>
+                    <Input name='name' floatingLabelText={___.company} onChange={this.nameChange}/>
+                </div>
                 <Register onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
             </div>
         );
@@ -156,7 +158,13 @@ class AgentRegisterBox extends Component{
 class AgentShowBox extends Component{
     render(){
         let box=_user?<JoinBox success={this.props.success}/>:<AgentRegisterBox success={this.props.success} parentId={this.props.parentId} key='register' />;
-        return box
+        return (
+            <div>
+                <h4 style={{textAlign:'center'}}>{_g.name}</h4>
+                <p style={{textAlign:'center'}}>{___.agent_register}</p>
+                {box}
+            </div>
+        );
     }
 }
 
@@ -177,15 +185,17 @@ class JoinBox extends Component{
     render() {
         return (
             <div>
-                <label>{___.account+'：'}</label>
-                <span>{_user.mobile}</span>
-                <VerificationCode 
-                    name='valid_code'
-                    type={1}
-                    account={_user.mobile} 
-                    onSuccess={this.change}
-                    onChange={this.change}
-                />
+                <div style={{background:'#fff',padding:'10px'}}>
+                    <label>{___.account+'：'}</label>
+                    <span>{_user.mobile}</span>
+                    <VerificationCode 
+                        name='valid_code'
+                        type={1}
+                        account={_user.mobile} 
+                        onSuccess={this.change}
+                        onChange={this.change}
+                    />
+                </div>
                 <div style={{textAlign:'center'}}>
                     <RaisedButton label={___.accept_invite} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>
                 </div>

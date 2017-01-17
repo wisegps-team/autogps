@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Input from './input';
+import FlatButton from 'material-ui/FlatButton';
 
 let sty={
     box:{
-        display: 'flex',
-        alignItems: 'center'
+        position:'relative'
     },
     b:{
-        flexShrink: 0
+        position: 'absolute',
+        right: '0px',
+        bottom: '8px'
     }
 }
 
@@ -31,6 +33,11 @@ class VerificationCode extends Component {
     change(e,val){
         let that=this;
         if(val.length==(this.props.length||4)){
+            let data={
+                valid_type:this.props.type,
+   				valid_code:val
+            }
+            data[this.props.accountType||'mobile']=this.props.account;
             Wapi.comm.validCode(function(res){
                 if(res.status_code){
                     W.errorCode(res);
@@ -42,11 +49,7 @@ class VerificationCode extends Component {
                 }else{
                     that.setState({code_err:___.code_err});
                 }
-            },{
-                valid_type:this.props.type,
-   				valid_code:val,
-   				mobile:this.props.account
-            });
+            },data);
             if(this.props.onChange){
                 this.props.onChange(val,this.props.name);
             }
@@ -54,7 +57,7 @@ class VerificationCode extends Component {
     }
     getCode(){
         if(!this.props.account){
-            W.alert(___.phone_err);
+            W.alert(___.phone_empty);
             return;
         }
         let that=this;
@@ -66,7 +69,8 @@ class VerificationCode extends Component {
                 clearInterval(that._time_id);
         },1000);
 
-        Wapi.comm.sendSMS(function(res){
+        let send=(this.props.accountType&&this.props.accountType=='email')?'sendEmail':'sendSMS';
+        Wapi.comm[send](function(res){
             if(res.status_code){
                 clearInterval(that._time_id);
                 that.setState({second:0});
@@ -84,9 +88,9 @@ class VerificationCode extends Component {
                     floatingLabelText={___.input_code}
                     errorText={this.state.code_err}
                     onChange={this.change}
-                    type='tel'
+                    type="tel"
                 />
-                <RaisedButton 
+                <FlatButton 
                     label={this.state.second||___.getCode} 
                     primary={!this.state.second} 
                     disabled={!!this.state.second} 
