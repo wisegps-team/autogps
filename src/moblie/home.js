@@ -82,6 +82,31 @@ const sty={
     },
     main:{
         marginBottom:'50px'
+    },
+    head:{
+        width:'100%',
+        height:'180px',
+        display:'block',
+        textAlign:'center',
+        paddingTop:'40px',
+        // backgroundColor:'#33ccee',
+        backgroundColor:'#3c9bf9',
+        color:'#ffffff'
+    },
+    head_pic:{
+        width:'100px',
+        height:'100px', 
+        borderRadius:'50%'
+    },
+    head_links:{
+        display:'table',
+        width:'100%',
+        marginTop:'20px'
+    },
+    head_link:{
+        display:'table-cell',
+        width:'33%',
+        borderRight:'1px solid #ffffff'
     }
 }
 
@@ -186,14 +211,36 @@ class App extends Component {
     go(tab){
         thisView.goTo(tab.props.value+'.js');
     }
+    personalInfo(){
+        thisView.goTo('./myAccount/personal_info.js');
+    }
+    recommend(){
+        thisView.goTo('my_marketing.js');
+    }
+    wallet(){
+        thisView.goTo('./myAccount/wallet.js');
+    }
     render() {
         return (
             <ThemeProvider>
             <div style={sty.main}>
+                <div style={sty.head} >
+                    <div style={{fontSize:'18px'}} onClick={this.personalInfo}>
+                        <img src='../../img/head.png' style={sty.head_pic}/>
+                        <div>
+                            {_user.employee ? _user.employee.name : (_user.customer.contact||_user.customer.name)}
+                        </div>
+                    </div>
+                    <div style={sty.head_links}>
+                        <div style={sty.head_link}>{___.order}</div>
+                        <div style={sty.head_link} onClick={this.recommend}>{___.recommend}</div>
+                        <div style={{display:'table-cell',width:'33%'}} onClick={this.wallet}>{___.wallet}</div>
+                    </div>
+                </div>
                 <div className='main'>
                     {cards}
                 </div>
-                <Tabs style={sty.tabs}>
+                {/*<Tabs style={sty.tabs}>
                     <Tab
                         className='tab'
                         icon={<ActionHome/>}
@@ -213,7 +260,7 @@ class App extends Component {
                         value={'my_account'}
                         onActive={this.go}
                     />
-                </Tabs>
+                </Tabs>*/}
             </div>
             </ThemeProvider>
         );

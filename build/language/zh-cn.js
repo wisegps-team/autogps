@@ -567,4 +567,6 @@ window.___={
 	'agent_register':'合作伙伴账号注册',
 	'employee_register':'员工账号注册',
 	'marketing_personnel_register':'集团营销账号注册',
+	'wallet':'钱包',
+	'order':'订单',
 }
