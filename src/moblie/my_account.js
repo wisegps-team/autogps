@@ -296,7 +296,9 @@ class ShowBox extends Component{
                 onClick={this.personalInfo}
                 style={sty.head}>
                     {/*<div style={{marginBottom:'10px',fontSize:'18px'}}>{_user.customer.name}</div>*/}
-                    <div style={{marginTop:'20px',fontSize:'18px'}}>{_user.employee ? _user.employee.name : _user.customer.contact}</div>
+                    <div style={{marginTop:'20px',fontSize:'18px'}}>
+                        {_user.employee ? _user.employee.name : (_user.customer.contact||_user.customer.name)}
+                    </div>
                     {/*<div>{_user.mobile}</div>*/}
                 </div>
                 <Divider/>

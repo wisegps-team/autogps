@@ -305,7 +305,6 @@ class DList extends Component{
     }
     render() {
         let data=this.props.data;
-        console.log(data);
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
                 <IconMenu
@@ -337,7 +336,7 @@ class DList extends Component{
                 <div style={styles.line}>
                     {ele.name}
                 </div>
-                <div style={styles.line}>
+                <div style={combineStyle(['line','span_right'])}>
                     {activityType[ele.type]
                     +(ele.sellerTypeId==_user.customer.objectId ? '' : ('/'+ele.sellerType))
                     +(ele.count?'/计算提成':'')}
@@ -345,7 +344,7 @@ class DList extends Component{
                 </div>
                 <div style={styles.line}>
                     <span style={styles.span_left}>{___.regional_marketing+' : '}</span>
-                    <span style={styles.span_right}>{(ele.brand||'')+ele.product}</span>
+                    <span style={styles.span_right}>{ele.brand+' '+ele.product}</span>
                 </div>
                 <div style={styles.line}>
                     <span style={styles.span_left}>{___.support_hotline+' : '}</span>

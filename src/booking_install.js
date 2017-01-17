@@ -222,7 +222,7 @@ class App extends Component {
                         "color": "#173177"
                     },
                     "keyword2": {//预订产品
-                        "value": ACT.product,
+                        "value": ACT.brand+' '+ACT.product,
                         "color": "#173177"
                     },
                     "keyword3": {//设备款项

@@ -133,7 +133,7 @@ class App extends Component {
                     // },e=>{W.native.close();});
                 }
             },{
-                openId:_g.cust_open_id,   //车主的openid
+                openId:booking.userOpenId,   //车主的openid
                 // uid:'798351359882694700',   //booking的uid
                 uid:booking.uid,
                 templateId:'OPENTM405760757',
