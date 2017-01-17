@@ -210,7 +210,6 @@ class App extends Component {
         }
         this.forceUpdate();
         history.back();
-        W.loading();
     }
     url(acitivity){
         window.location=acitivity.url;

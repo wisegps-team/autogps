@@ -198,7 +198,6 @@ class EditActivity extends Component {
             return;
         }
         console.log(data);
-        W.loading(true);
         if(this.intent=='edit'){    //修改
             let _data=Object.assign({},data);
 
