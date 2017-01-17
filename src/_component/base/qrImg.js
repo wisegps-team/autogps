@@ -24,8 +24,9 @@ class QrImg extends Component {
     }
 
     create(){
+        this.refs.main.innerHTML='';
         let text=this.props.data;
-        if(QRCode)
+        if(typeof QRCode!='undefined')
             new QRCode(this.refs.main,text);
         else
             jsLoad=()=>new QRCode(this.refs.main,text);
