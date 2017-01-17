@@ -31,7 +31,8 @@ thisView.addEventListener('load',function(){
 let sUrl='';
 let qrLinkData={
     uid:_user.customer.objectId,
-    type:4
+    type:4,
+    i:0
 };
 Wapi.qrLink.get(function(res) {
     if(res.data){
