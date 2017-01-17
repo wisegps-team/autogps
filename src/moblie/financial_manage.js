@@ -334,7 +334,7 @@ class BillPage extends Component {
     render() {
         return (
             <div style={styles.main}>
-                {(this.gotData && this.total!=0) ? (
+                {(this.gotData && this.total==0) ? (
                     <div style={styles.no_record}>
                         {___.no_money_records}
                     </div>):(
