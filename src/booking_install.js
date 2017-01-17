@@ -192,27 +192,17 @@ class App extends Component {
 
         this.data.userOpenId=_g.openid;
         this.data.selectInstallDate=W.dateToString(new Date());
-        // console.log(this.installTel);
-        // return;
+        W.loading(true,'发送中');
         Wapi.booking.update(res=>{//更新booking信息
-            let flag=0;
             Wapi.serverApi.sendWeixinByTemplate(re=>{//发送微信推送
                 console.log(re);
-             
-                Wapi.comm.sendSMS(r=>{//发送语音短信
-                    console.log(r);
-                    //完成后退出
-                    W.alert({
-                        title:___.booking_install_title,
-                        text:___.sendWeixinToSeller_success
-                    },e=>{W.native.close();});
-                },{
-                    mobile:this.installTel,
-                    type:0,
-                    content:___.booking_install_success,
-                    content_type:2,
-                })
-
+                //完成后退出
+                W.loading();
+                W.alert(___.sendWeixinToSeller_success,e=>{W.native.close();});
+                // W.alert({
+                //     title:___.booking_install_title,
+                //     text:___.sendWeixinToSeller_success
+                // },e=>{W.native.close();});
             },{
                 openId:this.seller_open_id,   //安装网点的openid
                 // uid:'798351359882694700',   //booking的uid
@@ -253,8 +243,15 @@ class App extends Component {
                     }
                 }
             });
-                   
-
+            
+            Wapi.comm.sendSMS(r=>{//发送语音短信
+                console.log(r);
+            },{
+                mobile:this.installTel,
+                type:0,
+                content:___.booking_install_success,
+                content_type:2,
+            })
         },this.data);
     }
     render() {
