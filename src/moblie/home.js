@@ -34,6 +34,7 @@ import ActionTrendingUp from 'material-ui/svg-icons/action/trending-up';
 import EditorMonetizationOn from 'material-ui/svg-icons/editor/monetization-on';
 import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
 import ImageFilterCenterFocus from 'material-ui/svg-icons/image/filter-center-focus';
+import ActionSettings from 'material-ui/svg-icons/action/settings';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -88,7 +89,7 @@ const sty={
         height:'180px',
         display:'block',
         textAlign:'center',
-        paddingTop:'40px',
+        paddingTop:'20px',
         // backgroundColor:'#33ccee',
         backgroundColor:'#3c9bf9',
         color:'#ffffff'
@@ -101,7 +102,7 @@ const sty={
     head_links:{
         display:'table',
         width:'100%',
-        marginTop:'20px'
+        marginTop:'15px'
     },
     head_link:{
         display:'table-cell',
@@ -191,6 +192,11 @@ const _pages=[//所有的页面
         name:___.financial_manage,
         icon:<EditorMonetizationOn style={sty.icon}/>
     },
+    // {   /*系统设置 */
+    //     href:'myAccount/system_set',
+    //     name:___.system_set,
+    //     icon:<ActionSettings style={sty.icon}/>
+    // };
 ];
 
 if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
@@ -199,8 +205,12 @@ if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 
+let set=<ModuleCard title={___.system_set} icon={<ActionSettings style={sty.icon}/>} href={'myAccount/system_set'} key={'myAccount/system_set'}/>
 
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
+if(typeof(_user.employee)=='undefined'){//临时用系统设置菜单
+    cards.push(set);
+}
 
 class App extends Component {
     getChildContext() {
