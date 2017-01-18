@@ -34,6 +34,7 @@ import ActionTrendingUp from 'material-ui/svg-icons/action/trending-up';
 import EditorMonetizationOn from 'material-ui/svg-icons/editor/monetization-on';
 import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
 import ImageFilterCenterFocus from 'material-ui/svg-icons/image/filter-center-focus';
+import ActionSettings from 'material-ui/svg-icons/action/settings';
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -82,6 +83,31 @@ const sty={
     },
     main:{
         marginBottom:'50px'
+    },
+    head:{
+        width:'100%',
+        height:'180px',
+        display:'block',
+        textAlign:'center',
+        paddingTop:'20px',
+        // backgroundColor:'#33ccee',
+        backgroundColor:'#3c9bf9',
+        color:'#ffffff'
+    },
+    head_pic:{
+        width:'100px',
+        height:'100px', 
+        borderRadius:'50%'
+    },
+    head_links:{
+        display:'table',
+        width:'100%',
+        marginTop:'15px'
+    },
+    head_link:{
+        display:'table-cell',
+        width:'33%',
+        borderRight:'1px solid #ffffff'
     }
 }
 
@@ -166,6 +192,11 @@ const _pages=[//所有的页面
         name:___.financial_manage,
         icon:<EditorMonetizationOn style={sty.icon}/>
     },
+    // {   /*系统设置 */
+    //     href:'myAccount/system_set',
+    //     name:___.system_set,
+    //     icon:<ActionSettings style={sty.icon}/>
+    // };
 ];
 
 if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
@@ -174,8 +205,12 @@ if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 
+let set=<ModuleCard title={___.system_set} icon={<ActionSettings style={sty.icon}/>} href={'myAccount/system_set'} key={'myAccount/system_set'}/>
 
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
+if(typeof(_user.employee)=='undefined'){//临时用系统设置菜单
+    cards.push(set);
+}
 
 class App extends Component {
     getChildContext() {
@@ -186,14 +221,36 @@ class App extends Component {
     go(tab){
         thisView.goTo(tab.props.value+'.js');
     }
+    personalInfo(){
+        thisView.goTo('./myAccount/personal_info.js');
+    }
+    recommend(){
+        thisView.goTo('my_marketing.js');
+    }
+    wallet(){
+        thisView.goTo('./myAccount/wallet.js');
+    }
     render() {
         return (
             <ThemeProvider>
             <div style={sty.main}>
+                <div style={sty.head} >
+                    <div style={{fontSize:'18px'}} onClick={this.personalInfo}>
+                        <img src='../../img/head.png' style={sty.head_pic}/>
+                        <div>
+                            {_user.employee ? _user.employee.name : (_user.customer.contact||_user.customer.name)}
+                        </div>
+                    </div>
+                    <div style={sty.head_links}>
+                        <div style={sty.head_link}>{___.order}</div>
+                        <div style={sty.head_link} onClick={this.recommend}>{___.recommend}</div>
+                        <div style={{display:'table-cell',width:'33%'}} onClick={this.wallet}>{___.wallet}</div>
+                    </div>
+                </div>
                 <div className='main'>
                     {cards}
                 </div>
-                <Tabs style={sty.tabs}>
+                {/*<Tabs style={sty.tabs}>
                     <Tab
                         className='tab'
                         icon={<ActionHome/>}
@@ -213,7 +270,7 @@ class App extends Component {
                         value={'my_account'}
                         onActive={this.go}
                     />
-                </Tabs>
+                </Tabs>*/}
             </div>
             </ThemeProvider>
         );

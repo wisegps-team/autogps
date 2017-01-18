@@ -37,7 +37,7 @@ thisView.addEventListener('load',function(){
 
 const styles={
     appbar:{position:'fixed',top:'0px'},
-    head:{width:'100%',height:'120px',display:'block',textAlign:'center',paddingTop:'40px',backgroundColor:'#33ccee'},
+    head:{width:'100%',height:'120px',display:'block',textAlign:'center',paddingTop:'40px',backgroundColor:'#3c9bf9'},
     head_str:{fontSize:'14px',marginBottom:'5px',color:'#ffffff'},
     head_num:{fontSize:'36px',marginBottom:'10px',color:'#ffffff'},
     bill:{padding:'5px 10px',borderBottom:'1px solid #cccccc'},
