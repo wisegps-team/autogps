@@ -42,6 +42,7 @@ class AgentRegisterBox extends Component{
         this.nameChange = this.nameChange.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.registerSuccess = this.registerSuccess.bind(this);
+        this.beforRegister = this.beforRegister.bind(this);
     }
     beforRegister(data){
         if(!this.data.name){
