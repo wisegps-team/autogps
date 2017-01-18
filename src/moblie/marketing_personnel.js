@@ -180,7 +180,7 @@ class TypeItem extends Component{
                 +_user.customer.objectId
                 +'&departId='+this.props.data.objectId
                 +'&wx_app_id='+_user.customer.sellerWxAppKey
-                +'&name='+_user.customer.name;
+                +'&name='+this.props.data.name;
         thisView.goTo('share_register.js',url);
     }
     toUpdate(){

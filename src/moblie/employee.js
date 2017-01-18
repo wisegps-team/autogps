@@ -124,6 +124,7 @@ class App extends React.Component {
         let url=location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
                 +_user.customer.objectId
                 +'&departId=0&wx_app_id='+_user.customer.sellerWxAppKey
+                +'&name='+_user.customer.name;
         thisView.goTo('share_register.js',url);
     }
     showDetails(data){
