@@ -56,7 +56,7 @@ function loadDictionary(){
 loadDictionary();
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
-thisView.setTitle(_user.customer.name);
+thisView.setTitle(___.zhilianche);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
     if(_g.loginLocation){

@@ -11,6 +11,9 @@ import LinearProgress from 'material-ui/LinearProgress';
 
 import AppBar from '../../_component/base/appBar';
 import {setTitle,getOpenIdKey} from '../../_modules/tool';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import UserNameInput from '../../_component/base/userNameInput';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
@@ -66,9 +69,48 @@ class App extends Component {
 class ShowBox extends Component{
     constructor(props, context) {
         super(props, context);
-		
+        this.state={
+            userName:false
+        }
+        this.userName = this.userName.bind(this);
+        this.close = this.close.bind(this);
+        this.changeName = this.changeName.bind(this);
+        this.saveName = this.saveName.bind(this);
     }
     
+    userName(){
+        this.setState({userName:true});
+    }
+    close(){
+        this.setState({
+            userName:false
+        });
+    }
+    
+    changeName(name){
+        this._name=name;
+    }
+    saveName(){
+        if(this._name){
+            let that=this;
+            Wapi.user.get(function(res){
+                if(res.status_code==0){
+                    W.alert(___.username_registed);
+                }else{
+                    Wapi.user.updateMe(function(re){
+                        _user.username=that._name;
+                        W.setSetting('user',_user);
+                        that.close();
+                    },{
+                        username:that._name
+                    });
+                }
+            },{
+                username:that._name
+            });
+        }
+    }
+
     logout(){
         W.loading('正在退出');
         let key=getOpenIdKey();
@@ -80,6 +122,19 @@ class ShowBox extends Component{
     }
 	
     render() {
+        const actions = [
+            <FlatButton
+                label={___.cancel}
+                primary={true}
+                onTouchTap={this.close}
+            />,
+            <FlatButton
+                label={___.ok}
+                primary={true}
+                keyboardFocused={true}
+                onTouchTap={this.saveName}
+            />
+        ];
         let company_item='';
         if(_user.customer.custTypeId!=7){
             company_item=<ListItem 
@@ -103,6 +158,7 @@ class ShowBox extends Component{
 						rightAvatar={<span style={sty.list_right}>{_user.employee?_user.employee.name:_user.customer.contact}</span>}
                         rightIcon={<NavigationChevronRight />}
                         style={sty.list_item}
+                        onClick={this.userName}
                     />
                     <ListItem 
                         primaryText={___.sex} 
@@ -119,6 +175,13 @@ class ShowBox extends Component{
                 <List style={{padding:'20px 16px 8px 16px',textAlign:'canter'}}>
                     <RaisedButton label={___.logout} fullWidth={true} secondary={true} onClick={this.logout}/>                    
                 </List>
+                <Dialog
+                    title={___.edit_user_name}
+                    open={this.state.userName}
+                    actions={actions}
+                >
+                    <UserNameInput onChange={this.changeName} value={_user.userName} floatingLabelText={___.input_user_name}/>
+                </Dialog>
             </div>
         );
     }

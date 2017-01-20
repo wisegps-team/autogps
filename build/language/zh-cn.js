@@ -569,4 +569,7 @@ window.___={
 	'marketing_personnel_register':'集团营销账号注册',
 	'wallet':'钱包',
 	'order':'订单',
+	'zhilianche':'智联车网',
+	'activity_img_url':'广告图片',
+	'img_standard':'图片分辨率为470*250px，请按此比例上传广告图片',
 }

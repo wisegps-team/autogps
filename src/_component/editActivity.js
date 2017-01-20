@@ -36,6 +36,7 @@ function getInitData(){
         installationFee:0,  //安装费用
         reward:0,           //佣金标准
         url:'',             //文案链接
+        imgUrl:'',          //广告图片链接
         principal:_user.customer.name,          //项目经理
         principalId:_user.customer.objectId,    //项目经理id,默认本公司
         principalTel:_user.mobile,              //项目经理电话
@@ -72,6 +73,7 @@ class EditActivity extends Component {
         this.intent='add';
 
         this.dataChange = this.dataChange.bind(this);
+        this.fileUpload = this.fileUpload.bind(this);
         this.typeChange = this.typeChange.bind(this);
         this.productChange = this.productChange.bind(this);
         this.principalChange = this.principalChange.bind(this);
@@ -131,7 +133,36 @@ class EditActivity extends Component {
             this.forceUpdate();
         }
     }
-    
+    fileUpload(e){
+        console.log('file upload');
+        console.log(e.target.files);
+        let h=e.target;
+		if(!h.files.length){
+			W.alert("未选择文件");
+			return;
+		}
+		var type=h.value.split('.').pop().toLocaleLowerCase();
+        var file =h.files[0];
+        if((type!="jpg"&&type!="png"&&type!="jpeg")){
+            h.value="";
+            h.files=null;
+            W.alert("抱歉，仅支持的jpg或png或者jpeg图片");
+            return;
+        }
+        W.loading("正在上传文件，请稍等");
+        Wapi.file.upload(res=>{
+            W.loading();
+            if (res && res.status_code) {
+                W.errorCode(res);
+                return;
+            }
+            console.log(res);
+            this.data.imgUrl=res.image_file_url;
+            this.forceUpdate();
+        },file,function(s){
+            W.loading("正在上传文件，请稍等……"+parseInt(s*100)+'%');
+        });
+    }
     dataChange(e,value,key){
         this.data[e.target.name]=value;
         if(e.target.name=='status'){
@@ -314,8 +345,16 @@ class EditActivity extends Component {
                 {/*活动链接*/}
                 <Input name='url' floatingLabelText={___.activity_url} value={this.data.url} onChange={this.dataChange} disabled={noEdit} />
 
+                {/*联系电话*/}
                 <Input name='tel' floatingLabelText={___.support_hotline} value={this.data.tel} onChange={this.dataChange} disabled={noEdit} />
                 
+                {/*广告图片链接*/}
+                <div style={styles.input_group}>
+                    <div>{___.activity_img_url}</div>
+                    <div style={{marginBottom:'5px',fontSize:'10px',color:'#999999'}}>{___.img_standard}</div>
+                    <input type="file" capture="camera" name="inputf" accept="image/*" onChange={e=>this.fileUpload(e)}/>
+                </div>
+
                 {/*客户经理开卡*/}
                 <div style={styles.input_group}>
                     <Checkbox 

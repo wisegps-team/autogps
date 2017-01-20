@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=88;//版本号
+let version=89;//版本号
 
 //地区表
 export const area={
@@ -2239,6 +2239,11 @@ export const activity={
         },{
             'name': 'url',
             'desc': '活动链接',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'imgUrl',
+            'desc': '广告图片链接',
             'type': 'String',
             'query': true
         },{
