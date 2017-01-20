@@ -148,7 +148,7 @@ class AgentRegisterBox extends Component{
         return (
             <div>
                 <div style={{padding:'0 10px',background:'#fff'}}>
-                    <Input name='name' floatingLabelText={___.company} onChange={this.nameChange}/>
+                    <Input name='name' floatingLabelText={___.company_name} onChange={this.nameChange}/>
                 </div>
                 <Register onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
             </div>

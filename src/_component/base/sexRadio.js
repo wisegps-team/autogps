@@ -3,12 +3,17 @@ import React, {Component} from 'react';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 const sty={
-    width:'auto',
-    display:'inline-block',
-    marginRight:'15px'
-}
-const labelStyle={
-    width: 'auto'
+    main:{
+        width:'auto',
+        display:'inline-block',
+        marginRight:'10px'
+    },
+    label:{
+        width: 'auto'
+    },
+    icon:{
+        marginRight:'5px'
+    }
 }
 
 class SexRadio extends Component {
@@ -28,14 +33,16 @@ class SexRadio extends Component {
                 <RadioButton
                     value='1'
                     label={___.man}
-                    labelStyle={labelStyle}
-                    style={sty}
+                    labelStyle={sty.label}
+                    iconStyle={sty.icon}
+                    style={sty.main}
                 />
                 <RadioButton
                     value='0'
                     label={___.woman}
-                    labelStyle={labelStyle}
-                    style={sty}
+                    labelStyle={sty.label}
+                    iconStyle={sty.icon}
+                    style={sty.main}
                 />
             </RadioButtonGroup>
         );
