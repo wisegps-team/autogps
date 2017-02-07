@@ -550,12 +550,12 @@ class DList extends Component{
         //170118
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
-                <table>
+                <table style={{borderCollapse: 'collapse'}}>
                 <tbody>
                     <tr>
                         <td style={styles.table_left} onClick={()=>this.toActivityPage(ele)}>
                             {ele.imgUrl?
-                            <img src={ele.imgUrl} style={{width:window.innerWidth*0.62,height:'125px'}} alt={ele.name}/>
+                            <img src={ele.imgUrl} style={{width:window.innerWidth*0.62,height:'125px',verticalAlign: 'middle'}} alt={ele.name}/>
                             :<div style={{width:window.innerWidth*0.62,textAlign:'center'}}>{ele.name}</div>}
                         </td>
                         <td style={styles.table_right}>
@@ -570,8 +570,8 @@ class DList extends Component{
                                     {'已有'+ele.status0+'位好友预订'}
                                 </div>
                             </div>
-                            <div style={{float:'right',marginRight:'16px'}}>
-                                <div style={{float:'right',textAlign:'center'}}>
+                            <div style={{height:'53px',width:window.innerWidth*0.38,position:'relative'}}>
+                                <div style={{textAlign:'center',position:'absolute',left:'50%'}}>
                                     <img 
                                         src='../../img/qrcode.png' 
                                         style={{width:'30px',height:'30px'}} 
@@ -579,7 +579,7 @@ class DList extends Component{
                                     />
                                     <div style={{fontSize:'8px'}}>营销资料</div>
                                 </div>
-                                <div style={{float:'left',textAlign:'center',marginRight:'10px'}}>
+                                <div style={{textAlign:'center',position:'absolute',left:'50%',marginLeft: '-50px'}}>
                                     <img 
                                         src='../../img/share.png' 
                                         style={{width:'30px',height:'30px'}} 
