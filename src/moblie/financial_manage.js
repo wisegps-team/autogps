@@ -211,6 +211,7 @@ class WithdrawPage extends Component {
         this.amount=0;
         this.withdrawChange = this.withdrawChange.bind(this);
         this.toCheckPhone = this.toCheckPhone.bind(this);
+        this.success = this.success.bind(this);
         this.toWithdraw = this.toWithdraw.bind(this);
     }
     componentDidMount() {
@@ -275,7 +276,7 @@ class WithdrawPage extends Component {
                 <div style={this.state.isInputAmount ? {display:'none'} : vmiddle(200,styles.sonpage_main)}>
                     <p style={{fontSize:'0.8em'}}>{___.need_check_phone}</p>
                     <div style={{width:'90%',marginLeft:'5%'}}>
-                        <MobileChecker mobile={_user.customer.tel} onSuccess={this.submit}/>
+                        <MobileChecker mobile={_user.customer.tel} onSuccess={this.success}/>
                     </div>
                     <RaisedButton style={{marginTop:'1em'}} onClick={this.toWithdraw} label={___.ok} primary={true}/>
                 </div>
