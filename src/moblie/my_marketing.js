@@ -94,7 +94,6 @@ class App extends Component {
         this.editSubmit = this.editSubmit.bind(this);
     }
     search(e,value){
-        console.log(this.activities);
         this.activities=this.originalActivities.filter(ele=>ele.name.includes(value));
         this.setState({keyword:value});
     }
@@ -105,7 +104,27 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        this.getData();
+        let par={
+            "group":{
+                "_id":{"activityId":"$activityId"},
+                "status0":{"$sum":"$status0"},
+                "status1":{"$sum":"$status1"},
+                "status2":{"$sum":"$status2"},
+                "status3":{"$sum":"$status3"}
+            },
+            "sorts":"activityId",
+            sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
+        }
+        Wapi.booking.aggr(resAggr=>{
+            this.booking=resAggr.data;
+            Wapi.customer.list(res=>{
+                this._parents=res.data||[];
+                this.getData();
+            },{
+                objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
+            });
+        },par);
+        // this.getData();
     }
     nextPage(){
         // this.page_no++;
@@ -244,7 +263,6 @@ class App extends Component {
                     type:0  //type=0 车主营销的活动
                 }
                 Wapi.activity.list(res=>{
-                    console.log(res);
                     _this.total=res.total;
                     let activities=res.data;
                     
@@ -420,6 +438,9 @@ class DList extends Component{
             +'&sellerId='+data._sellerId
             +'&mobile='+data._sellerTel
             +'&agent_tel='+_user.customer.tel
+            +'&wxAppKey='+data.wxAppKey
+            +'&activityId='+data.objectId
+            +'&seller_open_id='+_user.authData.openId
             +'&timerstamp='+Number(new Date());
             
         // this.setState({iframe:true});
@@ -454,7 +475,8 @@ class DList extends Component{
             var op={
                 title: data.name, // 分享标题
                 desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                // link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                link:'http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
                     +'&title='+encodeURIComponent(data.name)
                     +'&uid='+data.uid
                     +'&seller_name='+encodeURIComponent(data._seller)
@@ -496,7 +518,6 @@ class DList extends Component{
             close={this.toggleIframe}
         />:null;
         let data=this.props.data;
-        console.log(data);
         // let items=data.map((ele,i)=>
         //     <div key={i} style={styles.card}>
         //         <div style={styles.detail} onClick={()=>this.toActivityPage(ele)}>{___.act_detail}</div>
