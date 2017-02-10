@@ -9,7 +9,7 @@ import Checkbox from 'material-ui/Checkbox';
 
 import Input from '../base/input';
 import PhoneInput from '../base/PhoneInput';
-import VerificationCode from '../base/verificationCode';
+import VerificationOrig from '../base/verificationOrig';
 import {getOpenIdKey} from '../../_modules/tool';
 
 const sty={
@@ -18,7 +18,9 @@ const sty={
     },
     r:{
         display:'flex',
-        alignItems:'flex-end'
+        alignItems:'flex-end',
+        padding:'3px 10px',
+        borderBottom:'1px solid #dddddd'
     },
     i:{
         margin:'9px'
@@ -26,11 +28,12 @@ const sty={
     b:{
         width:'100%',
         textAlign:'center',
-        padding:'16px 5px 5px 0'
+        padding:'20px 5px 5px 0'
     },
     ex:{
         color:'#999999',
-        marginTop:'30px',
+        marginTop:'20px',
+        marginBottom:'20px',
         marginLeft:'10px',
         textAlign:'center',
     },
@@ -38,12 +41,23 @@ const sty={
         marginLeft: '9px',
         marginTop: '1em'
     },
+    black:{
+        color:'#000000'
+    },
+    input:{
+        width:'100%',
+        height:'40px',
+        fontSize:'16px',
+        border:'none',
+        outline:'none'
+    }
 }
 
 class Form extends Component {
     constructor(props, context) {
         super(props, context);
         this.valid=false;
+        // this.valid=true;//测试用
         this.data={
             sellerId:_g.sellerId,
             sellerName:_g.seller_name,
@@ -69,7 +83,7 @@ class Form extends Component {
     }
     
     change(e,val){
-        this.data[e.target.name]=val;
+        this.data[e.target.name]=e.target.value;
         if(e.target.name=='mobile')
             this.forceUpdate();
     }
@@ -133,43 +147,80 @@ class Form extends Component {
         let tel=(ACT?ACT.tel:'');
         let carowner=this.props.self?null:[
             <div style={sty.r} key={'carowner_name'}>
-                <ActionAccountBox style={sty.i}/>
-                <Input name='userName' floatingLabelText={___.carowner_name} onChange={this.change}/>
+                <input name='userName' placeholder={___.carowner_name} style={sty.input} onChange={this.change}/>
             </div>,
             <div style={sty.r} key={'carowner_phone'}>
-                <HardwareSmartphone style={sty.i}/>
-                <Input name='userMobile' floatingLabelText={___.carowner_phone} onChange={this.change} type='tel'/>
+                <input name='userMobile' placeholder={___.carowner_phone} style={sty.input} onChange={this.change}/>
             </div>
         ];
+        let describe=this.props.self?
+                <div style={{textAlign:'center'}}>
+                    预订时支付订金{ACT.deposit}元，{ACT.offersDesc}
+                </div>:
+                <div style={{textAlign:'center'}}>
+                    预订时支付设备款及{ACT.installationFee}元安装费，{ACT.offersDesc}
+                </div>
         let ps={
             color:'#ccc',
             marginLeft: '11px'
         };
         return (
             <div style={sty.f}>
-                <p style={ps}>{___.book_id+': '+_g.mobile.slice(-6)}</p>
-                <Checkbox label={___.booking_for_self} checked={this.props.self} onCheck={e=>this.props.setSelf(true)} style={sty.c}/>
-                <Checkbox label={___.booking_for_else} checked={!this.props.self} onCheck={e=>this.props.setSelf(false)} style={sty.c}/>
-                {carowner}
-                <div style={sty.r}>
-                    <ActionAccountBox style={sty.i}/>
-                    <Input name='name' floatingLabelText={___.booking_name} onChange={this.change}/>
+                
+                <table style={{borderCollapse: 'collapse',fontSize:'0.8em',backgroundColor:'#ffffff'}}>
+                <tbody>
+                    <tr>
+                        <td style={{width:window.innerWidth*0.62+'px',height:'125px',padding:'0px',backgroundColor:'#ffffff'}}>
+                            {ACT.imgUrl?
+                            <img src={ACT.imgUrl} style={{width:window.innerWidth*0.62,height:'125px',verticalAlign: 'middle'}} alt={ACT.name}/>
+                            :<div style={{width:window.innerWidth*0.62,textAlign:'center'}}>{ACT.name}</div>}
+                        </td>
+                        <td style={{width:window.innerWidth*0.38+'px',color:'#999999'}}>
+                            <div style={{marginLeft:'1em'}}>
+                                预订ID：<span style={sty.black}>{_g.mobile.slice(-6)}</span>
+                            </div>
+                            <div style={{marginTop:'5px',marginBottom:'5px'}}>
+                                预订商品：<span style={sty.black}>{ACT.brand+ACT.product}</span>
+                            </div>
+                            <div>
+                                统一售价：<span style={sty.black}>{ACT.price.toFixed(2)}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+
+                <div style={{display:'block',width:'100%',height:'50px'}}>
+                    <div style={{width:'40%',float:'left'}}>
+                        <Checkbox label={___.booking_for_self} checked={this.props.self} onCheck={e=>this.props.setSelf(true)} style={sty.c}/>
+                    </div>
+                    <div style={{width:'40%',float:'left'}}>
+                        <Checkbox label={___.booking_for_else} checked={!this.props.self} onCheck={e=>this.props.setSelf(false)} style={sty.c}/>
+                    </div>
                 </div>
-                <div style={sty.r}>
-                    <HardwareSmartphone style={sty.i}/>
-                    <Input name='mobile' floatingLabelText={___.booking_phone} onChange={this.change} type='tel'/>
+                <div style={{backgroundColor:'#ffffff'}}>
+                    {carowner}
+                    <div style={sty.r}>
+                        <input name='name' placeholder={___.booking_name} style={sty.input} onChange={this.change}/>
+                    </div>
+                    <div style={sty.r}>
+                        <input name='mobile' type='tel' placeholder={___.booking_phone} style={sty.input} onChange={this.change}/>
+                    </div>
+                    <div style={{display:'flex',alignItems:'flex-end',padding:'3px 10px'}}>
+                        <VerificationOrig 
+                            name='valid_code'
+                            type={1}
+                            account={this.data.mobile} 
+                            onSuccess={this.changeVerifi}
+                            style={{width:'100%'}}
+                        />
+                    </div>
                 </div>
-                <div style={sty.r}>
-                    <ActionVerifiedUser style={sty.i}/>
-                    <VerificationCode 
-                        name='valid_code'
-                        type={1}
-                        account={this.data.mobile} 
-                        onSuccess={this.changeVerifi}
-                    />
+                <div style={{padding:'20px 10px'}}>
+                    {describe}
                 </div>
                 <div style={sty.b}>
-                    <RaisedButton label={___.submit_booking} primary={true} onClick={this.submit}/>
+                    <RaisedButton label={___.submit_booking} primary={true} onClick={this.submit} labelColor='#f6f6f6'/>
                 </div>
 
                 <div style={sty.ex}>

@@ -22,6 +22,8 @@ import ErrorBox from './_component/booking/error_box';
 
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
+thisView.setTitle(___.booking);
+thisView.style.backgroundColor='#f6f6f6';
 thisView.addEventListener('load',function(){
     if(_g.bookingId){
         if(_g.openid)
@@ -192,13 +194,16 @@ class App extends Component {
             this._qrbox,
             (<ErrorBox
                 booking={this.data.booking}
+                act={ACT} 
                 callback={this.errorCall}
             />)
         ];
         return (
-            <AppBox>
-                {boxs[this.state.action]}
-            </AppBox>
+            <ThemeProvider>
+                <div>
+                    {boxs[this.state.action]}
+                </div>
+            </ThemeProvider>
         );
     }
 }
