@@ -22,6 +22,7 @@ const styles = {
 };
 
 const strStatus=[___.terminated,___.ongoing];
+const strChannel=[___.national_marketing,___.regional_marketing,''];
 function getInitData(){
     const initData={
         name:'',    //活动名称
@@ -29,12 +30,18 @@ function getInitData(){
         pay:0,      //佣金支付方式
         deposit:'',     //订金标准
         offersDesc:'',  //预定优惠
+        
+        //产品相关的字段，理论上除了productId和channel，其他都不再使用 /20170214
         brand:'',       //产品品牌
         product:'',     //产品型号
         productId:0,    //产品型号Id
         price:0,        //终端价格
         installationFee:0,  //安装费用
         reward:0,           //佣金标准
+
+        actProductId:'',    //营销产品ID
+        channel:2,          //安装渠道(0为全国安装，1为本地安装)
+
         url:'',             //文案链接
         imgUrl:'',          //广告图片链接
         principal:_user.customer.name,          //项目经理
@@ -46,7 +53,7 @@ function getInitData(){
         getCard:false,  //客户经理开卡
         status:1,       //活动状态（1进行中/0已终止）
         wxAppKey:_user.customer.wxAppKey||'',   //配置公众号才有此项目
-        tel:'',//咨询电话
+        tel:'',     //咨询电话
     };
     return initData;
 }
@@ -54,15 +61,16 @@ class EditActivity extends Component {
     constructor(props,context){
         super(props,context);
         this.data=getInitData();
-        // this.noEdit=true;
 
         this.products=[
             {
+                brand:'',
                 name:___.please_select_model,
                 productId:0,
                 price:0,
                 installationFee:0,
-                reward:0
+                reward:0,
+                channel:2
             },
         ],
         this.principals=[
@@ -81,15 +89,36 @@ class EditActivity extends Component {
         this.submit = this.submit.bind(this);
     }
     componentDidMount() {
+        W.loading(true);
         let flag=0;
-        Wapi.activityProduct.list(res=>{//从营销产品里选择当前活动的产品
-            let devices=res.data;
+
+        let uids=_user.customer.parentId.concat(_user.customer.objectId);
+        // let par1={
+        //     uid:_user.customer.objectId
+        // };
+        // Wapi.activityProduct.list(res=>{//从营销产品里选择当前活动的产品
+        //     let devices=res.data;
+        //     this.products=this.products.concat(devices);
+        //     flag++;
+        //     if(flag==4){
+        //         W.loading();
+        //         this.forceUpdate();
+        //     }
+        // },par1);
+
+        let par4={
+            uid:uids.join('|')
+            // createdActivity:true//不需要判定上级是否创建过营销活动/20170215
+        };
+        Wapi.activityProduct.list(resParents=>{//上一级的营销产品也添加到当前活动的待选产品
+            let devices=resParents.data;
             this.products=this.products.concat(devices);
             flag++;
             if(flag==3){
+                W.loading();
                 this.forceUpdate();
             }
-        },{uid:_user.customer.objectId});
+        },par4);
 
         let par2={
             companyId:_user.customer.objectId,
@@ -99,6 +128,7 @@ class EditActivity extends Component {
             this.principals=this.principals.concat(res.data);
             flag++;
             if(flag==3){
+                W.loading();
                 this.forceUpdate();
             }
         },par2);
@@ -111,6 +141,7 @@ class EditActivity extends Component {
             this.sellerTypes=this.sellerTypes.concat(res.data);
             flag++;
             if(flag==3){
+                W.loading();
                 this.forceUpdate();
             }
         },par3);
@@ -120,12 +151,17 @@ class EditActivity extends Component {
         if(nextProps.data){
             this.intent='edit';
             let data=getInitData();
-            this.data=Object.assign(data,nextProps.data);
-            // if(nextProps.data.creator!=_user.objectId){//判断当前用户是否为活动的创建者，若不是则不能修改活动
-            //     this.noEdit=true;
-            // }else{
-            //     this.noEdit=false;
-            // }
+            let next=Object.assign({},nextProps.data);
+            let product=this.products.find(ele=>ele.objectId==next.actProductId);
+
+            next.productId=product.productId;
+            next.brand=product.brand;
+            next.product=product.name;
+            next.price=product.price;
+            next.installationFee=product.installationFee;
+            next.reward=product.reward;
+
+            this.data=Object.assign({},data,next);
             this.forceUpdate();
         }else{
             this.intent='add';
@@ -182,12 +218,17 @@ class EditActivity extends Component {
     }
     productChange(e,v,key){
         let target=this.products.find(ele=>ele.productId==key);
+        this.data.actProductId=target.objectId;
+        this.data.channel=target.channel;
+
+        //20170214活动和产品ID关联，理论上下面6个属性不应该继续储存在acitivity中
         this.data.productId=target.productId;
         this.data.brand=target.brand;
         this.data.product=target.name;
         this.data.price=target.price;
         this.data.installationFee=target.installationFee;
         this.data.reward=target.reward;
+
         this.forceUpdate();
     }
     principalChange(e,v,k){//+++这里要加入 选当前用户选项（公司管理员），所以要加上判断(未完成)
@@ -239,9 +280,14 @@ class EditActivity extends Component {
             delete _data.status2;
 
             Wapi.activity.update(res=>{
-                this.props.editSubmit(data);
-                this.data=getInitData();
-                this.forceUpdate();
+                Wapi.activityProduct.update(re=>{
+                    this.props.editSubmit(data);
+                    this.data=getInitData();
+                    this.forceUpdate();
+                },{
+                    _objectId:data.actProductId,
+                    createdActivity:true
+                })
             },_data);
 
         }else{  //添加
@@ -256,9 +302,15 @@ class EditActivity extends Component {
                 data.status2=0;
                 data.status3=0;
 
-                this.props.addSubmit(data);
-                this.data=getInitData();
-                this.forceUpdate();
+                Wapi.activityProduct.update(re=>{
+                    this.props.addSubmit(data);
+                    this.data=getInitData();
+                    this.forceUpdate();
+                },{
+                    _objectId:data.actProductId,
+                    createdActivity:true
+                })
+
             },data);
         }
     }
@@ -280,7 +332,7 @@ class EditActivity extends Component {
         }
 
         let productItems=this.products.map(ele=>    //产品选项
-            <MenuItem key={ele.productId} value={ele.productId} primaryText={ele.name} />);
+            <MenuItem key={ele.productId} value={ele.productId} primaryText={strChannel[ele.channel]+' '+ele.brand+ele.name} />);
 
         let selleTypeItems=this.sellerTypes.map(e=> //营销人员（类型）选项
             <MenuItem key={e.objectId} value={e.objectId.toString()} primaryText={e.name} />);
@@ -323,13 +375,13 @@ class EditActivity extends Component {
                 {/*产品链接*/}
 
                 {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} disabled={true} />
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price.toFixed(2)} disabled={true} />
 
                 {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} disabled={true} />
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee.toFixed(2)} disabled={true} />
 
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} disabled={true} />
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward.toFixed(2)} disabled={true} />
                 
                 {/*支付方式*/}
                 <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={noEdit}>

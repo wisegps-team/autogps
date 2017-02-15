@@ -20,6 +20,7 @@ const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.selling_product);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+    // thisView.prefetch('authorize.js',2);
 });
 
 const styles = {
@@ -78,8 +79,11 @@ class App extends Component {
         this.list=[];
         this.gotData=false;
 
+        // this.marketPermission=false;//营销权限，确定当前customer能否新增和显示自己的营销产品
+
         this.search = this.search.bind(this);
         this.url = this.url.bind(this);
+        // this.authorize = this.authorize.bind(this);
         this.edit = this.edit.bind(this);
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
@@ -92,22 +96,44 @@ class App extends Component {
         this.setState({keyword:value});
     }
     componentDidMount() {
+        W.loading(true);
         // this.list=_list;
         // this.forceUpdate();
+        
+        //获取当前customer的权限，确定是否显示右上角‘添加’按钮,[集团营销，渠道营销，车主营销]包含其中至少一个
+        let va=_user.customer.other.va;
+        if(va.includes('0')||va.includes('1')||va.includes('3')){
+            this.marketPermission=true;
+        }
+
+        let par={};
+        if(this.marketPermission){
+            par={
+                uid:_user.customer.objectId+'|'+_user.customer.parentId.join('|')
+            };
+        }else{
+            par={
+                uid:_user.customer.parentId.join('|'),
+                createdActivity:true
+            };
+        }
         Wapi.activityProduct.list(res=>{
             this.originalList=res.data;
             this.list=res.data;
             this.gotData=true;
+
+            W.loading();
             this.forceUpdate();
-        },{
-            uid:_user.customer.objectId
-        },{
+        },par,{
             limit:99
         });
     }
     url(product){
         window.location=product.productUrl;
     }
+    // authorize(product){
+    //     thisView.goTo('authorize.js',product);
+    // }
     edit(product){
         this.curProduct=product;
         this.setState({isEdit:true});
@@ -174,6 +200,7 @@ class App extends Component {
         })
     }
     render() {
+        let styAdd = this.marketPermission ? styles.add_icon : {display:'none'};
         return (
             <ThemeProvider>
                 <div>
@@ -182,7 +209,7 @@ class App extends Component {
                         iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
                     />*/}
                     <div style={styles.search_head}>
-                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <ContentAdd style={styAdd} onClick={this.add}/>
                         <div style={styles.search_box}>
                             <Input 
                                 style={{height:'36px'}}
@@ -209,8 +236,11 @@ class App extends Component {
 }
 export default App;
 
+let strChannel=[___.national_marketing,___.regional_marketing];
+//let strAuthStatus=['待审核','已授权','已取消'];
 class ProductList extends Component {
     render() {
+        //let marketPromission=_user.customer.other&&_user.customer.other.va;
         let data=this.props.data;
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
@@ -229,6 +259,11 @@ class ProductList extends Component {
                         primaryText={___.preview} 
                         onTouchTap={()=>this.props.url(ele)}
                     />
+                    {/*<MenuItem 
+                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide}
+                        primaryText={___.authorize} 
+                        onTouchTap={()=>this.props.authorize(ele)}
+                    />*/}
                     <MenuItem 
                         style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
                         primaryText={___.edit} 
@@ -246,7 +281,7 @@ class ProductList extends Component {
                 <div style={styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.marketing_channel+' : '}</span>
-                        <span style={styles.span_right}>{ele.channel||'本地营销'}</span>
+                        <span style={styles.span_right}>{Number.isInteger(ele.channel)?('/'+strChannel[ele.channel]):''}</span>
                     </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.activity_reward+' : '}</span>
@@ -263,6 +298,29 @@ class ProductList extends Component {
                         <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
                     </span>
                 </div>
+                {/*有营销活动权限的
+                <div style={marketPromission?styles.line:styles.hide}>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{'共享授权'+' : '}</span>
+                        <span style={styles.span_right}>{333}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{'我的授权'+' : '}</span>
+                        <span style={styles.span_right}>{22}</span>
+                    </span>
+                </div>*/}
+                {/*无营销活动权限的
+                <div style={marketPromission?styles.hide:styles.line}>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{'授权状态'+' : '}</span>
+                        <span style={styles.span_right}>{strAuthStatus[1]}</span>
+                    </span>
+                    <span style={styles.spans}>
+                        <span style={styles.span_left}>{'预约车主'+' : '}</span>
+                        <span style={styles.span_right}>{9}</span>
+                    </span>
+                </div>*/}
+
             </div>
         );
         return (
@@ -284,6 +342,8 @@ function initData(){
         installationFee:'',
         reward:'',
         productUrl:'',
+        channel:_user.customer.custTypeId==1?0:1,
+        createdActivity:false
     };
 }
 class EditProduct extends Component {
@@ -379,7 +439,7 @@ class EditProduct extends Component {
     }
     render() {
         let types=this.types;
-        let typeItems=types.map(ele=><MenuItem key={ele.modelId} value={ele.modelId} primaryText={ele.model}/>);
+        let typeItems=types.map(ele=><MenuItem key={ele.modelId} value={ele.modelId} primaryText={ele.brand+ele.model}/>);
         typeItems.unshift(<MenuItem key={0} value={0} primaryText={___.please_select_model} />);
         return (
             <div style={styles.input_page}>
@@ -390,13 +450,13 @@ class EditProduct extends Component {
                 </SelectField>
 
                 {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price} onChange={this.dataChange} disabled={this.noEdit} />
+                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={moneyFont(this.data.price)} onChange={this.dataChange} disabled={this.noEdit} />
 
                 {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee} onChange={this.dataChange} disabled={this.noEdit} />
+                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={moneyFont(this.data.installationFee)} onChange={this.dataChange} disabled={this.noEdit} />
 
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward} onChange={this.dataChange} disabled={this.noEdit} />
+                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={moneyFont(this.data.reward)} onChange={this.dataChange} disabled={this.noEdit} />
 
                 {/*产品介绍*/}
                 <Input name='productUrl' floatingLabelText={___.product_description} value={this.data.productUrl} onChange={this.dataChange} disabled={this.noEdit} />

@@ -38,7 +38,23 @@ thisView.addEventListener('load',function(){
                     W.alert({title:_g.title,text:___.activity_stop},e=>history.back());
                 else{
                     ACT=res.data;
-                    ReactDOM.render(<App/>,thisView);
+                    if(ACT.actProductId){
+                        Wapi.activityProduct.get(re=>{
+                            if(re.data){
+                                let product=re.data;
+
+                                ACT.productId=product.productId;
+                                ACT.brand=product.brand;
+                                ACT.product=product.name;
+                                ACT.price=product.price;
+                                ACT.installationFee=product.installationFee;
+                                ACT.reward=product.reward;
+                            }
+                            ReactDOM.render(<App/>,thisView);
+                        },{objectId:ACT.actProductId})
+                    }else{
+                        ReactDOM.render(<App/>,thisView);
+                    }
                 } 
             },{
                 objectId:_g.activityId

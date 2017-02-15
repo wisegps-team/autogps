@@ -165,7 +165,7 @@ class App extends Component {
                 limit:-1,
             });
 
-        }else if(_user.customer.custTypeId==8||_user.customer.custTypeId==5){//经销商账号，显示上一级代理商创建的渠道营销活动。
+        }else if(_user.customer.custTypeId==8||_user.customer.custTypeId==5){//经销商和代理商账号，显示上一级创建的渠道营销活动。
 
             let parents=_user.customer.parentId.join('|');
             let par1={

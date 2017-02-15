@@ -9,6 +9,7 @@ import AppBar from '../_component/base/appBar';
 import IconButton from 'material-ui/IconButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Card from 'material-ui/Card';
 import IconMenu from 'material-ui/IconMenu';
@@ -40,6 +41,11 @@ const styles = {
     search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'},
     span_left:{fontSize:'0.8em',color:'#666666'},
     span_right:{fontSize:'0.8em'},
+    warnPage:{position: 'absolute',left: '0px',top: '0px',width:'100%',height: '100%',backgroundColor: '#fff'},
+    warns:{textIndent:'2em',padding:'10px'},
+    hide:{display:'none'},
+    p:{textIndent:'2em'},
+    btn:{width:'100%',display:'block',textAlign:'center',paddingBottom:'20px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -66,15 +72,17 @@ class App extends Component {
         }
         this.limit=99;
         this.page_no=1;
-        this.total=-1;
+        this.total=0;
         this.originalActivities=[];
         this.activities=[];
         this.booking=[];
         this.gotData=false;
 
         this.search = this.search.bind(this);
+        this.weixin = [{name:'服务号'},{name:'营销号'}];
 
         this.nextPage = this.nextPage.bind(this);
+        this.toAdd = this.toAdd.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
         this.delete = this.delete.bind(this);
@@ -94,22 +102,27 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        // let par={
-        //     "group":{
-        //         "_id":{"activityId":"$activityId"},
-        //         "status0":{"$sum":"$status0"},
-        //         "status1":{"$sum":"$status1"},
-        //         "status2":{"$sum":"$status2"},
-        //         "status3":{"$sum":"$status3"}
-        //     },
-        //     "sorts":"objectId",
-        //     "uid":_user.customer.objectId,
-        // }
-        // Wapi.booking.aggr(resAggr=>{
-        //     this.booking=resAggr.data;
-        //     this.getData();
-        // },par);
-        this.getData();
+        Wapi.weixin.list(res=>{
+            this.weixin[0]=res.data.find(ele=>ele.type==0)||{name:'服务号'};
+            this.weixin[1]=res.data.find(ele=>ele.type==1)||{name:'营销号'};
+        },{uid:_user.customer.objectId});
+
+        let par={
+            "group":{
+                "_id":{"activityId":"$activityId"},
+                "status0":{"$sum":"$status0"},
+                "status1":{"$sum":"$status1"},
+                "status2":{"$sum":"$status2"},
+                "status3":{"$sum":"$status3"}
+            },
+            "sorts":"objectId",
+            "uid":_user.customer.objectId,
+        }
+        Wapi.booking.aggr(resAggr=>{
+            this.booking=resAggr.data;
+            this.getData();
+        },par);
+        // this.getData();
     }
     nextPage(){
         this.page_no++;
@@ -146,7 +159,12 @@ class App extends Component {
             sorts:'-createdAt',
         });
     }
+    toAdd(){
+        this.showWarn=true;
+        this.forceUpdate();
+    }
     add(){
+        this.showWarn=false;
         this.setState({
             isEdit:true,
             noEdit:false,
@@ -215,16 +233,12 @@ class App extends Component {
         window.location=acitivity.url;
     }
     render() {
+        let marketPromission=_user.customer.other&&_user.customer.other.va;
         return (
             <ThemeProvider>
                 <div>
-                    {/*<AppBar 
-                        title={___.seller_activity}
-                        style={{position:'fixed'}}
-                        iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
-                    />*/}
                     <div style={styles.search_head}>
-                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
+                        <ContentAdd style={styles.add_icon} onClick={this.toAdd}/>
                         <div style={styles.search_box}>
                             <Input 
                                 style={{height:'36px'}}
@@ -258,6 +272,30 @@ class App extends Component {
                             addSubmit={this.addSubmit}
                         />
                     </SonPage>
+
+                    <div style={this.showWarn?styles.warnPage:styles.hide}>
+                        <div style={styles.warns}>
+                            <p>创建营销活动前，请先了解以下注意事项：</p>
+                            <p>一、营销活动类别</p>
+                            <p style={(Boolean(marketPromission) && marketPromission.includes('3'))?{}:styles.hide}>
+                                车主营销：您的终端用户可在公众号[{this.weixin[0].name}]的“推荐有礼”分享。
+                            </p>
+                            <p style={(Boolean(marketPromission) && marketPromission.includes('1'))?{}:styles.hide}>
+                                渠道营销：您的员工和渠道伙伴可在公众号[{this.weixin[1].name}]的“推荐有礼”分享。
+                            </p>
+                            <p style={(Boolean(marketPromission) && marketPromission.includes('0'))?{}:styles.hide}>
+                                集团营销：您的集团营销人员可在公众号[{this.weixin[1].name}]的“推荐有礼”分享。
+                            </p>
+                            <p>二、营销产品类别</p>
+                            <p>全国安装：车主预订后可在您授权的网点和选择同一营销产品其他伙伴授权的网点安装。</p>
+                            <p>本地安装：车主预订后只能在您授权的网点安装。</p>
+                            <p>三、预订时支持本人预订或赠送好友，本人预订可选零元预订或支付订金，赠送好友可选零元预订或支付设备款及安装费，预订时选择支付订金或设备款则通过微信付款到智联车网平台，预订后车主自由选择合适的安装网点，安装注册时支持同品牌营销产品低端换高端、高端换低端等多种选购方式，充分满足车主需求和营销需求。</p>
+                            <p>四、如有预付款，安装注册时平台同步划转到设备当前所属代理商/经销商的企业账号，佣金也由平台自动从该企业账号划转到营销人员个人钱包，<span style={{fontWeight:'bold'}}>为保证资金结算正常，请通过平台及时办理出入库手续。</span></p>
+                        </div>
+                        <div style={styles.btn}>
+                            <RaisedButton label={___.ok} primary={true} onClick={this.add} />
+                        </div>
+                    </div>
                 </div>
             </ThemeProvider>
         );
@@ -272,6 +310,7 @@ App.childContextTypes={
 let strStatus=[___.terminated,___.ongoing];
 let strBoolean=[___.no,___.yes];
 let activityType=[___.carowner_seller,___.group_marketing,___.employee_marketing,___.subordinate_marketing];
+let strChannel=[___.national_marketing,___.regional_marketing];
 class DList extends Component{
     constructor(props,context){
         super(props,context);
@@ -279,14 +318,18 @@ class DList extends Component{
         this.toCountPage = this.toCountPage.bind(this);
     }
     toActivityPage(data){
-        // history.replaceState('home.html','home.html','home.html');
-        // window.location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-        //     +'&uid='+_user.customer.objectId
-        //     +'&sellerId=0&mobile='+encodeURIComponent(___.noBooking)
-        //     +'&title='+encodeURIComponent(data.name)
-        //     +'&agent_tel='+_user.customer.tel
-        //     +'&seller_name='+encodeURIComponent(___.noBooking)
-        //     +'&timerstamp='+Number(new Date());
+        history.replaceState('home.html','home.html','home.html');
+        window.location='http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
+            +'&title='+encodeURIComponent(data.name)
+            +'&uid='+_user.customer.objectId
+            +'&seller_name='+encodeURIComponent(_user.customer.name)
+            +'&sellerId='+_user.objectId
+            +'&mobile='+_user.mobile
+            +'&agent_tel='+_user.customer.tel
+            +'&wxAppKey='+data.wxAppKey
+            +'&activityId='+data.objectId
+            +'&seller_open_id='+_user.authData.openId
+            +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){
@@ -320,7 +363,7 @@ class DList extends Component{
                     <MenuItem 
                         style={styles.menu_item} 
                         primaryText={___.preview} 
-                        onTouchTap={()=>this.context.url(ele)}
+                        onTouchTap={()=>this.toActivityPage(ele)}
                     />
                     <MenuItem 
                         style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
@@ -335,14 +378,29 @@ class DList extends Component{
                 </IconMenu>
                 <div style={styles.line}>
                     {ele.name}
+                    <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>
                 </div>
                 <div style={combineStyle(['line','span_right'])}>
                     {activityType[ele.type]
                     +(ele.sellerTypeId==_user.customer.objectId ? '' : ('/'+ele.sellerType))
-                    +(ele.count?'/计算提成':'')}
-                    <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>            
+                    +(ele.count?'/'+___.calculate_commission+'':'')
+                    +(Number.isInteger(ele.channel)?('/'+strChannel[ele.channel]):'')}
                 </div>
-                <div style={styles.line}>
+                <div style={{marginTop: '0.5em',fontSize: '0.8em',display: 'block',height: '1.5em'}}>
+                    <div style={{width:'32%',float: 'left'}}>
+                        <span style={{color:'#666666'}}>{___.seller_account+'：'}</span>
+                        <span>{0}</span>
+                    </div>
+                    <div style={{width:'32%',float: 'left'}}>
+                        <span style={{color:'#666666'}}>{___.click_account+'：'}</span>
+                        <span>{0}</span>
+                    </div>
+                    <div style={{width:'30%',float: 'left'}}>
+                        <span style={{color:'#666666'}}>{___.booked_number+'：'}</span>
+                        <span>{ele.status0}</span>
+                    </div>
+                </div>
+                {/*<div style={styles.line}>
                     <span style={styles.span_left}>{___.regional_marketing+' : '}</span>
                     <span style={styles.span_right}>{ele.brand+' '+ele.product}</span>
                 </div>
@@ -353,7 +411,7 @@ class DList extends Component{
                 <div style={styles.line}>
                     <span style={styles.span_left}>{___.offersDesc+' : '}</span>
                     <span style={styles.span_right}>{'现在支付订金'+ele.reward+'元，'+ele.offersDesc}</span>
-                </div>
+                </div>*/}
             </div>
         )
         return(
