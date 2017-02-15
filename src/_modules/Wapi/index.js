@@ -607,6 +607,7 @@ const Wapi={
 	activityProduct:new WAPI('activityProduct',_user?_user.access_token:null),
 	qrDistribution:new WAPI('qrDistribution',_user?_user.access_token:null),
 	qrLink:new WAPI('qrLink',_user?_user.access_token:null),
+	authorize:new WAPI('authorize',_user?_user.access_token:null),
 };
 
 
@@ -633,17 +634,18 @@ makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,d
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit,role,roleId');
 makeGetOp('weixin','objectId,uid,name,type,wxAppKey');
-makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl');
+makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl,channel,createdActivity');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('brand','objectId,name,company,uid',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'name',page:'name'});
 makeGetOp('booking','userId,activityId,mobile,sellerId,sellerName,uid,status,status0,status1,status2,status3,name,carType,resTime,payTime,confirmTime,money,did,openId,installId,install,installDate,type,userName,userMobile,payMoney,payStatus,orderId,activityType,userOpenId,product,receiptDate,selectInstallDate,res,receipt,receiptId,commission,commissionId,managerId,objectId,createdAt,updatedAt');
-makeGetOp('activity','creator,objectId,uid,type,name,url,imgUrl,status,reward,pay,deposit,offersDesc,price,installationFee,getCard,principal,principalId,principalTel,sellerType,sellerTypeId,brand,product,productId,wxAppKey,count,tel,createdAt,updatedAt');
+makeGetOp('activity','creator,objectId,uid,type,name,url,imgUrl,status,reward,pay,deposit,offersDesc,price,installationFee,getCard,principal,principalId,principalTel,sellerType,sellerTypeId,brand,product,productId,wxAppKey,count,tel,createdAt,updatedAt,channel,actProductId');
 makeGetOp('qrData','objectId,id,data');
 makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
+makeGetOp('authorize','objectId,id,productId,actProductId,applyCompanyId,applyUid,applyDate,approveCompanyId,approveUid,approveDate,cancelUid,cancelDate,status');
 
 
 

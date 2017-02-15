@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=90;//版本号
+let version=95;//版本号
 
 //地区表
 export const area={
@@ -2282,6 +2282,16 @@ export const activity={
             'type': 'Number',
             'query': true
         },{
+            'name': 'actProductId',
+            'desc': '营销产品ID',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'channel',
+            'desc': '安装渠道',//0为全国安装，1为本地安装
+            'type': 'Number',
+            'query': true
+        },{
             'name': 'getCard',
             'desc': '客户经理开卡',
             'type': 'Boolean',
@@ -2487,6 +2497,16 @@ export const activityProduct={
             'desc': '产品介绍链接',
             'type': 'String',
             'query': true,
+        },{
+            'name': 'channel',
+            'desc': '安装渠道',//0全国安装，1本地安装
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'createdActivity',
+            'desc': '是否创建过活动',
+            'type': 'Boolean',
+            'query': true 
         }
     ],
     indexDefine: [
@@ -2614,12 +2634,102 @@ export const qrLink={
     ]
 }
 
+//二维码批号表，显示已分配的某一批二维码的信息
+export const authorize={
+    name: 'authorize',             //表名
+    desc: '营销产品授权表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'id',
+            'desc': '数据id',
+            'type': 'Number',
+            'default':'@AutoInc',
+            'query': true, 
+        },{
+            'name': 'productId',
+            'desc': '产品型号ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'actProductId',
+            'desc': '营销产品ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'applyCompanyId',
+            'desc': '申请公司ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'applyUid',
+            'desc': '申请人ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'applyDate',
+            'desc': '申请日期',
+            'type': 'Date',
+            'default': '',
+            'display': '',
+            'query': true,    //可查询字段
+            'validations': {
+            },
+            'messages': {
+            }
+        },{
+            'name': 'approveCompanyId',
+            'desc': '审核公司ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'approveUid',
+            'desc': '审核人ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'approveDate',
+            'desc': '审核日期',
+            'type': 'Date',
+            'default': '',
+            'display': '',
+            'query': true,    //可查询字段
+            'validations': {
+            },
+            'messages': {
+            }
+        },{
+            'name': 'cancelUid',
+            'desc': '取消授权人ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'cancelDate',
+            'desc': '取消授权日期',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'status',
+            'desc': '状态',
+            'type': 'Number',   //0待审核／1已授权／2已取消
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+
 
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin,qrData,activityProduct,qrDistribution,qrLink
+    weixin,qrData,activityProduct,qrDistribution,qrLink,authorize
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);

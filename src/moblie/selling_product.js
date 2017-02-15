@@ -224,7 +224,12 @@ class App extends Component {
                         无营销产品！
                     </div>
                     <div>
-                        <ProductList data={this.list} url={this.url} edit={this.edit} delete={this.delete}/>
+                        <ProductList 
+                            data={this.list} 
+                            url={this.url} 
+                            edit={this.edit} 
+                            delete={this.delete}
+                        />
                     </div>
                     <SonPage title={___.edit_selling_product} open={this.state.isEdit} back={this.editBack}>
                         <EditProduct data={this.curProduct} editSubmit={this.editSubmit} addSubmit={this.addSubmit}/>
@@ -237,7 +242,7 @@ class App extends Component {
 export default App;
 
 let strChannel=[___.national_marketing,___.regional_marketing];
-//let strAuthStatus=['待审核','已授权','已取消'];
+let strAuthStatus=['待审核','已授权','已取消'];
 class ProductList extends Component {
     render() {
         //let marketPromission=_user.customer.other&&_user.customer.other.va;
