@@ -577,5 +577,5 @@ window.___={
 	'click_account':'点击统计',
 	'booked_number':'预订数量',
 	'authorize':'授权',
-	'product_authorize':'产品授权',
+	'partner_authorize':'合作授权',
 }

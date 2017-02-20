@@ -137,6 +137,12 @@ class App extends React.Component {
     }
     componentDidMount(){
         this.load();
+        let _this=this;
+        thisView.addEventListener('show',function (e) {
+            _this.gotData=true;
+            _this._data=e.params;
+            _this.load();
+        });
     }
     detail(data){
         // this.setState({bookData:data});
@@ -149,9 +155,8 @@ class App extends React.Component {
         this.page++;
 
         Wapi.booking.list(res=>{
-            console.log(res);
             this.setState({
-                books:arr.concat(res.data),
+                books:res.data,
             });
         },this._data,{
             limit:20,
@@ -165,6 +170,8 @@ class App extends React.Component {
         });
     }
     render(){
+        console.log('render');
+        let styNoData=(this.gotData && this.state.books.length==0)?styles.show:styles.hide;
         return(
             <ThemeProvider>
                 {/*<AppBar 
@@ -173,6 +180,9 @@ class App extends React.Component {
                 />*/}
 
                 <div style={styles.main}>
+                    <div style={styNoData} >
+                        暂无数据
+                    </div>
                     <Alist 
                         max={this.state.total} 
                         limit={20} 

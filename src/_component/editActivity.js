@@ -64,6 +64,7 @@ class EditActivity extends Component {
 
         this.products=[
             {
+                objectId:0,
                 brand:'',
                 name:___.please_select_model,
                 productId:0,
@@ -153,6 +154,9 @@ class EditActivity extends Component {
             let data=getInitData();
             let next=Object.assign({},nextProps.data);
             let product=this.products.find(ele=>ele.objectId==next.actProductId);
+            if(!next.actProductId){
+                product=this.products.find(ele=>ele.productId==next.productId);
+            }
 
             next.productId=product.productId;
             next.brand=product.brand;
@@ -217,7 +221,7 @@ class EditActivity extends Component {
         this.forceUpdate();
     }
     productChange(e,v,key){
-        let target=this.products.find(ele=>ele.productId==key);
+        let target=this.products.find(ele=>ele.objectId==key);
         this.data.actProductId=target.objectId;
         this.data.channel=target.channel;
 
@@ -332,7 +336,7 @@ class EditActivity extends Component {
         }
 
         let productItems=this.products.map(ele=>    //产品选项
-            <MenuItem key={ele.productId} value={ele.productId} primaryText={strChannel[ele.channel]+' '+ele.brand+ele.name} />);
+            <MenuItem key={ele.objectId} value={ele.objectId} primaryText={strChannel[ele.channel]+' '+ele.brand+ele.name} />);
 
         let selleTypeItems=this.sellerTypes.map(e=> //营销人员（类型）选项
             <MenuItem key={e.objectId} value={e.objectId.toString()} primaryText={e.name} />);
@@ -345,7 +349,7 @@ class EditActivity extends Component {
                 <Input name='name' floatingLabelText={___.activity_name} value={this.data.name} onChange={this.dataChange} disabled={noEdit} />
                 
                 {/*营销类别*/}
-                <SelectField name='productId' floatingLabelText={___.activity_type} value={this.data.type} onChange={this.typeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
+                <SelectField name='actType' floatingLabelText={___.activity_type} value={this.data.type} onChange={this.typeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
                     {typeItems}
                 </SelectField>
 
@@ -367,8 +371,8 @@ class EditActivity extends Component {
                     />
                 </div>
 
-                {/*产品型号*/}
-                <SelectField name='productId' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.productChange} style={styles.select} maxHeight={200} disabled={noEdit}>
+                {/*营销产品型号*/}
+                <SelectField name='actProductId' floatingLabelText={___.product_type} value={Number(this.data.actProductId)} onChange={this.productChange} style={styles.select} maxHeight={300} disabled={noEdit}>
                     {productItems}
                 </SelectField>
 

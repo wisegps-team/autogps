@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=95;//版本号
+let version=98;//版本号
 
 //地区表
 export const area={
@@ -2139,7 +2139,7 @@ export const booking={
             'query': true,
         },{
             'name': 'product',
-            'desc':'预订产品信息',//name名称，id产品id，brand品牌，price设备款，installationFee安装费，reward佣金
+            'desc':'预订产品信息',//name名称，id产品id，brand品牌，price设备款，installationFee安装费，reward佣金,actProductId营销产品id
             'type':'Object',
             'query':true
         },{
@@ -2448,7 +2448,7 @@ export const activityProduct={
     desc: '营销产品表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
@@ -2634,7 +2634,7 @@ export const qrLink={
     ]
 }
 
-//二维码批号表，显示已分配的某一批二维码的信息
+//营销产品授权表
 export const authorize={
     name: 'authorize',             //表名
     desc: '营销产品授权表',             //表描述
@@ -2661,12 +2661,22 @@ export const authorize={
             'type': 'String',
             'query': true,
         },{
+            'name': 'applyCompanyName',
+            'desc': '申请公司名称',
+            'type': 'String',
+            'query': true,
+        },{
             'name': 'applyCompanyId',
             'desc': '申请公司ID',
             'type': 'String',
             'query': true,
         },{
-            'name': 'applyUid',
+            'name': 'applyUserName',
+            'desc': '申请人姓名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'applyUserId',
             'desc': '申请人ID',
             'type': 'String',
             'query': true,
@@ -2682,12 +2692,22 @@ export const authorize={
             'messages': {
             }
         },{
+            'name': 'approveCompanyName',
+            'desc': '审核公司名称',
+            'type': 'String',
+            'query': true,
+        },{
             'name': 'approveCompanyId',
             'desc': '审核公司ID',
             'type': 'String',
             'query': true,
         },{
-            'name': 'approveUid',
+            'name': 'approveUserName',
+            'desc': '审核人姓名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'approveUserId',
             'desc': '审核人ID',
             'type': 'String',
             'query': true,
@@ -2703,15 +2723,26 @@ export const authorize={
             'messages': {
             }
         },{
-            'name': 'cancelUid',
+            'name': 'cancelUserName',
+            'desc': '取消授权人姓名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'cancelUserId',
             'desc': '取消授权人ID',
             'type': 'String',
             'query': true,
         },{
-            'name': 'cancelDate',
+            'name': 'approveDate',
             'desc': '取消授权日期',
-            'type': 'String',
-            'query': true,
+            'type': 'Date',
+            'default': '',
+            'display': '',
+            'query': true,    //可查询字段
+            'validations': {
+            },
+            'messages': {
+            }
         },{
             'name': 'status',
             'desc': '状态',

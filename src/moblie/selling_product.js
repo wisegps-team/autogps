@@ -20,7 +20,7 @@ const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.selling_product);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
-    // thisView.prefetch('authorize.js',2);
+    thisView.prefetch('myAccount/my_order.js',2);
 });
 
 const styles = {
@@ -44,6 +44,7 @@ const styles = {
     search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'},
     span_left:{fontSize:'0.8em',color:'#666666'},
     span_right:{fontSize:'0.8em'},
+    a:{color:'rgb(26, 140, 255)'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -67,6 +68,9 @@ for(let i=5;i--;){
     _list.push(p);
 }
 
+let strChannel=[___.national_marketing,___.regional_marketing];
+let strAuthStatus=['待审核','已授权','已取消','未授权'];
+
 class App extends Component {
     constructor(props,context){
         super(props,context);
@@ -79,17 +83,18 @@ class App extends Component {
         this.list=[];
         this.gotData=false;
 
-        // this.marketPermission=false;//营销权限，确定当前customer能否新增和显示自己的营销产品
+        this.marketPermission=false;//营销权限，确定当前customer能否新增和显示自己的营销产品
 
         this.search = this.search.bind(this);
         this.url = this.url.bind(this);
-        // this.authorize = this.authorize.bind(this);
+        this.authorize = this.authorize.bind(this);
         this.edit = this.edit.bind(this);
         this.editBack = this.editBack.bind(this);
         this.editSubmit = this.editSubmit.bind(this);
         this.delete = this.delete.bind(this);
         this.add = this.add.bind(this);
         this.addSubmit = this.addSubmit.bind(this);
+        this.toOrder = this.toOrder.bind(this);
     }
     search(e,value){
         this.list=this.originalList.filter(ele=>ele.name.includes(value)||ele.brand.includes(value));
@@ -99,9 +104,18 @@ class App extends Component {
         W.loading(true);
         // this.list=_list;
         // this.forceUpdate();
+
+        let _this=this;
+        thisView.addEventListener('message',(e)=>{
+            // console.log('收到"'+e.from+'"post过来的信息'+JSON.stringify(e.data));
+            let data=e.data;
+            let target=this.originalList.find(ele=>ele.objectId==data.actProductId);
+            target.myAuth+=data.num;
+            this.forceUpdate();
+        });
         
         //获取当前customer的权限，确定是否显示右上角‘添加’按钮,[集团营销，渠道营销，车主营销]包含其中至少一个
-        let va=_user.customer.other.va;
+        let va=(_user.customer.other&&_user.customer.other.va)||'';
         if(va.includes('0')||va.includes('1')||va.includes('3')){
             this.marketPermission=true;
         }
@@ -117,23 +131,111 @@ class App extends Component {
                 createdActivity:true
             };
         }
+
         Wapi.activityProduct.list(res=>{
             this.originalList=res.data;
-            this.list=res.data;
+            // this.list=res.data;
             this.gotData=true;
 
-            W.loading();
-            this.forceUpdate();
+            if(this.marketPermission){
+                Wapi.authorize.list(re=>{
+                    let auths=re.data;
+                    let counts=countIt(auths);
+                    
+                    this.originalList=this.originalList.map(ele=>{
+                        let target=counts.find(item=>item.actProductId==ele.objectId);
+                        if(target){
+                            ele.allAuth=target.allAuth;
+                            ele.myAuth=target.myAuth;
+                        }else{
+                            ele.allAuth=0;
+                            ele.myAuth=0;
+                        }
+                        return ele;
+                    });
+                    this.list=this.originalList;
+
+                    W.loading();
+                    this.forceUpdate();
+                },{
+                    status:'1|2'
+                },{
+                    fields:'actProductId,approveCompanyId',limit:-1
+                });
+            }else{
+                let flag=0;
+                let pids=this.originalList.map(ele=>ele.objectId);
+                Wapi.authorize.list(r=>{
+                    let auths=r.data;
+                    this.originalList=this.originalList.map(ele=>{
+                        let target=auths.find(item=>item.actProductId==ele.objectId);
+                        if(target){
+                            ele.authStatus=target.status;
+                        }else{
+                            ele.authStatus=3;
+                        }
+                        return ele;
+                    });
+                    this.list=this.originalList;
+                    flag++;
+                    if(flag==2){
+                        W.loading();
+                        this.forceUpdate();
+                    }
+                },{
+                    actProductId:pids.join('|'),
+                    applyCompanyId:_user.customer.objectId
+                },{
+                    fields:'actProductId,status'
+                })
+
+                Wapi.booking.aggr(result=>{
+                    let bookCount=result.data;
+                    this.originalList=this.originalList.map(ele=>{
+                        let target=bookCount.find(item=>item._id.product.id==ele.productId);
+                        if(target){
+                            ele.bookNum=target.status0;
+                        }else{
+                            ele.bookNum=0;
+                        }
+                        return ele;
+                    });
+                    this.list=this.originalList;
+                    flag++;
+                    if(flag==2){
+                        W.loading();
+                        this.forceUpdate();
+                    }
+                },{
+                    "group":{
+                        "_id":{"product":"$product"},
+                        "status0":{"$sum":"$status0"}
+                    },
+                    "sorts":"objectId",
+                    "installId":_user.customer.objectId
+                })
+            }
+
         },par,{
-            limit:99
+            limit:-1
         });
+
     }
     url(product){
         window.location=product.productUrl;
     }
-    // authorize(product){
-    //     thisView.goTo('authorize.js',product);
-    // }
+    authorize(product,intent){
+        if(product.myAuth==0&&intent==0){
+            W.alert('暂未授权任何商家');
+            return;
+        }
+        let params={
+            product:product,
+            intent:intent
+        };
+        thisView.goTo('authorize.js',params);
+        // thisView.postMessage('authorize.js',params);
+    }
     edit(product){
         this.curProduct=product;
         this.setState({isEdit:true});
@@ -175,6 +277,14 @@ class App extends Component {
     add(){
         this.curProduct={};
         this.setState({isEdit:true});
+    }
+    toOrder(product){
+        console.log(product);
+        let par={
+            installId:_user.customer.objectId,
+            productId:product.productId
+        }
+        thisView.goTo('myAccount/my_order.js',par);
     }
     addSubmit(product){
         Wapi.activityProduct.list(re=>{
@@ -227,8 +337,10 @@ class App extends Component {
                         <ProductList 
                             data={this.list} 
                             url={this.url} 
+                            authorize={this.authorize} 
                             edit={this.edit} 
                             delete={this.delete}
+                            toOrder={this.toOrder}
                         />
                     </div>
                     <SonPage title={___.edit_selling_product} open={this.state.isEdit} back={this.editBack}>
@@ -241,12 +353,12 @@ class App extends Component {
 }
 export default App;
 
-let strChannel=[___.national_marketing,___.regional_marketing];
-let strAuthStatus=['待审核','已授权','已取消'];
+
 class ProductList extends Component {
     render() {
-        //let marketPromission=_user.customer.other&&_user.customer.other.va;
+        let marketPromission=_user.customer.other&&_user.customer.other.va;
         let data=this.props.data;
+        console.log(data);
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
                 <IconMenu
@@ -264,11 +376,11 @@ class ProductList extends Component {
                         primaryText={___.preview} 
                         onTouchTap={()=>this.props.url(ele)}
                     />
-                    {/*<MenuItem 
-                        style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide}
+                    <MenuItem 
+                        style={marketPromission ? styles.menu_item : styles.hide}
                         primaryText={___.authorize} 
-                        onTouchTap={()=>this.props.authorize(ele)}
-                    />*/}
+                        onTouchTap={()=>this.props.authorize(ele,1)}
+                    />
                     <MenuItem 
                         style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
                         primaryText={___.edit} 
@@ -286,7 +398,7 @@ class ProductList extends Component {
                 <div style={styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.marketing_channel+' : '}</span>
-                        <span style={styles.span_right}>{Number.isInteger(ele.channel)?('/'+strChannel[ele.channel]):''}</span>
+                        <span style={styles.span_right}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>
                     </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.activity_reward+' : '}</span>
@@ -303,28 +415,28 @@ class ProductList extends Component {
                         <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
                     </span>
                 </div>
-                {/*有营销活动权限的
+                {/*有营销活动权限的*/}
                 <div style={marketPromission?styles.line:styles.hide}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{'共享授权'+' : '}</span>
-                        <span style={styles.span_right}>{333}</span>
+                        <span style={styles.span_right}>{ele.allAuth}</span>
                     </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{'我的授权'+' : '}</span>
-                        <span style={styles.span_right}>{22}</span>
+                        <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.authorize(ele,0)}>{ele.myAuth}</span>
                     </span>
-                </div>*/}
-                {/*无营销活动权限的
+                </div>
+                {/*无营销活动权限的*/}
                 <div style={marketPromission?styles.hide:styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{'授权状态'+' : '}</span>
-                        <span style={styles.span_right}>{strAuthStatus[1]}</span>
+                        <span style={styles.span_right}>{strAuthStatus[ele.authStatus]}</span>
                     </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{'预约车主'+' : '}</span>
-                        <span style={styles.span_right}>{9}</span>
+                        <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.toOrder(ele)}>{ele.bookNum}</span>
                     </span>
-                </div>*/}
+                </div>
 
             </div>
         );
@@ -478,4 +590,38 @@ class EditProduct extends Component {
 
 function moneyFont(num){
     return Number(num).toFixed(2);
+}
+
+function countIt(data){
+    let arr=[];
+    for(let i=data.length;i--;){
+        let obj=data[i];
+        if(arr.length){
+            for(let j=arr.length-1;j>=0;j--){
+                if(arr[j].actProductId==obj.actProductId){
+                    if(obj.approveCompanyId==_user.customer.objectId){
+                        arr[j].myAuth++;
+                    }else{
+                        arr[j].allAuth++;
+                    }
+                    break;
+                }
+                if(j==0){
+                    arr.push({
+                        actProductId:obj.actProductId,
+                        allAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
+                        myAuth:(obj.approveCompanyId==_user.customer.objectId?1:0)
+                    });
+                }
+            }
+        }else{
+            arr.push({
+                actProductId:obj.actProductId,
+                allAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
+                myAuth:(obj.approveCompanyId==_user.customer.objectId?1:0)
+            });
+        }
+    }
+    console.log(arr);
+    return arr;
 }

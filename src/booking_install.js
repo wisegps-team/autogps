@@ -24,7 +24,7 @@ const styles = {
 
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
-
+thisView.setTitle(___.service_booking);
 thisView.addEventListener('load',function(e){
     ReactDOM.render(<App/>,thisView);
 });
@@ -114,18 +114,48 @@ class App extends Component {
                 },{objectId:ACT.productId});
 
             },{objectId:activityId});
+
             //获取安装网点
-            Wapi.serverApi.getInstallByUid(re=>{
-                this.installs=re.data;//正式用
-                this.visibleInstalls=re.data;
-                // this.installs=_customers;//测试用
-                flag++;
-                if(flag==2)this.forceUpdate();
-            },{
-                uid:uid,
-                // uid:"781687274311127000"//测试用 这里的uid其实是父级的objectId，
-            },{
-                limit:999
+            // Wapi.serverApi.getInstallByUid(re=>{
+            //     console.log(re.data);
+            //     this.installs=re.data;//正式用
+            //     this.visibleInstalls=re.data;
+            //     // this.installs=_customers;//测试用
+            //     flag++;
+            //     if(flag==2)this.forceUpdate();
+            // },{
+            //     uid:uid,
+            //     // uid:"781687274311127000"//测试用 这里的uid其实是父级的objectId，
+            // },{
+            //     limit:999
+            // });
+
+            //获取安装网点改为从授权表中获取
+            let parAuth={
+                productId:booking.product.id,
+                // actProductId:'814010097264103400',
+                // actProductId:'821167117784191000',
+                status:1
+            };
+            if(booking.product.actProductId){
+                parAuth={
+                    actProductId:booking.product.actProductId,
+                    status:1
+                };
+            }
+            Wapi.authorize.list(auths=>{
+                let cids=auths.data.map(ele=>ele.applyCompanyId);
+                Wapi.customer.list(custs=>{
+                    console.log(custs.data);
+                    this.installs=custs.data;//正式用
+                    this.visibleInstalls=custs.data;
+                    flag++;
+                    if(flag==2)this.forceUpdate();
+                },{
+                    objectId:cids.join('|'),
+                })
+            },parAuth,{
+                fields:'objectId,applyCompanyId'
             });
 
         },{objectId:_g.bookingId});

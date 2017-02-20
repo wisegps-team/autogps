@@ -125,7 +125,8 @@ class Form extends Component {
             price:ACT.price,
             installationFee:ACT.installationFee,
             reward:ACT.reward,
-            act_url:ACT.url
+            act_url:ACT.url,
+            actProductId:ACT.actProductId
         };
         if(ACT.count)
             submit_data.managerId=ACT.principalId;//活动负责人id

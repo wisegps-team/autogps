@@ -378,7 +378,7 @@ class DList extends Component{
                 </IconMenu>
                 <div style={styles.line}>
                     {ele.name}
-                    <span style={ele.status?styles.hide:{}}>/<span style={styles.warn}>暂停推广</span></span>
+                    <span style={ele.status?styles.hide:{}}><span style={styles.warn}> 暂停推广</span></span>
                 </div>
                 <div style={combineStyle(['line','span_right'])}>
                     {activityType[ele.type]

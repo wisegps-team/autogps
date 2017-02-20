@@ -645,7 +645,7 @@ makeGetOp('activity','creator,objectId,uid,type,name,url,imgUrl,status,reward,pa
 makeGetOp('qrData','objectId,id,data');
 makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
-makeGetOp('authorize','objectId,id,productId,actProductId,applyCompanyId,applyUid,applyDate,approveCompanyId,approveUid,approveDate,cancelUid,cancelDate,status');
+makeGetOp('authorize','objectId,id,productId,actProductId,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
 
 
 
