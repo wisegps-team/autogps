@@ -24,6 +24,8 @@ import ErrorBox from './_component/booking/error_box';
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.booking);
 thisView.style.backgroundColor='#f6f6f6';
+
+let ACT=null;
 thisView.addEventListener('load',function(){
     if(_g.bookingId){
         if(_g.openid)
@@ -62,8 +64,6 @@ thisView.addEventListener('load',function(){
         }
     }
 });
-
-let ACT=null;
 
 const sty={
     con:{

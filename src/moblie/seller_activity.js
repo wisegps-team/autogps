@@ -19,6 +19,7 @@ import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import EditActivity from '../_component/editActivity';
 import Input from '../_component/base/input';
+import {getOpenIdKey,changeToLetter} from '../_modules/tool';
 
 
 const styles = {
@@ -316,20 +317,77 @@ class DList extends Component{
         super(props,context);
         this.toActivityPage = this.toActivityPage.bind(this);
         this.toCountPage = this.toCountPage.bind(this);
+        this.canTouch=true;
     }
     toActivityPage(data){
-        history.replaceState('home.html','home.html','home.html');
-        window.location='http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
-            +'&title='+encodeURIComponent(data.name)
-            +'&uid='+_user.customer.objectId
-            +'&seller_name='+encodeURIComponent(_user.customer.name)
-            +'&sellerId='+_user.objectId
-            +'&mobile='+_user.mobile
-            +'&agent_tel='+_user.customer.tel
-            +'&wxAppKey='+data.wxAppKey
-            +'&activityId='+data.objectId
-            +'&seller_open_id='+_user.authData.openId
-            +'&timerstamp='+Number(new Date());
+        if(!this.canTouch)return;
+        this.canTouch=false;
+        setTimeout(()=>{
+            this.canTouch=true;
+        }, 500);
+
+        data._seller=_user.employee?_user.employee.name:_user.customer.contact;
+        data._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
+        data._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+        let strOpenId='';
+        let idKey=getOpenIdKey();
+        if(_user.authData && _user.authData[idKey]){
+            strOpenId='&seller_open_id='+_user.authData[idKey];
+        }
+
+        
+        Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
+            let linkUrl='';
+            if(res.data){
+                linkUrl='http://autogps.cn/?s='+res.data.id;
+                history.replaceState('home.html','home.html','home.html');
+                window.location=linkUrl;
+                // console.log(linkUrl);
+            }else{
+                Wapi.qrLink.add(re=>{
+                    let _id=changeToLetter(re.autoId);
+                    linkUrl='http://autogps.cn/?s='+_id;
+                    Wapi.qrLink.update(json=>{
+                        history.replaceState('home.html','home.html','home.html');
+                        window.location=linkUrl;
+                        // console.log(linkUrl);
+                    },{
+                        _objectId:re.objectId,
+                        id:_id
+                    })
+                },{
+                    i:1,
+                    act:String(data.objectId),
+                    sellerId:String(data._sellerId),
+                    uid:String(data.uid),
+                    type:3,
+                    url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                        +'&uid='+data.uid
+                        +'&sellerId='+data._sellerId
+                        +'&activityId='+data.objectId
+                        +strOpenId
+                        +'&timerstamp='+Number(new Date()),
+                });
+            }
+        },{
+            act:data.objectId,
+            sellerId:data._sellerId,
+            uid:data.uid,
+            type:3
+        });
+
+        // history.replaceState('home.html','home.html','home.html');
+        // window.location='http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
+        //     +'&title='+encodeURIComponent(data.name)
+        //     +'&uid='+_user.customer.objectId
+        //     +'&seller_name='+encodeURIComponent(_user.customer.name)
+        //     +'&sellerId='+_user.objectId
+        //     +'&mobile='+_user.mobile
+        //     +'&agent_tel='+_user.customer.tel
+        //     +'&wxAppKey='+data.wxAppKey
+        //     +'&activityId='+data.objectId
+        //     +'&seller_open_id='+_user.authData.openId
+        //     +'&timerstamp='+Number(new Date());
     }
     toCountPage(page,data){
         if(page=='booking'){

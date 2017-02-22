@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=98;//版本号
+let version=99;//版本号
 
 //地区表
 export const area={
@@ -105,7 +105,7 @@ export const customer={
     desc: '客户表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
@@ -539,7 +539,7 @@ export const employee={
     desc: '人员表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [

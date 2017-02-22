@@ -223,7 +223,8 @@ class App extends Component {
                         let activity=this.activity;                        
                         activity._seller=_user.employee?_user.employee.name:_user.customer.contact;
                         activity._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
-                        activity._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+                        // activity._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
+                        activity._sellerTel=_user.employee?_user.employee.tel:_user.customer.tel;
 
                         let strOpenId='';
                         let idKey=getOpenIdKey();
@@ -231,26 +232,32 @@ class App extends Component {
                             strOpenId='&seller_open_id='+_user.authData[idKey];
                         }
                         let data={
-                            i:0,
-                            uid:_user.customer.objectId,
+                            i:1,
+                            uid:String(_user.customer.objectId),
                             id:code,
-                            sellerId:_user.objectId,
-                            act:this.activity.objectId,
+                            sellerId:String(_user.objectId),
+                            act:String(this.activity.objectId),
                             type:1,
                             batchId:batchId,
                             batchName:batchName,
                             status:1,
-                            url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(activity.url)
-                                +'&title='+encodeURIComponent(activity.name)
-                                +'&uid='+activity.uid
-                                +'&seller_name='+encodeURIComponent(activity._seller)
-                                +'&sellerId='+activity._sellerId
-                                +'&mobile='+activity._sellerTel
-                                +'&agent_tel='+_user.customer.tel
-                                +'&wxAppKey='+activity.wxAppKey
+                            url:WiStorm.root+'action.html?intent=logout'
                                 +'&activityId='+activity.objectId
+                                +'&sellerId='+activity._sellerId
+                                +'&uid='+activity.uid
                                 +strOpenId
                                 +'&timerstamp='+Number(new Date()),
+                            // url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(activity.url)
+                            //     +'&title='+encodeURIComponent(activity.name)
+                            //     +'&uid='+activity.uid
+                            //     +'&seller_name='+encodeURIComponent(activity._seller)
+                            //     +'&sellerId='+activity._sellerId
+                            //     +'&mobile='+activity._sellerTel
+                            //     +'&agent_tel='+_user.customer.tel
+                            //     +'&wxAppKey='+activity.wxAppKey
+                            //     +'&activityId='+activity.objectId
+                            //     +strOpenId
+                            //     +'&timerstamp='+Number(new Date()),
                         }
 
                         if(created){

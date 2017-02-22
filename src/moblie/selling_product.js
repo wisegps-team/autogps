@@ -246,7 +246,6 @@ class App extends Component {
         delete data.objectId;
 
         Wapi.activityProduct.update(res=>{
-            console.log(res);
             if(res.status_code!=0){
                 W.alert('修改产品信息失败');
                 return;
@@ -268,7 +267,6 @@ class App extends Component {
         W.confirm(___.confirm_delete_product,b=>{
             if(!b)return;
             Wapi.activityProduct.delete(res=>{
-                console.log(res);
                 this.list=this.list.filter(ele=>ele.objectId!=product.objectId);
                 this.forceUpdate();
             },{objectId:product.objectId});
@@ -279,7 +277,6 @@ class App extends Component {
         this.setState({isEdit:true});
     }
     toOrder(product){
-        console.log(product);
         let par={
             installId:_user.customer.objectId,
             productId:product.productId
@@ -294,7 +291,6 @@ class App extends Component {
             }
 
             Wapi.activityProduct.add(res=>{
-                console.log(res);
                 if(res.status_code!=0){
                     W.alert('添加产品信息失败');
                     return;
@@ -358,7 +354,6 @@ class ProductList extends Component {
     render() {
         let marketPromission=_user.customer.other&&_user.customer.other.va;
         let data=this.props.data;
-        console.log(data);
         let items=data.map((ele,i)=>
             <div key={i} style={styles.card}>
                 <IconMenu
@@ -622,6 +617,5 @@ function countIt(data){
             });
         }
     }
-    console.log(arr);
     return arr;
 }

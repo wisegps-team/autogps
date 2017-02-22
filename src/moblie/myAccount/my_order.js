@@ -170,7 +170,6 @@ class App extends React.Component {
         });
     }
     render(){
-        console.log('render');
         let styNoData=(this.gotData && this.state.books.length==0)?styles.show:styles.hide;
         return(
             <ThemeProvider>

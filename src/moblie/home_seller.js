@@ -26,7 +26,7 @@ import EmployeeSearch from '../_component/employee_search';
 
 import STORE from '../_reducers/main';
 import {user_type_act,brand_act,department_act,product_act} from '../_reducers/dictionary';
-import {getOpenIdKey} from '../_modules/tool';
+import {getOpenIdKey,changeToLetter} from '../_modules/tool';
 
 const styles={
     main:{paddingBottom:'50px'},
@@ -151,28 +151,68 @@ class ActivityList extends Component {
             if(_user.authData && _user.authData[idKey]){
                 strOpenId='&seller_open_id='+_user.authData[idKey];
             }
-            var op={
-                title: data.name, // 分享标题
-                desc: data.booking_offersDesc, // 分享描述
-                link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
-                    +'&uid='+data.uid
-                    +'&sellerId='+_user.employee.objectId
-                    +'&mobile='+_user.employee.tel
-                    +'&title='+encodeURIComponent(data.name)
-                    +'&agent_tel='+_user.customer.tel
-                    +'&seller_name='+encodeURIComponent(_user.employee.name)
-                    +'&wx_app_id='+_user.customer.wxAppKey
-                    +'&activityId='+data.objectId
-                    +strOpenId
-                    +'&timerstamp='+Number(new Date()),
-                imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                success: function(){},
-                cancel: function(){}
+
+            Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
+                let linkUrl='';
+                if(res.data){
+                    linkUrl='http://autogps.cn/?s='+res.data.id;
+                    setWxShare(linkUrl);
+                }else{
+                    Wapi.qrLink.add(re=>{
+                        let _id=changeToLetter(re.autoId);
+                        linkUrl='http://autogps.cn/?s='+_id;
+                        Wapi.qrLink.update(json=>{
+                            setWxShare(linkUrl);
+                        },{
+                            _objectId:re.objectId,
+                            id:_id
+                        })
+                    },{
+                        i:1,
+                        act:String(data.objectId),
+                        sellerId:String(_user.employee.objectId),
+                        uid:String(data.uid),
+                        type:3,
+                        url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                            +'&uid='+data.uid
+                            +'&sellerId='+_user.employee.objectId
+                            +'&activityId='+data.objectId
+                            +strOpenId
+                            +'&timerstamp='+Number(new Date()),
+                    });
+                }
+            },{
+                act:data.objectId,
+                sellerId:_user.employee.objectId,
+                uid:data.uid,
+                type:3
+            });
+            
+            function setWxShare(url){
+                var op={
+                    title: data.name, // 分享标题
+                    desc: data.booking_offersDesc, // 分享描述
+                    link: url,
+                    // link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                    //     +'&uid='+data.uid
+                    //     +'&sellerId='+_user.employee.objectId
+                    //     +'&mobile='+_user.employee.tel
+                    //     +'&title='+encodeURIComponent(data.name)
+                    //     +'&agent_tel='+_user.customer.tel
+                    //     +'&seller_name='+encodeURIComponent(_user.employee.name)
+                    //     +'&wx_app_id='+_user.customer.wxAppKey
+                    //     +'&activityId='+data.objectId
+                    //     +strOpenId
+                    //     +'&timerstamp='+Number(new Date()),
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){},
+                    cancel: function(){}
+                }
+                wx.onMenuShareTimeline(op);
+                wx.onMenuShareAppMessage(op);
+                setShare=null;
+                W.alert(___.share_activity);
             }
-            wx.onMenuShareTimeline(op);
-            wx.onMenuShareAppMessage(op);
-            setShare=null;
-            W.alert(___.share_activity);
         }
         if(W.native){
             setShare();
