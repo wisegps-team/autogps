@@ -108,7 +108,15 @@ class App extends Component {
                         W.alert(___.not_allow_login);
                         return;
                     }
-                    user.pages=page.data;
+                    if(user.customer.custTypeId==8 && user.customer.isInstall==0){
+                        //没有经销商权限的服务商，去除供应商管理，库存管理，营销产品
+                        let arr=[793281718504263700,773357884795916300,803882340127477800];
+                        user.pages=page.data.filter(ele=>!arr.includes(ele.objectId));
+                    }else{
+                        user.pages=page.data;
+                    }
+                    console.log(page.data);
+                    // user.pages=page.data;
                     W._loginSuccess(user);
                     that.finishLogin();
                 },{

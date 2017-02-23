@@ -151,7 +151,7 @@ class ActivityList extends Component {
             if(_user.authData && _user.authData[idKey]){
                 strOpenId='&seller_open_id='+_user.authData[idKey];
             }
-
+            let _sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
                 if(res.data){
@@ -170,12 +170,12 @@ class ActivityList extends Component {
                     },{
                         i:1,
                         act:String(data.objectId),
-                        sellerId:String(_user.employee.objectId),
+                        sellerId:String(_sellerId),
                         uid:String(data.uid),
                         type:3,
                         url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
                             +'&uid='+data.uid
-                            +'&sellerId='+_user.employee.objectId
+                            +'&sellerId='+_sellerId
                             +'&activityId='+data.objectId
                             +strOpenId
                             +'&timerstamp='+Number(new Date()),
@@ -183,7 +183,7 @@ class ActivityList extends Component {
                 }
             },{
                 act:data.objectId,
-                sellerId:_user.employee.objectId,
+                sellerId:_sellerId,
                 uid:data.uid,
                 type:3
             });
@@ -191,7 +191,7 @@ class ActivityList extends Component {
             function setWxShare(url){
                 var op={
                     title: data.name, // 分享标题
-                    desc: data.booking_offersDesc, // 分享描述
+                    desc: data.offersDesc, // 分享描述
                     link: url,
                     // link:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
                     //     +'&uid='+data.uid

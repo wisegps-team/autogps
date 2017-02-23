@@ -177,19 +177,19 @@ class UserItem extends Component{
             case 3://业务统计
                 this.context.showCount(this.props.data,'pop');
                 break;
-            case 4://开启/关闭车主营销
-                let arrVa=[];
-                if(this.props.data.other && this.props.data.other.va){
-                    let strVa=this.props.data.other.va;
-                    arrVa=strVa.split(',');
-                }
-                let add=(arrVa.includes('3'))?false:true;
-                setRole(this.props.data,e=>{
-                    this.forceUpdate();
-                    W.alert(___.setting_success);
-                },add);
+            // case 4://开启/关闭车主营销 //20170223去掉此功能
+            //     let arrVa=[];
+            //     if(this.props.data.other && this.props.data.other.va){
+            //         let strVa=this.props.data.other.va;
+            //         arrVa=strVa.split(',');
+            //     }
+            //     let add=(arrVa.includes('3'))?false:true;
+            //     setRole(this.props.data,e=>{
+            //         this.forceUpdate();
+            //         W.alert(___.setting_success);
+            //     },add);
                 
-                break;
+            //     break;
             case 5://设置安装网点
                 let isInstall=Number(!this.props.data.isInstall);
                 Wapi.customer.update(res=>{
@@ -221,13 +221,6 @@ class UserItem extends Component{
         if(arrVa.length!=0){
             strVa=arrVa.map(ele=>_strVa[ele]).join(' ');
         }
-        if(this.props.data.isInstall){
-            if(strVa==___.no_added_service){
-                strVa=___.install_shop;
-            }else{
-                strVa=strVa+' '+___.install_shop;
-            }
-        }
         let openCS={//open_carowner_seller 开启车主营销，对应其上级应当已开启车主营销
             canOpen:_user.customer.other && _user.customer.other.va && _user.customer.other.va.includes('3'),
             isOpened:arrVa.includes('3'),
@@ -237,9 +230,13 @@ class UserItem extends Component{
             isSetted:this.props.data.isInstall,
         }
         
+        let cType=this.props.data.custType;
+        if(this.props.data.custTypeId==8 && this.props.data.isInstall==0){
+            cType=___.service_provider;
+        }
         let title=(<span>
             {this.props.data.name}
-            <small style={cust_item_sty.sm}>{this.props.data.custType}</small>
+            <small style={cust_item_sty.sm}>{cType}</small>
             <small style={cust_item_sty.sm}>{strVa}</small>
             <small style={cust_item_sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
         </span>);
@@ -268,8 +265,7 @@ class RightIconMenu extends Component{
         }
     }
     render() {
-        let styOpenCS=_user.customer.custTypeId==1 ? null : {display:'none'};//开启车主营销 菜单是否显示 仅品牌商(custTypeId==1)显示
-        // let styOpenCS=this.props.openCS.canOpen ? null : {display:'none'};//开启车主营销 菜单是否显示
+        // let styOpenCS=_user.customer.custTypeId==1 ? null : {display:'none'};//开启车主营销 菜单是否显示 仅品牌商(custTypeId==1)显示 //20170223去掉此功能
         let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;//开启车主营销显示字符 [关闭/开启]车主营销
         let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置安装网点 菜单是否显示
         let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置安装网点菜单字符 [取消/设置]安装网点
@@ -293,7 +289,7 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
-                <MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>
+                {/*<MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>*/}
                 <MenuItem style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
             </IconMenu>
         );

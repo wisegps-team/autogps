@@ -535,12 +535,12 @@ class DList extends Component{
                     },{
                         i:1,
                         act:String(data.objectId),
-                        sellerId:String(_user.employee.objectId),
+                        sellerId:String(data._sellerId),
                         uid:String(data.uid),
                         type:3,
                         url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
                             +'&uid='+data.uid
-                            +'&sellerId='+_user.employee.objectId
+                            +'&sellerId='+data._sellerId
                             +'&activityId='+data.objectId
                             +strOpenId
                             +'&timerstamp='+Number(new Date()),
@@ -548,7 +548,7 @@ class DList extends Component{
                 }
             },{
                 act:data.objectId,
-                sellerId:_user.employee.objectId,
+                sellerId:data._sellerId,
                 uid:data.uid,
                 type:3
             });
@@ -556,7 +556,7 @@ class DList extends Component{
             function setWxShare(url){
                 var op={
                     title: data.name, // 分享标题
-                    desc: data.booking_offersDesc, // 分享描述
+                    desc: data.offersDesc, // 分享描述
                     link: url,
                     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
                     success: function(){},

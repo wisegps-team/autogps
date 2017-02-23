@@ -132,32 +132,32 @@ function checkWallet(){
 checkWallet();
 
 const _pages=[//所有的页面
-    {
+    {   /*供应商管理 */
         href:'superior',
         name:___.superior,
         icon:<ActionSupervisorAccount style={sty.icon}/>
     },
-    {
+    {   /*渠道管理 */
         href:'subordinate',
         name:___.subordinate,
         icon:<ActionPermContactCalendar style={sty.icon}/>
     },
-    {
+    {   /*政企客户 */
         href:'user_manage',
         name:___.user_manage,
         icon:<ActionPermIdentity style={sty.iconActive}/>
     },
-    {
+    {   /*库存管理（出入库相关信息） */
         href:'device_manage',
         name:___.device_manage,
         icon:<HardwareKeyboard style={sty.icon}/>
     },
-    {
-        href:'brand_manage',
-        name:___.brand_manage,
-        icon:<ActionViewList style={sty.icon}/>
-    },
-    {
+    // {   /*产品管理(是品牌型号的管理) */
+    //     href:'brand_manage',
+    //     name:___.brand_manage,
+    //     icon:<ActionViewList style={sty.icon}/>
+    // },
+    {   /*增值业务 */
         href:'activity_agent',
         name:___.activity_agent,
         icon:<ToggleStar style={sty.icon}/>
@@ -182,7 +182,7 @@ const _pages=[//所有的页面
         name:___.qrcode_manage,
         icon:<ImageFilterCenterFocus style={sty.iconActive}/>
     },
-    {   /*代理商，经销商的财务管理 */
+    {   /*代理商，经销商的企业账户 */
         href:'financial_manage',
         name:___.financial_manage,
         icon:<EditorMonetizationOn style={sty.icon}/>
@@ -199,9 +199,9 @@ const _pages=[//所有的页面
     // };
 ];
 
-if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
-    _user.pages=_user.pages.filter(ele=>ele.objectId!='791907964700201000');  //name!='车主营销'
-}
+// if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
+//     _user.pages=_user.pages.filter(ele=>ele.objectId!='791907964700201000');  //name!='车主营销'
+// }
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 
