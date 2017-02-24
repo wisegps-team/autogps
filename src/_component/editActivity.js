@@ -290,7 +290,7 @@ class EditActivity extends Component {
                     this.forceUpdate();
                 },{
                     _objectId:data.actProductId,
-                    createdActivity:true
+                    // createdActivity:true
                 })
             },_data);
 
@@ -312,7 +312,7 @@ class EditActivity extends Component {
                     this.forceUpdate();
                 },{
                     _objectId:data.actProductId,
-                    createdActivity:true
+                    // createdActivity:true
                 })
 
             },data);

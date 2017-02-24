@@ -266,7 +266,7 @@ class RightIconMenu extends Component{
     }
     render() {
         // let styOpenCS=_user.customer.custTypeId==1 ? null : {display:'none'};//开启车主营销 菜单是否显示 仅品牌商(custTypeId==1)显示 //20170223去掉此功能
-        let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;//开启车主营销显示字符 [关闭/开启]车主营销
+        // let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;//开启车主营销显示字符 [关闭/开启]车主营销
         let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置安装网点 菜单是否显示
         let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置安装网点菜单字符 [取消/设置]安装网点
         return (

@@ -120,105 +120,156 @@ class App extends Component {
             this.marketPermission=true;
         }
 
-        let par={};
-        if(this.marketPermission){
-            par={
-                uid:_user.customer.objectId+'|'+_user.customer.parentId.join('|')
-            };
-        }else{
-            par={
-                uid:_user.customer.parentId.join('|'),
-                createdActivity:true
-            };
-        }
+        // let par={};
+        // if(this.marketPermission){
+        //     par={
+        //         uid:_user.customer.objectId+'|'+_user.customer.parentId.join('|')
+        //     };
+        // }else{
+        //     par={
+        //         uid:_user.customer.parentId.join('|'),
+        //         createdActivity:true
+        //     };
+        // }
 
-        Wapi.activityProduct.list(res=>{
-            this.originalList=res.data;
-            // this.list=res.data;
-            this.gotData=true;
+        // Wapi.activityProduct.list(res=>{
+        //     if(this.marketPermission){
+        //         Permission(res.data);
+        //     }else{
+        //         NoPermission(res.data);
+        //     }
 
-            if(this.marketPermission){
-                Wapi.authorize.list(re=>{
-                    let auths=re.data;
-                    let counts=countIt(auths);
-                    
-                    this.originalList=this.originalList.map(ele=>{
-                        let target=counts.find(item=>item.actProductId==ele.objectId);
-                        if(target){
-                            ele.allAuth=target.allAuth;
-                            ele.myAuth=target.myAuth;
-                        }else{
-                            ele.allAuth=0;
-                            ele.myAuth=0;
-                        }
-                        return ele;
+        // },par,{
+        //     limit:-1
+        // });
+
+        Wapi.activity.list(dataAct=>{
+
+            let arrActPid=dataAct.data.map(ele=>ele.actProductId);
+            let dataTotal=[];
+
+            Wapi.activityProduct.list(dataNoP=>{
+
+                dataTotal=dataTotal.concat(dataNoP.data);
+
+                if(this.marketPermission){
+                    Wapi.activityProduct.list(dataP=>{
+                        dataTotal=dataTotal.concat(dataP.data);
+                        dataTotal=noRepeat(dataTotal);
+                        Permission(dataTotal);
+                    },{
+                        uid:_user.customer.objectId+'|'+_user.customer.parentId.join('|')
+                    },{
+                        limit:-1
                     });
-                    this.list=this.originalList;
+                }else{
+                    NoPermission(dataTotal);
+                }
 
-                    W.loading();
-                    this.forceUpdate();
-                },{
-                    status:'1|2'
-                },{
-                    fields:'actProductId,approveCompanyId',limit:-1
-                });
-            }else{
-                let flag=0;
-                let pids=this.originalList.map(ele=>ele.objectId);
-                Wapi.authorize.list(r=>{
-                    let auths=r.data;
-                    this.originalList=this.originalList.map(ele=>{
-                        let target=auths.find(item=>item.actProductId==ele.objectId);
-                        if(target){
-                            ele.authStatus=target.status;
-                        }else{
-                            ele.authStatus=3;
-                        }
-                        return ele;
-                    });
-                    this.list=this.originalList;
-                    flag++;
-                    if(flag==2){
-                        W.loading();
-                        this.forceUpdate();
-                    }
-                },{
-                    actProductId:pids.join('|'),
-                    applyCompanyId:_user.customer.objectId
-                },{
-                    fields:'actProductId,status'
-                })
+            },{
+                objectId:arrActPid.join('|')
+            },{
+                limit:-1
+            });
 
-                Wapi.booking.aggr(result=>{
-                    let bookCount=result.data;
-                    this.originalList=this.originalList.map(ele=>{
-                        let target=bookCount.find(item=>item._id.product.id==ele.productId);
-                        if(target){
-                            ele.bookNum=target.status0;
-                        }else{
-                            ele.bookNum=0;
-                        }
-                        return ele;
-                    });
-                    this.list=this.originalList;
-                    flag++;
-                    if(flag==2){
-                        W.loading();
-                        this.forceUpdate();
-                    }
-                },{
-                    "group":{
-                        "_id":{"product":"$product"},
-                        "status0":{"$sum":"$status0"}
-                    },
-                    "sorts":"objectId",
-                    "installId":_user.customer.objectId
-                })
-            }
-
-        },par,{
+        },{
+            uid:_user.customer.parentId.join('|')
+        },{
+            fields:'objectId,actProductId',
             limit:-1
         });
+        
+
+        function Permission(data){
+            _this.originalList=data;
+            // _this.list=data;
+            _this.gotData=true;
+
+            Wapi.authorize.list(re=>{
+                let auths=re.data;
+                let counts=countIt(auths);
+                
+                _this.originalList=_this.originalList.map(ele=>{
+                    let target=counts.find(item=>item.actProductId==ele.objectId);
+                    if(target){
+                        ele.allAuth=target.allAuth;
+                        ele.myAuth=target.myAuth;
+                    }else{
+                        ele.allAuth=0;
+                        ele.myAuth=0;
+                    }
+                    return ele;
+                });
+                _this.list=_this.originalList;
+
+                W.loading();
+                _this.forceUpdate();
+            },{
+                status:'1|2'
+            },{
+                fields:'actProductId,approveCompanyId',
+                limit:-1
+            });
+        }
+
+        function NoPermission(data){
+            _this.originalList=data;
+            // _this.list=data;
+            _this.gotData=true;
+
+            let flag=0;
+            let pids=_this.originalList.map(ele=>ele.objectId);
+            Wapi.authorize.list(r=>{
+                let auths=r.data;
+                _this.originalList=_this.originalList.map(ele=>{
+                    let target=auths.find(item=>item.actProductId==ele.objectId);
+                    if(target){
+                        ele.authStatus=target.status;
+                    }else{
+                        ele.authStatus=3;
+                    }
+                    return ele;
+                });
+                _this.list=_this.originalList;
+                flag++;
+                if(flag==2){
+                    W.loading();
+                    _this.forceUpdate();
+                }
+            },{
+                actProductId:pids.join('|'),
+                applyCompanyId:_user.customer.objectId
+            },{
+                fields:'actProductId,status',
+                limit:-1
+            })
+
+            Wapi.booking.aggr(result=>{
+                let bookCount=result.data;
+                _this.originalList=_this.originalList.map(ele=>{
+                    let target=bookCount.find(item=>item._id.product.id==ele.productId);
+                    if(target){
+                        ele.bookNum=target.status0;
+                    }else{
+                        ele.bookNum=0;
+                    }
+                    return ele;
+                });
+                _this.list=_this.originalList;
+                flag++;
+                if(flag==2){
+                    W.loading();
+                    _this.forceUpdate();
+                }
+            },{
+                "group":{
+                    "_id":{"product":"$product"},
+                    "status0":{"$sum":"$status0"}
+                },
+                "sorts":"objectId",
+                "installId":_user.customer.objectId
+            })
+        }
 
     }
     url(product){
@@ -455,7 +506,7 @@ function initData(){
         reward:'',
         productUrl:'',
         channel:_user.customer.custTypeId==1?0:1,
-        createdActivity:false
+        // createdActivity:false
     };
 }
 class EditProduct extends Component {
@@ -618,4 +669,16 @@ function countIt(data){
         }
     }
     return arr;
+}
+
+function noRepeat(arr){
+    let _arr=[];
+    for(let i=arr.length;i--;){
+        if(_arr.length==0){
+            _arr.push(arr[i]);
+        }else if(!_arr.find(ele=>ele.objectId==arr[i].objectId)){
+            _arr.push(arr[i]);
+        }
+    }
+    return _arr;
 }

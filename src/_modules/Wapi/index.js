@@ -634,7 +634,7 @@ makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,d
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit,role,roleId');
 makeGetOp('weixin','objectId,uid,name,type,wxAppKey');
-makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl,channel,createdActivity');
+makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl,channel');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
 makeGetOp('area','id,name,parentId,level,areaCode,zipCode,provinceId,provinceName',{limit:-1,sorts:'id',page:'id'});

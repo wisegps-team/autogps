@@ -327,7 +327,7 @@ export const customer={
         },
         {
             'name': 'isInstall',
-            'desc': '是否安装网点',
+            'desc': '是否安装网点',//定义改为是否为经销商字段名沿用 20170222
             'type': 'Number',
             'query': true,
         },{
@@ -2506,6 +2506,11 @@ export const activityProduct={
             'name': 'createdActivity',
             'desc': '是否创建过活动',
             'type': 'Boolean',
+            'query': true 
+        },{
+            'name': 'custId',
+            'desc': '使用过的商家',//使用此营销产品创建过营销活动的cust
+            'type': 'Array',
             'query': true 
         }
     ],
