@@ -28,6 +28,7 @@ class VerificationOrig extends Component {
             code_err:null,
             second:0
         }
+        this.accountFormat=false;
         this.change = this.change.bind(this);
         this.getCode = this.getCode.bind(this);
     }
@@ -35,8 +36,28 @@ class VerificationOrig extends Component {
     componentWillUnmount() {
         clearInterval(this._time_id);
     }
-    
-
+    componentWillReceiveProps(nextProps) {
+        let account=nextProps.account;
+        let reg=/^[1][3578][0-9]{9}$/;
+        if(reg.test(account)){
+            if(this.props.needExist){
+                Wapi.user.checkExists((json)=>{//验证是否本平台用户
+                    if(json.exist){
+                        this.accountFormat=true;
+                        this.forceUpdate();
+                    }else{
+                        W.toast('此号码非本平台用户');
+                    }
+                },{mobile:account});
+            }else{
+                this.accountFormat=true;
+                this.forceUpdate();
+            }
+        }else if(this.accountFormat){
+            this.accountFormat=false;
+            this.forceUpdate();
+        }
+    }
     change(e){
         let val=e.target.value;
         let that=this;
@@ -58,9 +79,9 @@ class VerificationOrig extends Component {
                     that.setState({code_err:___.code_err});
                 }
             },data);
-            if(this.props.onChange){
-                this.props.onChange(val,this.props.name);
-            }
+        }
+        if(this.props.onChange){
+            this.props.onChange(val,this.props.name);
         }
     }
     getCode(){
@@ -101,7 +122,7 @@ class VerificationOrig extends Component {
                 <FlatButton 
                     label={this.state.second||___.getCode} 
                     primary={!this.state.second} 
-                    disabled={!!this.state.second} 
+                    disabled={!!this.state.second || !this.accountFormat} 
                     onClick={this.getCode}
                     style={sty.b}
                 />

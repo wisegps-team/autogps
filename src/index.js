@@ -231,6 +231,9 @@ class App extends Component {
                 <div className='login' style={_sty}>
                     {actives[this.state.active]}
                 </div>
+                {/*<div className='login' style={_sty}>
+                    {actives[3]}
+                </div>*/}
             </ThemeProvider>
         );
     }

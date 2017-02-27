@@ -11,7 +11,9 @@ import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import IconButton from 'material-ui/IconButton';
 
 import VerificationCode from '../base/verificationCode';
+import VerificationOrig from '../base/verificationOrig';
 import Register from './register';
+import RegisterOrig from './registerOrig';
 import Login from './index';
 import AreaSelect from '../base/areaSelect';
 import Input from '../base/input';
@@ -28,6 +30,28 @@ import SexRadio from '../base/sexRadio';
  *          不存在或为0是注册成功，等于1为密码错误且之前已经注册过用户，
  *          等于2是输入了正确的密码，而且已经是一个客户，客户表中已有数据，所以不能注册
  */
+
+
+const sty={
+    f:{
+        width: '100%'
+    },
+    r:{
+        display:'flex',
+        alignItems:'flex-end',
+        padding:'3px 10px',
+        borderBottom:'1px solid #dddddd',
+        backgroundColor:'#fff',
+    },
+    input:{
+        width:'100%',
+        height:'40px',
+        fontSize:'16px',
+        border:'none',
+        outline:'none'
+    }
+}
+
 class AgentRegisterBox extends Component{
     constructor(props, context) {
         super(props, context);
@@ -135,8 +159,8 @@ class AgentRegisterBox extends Component{
         });
     }
 
-    nameChange(e,val){
-        this.data[e.target.name]=val;
+    nameChange(e){
+        this.data[e.target.name]=e.target.value;
     }
     beforRegister(){
         if(this.data.name){
@@ -147,10 +171,10 @@ class AgentRegisterBox extends Component{
     render() {
         return (
             <div>
-                <div style={{padding:'0 10px',background:'#fff'}}>
-                    <Input name='name' floatingLabelText={___.company_name} onChange={this.nameChange}/>
+                <div style={sty.r}>
+                    <input name='name' placeholder={___.company_name} style={sty.input} onChange={this.nameChange}/>
                 </div>
-                <Register onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
+                <RegisterOrig onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
             </div>
         );
     }
@@ -186,19 +210,34 @@ class JoinBox extends Component{
     render() {
         return (
             <div>
-                <div style={{background:'#fff',padding:'10px'}}>
-                    <label>{___.account+'：'}</label>
-                    <span>{_user.mobile}</span>
-                    <VerificationCode 
+                {/*<div style={{background:'#fff',padding:'10px'}}>*/}
+                <div style={{background:'#fff'}}>
+                    <div style={sty.r}>
+                        <div style={{margin:'10px 0px'}} >
+                            <span>{___.account+'：'}</span>
+                            <span>{_user.mobile}</span>
+                        </div>
+                    </div>
+                    {/*<VerificationCode 
                         name='valid_code'
                         type={1}
                         account={_user.mobile} 
                         onSuccess={this.change}
                         onChange={this.change}
-                    />
+                    />*/}
+                    <div style={{display:'flex',alignItems:'flex-end',padding:'3px 10px'}}>
+                        <VerificationOrig 
+                            name='valid_code'
+                            type={1}
+                            account={_user.mobile} 
+                            onSuccess={this.change}
+                            onChange={this.change}
+                            style={{width:'100%'}}
+                        />
+                    </div>
                 </div>
                 <div style={{textAlign:'center'}}>
-                    <RaisedButton label={___.accept_invite} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>
+                    <RaisedButton label={___.accept_invite} onClick={this.submit} primary={true} style={{marginTop:'10px'}} labelColor='#eee'/>
                 </div>
             </div>
         );

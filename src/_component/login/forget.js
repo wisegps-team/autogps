@@ -11,7 +11,7 @@ import PasswordRepeat from './password';
 import sty from './style';
 
 class Forget extends Component {
-constructor(props, context) {
+    constructor(props, context) {
         super(props, context);
         this.state={
             account:null
@@ -62,24 +62,29 @@ constructor(props, context) {
     render() {
         return (
             <div {...this.props}>
-                <PhoneInput
-                    name='account'
-                    hintText={___.input_account}
-                    floatingLabelText={___.account}
-                    onChange={this.change}
-                    needExist={true}
-                />
-                <VerificationCode 
-                    name='valid_code'
-                    type={2}
-                    account={this.state.account} 
-                    onSuccess={this.change}
-                />
-                <PasswordRepeat 
-                    onChange={this.change}
-                    name='password'
-                />
-                <RaisedButton label={___.reset_pwd} primary={true} style={sty.but} onClick={this.submit}/>
+                <div style={{backgroundColor:'#fff',padding:'0px 15px'}}>
+                    <PhoneInput
+                        name='account'
+                        hintText={___.input_account}
+                        floatingLabelText={___.account}
+                        onChange={this.change}
+                        needExist={true}
+                    />
+                    <PasswordRepeat 
+                        onChange={this.change}
+                        name='password'
+                    />
+                    <VerificationCode 
+                        name='valid_code'
+                        type={2}
+                        account={this.state.account} 
+                        onSuccess={this.change}
+                    />
+                </div>
+                {/*<RaisedButton label={___.reset_pwd} primary={true} style={sty.but} onClick={this.submit} labelColor='#eee'/>*/}
+                <div style={sty.b}>
+                    <RaisedButton label={___.reset_pwd} primary={true} onClick={this.submit} labelColor='#eee'/>
+                </div>
             </div>
         );
     }

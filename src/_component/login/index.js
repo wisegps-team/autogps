@@ -82,8 +82,9 @@ class Login extends Component {
             W.setSetting("account",this.formData.account);
         }
     }
-    change(e,val){
-        let name=e.currentTarget.name;
+    change(e){
+        let val=e.target.value;
+        let name=e.target.name;
         this.formData[name]=val;
         if(val){
             let s={};
@@ -99,7 +100,7 @@ class Login extends Component {
     render() {
         return (
             <div {...this.props}>
-                <Input
+                {/*<Input
                     name='account'
                     hintText={___.input_account}
                     floatingLabelText={___.account}
@@ -116,15 +117,40 @@ class Login extends Component {
                     value={this.formData.password}
                     errorText={this.state.password_err}
                     onChange={this.change}
-                />
-                <Checkbox
-                    label={___.remember}
-                    defaultChecked={remember_pwd}
-                    onCheck={this.remember}
-                    style={sty.ch}
-                    labelStyle={sty.cl}
-                />
-                <RaisedButton label={___.login} primary={true} style={sty.but} onClick={this.submit}/>
+                />*/}
+
+                <div style={{backgroundColor:'#ffffff'}}>
+                    <div style={sty.r}>
+                        <input 
+                            name='account' 
+                            value={this.formData.account}
+                            placeholder={___.input_account} 
+                            style={sty.input} 
+                            onChange={this.change}
+                        />
+                    </div>
+                    <div style={sty.r}>
+                        <input 
+                            name='password' 
+                            type='password' 
+                            value={this.formData.password}
+                            placeholder={___.input_pwd} 
+                            style={sty.input} 
+                            onChange={this.change}
+                        />
+                    </div>
+                </div>
+
+                <div style={{paddingLeft:'10%',paddingRight:'10%'}}>
+                    <Checkbox
+                        label={___.remember}
+                        defaultChecked={remember_pwd}
+                        onCheck={this.remember}
+                        style={sty.ch}
+                        labelStyle={sty.cl}
+                    />
+                    <RaisedButton label={___.login} primary={true} style={sty.but} onClick={this.submit} labelColor='#eee'/>
+                </div>
             </div>
         );
     }
