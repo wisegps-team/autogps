@@ -46,7 +46,7 @@ const styles = {
     warns:{textIndent:'2em',padding:'10px'},
     hide:{display:'none'},
     p:{textIndent:'2em'},
-    btn:{width:'100%',display:'block',textAlign:'center',paddingBottom:'20px'},
+    btn:{width:'100%',display:'block',textAlign:'center',paddingBottom:'30px'},
 };
 function combineStyle(arr){
     return arr.reduce((a,b)=>Object.assign({},styles[a],styles[b]));
@@ -255,7 +255,7 @@ class App extends Component {
                         点击右上角＋创建营销活动！
                     </div>
 
-                    <div name='list' style={styles.main}>
+                    <div name='list' style={!this.showWarn ? styles.main : styles.hide}>
                         <Alist 
                             max={this.total} 
                             limit={this.limit} 

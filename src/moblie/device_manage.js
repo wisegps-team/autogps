@@ -8,6 +8,8 @@ import {ThemeProvider} from '../_theme/default';
 import {List,ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import ContentRemoveCircleOutline from 'material-ui/svg-icons/content/remove-circle-outline';
+import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
@@ -33,16 +35,16 @@ const styles = {
     card:{margin:'1em',padding:'0.5em'},
     show:{paddingTop:'50px'},
     hide:{display:'none'},
-    a:{position: 'absolute',width:'100%',bottom:'10px'},
-    box:{position:'relative',paddingBottom:'60px'},
+    a:{position: 'absolute',width:'100%',bottom:'-20px'},
+    box:{position:'relative',paddingBottom:'60px',marginTop:'20px'},
     product_id:{borderBottom:'solid 1px #999999'},
     ids_box:{marginTop:'1em',marginBottom:'1em'},
     btn_cancel:{marginTop:'30px',marginRight:'20px'},
     input_page:{marginTop:'20px',textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
-    w:{width:'100%'},
+    w:{width:'100%',borderCollapse:'collapse'},
     to:{horizontal: 'right', vertical: 'top'},
     c:{color:'#fff'},
-    variable:{color:'#009688'},
+    variable:{color:'#009688',position: 'absolute',right: 0,top: '20px'},
     link:{color:'#0000cc'}
 };
 
@@ -68,24 +70,24 @@ thisView.addEventListener('load',function(){
 });
 
 // 测试用
-// let testNum=10;
-// W.native={
-//     scanner:{
-//         start:function(callback){
-//             setTimeout(function(){
-//                 callback(testNum.toString());
-//                 // testNum++;
-//             },100);
-//         }
-//     }
-// }
-// let isWxSdk=true;
+let testNum=200;
+W.native={
+    scanner:{
+        start:function(callback){
+            setTimeout(function(){
+                callback(testNum.toString());
+                testNum++;
+            },100);
+        }
+    }
+}
+let isWxSdk=true;
 
-//正式用
-let isWxSdk=false;
-if(W.native)isWxSdk=true;
-else
-    window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
+// 正式用
+// let isWxSdk=false;
+// if(W.native)isWxSdk=true;
+// else
+//     window.addEventListener('nativeSdkReady',()=>{isWxSdk=true;});
 
 
 class AppDeviceManage extends Component{
@@ -200,6 +202,7 @@ class DeviceIn extends Component{
         this.data={}
         this.brandChange=this.brandChange.bind(this);
         this.addId=this.addId.bind(this);
+        this.deleteId=this.deleteId.bind(this);
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
     }
@@ -264,6 +267,21 @@ class DeviceIn extends Component{
             W.alert(___.please_wait);
         }
     }
+    deleteId(){
+        let _this=this;
+        let ids=_this.state.product_ids;
+        if(isWxSdk){
+            W.native.scanner.start(function(res){//扫码，did添加到当前用户
+                res=reCode(res);
+                if(ids.includes(res)){//队列中已有此编号
+                    ids.splice(ids.indexOf(res),1);
+                    _this.setState({product_ids:ids})
+                }
+            });
+        }else{
+            W.alert(___.please_wait);
+        }
+    }
     cancel(){
         this.setState({
             product_ids:[]
@@ -309,15 +327,18 @@ class DeviceIn extends Component{
     }
 
     render(){
+        let len=this.state.product_ids.length;
         return(
             <ThemeProvider>
             <div style={styles.input_page}>
-                {/*<h3>{___.device_in}</h3>*/}
-                <div style={{width:'80%',marginLeft:'10%',textAlign:'left'}}>
+                <div style={{width:'100%',textAlign:'left'}}>
                     <h4>{___.device_type}:</h4>
-                    <BrandSelect onChange={this.brandChange}/>
+                    <div style={{position: 'relative'}}>
+                        <BrandSelect onChange={this.brandChange} style={{width: '80%'}}/>
+                        <span onClick={this.toDidList} style={styles.variable}>{len}</span>
+                    </div>
                 </div>
-                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
+                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} deleteId={this.deleteId} cancel={this.cancel} submit={this.submit} />
             </div>
             </ThemeProvider>
         )
@@ -337,10 +358,14 @@ class DeviceOut extends Component{
             modelId:'',
             wxAppKey:null
         }
+        this.device = null;
+        this.product = null;
         this.custChange=this.custChange.bind(this);
         this.addId=this.addId.bind(this);
+        this.deleteId = this.deleteId.bind(this);
         this.submit=this.submit.bind(this);
         this.cancel=this.cancel.bind(this);
+        
     }
     componentDidMount() {
         popPage.addEventListener('show',e=>{
@@ -363,14 +388,53 @@ class DeviceOut extends Component{
                 W.alert(___.device_repeat);
                 return;
             }
-            ids=ids.concat(res);
-            _this.setState({
-                product_ids:ids,
-            });
-            W.native.scanner.start(get);
+            Wapi.device.get((dev) => {
+                if(dev.data.uid == _user.customer.objectId){
+                    if(ids.length == 0){
+                        _this.device = dev.data;
+                        Wapi.product.get((pro)=>{
+                            _this.product = pro.data;
+                        },{objectId: dev.data.modelId})
+                        ids=ids.concat(res);
+                        _this.setState({
+                            product_ids:ids,
+                        });
+                    }else{
+                        if(dev.data.modelId == _this.device.modelId){
+                            ids=ids.concat(res);
+                             _this.setState({
+                                product_ids:ids,
+                            });
+                        }else{
+                            W.alert("此设备型号不同,无法添加");
+                            return;
+                        }
+                    }
+                }else {
+                    W.alert("此设备不属于当前用户,无法添加");
+                    return;
+                }
+            },{did:res})
+           
+            // W.native.scanner.start(get);
         }
         if(isWxSdk){
             W.native.scanner.start(get);
+        }else{
+            W.alert(___.please_wait);
+        }
+    }
+    deleteId(){
+        let _this=this;
+        let ids=_this.state.product_ids;
+        if(isWxSdk){
+            W.native.scanner.start(function(res){//扫码，did添加到当前用户
+                res=reCode(res);
+                if(ids.includes(res)){//队列中已有此编号
+                    ids.splice(ids.indexOf(res),1);
+                    _this.setState({product_ids:ids})
+                }
+            });
         }else{
             W.alert(___.please_wait);
         }
@@ -426,22 +490,13 @@ class DeviceOut extends Component{
                     return;
                 }
                 let dev=devs.data[0];
-                Wapi.product.get(pro=>{
-                    if(!pro.data){
-                        W.loading();
-                        W.alert(___.model_error);
-                        return;
-                    }
-                    let MODEL={
-                        brand:pro.data.brand,
-                        brandId:pro.data.brandId,
-                        model:pro.data.name,
-                        modelId:pro.data.objectId,
+                let MODEL={
+                        brand:this.product.brand,
+                        brandId:this.product.brandId,
+                        model:this.product.name,
+                        modelId:this.product.objectId,
                     };
-                    _this.save(ids,MODEL);
-                },{
-                    objectId:dev.modelId
-                });
+                _this.save(ids,MODEL);
             },{
                 did:dids,
                 uid:_user.customer.objectId,
@@ -502,23 +557,30 @@ class DeviceOut extends Component{
             },device);
         });
     }
-
+    
     render(){
+        let len = this.state.product_ids.length;
         return(
             <ThemeProvider>
             <div style={styles.input_page}>
-                {/*<h3>{___.device_out}</h3>*/}
                 <table style={styles.w}>
                     <tbody>
                         <tr>
-                            <td style={{whiteSpace:'nowrap',paddingTop:'14px'}}>{___.cust}</td>
+                            {/*<td style={{whiteSpace:'nowrap',paddingTop:'14px',textAlign:'left'}}>{___.cust}</td>*/}
                             <td>
                                 <UserSearch onChange={this.custChange} data={{parentId:_user.customer.objectId}}/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} cancel={this.cancel} submit={this.submit} />
+                <div style={{width:'100%',textAlign:'left'}}>
+                    {/*<h4>{___.device_type}:</h4>*/}
+                    <div style={{position: 'relative'}}>
+                        <BrandSelect onChange={this.brandChange} style={{width: '80%'}} product={this.product}/>
+                        <span onClick={this.toDidList} style={styles.variable}>{len}</span>
+                    </div>
+                </div>
+                <ScanGroup product_ids={this.state.product_ids} addId={this.addId} deleteId={this.deleteId} cancel={this.cancel} submit={this.submit} />
             </div>
             </ThemeProvider>
         )
@@ -548,11 +610,16 @@ class ScanGroup extends Component{
         }
         return(
             <div style={styles.box}>
-                <div>{___.num+'：'}<span onClick={this.toDidList} style={styles.variable}>{len}</span></div>
                 {productItems}
                 <div style={styles.a}>
-                    <RaisedButton onClick={this.props.submit} label={___.ok} secondary={true} style={{marginRight:'10px'}}/>
-                    <RaisedButton onClick={this.props.addId} label={___.scan_input} primary={true}/>
+                    <div style={{overflow:'hidden'}}>
+                        <RaisedButton onClick={this.props.deleteId} label="扫码减少" primary={true} style={{float:'left',width:'45%'}}/>
+                       
+                        <RaisedButton onClick={this.props.addId} label="扫码增加" primary={true} style={{float:'right',width: '45%'}}/>
+                    </div>
+                    <div style={{marginTop: 10}}>
+                        <RaisedButton onClick={this.props.submit} label={___.ok} secondary={true} fullWidth={true}/>
+                    </div>
                 </div>
             </div>
         )

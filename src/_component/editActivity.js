@@ -17,7 +17,7 @@ import UserTypeSearch from '../_component/userType_search';
 const styles = {
     input_page:{textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     input_group:{marginTop:'0.5em',textAlign:'left'},
-    bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'10px'},
+    bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'30px'},
     select:{width:'100%',textAlign:'left'},
 };
 
