@@ -145,7 +145,7 @@ class App extends Component {
 
         Wapi.activity.list(dataAct=>{
 
-            let arrActPid=dataAct.data.map(ele=>ele.actProductId);
+            let arrActPid=noNull(dataAct.data.map(ele=>ele.actProductId));
             let dataTotal=[];
 
             Wapi.activityProduct.list(dataNoP=>{
@@ -678,6 +678,16 @@ function noRepeat(arr){
             _arr.push(arr[i]);
         }else if(!_arr.find(ele=>ele.objectId==arr[i].objectId)){
             _arr.push(arr[i]);
+        }
+    }
+    return _arr;
+}
+
+function noNull(arr){
+    let _arr=[];
+    for(let i=arr.length;i--;){
+        if(arr[i]){
+            _arr.unshift(arr[i]);
         }
     }
     return _arr;

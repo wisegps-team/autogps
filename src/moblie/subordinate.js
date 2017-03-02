@@ -32,14 +32,21 @@ let sUrl='';
 let qrLinkData={
     uid:_user.customer.objectId,
     type:4,
-    i:0
+    // i:0
 };
+
+// let marketPromission=_user.customer.other&&_user.customer.other.va;
+// if(marketPromission.includes('1')){
+//     sth;
+// }
+
 Wapi.qrLink.get(function(res) {
     if(res.data){
         setUrl(res.data.id);
     }else{
         Wapi.weixin.get(wei=>{
             if(!wei.data){
+                // getWeixin();
                 W.alert('请先配置公众号，才能邀约下级');
                 return;
             }
@@ -340,7 +347,7 @@ class QrBox extends Component{
         console.log(sUrl);
         let dis=this.props.show?{}:{display:'none'};
         dis.textAlign='center';
-        let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128)/2+'px'};
+        let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128-100)/2+'px'};
         let btnSty={position:'fixed',bottom:'50px',textAlign:'center',display:'block',width:'100%'};
         let imgSty={};
         if(this.state.active)imgSty.display='none';
@@ -348,6 +355,8 @@ class QrBox extends Component{
             <div style={dis}>
                 <div style={imgSty} {...this.props} show={null}>
                     <div style={qrSty}>
+                        <h4>{_user.customer.name}</h4>
+                        <div>{___.subordinate_register}</div>
                         <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
                     </div>
                     <br/>

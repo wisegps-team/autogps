@@ -17,7 +17,7 @@ import UserTypeSearch from '../_component/userType_search';
 const styles = {
     input_page:{textAlign:'center',width:'90%',marginLeft:'5%',marginRight:'5%'},
     input_group:{marginTop:'0.5em',textAlign:'left'},
-    bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'10px'},
+    bottom_btn_center:{width:'100%',display:'block',textAlign:'center',paddingTop:'15px',paddingBottom:'30px'},
     select:{width:'100%',textAlign:'left'},
 };
 
@@ -153,7 +153,7 @@ class EditActivity extends Component {
             this.intent='edit';
             let data=getInitData();
             let next=Object.assign({},nextProps.data);
-            let product=this.products.find(ele=>ele.objectId==next.actProductId);
+            let product=this.products.find(ele=>ele.objectId==next.actProductId)||this.products[0];
             if(!next.actProductId){
                 product=this.products.find(ele=>ele.productId==next.productId);
             }
@@ -284,14 +284,14 @@ class EditActivity extends Component {
             delete _data.status2;
 
             Wapi.activity.update(res=>{
-                Wapi.activityProduct.update(re=>{
+                // Wapi.activityProduct.update(re=>{
                     this.props.editSubmit(data);
                     this.data=getInitData();
                     this.forceUpdate();
-                },{
-                    _objectId:data.actProductId,
-                    // createdActivity:true
-                })
+                // },{
+                //     _objectId:data.actProductId,
+                //     createdActivity:true
+                // })
             },_data);
 
         }else{  //添加

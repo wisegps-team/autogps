@@ -580,4 +580,5 @@ window.___={
 	'partner_authorize':'合作授权',
 	'brand_set':'产品',
 	'service_provider':'服务商',
+	'subordinate_register':'渠道账号注册',
 }

@@ -131,6 +131,7 @@ class App extends Component {
         // this.getData();
     }
     getData(){
+        W.loading(true);
         if(_user.employee && _user.employee.type==1){
             //兼职营销账号，显示所属公司的集团营销活动。
             let par0={
@@ -159,6 +160,7 @@ class App extends Component {
                 });
                 this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
+                W.loading();
                 this.forceUpdate();
             },par0,{
                 sorts:'-createdAt',
@@ -197,49 +199,14 @@ class App extends Component {
                 });
                 this.originalActivities=this.originalActivities.concat(activities);
                 this.activities=this.activities.concat(activities);
+                W.loading();
                 this.forceUpdate();
             },par1,{
                 sorts:'-createdAt',
                 limit:-1,
             });
 
-        }
-        // else if(_user.customer.custTypeId==5){//如果是代理商账号，显示type=2，员工营销；
-            
-        //     let par2={
-        //         uid:_user.customer.objectId,
-        //         status:1,
-        //         type:2,
-        //         // sellerTypeId:_user.customer.objectId,
-        //     }
-        //     Wapi.activity.list(res=>{
-        //         this.total=res.total;
-        //         let activities=res.data;
-                
-        //         activities.forEach(ele=>{
-        //             let booking=this.booking.find(item=>item._id.activityId==ele.objectId);
-        //             if(booking){
-        //                 ele.status0=booking.status0;
-        //                 ele.status1=booking.status1;
-        //                 ele.status2=booking.status2;
-        //                 ele.status3=booking.status3;
-        //             }else{
-        //                 ele.status0=0;
-        //                 ele.status1=0;
-        //                 ele.status2=0;
-        //                 ele.status3=0;
-        //             }
-        //         });
-        //         this.originalActivities=this.originalActivities.concat(activities);
-        //         this.activities=this.activities.concat(activities);
-        //         this.forceUpdate();
-        //     },par2,{
-        //         sorts:'-createdAt',
-        //         limit:-1,
-        //     });
-
-        // }
-        else if(_user.customer.custTypeId==7){
+        }else if(_user.customer.custTypeId==7){
             //车主账号，显示上两级创建的车主营销活动。
             let _this=this;
             let parents=_user.customer.parentId;
@@ -286,12 +253,17 @@ class App extends Component {
                     });
                     _this.originalActivities=_this.originalActivities.concat(activities);
                     _this.activities=_this.activities.concat(activities);
+                    W.loading();
                     _this.forceUpdate();
                 },par3,{
                     sorts:'-createdAt',
                     limit:-1,
                 });
             }
+        }else{
+            this.noData=true;
+            W.loading();
+            this.forceUpdate();
         }
     }
     add(){
@@ -350,22 +322,6 @@ class App extends Component {
         return (
             <ThemeProvider>
                 <div>
-                    {/*<AppBar 
-                        title={___.recommend}
-                        style={this.state.isShare ? styles.hide : {position:'fixed'}}
-                    />*/}
-                    {/*<div style={styles.search_head}>
-                        <ContentAdd style={styles.add_icon} onClick={this.add}/>
-                        <div style={styles.search_box}>
-                            <Input 
-                                style={{height:'36px'}}
-                                inputStyle={{height:'30px'}}
-                                onChange={this.search} 
-                                hintText={___.search}
-                                value={this.state.keyword}
-                            />
-                        </div>
-                    </div>*/}
                     <div style={{width:'100%',height:'210px',display:'block',backgroundColor:'#ffffff'}}>
                         <img src='../../img/my_marketing_head.png' style={{width:'100%',height:'100%'}}/>
                     </div>
@@ -377,8 +333,10 @@ class App extends Component {
                             data={this.activities} 
                             next={this.nextPage} 
                         />
+                        <div style={this.noData?{marginTop:'30px',textAlign:'center'}:styles.hide}>
+                            暂无活动
+                        </div>
                     </div>
-                    
                     <SonPage title={___.seller_activity} open={this.state.isEdit} back={this.editBack}>
                         <EditActivity 
                             isCarownerSeller={this.state.isCarownerSeller}
@@ -388,10 +346,6 @@ class App extends Component {
                             addSubmit={this.addSubmit}
                         />
                     </SonPage>
-                    
-                    {/*<SonPage title={___.act_share} open={this.state.isShare} back={this.shareBack}>
-                        <SharePage/>
-                    </SonPage>*/}
 
                     <div style={this.state.isShare ? styles.share_page : styles.hide} onClick={this.shareBack}>
                         <SharePage reward={this.state.reward}/>
@@ -662,8 +616,12 @@ class DList extends Component{
             <div>
                 {items}
                 {iframe}
-                <div style={{marginTop:'15px',width:'100%',textAlign:'center'}}>
-                    <p>按提示将活动发送给朋友或分享到朋友圈，</p>
+                <div style={data.length?{marginTop:'15px',width:'100%',textAlign:'center',fontSize:'12px'}:styles.hide}>
+                    <p>
+                        点击
+                        <img src='../../img/share.png' style={{width:'20px',height:'20px'}} />
+                        按提示将活动发送给朋友或分享到朋友圈，
+                    </p>
                     <p>好友打开链接即可了解活动详情并咨询预订！</p>
                 </div>
             </div>

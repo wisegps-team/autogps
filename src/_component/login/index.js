@@ -86,11 +86,12 @@ class Login extends Component {
         let val=e.target.value;
         let name=e.target.name;
         this.formData[name]=val;
-        if(val){
-            let s={};
-            s[name+'_err']='';
-            this.setState(s);
-        }
+        this.forceUpdate();
+        // if(val){
+        //     let s={};
+        //     s[name+'_err']='';
+        //     this.setState(s);
+        // }
     }
     remember(e,val){//点击记住密码
         this.need_remember=val;
