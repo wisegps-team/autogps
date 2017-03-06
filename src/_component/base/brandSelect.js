@@ -43,6 +43,15 @@ class BrandSelect extends Component {
             that.setState({brands,brandId});
         });
     }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.product){
+            this.setState({
+                brandId:nextProps.product.brandId,
+                productId:nextProps.product.objectId,
+            });
+        }
+    }
+    
     componentWillUnmount() {
         this.unsubscribe();
     }
@@ -96,7 +105,12 @@ class BrandSelect extends Component {
     }
     
     render() {
-        let products=this.state.products.map(ele=>(<MenuItem value={ele.objectId} primaryText={ele.name} key={ele.objectId}/>))
+        let products=this.state.products.map(ele=>(<MenuItem value={ele.objectId} primaryText={ele.name} key={ele.objectId}/>));
+        if(this.props.product&&this.props.product.objectId){
+            let p=this.props.product;
+            this.brands=[<MenuItem value={p.brandId} primaryText={p.brand} key={p.brandId}/>];
+            products=[<MenuItem value={p.objectId} primaryText={p.name} key={p.objectId}/>];
+        };
         return (
             <div {...this.props}>
                 <SelectField

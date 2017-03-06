@@ -61,7 +61,7 @@ class Dlist extends Component{
         //     </Card>);
         let items=this.props.data.map((ele,i)=>
             <div key={i} style={styles.card} ref={'card'+i}>
-                <div style={{float:'right',color:'#0000cc'}} onClick={()=>this.context.toDidList(ele)}>{ele.did.length}</div>
+                <div style={{float:'right',marginTop:'0.5em',color:'#0000cc'}} onClick={()=>this.context.toDidList(ele)}>{ele.did.length}</div>
                 <div style={_from=='cust_list' ? styles.line : styles.hide}>
                     {ele.brand+' '+ele.model}
                 </div>

@@ -10,6 +10,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 
+import SonPage from './base/sonPage';
 
 const styles = {
     main:{width:'90%',marginLeft:'5%',marginRight:'5%'},
@@ -39,6 +40,8 @@ class ProductLogList extends Component {
             selectProduct:null,
             keyword:'',
         }
+        this.showStock=false;
+        this.stock=[];
 
         this.originalProduct=[];
         this.search = this.search.bind(this);
@@ -46,6 +49,9 @@ class ProductLogList extends Component {
         this.toPushPage = this.toPushPage.bind(this);
         this.toPopPage = this.toPopPage.bind(this);
         this.getProduct = this.getProduct.bind(this);
+
+        this.toStockPage = this.toStockPage.bind(this);
+        this.showStockBack = this.showStockBack.bind(this);
     }
 
     search(e,value){
@@ -57,10 +63,14 @@ class ProductLogList extends Component {
     }
     
     componentDidMount() {
+        this.props.thisView.addEventListener('show',e=>{
+            this.getProduct();
+        });
         this.getProduct();
     }
     
     getProduct(params){
+        W.loading(true);
         let par={
             "group":{
                 "_id":{
@@ -83,6 +93,7 @@ class ProductLogList extends Component {
             par = Object.assign(par,params);
         }
         Wapi.deviceLog.aggr(res=>{
+            W.loading();
             let product=res.data.filter(l=>l._id.modelId);
             product.forEach(ele=>{
                 ele.inCount=ele.inCount||0;
@@ -114,11 +125,38 @@ class ProductLogList extends Component {
         this.props.thisView.postMessage('pushPopCount.js',paramsPop);
         this.props.thisView.goTo('pushPopCount.js',paramsPop);
     }
+    toStockPage(product){
+        Wapi.device.list(res=>{
+            this.stock=res.data.map(ele=>ele.did);
+            this.showStock=true;
+            this.forceUpdate();
+        },{
+            uid:_user.customer.objectId,
+            modelId:product._id.modelId
+        },{
+            fields:'did,objectId'
+        })
+    }
+    showStockBack(){
+        this.showStock=false;
+        this.forceUpdate();
+    }
     render() {
-        let isBrandSeller=(_user.customer.custTypeId==0||_user.customer.custTypeId==1);
-        // let isBrandSeller=true;//测试用
-        let rightIcon=isBrandSeller?
-            (<IconMenu
+        let menus=[
+            <MenuItem key={0} primaryText={___.pop} onTouchTap={this.props.deviceOut}/>,
+            <MenuItem key={1} primaryText={___.push} onTouchTap={this.props.deviceIn}/>,
+            <MenuItem key={2} primaryText={___.return} onTouchTap={this.props.deviceReturn}/>
+        ];
+        let showMenu=[];
+        if(_user.customer.custTypeId==1){
+            showMenu=[menus[1],menus[0]];
+        }else if(_user.customer.custTypeId==5){
+            showMenu=[menus[0],menus[2]];
+        }else if(_user.customer.custTypeId==8){
+            showMenu=[menus[2]];
+        }
+        let rightIcon=
+            <IconMenu
                 iconButtonElement={
                     <IconButton style={{border:'0px',padding:'0px',margin:'0px',width:'24px',height:'24px'}}>
                         <MoreVertIcon/>
@@ -127,9 +165,8 @@ class ProductLogList extends Component {
                 targetOrigin={styles.to}
                 anchorOrigin={styles.to}
                 >
-                <MenuItem primaryText={___.push} onTouchTap={this.props.deviceIn}/>
-                <MenuItem primaryText={___.pop} onTouchTap={this.props.deviceOut}/>
-            </IconMenu>):(<MoreVertIcon onTouchTap={this.props.deviceOut}/>);
+                {showMenu}
+            </IconMenu>;
 
         let items=this.state.product.map((ele,i)=>
             <div key={i} style={styles.list_item}>
@@ -146,7 +183,10 @@ class ProductLogList extends Component {
                         {' '+___.pop+' '}
                         <span style={styles.link}>{ele.outCount||0}</span>
                     </span>
-                    <span>{' '+___.stock_count+' '+ele.stock||0}</span>
+                    <span onClick={()=>this.toStockPage(ele)}>
+                        {' '+___.stock_count+' '}
+                        <span style={styles.link}>{ele.stock||0}</span>
+                    </span>
                 </div>
             </div>);
 
@@ -167,6 +207,34 @@ class ProductLogList extends Component {
                 <div style={styles.main}>
                     {items}
                 </div>
+                <SonPage open={this.showStock} back={this.showStockBack}>
+                    <StockList data={this.stock}/>
+                </SonPage>
+            </div>
+        );
+    }
+}
+
+
+class StockList extends Component {
+    constructor(props,context){
+        super(props,context);
+        this.state={
+            data:[],
+        }
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.data){
+            this.setState({data:nextProps.data});
+        }
+    }
+    
+    render() {
+        let data=this.state.data;
+        let items=data.map((ele,i)=><p key={i}>{ele}</p>);
+        return (
+            <div style={styles.card}>
+                {items}
             </div>
         );
     }

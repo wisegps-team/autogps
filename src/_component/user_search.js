@@ -31,6 +31,8 @@ class UserSearch extends Component {
             maxHeight:null,
             top:false
         };
+        this.clear = this.clear.bind(this);
+        this.receiveUser = this.receiveUser.bind(this);
         this.change = this.change.bind(this);
         this.open = this.open.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -39,6 +41,18 @@ class UserSearch extends Component {
         return nextState!=this.state;
     }
 
+    clear(){
+        this.setState({
+            data:[],
+            value:''
+        });
+    }
+    receiveUser(user){
+        this.setState({
+            data:[user],
+            value:user.name
+        });
+    }
     change(e,val){
         if(this.state.value==val)return;
         if(val){

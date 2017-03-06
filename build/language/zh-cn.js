@@ -581,4 +581,11 @@ window.___={
 	'brand_set':'产品',
 	'service_provider':'服务商',
 	'subordinate_register':'渠道账号注册',
+	'return':'退货',
+	'device_invalid':'无效设备，请确认后重新扫描',
+	'device_others':'此设备不属于当前用户,无法添加',
+	'device_type_err':'此设备型号不是type,无法添加',
+	'num_not_in':'队列中没有此编号，请确认后重新扫描',
+	'device_not_batch':'此设备与之前设备不是同一批次入库,无法同时退货',
+	'device_no_log':'无法找到此设备在当前用户的入库记录，请确认后重新扫描',
 }
