@@ -325,18 +325,13 @@ class App extends Component {
                     <div style={{width:'100%',height:'210px',display:'block',backgroundColor:'#ffffff'}}>
                         <img src='../../img/my_marketing_head.png' style={{width:'100%',height:'100%'}}/>
                     </div>
-                    <div name='list' style={styles.main}>
-                        {/*items*/}
-                        <Alist 
-                            max={this.total} 
-                            limit={this.limit} 
-                            data={this.activities} 
-                            next={this.nextPage} 
-                        />
-                        <div style={this.noData?{marginTop:'30px',textAlign:'center'}:styles.hide}>
-                            暂无活动
-                        </div>
-                    </div>
+                    <ActivityList 
+                        max={this.total} 
+                        limit={this.limit} 
+                        data={this.activities} 
+                        next={this.nextPage} 
+                        noData={this.noData}
+                    />
                     <SonPage title={___.seller_activity} open={this.state.isEdit} back={this.editBack}>
                         <EditActivity 
                             isCarownerSeller={this.state.isCarownerSeller}
@@ -652,3 +647,24 @@ class SharePage extends Component {
 }
 
 
+class ActivityList extends Component {
+    constructor(props, context) {
+        super(props, context);
+    }
+    render() {
+        return (
+           <div name='list' style={styles.main}>
+                {/*items*/}
+                <Alist 
+                    max={this.props.max} 
+                    limit={this.props.limit} 
+                    data={this.props.data} 
+                    next={this.props.next} 
+                />
+                <div style={this.props.noData?{marginTop:'30px',textAlign:'center'}:styles.hide}>
+                    暂无活动
+                </div>
+            </div>
+        );
+    }
+}

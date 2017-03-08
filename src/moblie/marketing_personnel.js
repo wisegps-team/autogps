@@ -200,6 +200,8 @@ class TypeItem extends Component{
         W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
             e?Wapi.department.delete(res=>{
                 W.alert(___.delete_success);
+                this.props.reload();
+                // this.forceUpdate();
             },{
                 objectId:this.props.data.objectId
             }):null;
@@ -298,7 +300,7 @@ class TypePage extends Component {
     
 
     render() {
-        let item=this.state.data.map(e=>(<TypeItem data={e} key={e.objectId}/>));
+        let item=this.state.data.map(e=>(<TypeItem data={e} key={e.objectId} reload={this.props.reload}/>));
         return (
             <div style={styles.card}>
                 {item}
@@ -320,6 +322,7 @@ class TypeAutoList extends Component {
         this.page=1;
         this.loadNextPage = this.loadNextPage.bind(this);
         this.add = this.add.bind(this);
+        this.reload = this.reload.bind(this);
         this.op={
             page:'createdAt',
             sorts:'-createdAt',
@@ -346,8 +349,9 @@ class TypeAutoList extends Component {
     componentWillUnmount() {
         window.removeEventListener(EVENT.typeAdd,this.add);
     }
-    
-
+    reload(){
+        Wapi.department.list(res=>this.setState(res),this._data,Object.assign(this.op,{page_no:this.page}));
+    }
     loadNextPage(){
         //加载下一页的方法
         let arr=this.state.data;
@@ -362,6 +366,7 @@ class TypeAutoList extends Component {
                 limit={this.op.limit} 
                 data={this.state.data} 
                 next={this.loadNextPage} 
+                reload={this.reload}
             />
         );
     }

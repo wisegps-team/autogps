@@ -67,7 +67,8 @@ function AutoList(ShowComponent){
             let pages=[];
             for(let i=0;i<this.state.page;i++)
                 pages.push(<ShowComponent 
-                    data={this.props.data.slice(i*this.props.limit,(i+1)*this.props.limit)}
+                    data={this.props.data.slice(i*this.props.limit,(i+1)*this.props.limit)} 
+                    reload={this.props.reload}
                     key={i}
                 />);
             if(this.state.waiting)
