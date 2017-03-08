@@ -172,14 +172,12 @@ class TypeItem extends Component{
         this.click = this.click.bind(this);
     }
     getUrl(){
-        if(!_user.customer.sellerWxAppKey){
-            W.alert(___.seller_wx_app_null);
-            return;
-        }
+        let wx_app_id=W.getCookie('current_wx');//统一使用当前公众号
+        
         let url=location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
                 +_user.customer.objectId
                 +'&departId='+this.props.data.objectId
-                +'&wx_app_id='+_user.customer.sellerWxAppKey
+                +'&wx_app_id='+wx_app_id
                 +'&name='+this.props.data.name;
         thisView.goTo('share_register.js',url);
     }

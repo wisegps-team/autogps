@@ -23,6 +23,9 @@ require('./_sass/index.scss');//包含css
 
 window.addEventListener('load',function(){
     ReactDOM.render(<App/>,W('#main'));
+    if(_g.wx_app_id){
+        W.setCookie('current_wx',_g.wx_app_id);
+    }
 });
 
 class App extends Component {
@@ -206,8 +209,9 @@ class App extends Component {
     
     bindSuccess(user){//绑定微信成功
         let p='';
-        if(_g.wx_app_id)
+        if(_g.wx_app_id){
             p='/?wx_app_id='+_g.wx_app_id;
+        }
         location=location.origin+p;
     }
     render() {
@@ -232,7 +236,7 @@ class App extends Component {
                     {actives[this.state.active]}
                 </div>
                 {/*<div className='login' style={_sty}>
-                    {actives[3]}
+                    {actives[1]}
                 </div>*/}
             </ThemeProvider>
         );

@@ -56,32 +56,17 @@ class AgentRegisterBox extends Component{
     constructor(props, context) {
         super(props, context);
 
-        this.state={
-            stepIndex:0
-        }
         this.data={
+            name:'',
+            contact:'',
             sex:1
         };
 
         this.nameChange = this.nameChange.bind(this);
+        this.sexChange = this.sexChange.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.registerSuccess = this.registerSuccess.bind(this);
         this.beforRegister = this.beforRegister.bind(this);
-    }
-    beforRegister(data){
-        if(!this.data.name){
-            W.alert(___.user_name_empty);
-            return false;
-        }
-        if(!this.data.cityId){
-            W.alert(___.area_empty);
-            return false;
-        }
-        if(!this.data.contact){
-            W.alert(___.contact_empty);
-            return false;
-        }
-        return true;
     }
     registerSuccess(){
         W.loading(1);
@@ -162,17 +147,31 @@ class AgentRegisterBox extends Component{
     nameChange(e){
         this.data[e.target.name]=e.target.value;
     }
-    beforRegister(){
-        if(this.data.name){
-            return true;
-        }else
+    sexChange(val){
+        this.data.sex=val;
+    }
+    beforRegister(callback){
+        if(!this.data.name){
             W.alert(___.pls_input_company_name);
+            return;
+        }
+        if(!this.data.contact){
+            W.alert(___.contact_empty);
+            return;
+        }
+        callback();
     }
     render() {
         return (
             <div>
                 <div style={sty.r}>
                     <input name='name' placeholder={___.company_name} style={sty.input} onChange={this.nameChange}/>
+                </div>
+                <div style={sty.r}>
+                    <form style={{position:'relative',width:'100%',background:'#fff'}}>
+                        <input name='contact' onChange={this.nameChange} placeholder={___.person_name} style={sty.input}/>
+                        <SexRadio onChange={this.sexChange} style={{position:'absolute',right:'0px',top:'8px'}}/>
+                    </form>
                 </div>
                 <RegisterOrig onSuccess={this.handleNext} beforRegister={this.beforRegister}/>
             </div>

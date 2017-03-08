@@ -145,7 +145,7 @@ class ProductLogList extends Component {
         let menus=[
             <MenuItem key={0} primaryText={___.pop} onTouchTap={this.props.deviceOut}/>,
             <MenuItem key={1} primaryText={___.push} onTouchTap={this.props.deviceIn}/>,
-            <MenuItem key={2} primaryText={___.return} onTouchTap={this.props.deviceReturn}/>
+            <MenuItem key={2} primaryText={___.device_return} onTouchTap={this.props.deviceReturn}/>
         ];
         let showMenu=[];
         if(_user.customer.custTypeId==1){

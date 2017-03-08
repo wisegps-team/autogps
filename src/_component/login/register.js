@@ -72,7 +72,7 @@ class Register extends Component {
                     <Input
                         name='account'
                         hintText={___.input_account}
-                        floatingLabelText={___.account}
+                        floatingLabelText={___.phone_num}
                         onChange={this.accountChange}
                         type='tel'
                     />
@@ -86,7 +86,7 @@ class Register extends Component {
                 </div>
 
                 <div style={{textAlign:'center'}}>
-                    <RaisedButton label={___.register} primary={true} style={{marginTop:'10px'}} onClick={this.submit}/>
+                    <RaisedButton label={___.register} primary={true} style={{marginTop:'10px'}} onClick={this.submit} labelColor='#eee'/>
                 </div>
             </div>
         );

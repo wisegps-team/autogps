@@ -117,13 +117,11 @@ class App extends React.Component {
         //     show_sonpage:true,
         //     intent:'add',
         // });
-        if(!_user.customer.sellerWxAppKey){
-            W.alert(___.seller_wx_app_null);
-            return;
-        }
+        let wx_app_id=W.getCookie('current_wx');
+        
         let url=location.origin+'/?location=tempRegister.html&intent=logout&needOpenId=true&parentId='
                 +_user.customer.objectId
-                +'&departId=0&wx_app_id='+_user.customer.sellerWxAppKey
+                +'&departId=0&wx_app_id='+wx_app_id
                 +'&name='+_user.customer.name;
         thisView.goTo('share_register.js',url);
     }

@@ -13,8 +13,8 @@ import PasswordRepeat from './password';
 import sty from './style';
 
 const strFormData={
-    mobile:___.cellphone,
-    valid_code:___.verification_code,
+    mobile:___.phone_num,
+    valid_code:___.phone_num,
     password:___.pwd,
     valid_type:'valid_type'
 }
@@ -30,7 +30,10 @@ class RegisterOrig extends Component {
             password:null,
             valid_type:1
         };
+        this.correct='';
+        this.canSubmit=false;
         this.change = this.change.bind(this);
+        this.verifiSuccess = this.verifiSuccess.bind(this);
         this.accountChange = this.accountChange.bind(this);
         this.submit = this.submit.bind(this);
         this.success = this.success.bind(this);
@@ -56,20 +59,36 @@ class RegisterOrig extends Component {
             }
         }
         let data=Object.assign({},this.formData);
-        if(!this.props.beforRegister||this.props.beforRegister(data))
+
+        // if(!this.props.beforRegister||this.props.beforRegister(data))
+        //     Wapi.user.register(this.success,data);
+            
+        this.props.beforRegister(()=>{
             Wapi.user.register(this.success,data);
+        })
     }
 
     accountChange(e){
         let val=e.target.value;
         let reg=/^[1][3578][0-9]{9}$/;
         if(reg.test(val)){
-            this.formData['mobile']=val;  
-            this.setState({account:val}); 
+            this.formData['mobile']=val;
+        }else{
+            this.formData['mobile']=null;
         }
+        this.setState({account:val});
     }
     change(val){
         this.formData.valid_code=val;
+        if(this.correct!='' && val!=this.correct){
+            this.canSubmit=false;
+            this.forceUpdate();
+        }
+    }
+    verifiSuccess(val){
+        this.correct=val;
+        this.canSubmit=true;
+        this.forceUpdate();
     }
 
     render() {
@@ -80,7 +99,7 @@ class RegisterOrig extends Component {
                         <input 
                             name='account' 
                             type='tel' 
-                            placeholder={___.account} 
+                            placeholder={___.phone_num} 
                             style={sty.input} 
                             onChange={this.accountChange}
                         />
@@ -90,14 +109,14 @@ class RegisterOrig extends Component {
                             name='valid_code'
                             type={1}
                             account={this.state.account} 
-                            onSuccess={this.change}
+                            onSuccess={this.verifiSuccess}
                             onChange={this.change}
                             style={{width:'100%'}}
                         />
                     </div>
                 </div>
                 <div style={{textAlign:'center'}}>
-                    <RaisedButton label={___.register} onClick={this.submit} primary={true} style={{marginTop:'15px'}} labelColor='#eee'/>
+                    <RaisedButton disabled={!this.canSubmit} label={___.register} onClick={this.submit} primary={true} style={{marginTop:'15px'}} labelColor='#eee'/>
                 </div>
             </div>
         );

@@ -29,15 +29,21 @@ class VerificationOrig extends Component {
             second:0
         }
         this.accountFormat=false;
+        this.checkMobile = this.checkMobile.bind(this);
         this.change = this.change.bind(this);
         this.getCode = this.getCode.bind(this);
     }
-
+    componentDidMount() {
+        this.checkMobile(this.props.account);
+    }
     componentWillUnmount() {
         clearInterval(this._time_id);
     }
     componentWillReceiveProps(nextProps) {
-        let account=nextProps.account;
+        this.checkMobile(nextProps.account);
+    }
+    checkMobile(mobile){
+        let account=mobile;
         let reg=/^[1][3578][0-9]{9}$/;
         if(reg.test(account)){
             if(this.props.needExist){
