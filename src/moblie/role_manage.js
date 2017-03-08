@@ -149,15 +149,22 @@ class App extends React.Component {
     // }
     deleteRole(role){
         let _this=this;
-        W.confirm(___.confirm_delete_role,function(b){
-            if(b){
-                Wapi.role.delete(res=>{//delete a role
-                    _this.roles=_this.roles.filter(ele=>ele.objectId!=role.objectId);
-                    _this.forceUpdate();
-                },{objectId:role.objectId});
-            }
-        });
-        
+        Wapi.employee.list(res => {
+            if(res.data&&res.data.length){
+                W.alert(___.role_no_delete)
+            }else{
+                W.confirm(___.confirm_delete_data,function(b){
+                    if(b){
+                        Wapi.role.delete(res=>{//delete a role
+                            _this.roles=_this.roles.filter(ele=>ele.objectId!=role.objectId);
+                            _this.forceUpdate();
+                        },{objectId:role.objectId});
+                    }
+                })  
+            }     
+        },{
+            roleId:role.objectId
+        })
     }
     render(){
         let items=this.roles.map((ele,i)=>

@@ -195,15 +195,24 @@ class TypeItem extends Component{
             W.alert(___.mp_delete);
             return;
         }
-        W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
-            e?Wapi.department.delete(res=>{
-                W.alert(___.delete_success);
-                this.props.reload();
-                // this.forceUpdate();
-            },{
-                objectId:this.props.data.objectId
-            }):null;
-        });
+        Wapi.activity.list(res => {
+            if(res.data&&res.data.length){
+                W.alert(___.activity_no_delete)
+            }else{
+                W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
+                    e?Wapi.department.delete(res=>{
+                        W.alert(___.delete_success);
+                        this.props.reload();
+                        // this.forceUpdate();
+                    },{
+                        objectId:this.props.data.objectId
+                    }):null;
+                });
+            }
+        },{
+            sellerTypeId: this.props.data.objectId
+        })
+        
     }
     getPerson(){
         thisView.goTo('person_list.js',Object.assign({},this.props.data));
