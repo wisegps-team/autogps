@@ -2728,7 +2728,7 @@ export const authorize={
             'messages': {
             }
         },{
-            'name': 'cancelUserName',
+            'name': 'cancelUserName',//取消授权相关字段现在定义为‘暂停’ /20170308
             'desc': '取消授权人姓名',
             'type': 'String',
             'query': true,
@@ -2751,7 +2751,7 @@ export const authorize={
         },{
             'name': 'status',
             'desc': '状态',
-            'type': 'Number',   //0待审核／1已授权／2已取消
+            'type': 'Number',   //0待审核／1已授权／2已暂停
             'query': true,
         }
     ],

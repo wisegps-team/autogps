@@ -381,13 +381,15 @@ class ActivityList extends Component {
         );
     }
 }
-// const cards = [];
+
+// const cards = [];//测试用
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
 if(typeof(_user.employee)=='undefined'){//临时用系统设置菜单
     cards.push(set);
 }
+
 //营销平台首页如果无菜单，显示推荐有礼下面的内容
-if(cards == 0){
+if(cards.length == 0){
     cards.push(<ActivityList key={'my_marketing'}/>)
 }
 
@@ -429,27 +431,6 @@ class App extends Component {
                 <div className='main'>
                     {cards}
                 </div>
-                {/*<Tabs style={sty.tabs}>
-                    <Tab
-                        className='tab'
-                        icon={<ActionHome/>}
-                        label={___.home}
-                    />
-                    <Tab
-                        className='tab'
-                        icon={<ActionWork/>}
-                        label={___.message}
-                        value={'to_do'}
-                        onActive={this.go}
-                    />
-                    <Tab
-                        className='tab'                    
-                        icon={<ActionAccountCircle/>}
-                        label={___.user}
-                        value={'my_account'}
-                        onActive={this.go}
-                    />
-                </Tabs>*/}
             </div>
             </ThemeProvider>
         );

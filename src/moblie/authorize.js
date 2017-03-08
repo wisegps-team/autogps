@@ -38,6 +38,7 @@ const styles = {
     spans:{width:'140px',display:'table-cell'},
     menu_item:{height:'40px'},
     no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
+    show:{display:'block'},
     hide:{display:'none'},
     search_head:{width:'100%',display:'block'},
     add_icon:{float:'right',marginRight:'15px',color:"#2196f3"},
@@ -145,18 +146,29 @@ class App extends Component {
             W.loading();
             this.authorized=res.data;
             this.setState({intent:0});
+            // this.state.intent=0;
+            // this.forceUpdate();
         },{
             actProductId:id,
             approveCompanyId:_user.customer.objectId
         })
     }
     render() {
-        let addList=<Authorizing data={this.authorizing} actProduct={this.actProduct} addAuth={this.addAuth}/>;
-        let showList=<Authorized data={this.authorized} actProduct={this.actProduct}/>;
+        // let addList=<Authorizing data={this.authorizing} actProduct={this.actProduct} addAuth={this.addAuth}/>;
+        // let showList=<Authorized data={this.authorized} actProduct={this.actProduct}/>;
         return (
             <ThemeProvider>
                 <div>
-                    {this.state.intent?addList:showList}
+                    {/*{this.state.intent?addList:showList}*/}
+                    <Authorizing 
+                        style={this.state.intent?styles.show:styles.hide} 
+                        data={this.authorizing} 
+                        actProduct={this.actProduct} 
+                        addAuth={this.addAuth}/>
+                    <Authorized 
+                        style={this.state.intent?styles.hide:styles.show} 
+                        data={this.authorized} 
+                        actProduct={this.actProduct}/>
                 </div>
             </ThemeProvider>
         );
@@ -181,7 +193,9 @@ class Authorizing extends Component {
         this.authorize = this.authorize.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
+        if(nextProps.style.display=='none'){
+            return;
+        }
         this.selected=[];
         if(nextProps.data.length==0){
             W.alert('暂无需要授权的商家');
@@ -236,7 +250,7 @@ class Authorizing extends Component {
             />
         );
         return (
-            <div>
+            <div style={this.props.style}>
                 <div style={styles.search_head}>
                     <div style={styles.search_box}>
                         <Input 
@@ -263,7 +277,7 @@ class Authorizing extends Component {
     }
 }
 
-let strStatus=['待审核','已授权','已取消'];
+let strStatus=['待审核','已授权','已暂停'];
 class Authorized extends Component {
     constructor(props,context){
         super(props,context);
@@ -271,9 +285,12 @@ class Authorized extends Component {
         this.data=[];
         this.cancelAuth = this.cancelAuth.bind(this);
         this.reAuth = this.reAuth.bind(this);
+        this.deleteAuth = this.deleteAuth.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
+        if(nextProps.style.display=='none'){
+            return;
+        }
         let pid=nextProps.actProduct.productId;
         Wapi.booking.aggr(res=>{
             this.bookCount=res.data;
@@ -298,7 +315,7 @@ class Authorized extends Component {
     }    
     cancelAuth(data){
         Wapi.authorize.update(res=>{
-            W.alert('已取消'+data.applyCompanyName+'的授权',()=>{
+            W.alert('已暂停'+data.applyCompanyName+'的授权',()=>{
                 data.status=2;
                 this.forceUpdate();
             });
@@ -322,6 +339,21 @@ class Authorized extends Component {
             approveDate:W.dateToString(new Date())
         });
     }
+    deleteAuth(data){
+        W.confirm('确定删除？',e=>{
+            if(!e)return;
+            Wapi.authorize.delete(res=>{
+                thisView.postMessage('selling_product.js',{
+                    actProductId:data.actProductId,
+                    num:-1
+                });
+                this.data=this.data.filter(ele=>ele.objectId!=data.objectId);
+                this.forceUpdate();
+            },{
+                objectId:data.objectId,
+            });
+        });
+    }
     render() {
         let p=this.props.actProduct;
         let strName=(Number.isInteger(p.channel)?(strChannel[p.channel]):'')+' '+p.brand+p.name;
@@ -339,7 +371,7 @@ class Authorized extends Component {
                     >
                     <MenuItem 
                         style={ele.status==1?styles.menu_item:styles.hide} 
-                        primaryText={'取消授权'}
+                        primaryText={'暂停授权'}
                         onTouchTap={()=>this.cancelAuth(ele)}
                     />
                     <MenuItem 
@@ -347,14 +379,15 @@ class Authorized extends Component {
                         primaryText={'恢复授权'}
                         onTouchTap={()=>this.reAuth(ele)}
                     />
+                    <MenuItem 
+                        style={styles.menu_item} 
+                        primaryText={'删除授权'}
+                        onTouchTap={()=>this.deleteAuth(ele)}
+                    />
                 </IconMenu>
                 <div style={{marginTop:'10px',marginBottom:'10px'}}>
                     {ele.applyCompanyName}
                 </div>
-                {/*<div>
-                    <span>授权状态：</span><span>{strStatus[ele.status]}</span>
-                    <span style={{marginLeft:'20px'}}>预约车主：</span><span>{ele.bookNum}</span>
-                </div>*/}
                 <div style={styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{'授权状态'+' : '}</span>
@@ -369,7 +402,7 @@ class Authorized extends Component {
             </div>
         );
         return (
-            <div>
+            <div style={this.props.style}>
                 <div style={{width:'100%',padding:'15px 0px',borderBottom:'1px solid #999999',textAlign:'center'}}>
                     授权产品：{strName}
                 </div>

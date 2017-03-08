@@ -160,7 +160,7 @@ class Department extends Component{
             if(res.data&&res.data.length){
                 W.alert(___.department_can_not_remove)
             }else{
-                W.confirm(___.confirm_remove_dep,function(b){
+                W.confirm(___.confirm_delete_data,function(b){
                     if(b)
                         Wapi.department.delete(function(res){
                             STORE.dispatch(department_act.delete(that.props.data.objectId));

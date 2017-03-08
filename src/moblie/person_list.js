@@ -11,6 +11,9 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import RaisedButton from 'material-ui/RaisedButton';
+
 
 const sty={
     tem:{
@@ -31,12 +34,23 @@ const sty={
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.seller);
+
+var category = thisView.prefetch('#editcategory',3);
+
+
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
+
+    
+    ReactDOM.render(<EditCategory/>,category);
+    category.setTitle("___.seller");
+
     thisView.prefetch('booking_list.js',2);
 });
 
-
+var _person = {
+    departId: 0
+}
 class App extends Component{
     constructor(props) {
         super(props);
@@ -72,6 +86,7 @@ class PersonBox extends Component{
         }
         this.click = this.click.bind(this);
         this.delete = this.delete.bind(this);
+        this.edit = this.edit.bind(this);
     }
     componentDidMount() {
         Wapi.booking.aggr(res=>{
@@ -130,7 +145,18 @@ class PersonBox extends Component{
     goList(emp,status){
         thisView.goTo('booking_list.js',{sellerId:emp.objectId,status});
     }
+    edit(person){
+        // Wapi.department.list(res => {
+        //     console.log(res)
+        // },{
+        //     uid:_user.customer.objectId,type:1
+        // })
+        // console.log(person,'person')
+        _person = person;
+        thisView.goTo('#editcategory');
+    }
     delete(person){
+        // console.log(person)
         if(person.status0||person.status1){
             W.alert(___.per_delete);
             return;
@@ -148,11 +174,15 @@ class PersonBox extends Component{
             case 0:
                 this.delete(person);
                 break;
+            case 1:
+                this.edit(person);
+                break;
             default:
                 break;
         }
     }
     render() {
+        // console.log(this.state.data,'ceshi')
         let emp=this.state.data.map(e=>(
             <div key={e.objectId} style={sty.tem}>
                 <div>
@@ -195,7 +225,74 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.delete}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(1)}>修改分类</MenuItem>
             </IconMenu>
         );
     }
 }
+
+
+class EditCategory extends Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            data:[],   
+        }
+        this.check = this.check.bind(this);
+        this.submit = this.submit.bind(this);
+        this.objectId='';
+        
+    }
+    componentDidMount(){
+        category.addEventListener('show',e => {
+            this.forceUpdate();
+        });
+        Wapi.department.list(res => {
+            this.setState({data:res.data})
+            console.log(res.data)
+        },{
+            uid:_user.customer.objectId,type:1
+        })
+    }
+   
+    check(e){
+        this.objectId = e.target.value;
+        console.log(this.objectId)
+    }
+    submit(e){
+        Wapi.employee.update(function(){
+            history.back()
+        },{
+            _objectId:_person.objectId,
+            departId:this.objectId
+        })
+    }
+    render() {
+        console.log(this.state.data,'1')
+        console.log(this.state.depId,'2')
+        let items = this.state.data.map((ele,index) => {
+           return(<RadioButton
+                    key={index}
+                    value={ele.objectId.toString()}
+                    label={ele.name}
+                    style={{marginBottom: 16}}
+                />)  
+        })
+        const defaultvalue = _person.departId.toString()
+        console.log(defaultvalue,'dff')
+        return (
+            <ThemeProvider>
+                <div style={{padding:20}}>
+                    <div style={{marginBottom:20}}>集团营销分类</div>
+                    <RadioButtonGroup name="shipSpeed" onChange={this.check} valueSelected={defaultvalue}>
+                       {items} 
+                    </RadioButtonGroup>
+                    <div style={{width:'100%',display:'block',textAlign:'center',paddingTop:'5px'}}>
+                        <RaisedButton label={___.ok} primary={true} onClick={this.submit} />
+                    </div>
+                </div>
+            </ThemeProvider>
+        );
+    }
+}
+

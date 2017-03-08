@@ -71,6 +71,14 @@ for(let i=5;i--;){
 let strChannel=[___.national_marketing,___.regional_marketing];
 let strAuthStatus=['待审核','已授权','已取消','未授权'];
 
+let canTouch=true;
+function setTouch(){
+    canTouch=false;
+    setTimeout(function() {
+        canTouch=true;
+    }, 400);
+}
+
 class App extends Component {
     constructor(props,context){
         super(props,context);
@@ -102,8 +110,6 @@ class App extends Component {
     }
     componentDidMount() {
         W.loading(true);
-        // this.list=_list;
-        // this.forceUpdate();
 
         let _this=this;
         thisView.addEventListener('message',(e)=>{
@@ -119,29 +125,6 @@ class App extends Component {
         if(va.includes('0')||va.includes('1')||va.includes('3')){
             this.marketPermission=true;
         }
-
-        // let par={};
-        // if(this.marketPermission){
-        //     par={
-        //         uid:_user.customer.objectId+'|'+_user.customer.parentId.join('|')
-        //     };
-        // }else{
-        //     par={
-        //         uid:_user.customer.parentId.join('|'),
-        //         createdActivity:true
-        //     };
-        // }
-
-        // Wapi.activityProduct.list(res=>{
-        //     if(this.marketPermission){
-        //         Permission(res.data);
-        //     }else{
-        //         NoPermission(res.data);
-        //     }
-
-        // },par,{
-        //     limit:-1
-        // });
 
         Wapi.activity.list(dataAct=>{
 
@@ -273,9 +256,13 @@ class App extends Component {
 
     }
     url(product){
+        if(!canTouch)return;
+        setTouch();
         window.location=product.productUrl;
     }
     authorize(product,intent){
+        if(!canTouch)return;
+        setTouch();
         if(product.myAuth==0&&intent==0){
             W.alert('暂未授权任何商家');
             return;
@@ -288,6 +275,8 @@ class App extends Component {
         // thisView.postMessage('authorize.js',params);
     }
     edit(product){
+        if(!canTouch)return;
+        setTouch();
         this.curProduct=product;
         this.setState({isEdit:true});
     }
@@ -315,12 +304,26 @@ class App extends Component {
         this.setState({isEdit:false});
     }
     delete(product){
-        W.confirm(___.confirm_delete_product,b=>{
-            if(!b)return;
-            Wapi.activityProduct.delete(res=>{
-                this.list=this.list.filter(ele=>ele.objectId!=product.objectId);
-                this.forceUpdate();
-            },{objectId:product.objectId});
+        if(!canTouch)return;
+        setTouch();
+        if(product.allAuth || product.myAuth){
+            W.alert('在营销产品授权中已使用，不可删除！');
+            return;
+        }
+        Wapi.activity.list(res=>{
+            if(res.data && res.data.length){
+                W.alert('在营销活动中已使用，不可删除！');
+                return;
+            }
+            W.confirm('确认删除？',b=>{
+                if(!b)return;
+                Wapi.activityProduct.delete(res=>{
+                    this.list=this.list.filter(ele=>ele.objectId!=product.objectId);
+                    this.forceUpdate();
+                },{objectId:product.objectId});
+            });
+        },{
+            actProductId:product.objectId
         })
     }
     add(){
@@ -347,6 +350,8 @@ class App extends Component {
                     return;
                 }
                 product.objectId=res.objectId;
+                product.allAuth=0;
+                product.myAuth=0;
                 this.list.unshift(product);
                 history.back();
             },product);
@@ -357,14 +362,11 @@ class App extends Component {
         })
     }
     render() {
+        console.log(this.originalList);
         let styAdd = this.marketPermission ? styles.add_icon : {display:'none'};
         return (
             <ThemeProvider>
                 <div>
-                    {/*<AppBar 
-                        title={___.selling_product}
-                        iconElementRight={<IconButton onClick={this.add}><ContentAdd/></IconButton>}
-                    />*/}
                     <div style={styles.search_head}>
                         <ContentAdd style={styAdd} onClick={this.add}/>
                         <div style={styles.search_box}>
