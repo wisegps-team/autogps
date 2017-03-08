@@ -186,7 +186,7 @@ class App extends Component {
             W.alert(___.activity_delete_booked);
             return;
         }
-        W.confirm(___.confirm_delete_activity,(b)=>{
+        W.confirm(___.confirm_delete_data,(b)=>{
             if(b){
                 Wapi.activity.delete(res=>{
                     if(res.status_code==0){
