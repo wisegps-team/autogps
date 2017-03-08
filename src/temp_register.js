@@ -9,11 +9,13 @@ import ReactDOM from 'react-dom';
 import {ThemeProvider} from './_theme/default';
 
 import Register from './_component/login/register';
+import RegisterOrig from './_component/login/registerOrig';
 import Input from './_component/base/input';
 import SexRadio from './_component/base/sexRadio';
 import QrBox from './_component/login/qr_box';
 
 import {getOpenIdKey,setTitle} from './_modules/tool';
+import {Wapi} from './_modules/Wapi';
 
 require('./_sass/index.scss');//包含css
 setTitle(___.invite_regist);
@@ -21,6 +23,24 @@ window.addEventListener('load',function(){
     ReactDOM.render(<App/>,W('#main'));
 });
 
+const sty={
+    r:{
+        display:'flex',
+        alignItems:'flex-end',
+        padding:'3px 10px',
+        borderBottom:'1px solid #dddddd',
+        backgroundColor:'#fff',
+    },
+    form:{position:'relative',width:'100%',background:'#fff'},
+    sex:{position:'absolute',right:'0px',top:'8px'},
+    input:{
+        width:'100%',
+        height:'40px',
+        fontSize:'16px',
+        border:'none',
+        outline:'none'
+    }
+}
 
 class App extends Component {
     constructor(props, context) {
@@ -95,19 +115,20 @@ class EmployeeRegisterBox extends Component{
         super(props, context);
         this.registerSuccess = this.registerSuccess.bind(this);
         this.data={
+            name:'',
             sex:1
         };
         Object.assign(this.data,props.defaultData);
-        this.change = this.change.bind(this);
+        this.sexChange = this.sexChange.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.beforRegister = this.beforRegister.bind(this);
     }
-    beforRegister(){
+    beforRegister(callback){
         if(!this.data.name){
             W.alert(___.user_name_empty);
-            return false;
+            return;
         }
-        return true;
+        callback();
     }
     registerSuccess(res){
         let user=res;
@@ -162,9 +183,9 @@ class EmployeeRegisterBox extends Component{
     }
 
     nameChange(e,val){
-        this.data[e.target.name]=val;
+        this.data[e.target.name]=e.target.value;
     }
-    change(val){
+    sexChange(val){
         this.data.sex=val;
     }
     render() {
@@ -174,11 +195,19 @@ class EmployeeRegisterBox extends Component{
                 <h4 style={{textAlign:'center'}}>{_g.name}</h4>
                 <p style={{textAlign:'center'}}>{des}</p>
                 <div>
-                    <form style={{position:'relative',padding:'10px',background:'#fff'}}>
+                    {/*<form style={{position:'relative',padding:'10px',background:'#fff'}}>
                         <Input name='name' floatingLabelText={___.person_name} onChange={this.nameChange}/>
-                        <SexRadio onChange={this.change} style={{position:'absolute',right:'0px',top:'32px'}}/>
+                        <SexRadio onChange={this.sexChange} style={{position:'absolute',right:'0px',top:'32px'}}/>
                     </form>
-                    <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
+                    <Register onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>*/}
+
+                    <div style={sty.r}>
+                        <form style={sty.form}>
+                            <input name='name' onChange={this.nameChange} placeholder={___.person_name} style={sty.input}/>
+                            <SexRadio onChange={this.sexChange} style={sty.sex}/>
+                        </form>
+                    </div>
+                    <RegisterOrig onSuccess={this.registerSuccess} beforRegister={this.beforRegister}/>
                 </div>
             </div>
         );

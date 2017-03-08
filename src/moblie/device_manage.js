@@ -59,7 +59,7 @@ var popPage=thisView.prefetch('#pop',3);
 popPage.setTitle(___.pop);
 
 var returnPage=thisView.prefetch('#return',3);
-returnPage.setTitle(___.return);
+returnPage.setTitle(___.device_return);
 
 var didsPage=thisView.prefetch('#didList',3);
 

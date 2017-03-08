@@ -35,39 +35,26 @@ let qrLinkData={
     // i:0
 };
 
-// let marketPromission=_user.customer.other&&_user.customer.other.va;
-// if(marketPromission.includes('1')){
-//     sth;
-// }
 
 Wapi.qrLink.get(function(res) {
-    if(res.data){
+    let wx_app_id=W.getCookie('current_wx');
+    if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
         setUrl(res.data.id);
     }else{
-        Wapi.weixin.get(wei=>{
-            if(!wei.data){
-                // getWeixin();
-                W.alert('请先配置公众号，才能邀约下级');
-                return;
-            }
-            let wx_app_id=wei.data.wxAppKey;
-            let data=Object.assign({},qrLinkData);
-            let custType=(_user.customer.custTypeId==1)?5:8;
-            data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
-            Wapi.qrLink.add(res=>{
-                Wapi.qrLink.get(r=>{
-                    let id=changeToLetter(r.data.i);
-                    setUrl(id);
-                    Wapi.qrLink.update(null,{
-                        _objectId:res.objectId,
-                        id
-                    });
-                },{objectId:res.objectId});
-            },data);
-        },{
-            uid:_user.customer.objectId,
-            type:1
-        });
+        let data=Object.assign({},qrLinkData);
+        data.i=0;
+        let custType=(_user.customer.custTypeId==1)?5:8;
+        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+        Wapi.qrLink.add(res=>{
+            Wapi.qrLink.get(r=>{
+                let id=changeToLetter(r.data.i);
+                setUrl(id);
+                Wapi.qrLink.update(null,{
+                    _objectId:res.objectId,
+                    id
+                });
+            },{objectId:res.objectId});
+        },data);
     }
 },qrLinkData);
 
@@ -344,7 +331,6 @@ class QrBox extends Component{
         }  
     }
     render() {
-        console.log(sUrl);
         let dis=this.props.show?{}:{display:'none'};
         dis.textAlign='center';
         let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128-100)/2+'px'};
