@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=99;//版本号
+let version=101;//版本号
 
 //地区表
 export const area={
@@ -2760,12 +2760,57 @@ export const authorize={
     ]
 }
 
-
+export const promotion={
+    name: 'promotion',             //表名
+    desc: '推广统计表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'id',
+            'desc': '推广Id',
+            'type': 'Number',
+            'default':'@AutoInc',
+            'query': true,
+        },{
+            'name': 'time',
+            'desc': '时间',
+            'type': 'Date',
+            'query': true,
+        },{
+            'name': 'type',
+            'desc': '类别',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'qrcodeId',
+            'desc': '营销二维码Id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'actpersonId',
+            'desc': '营销人员Id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'activityId',
+            'desc': '营销活动Id',
+            'type': 'String',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+} 
 
 let TABLES=[
     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin,qrData,activityProduct,qrDistribution,qrLink,authorize
+    weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
 ];
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
