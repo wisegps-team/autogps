@@ -345,6 +345,16 @@ class TypeAutoList extends Component {
     componentDidMount() {//初始化数据
         Wapi.department.list(res=>this.setState(res),this._data,Object.assign(this.op,{page_no:this.page}));
         window.addEventListener(EVENT.typeAdd,this.add);
+        window.addEventListener('depart_data_change',(e)=>{
+            this.state.data.map(ele=>{
+                if(ele.objectId==e.params.oldDep){
+                    ele.total--;
+                }else if(ele.objectId==e.params.newDep){
+                    ele.total++;
+                }
+            });
+            this.forceUpdate();
+        });
     }
     add(e){
         let newType=e.params;

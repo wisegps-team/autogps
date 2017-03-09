@@ -43,7 +43,7 @@ thisView.addEventListener('load',function(){
 
     
     ReactDOM.render(<EditCategory/>,category);
-    category.setTitle("___.seller");
+    category.setTitle(___.seller);
 
     thisView.prefetch('booking_list.js',2);
 });
@@ -61,18 +61,21 @@ class App extends Component{
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
-            if(!e.params)return;
-            this.setState({
-                depId:e.params.objectId,
-                name:e.params.name
-            });
+            if(e.params){
+                this.setState({
+                    depId:e.params.objectId,
+                    name:e.params.name
+                });
+            }else if(_person && _person.objectId){
+                this.refs.box.getData();
+            };
         });
     }
     
     render() {
         return (
             <ThemeProvider>
-                <PersonBox depId={this.state.depId}/>
+                <PersonBox ref='box' depId={this.state.depId}/>
             </ThemeProvider>
         );
     }
@@ -84,6 +87,7 @@ class PersonBox extends Component{
         this.state={
             data:[]
         }
+        this.getData = this.getData.bind(this);
         this.click = this.click.bind(this);
         this.delete = this.delete.bind(this);
         this.edit = this.edit.bind(this);
@@ -91,6 +95,7 @@ class PersonBox extends Component{
     componentDidMount() {
         Wapi.booking.aggr(res=>{
             this.aggr=res.data;
+            this.getData();
         },{
             "group":{
                 "_id":{
@@ -114,28 +119,30 @@ class PersonBox extends Component{
         });
     }
     
-    
     componentWillReceiveProps(nextProps) {
         if(nextProps.depId!=this.props.depId){
-            this.setState({data:[]});
-            Wapi.employee.list(res=>{
-                let data=res.data;
-                data.forEach(e=>{
-                    let a=this.aggr.find(a=>a._id.sellerId==e.objectId);
-                    Object.assign(e,{
-                        status0:0,
-                        status1:0,
-                        status2:0,
-                        status3:0
-                    },a);
-                });
-                this.setState({data});
-            },{
-                departId:nextProps.depId
-            },{
-                limit:-1
-            });
+            this.getData(nextProps.depId);
         }
+    }
+    getData(depId){
+        this.setState({data:[]});
+        Wapi.employee.list(res=>{
+            let data=res.data;
+            data.forEach(e=>{
+                let a=this.aggr.find(a=>a._id.sellerId==e.objectId);
+                Object.assign(e,{
+                    status0:0,
+                    status1:0,
+                    status2:0,
+                    status3:0
+                },a);
+            });
+            this.setState({data});
+        },{
+            departId:depId||this.props.depId
+        },{
+            limit:-1
+        });
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -182,7 +189,6 @@ class PersonBox extends Component{
         }
     }
     render() {
-        // console.log(this.state.data,'ceshi')
         let emp=this.state.data.map(e=>(
             <div key={e.objectId} style={sty.tem}>
                 <div>
@@ -199,6 +205,7 @@ class PersonBox extends Component{
         return (
             <div style={sty.p}>
                 {emp}
+                <div style={emp.length==0?{}:{display:'none'}}>该分类下暂无人员</div>
             </div>
         );
     }
@@ -245,11 +252,11 @@ class EditCategory extends Component {
     }
     componentDidMount(){
         category.addEventListener('show',e => {
+            this.objectId=_person.departId;
             this.forceUpdate();
         });
         Wapi.department.list(res => {
             this.setState({data:res.data})
-            console.log(res.data)
         },{
             uid:_user.customer.objectId,type:1
         })
@@ -257,19 +264,24 @@ class EditCategory extends Component {
    
     check(e){
         this.objectId = e.target.value;
-        console.log(this.objectId)
+        this.forceUpdate();
     }
     submit(e){
-        Wapi.employee.update(function(){
-            history.back()
+        let data={
+            intent:'change',
+            oldDep:_person.departId,
+            newDep:this.objectId
+        }
+        Wapi.employee.update(()=>{
+            _person.departId=this.objectId;
+            W.emit(window,'depart_data_change',data);
+            history.back();
         },{
             _objectId:_person.objectId,
             departId:this.objectId
         })
     }
     render() {
-        console.log(this.state.data,'1')
-        console.log(this.state.depId,'2')
         let items = this.state.data.map((ele,index) => {
            return(<RadioButton
                     key={index}
@@ -278,13 +290,11 @@ class EditCategory extends Component {
                     style={{marginBottom: 16}}
                 />)  
         })
-        const defaultvalue = _person.departId.toString()
-        console.log(defaultvalue,'dff')
         return (
             <ThemeProvider>
                 <div style={{padding:20}}>
                     <div style={{marginBottom:20}}>集团营销分类</div>
-                    <RadioButtonGroup name="shipSpeed" onChange={this.check} valueSelected={defaultvalue}>
+                    <RadioButtonGroup name="shipSpeed" onChange={this.check} valueSelected={this.objectId}>
                        {items} 
                     </RadioButtonGroup>
                     <div style={{width:'100%',display:'block',textAlign:'center',paddingTop:'5px'}}>
