@@ -114,7 +114,7 @@ class App extends Component {
                     //     actProductId:this.actProduct.objectId,
                     //     num:custs.length
                     // });
-                    // W.alert('授权成功',()=>{
+                    // W.alert(___.auth_success,()=>{
                     //     history.back();
                     // })
         custs.forEach(item=>{
@@ -125,7 +125,7 @@ class App extends Component {
                         actProductId:this.actProduct.objectId,
                         num:custs.length
                     });
-                    W.alert('授权成功',()=>{
+                    W.alert(___.auth_success,()=>{
                         history.back();
                     })
                 }
@@ -198,7 +198,7 @@ class Authorizing extends Component {
         }
         this.selected=[];
         if(nextProps.data.length==0){
-            W.alert('暂无需要授权的商家');
+            W.alert(___.no_need_auth);
         }
         this.originalList=nextProps.data;
         this.list=nextProps.data;
@@ -225,7 +225,7 @@ class Authorizing extends Component {
     }
     authorize(){
         let _this=this;
-        W.confirm('确定授权给所选商家？',function(b){
+        W.confirm(___.confirm_auth,function(b){
                     if(b){
                         _this.props.addAuth(_this.selected);   
                     }
@@ -257,7 +257,7 @@ class Authorizing extends Component {
                             style={{height:'36px'}}
                             inputStyle={{height:'30px'}}
                             onChange={this.search} 
-                            hintText={'搜索商家'}
+                            hintText={___.search_cust}
                             value={this.state.keyword}
                         />
                     </div>
@@ -266,7 +266,7 @@ class Authorizing extends Component {
                     授权产品：{strName}
                 </div>*/}
                 <div style={{margin:'10px',fontSize:'0.8em'}}>
-                    请选择授权商家
+                    {___.select_auth_cust}
                 </div>
                 {list}
                 <div style={{width:'100%',padding:'30px 0px 20px',textAlign:'center'}}>
@@ -277,7 +277,7 @@ class Authorizing extends Component {
     }
 }
 
-let strStatus=['待审核','已授权','已暂停'];
+let strStatus=[___.wait_auth,___.authed,___.stop_auth];
 class Authorized extends Component {
     constructor(props,context){
         super(props,context);
@@ -315,7 +315,7 @@ class Authorized extends Component {
     }    
     cancelAuth(data){
         Wapi.authorize.update(res=>{
-            W.alert('已暂停'+data.applyCompanyName+'的授权',()=>{
+            W.alert(___.stop_cust_auth.replace('cust',data.applyCompanyName),()=>{
                 data.status=2;
                 this.forceUpdate();
             });
@@ -328,7 +328,7 @@ class Authorized extends Component {
     }
     reAuth(data){
         Wapi.authorize.update(res=>{
-            W.alert('已恢复'+data.applyCompanyName+'的授权',()=>{
+            W.alert(___.continue_cust_auth.replace('cust',data.applyCompanyName),()=>{
                 data.status=1;
                 this.forceUpdate();
             });
@@ -340,7 +340,7 @@ class Authorized extends Component {
         });
     }
     deleteAuth(data){
-        W.confirm('确定删除？',e=>{
+        W.confirm(___.confirm_delete_data,e=>{
             if(!e)return;
             Wapi.authorize.delete(res=>{
                 thisView.postMessage('selling_product.js',{
@@ -371,17 +371,17 @@ class Authorized extends Component {
                     >
                     <MenuItem 
                         style={ele.status==1?styles.menu_item:styles.hide} 
-                        primaryText={'暂停授权'}
+                        primaryText={___.stop_auth}
                         onTouchTap={()=>this.cancelAuth(ele)}
                     />
                     <MenuItem 
                         style={ele.status==2?styles.menu_item:styles.hide} 
-                        primaryText={'恢复授权'}
+                        primaryText={___.continue_auth}
                         onTouchTap={()=>this.reAuth(ele)}
                     />
                     <MenuItem 
                         style={styles.menu_item} 
-                        primaryText={'删除授权'}
+                        primaryText={___.delete_auth}
                         onTouchTap={()=>this.deleteAuth(ele)}
                     />
                 </IconMenu>
@@ -390,12 +390,12 @@ class Authorized extends Component {
                 </div>
                 <div style={styles.line}>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'授权状态'+' : '}</span>
+                        <span style={styles.span_left}>{___.auth_status+' : '}</span>
                         <span style={ele.status==1?styles.span_right:styles.hide}>{strStatus[1]}</span>
                         <span style={ele.status==2?combineStyle(['span_right','warn']):styles.hide}>{strStatus[2]}</span>
                     </span>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'预约车主'+' : '}</span>
+                        <span style={styles.span_left}>{___.booked_carowner+' : '}</span>
                         <span style={styles.span_right}>{ele.bookNum}</span>
                     </span>
                 </div>

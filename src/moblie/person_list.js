@@ -205,7 +205,7 @@ class PersonBox extends Component{
         return (
             <div style={sty.p}>
                 {emp}
-                <div style={emp.length==0?{}:{display:'none'}}>该分类下暂无人员</div>
+                <div style={emp.length==0?{}:{display:'none'}}>{___.type_no_person}</div>
             </div>
         );
     }
@@ -232,7 +232,7 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.delete}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(1)}>修改分类</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(1)}>{___.edit_type}</MenuItem>
             </IconMenu>
         );
     }

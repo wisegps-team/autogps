@@ -69,7 +69,7 @@ for(let i=5;i--;){
 }
 
 let strChannel=[___.national_marketing,___.regional_marketing];
-let strAuthStatus=['待审核','已授权','已取消','未授权'];
+let strAuthStatus=[___.wait_auth,___.authed,___.stoped,___.no_authed];
 
 let canTouch=true;
 function setTouch(){
@@ -175,10 +175,10 @@ class App extends Component {
                 _this.originalList=_this.originalList.map(ele=>{
                     let target=counts.find(item=>item.actProductId==ele.objectId);
                     if(target){
-                        ele.allAuth=target.allAuth;
+                        ele.shareAuth=target.shareAuth;
                         ele.myAuth=target.myAuth;
                     }else{
-                        ele.allAuth=0;
+                        ele.shareAuth=0;
                         ele.myAuth=0;
                     }
                     return ele;
@@ -264,7 +264,7 @@ class App extends Component {
         if(!canTouch)return;
         setTouch();
         if(product.myAuth==0&&intent==0){
-            W.alert('暂未授权任何商家');
+            W.alert(___.no_authed_cust);
             return;
         }
         let params={
@@ -287,7 +287,7 @@ class App extends Component {
 
         Wapi.activityProduct.update(res=>{
             if(res.status_code!=0){
-                W.alert('修改产品信息失败');
+                W.alert(___.edit_product_fail);
                 return;
             }
             
@@ -306,16 +306,16 @@ class App extends Component {
     delete(product){
         if(!canTouch)return;
         setTouch();
-        if(product.allAuth || product.myAuth){
-            W.alert('在营销产品授权中已使用，不可删除！');
+        if(product.shareAuth || product.myAuth){
+            W.alert(___.actProduct_no_delete);
             return;
         }
         Wapi.activity.list(res=>{
             if(res.data && res.data.length){
-                W.alert('在营销活动中已使用，不可删除！');
+                W.alert(___.activity_no_delete);
                 return;
             }
-            W.confirm('确认删除？',b=>{
+            W.confirm(___.confirm_delete_data,b=>{
                 if(!b)return;
                 Wapi.activityProduct.delete(res=>{
                     this.list=this.list.filter(ele=>ele.objectId!=product.objectId);
@@ -346,11 +346,11 @@ class App extends Component {
 
             Wapi.activityProduct.add(res=>{
                 if(res.status_code!=0){
-                    W.alert('添加产品信息失败');
+                    W.alert(___.add_product_fail);
                     return;
                 }
                 product.objectId=res.objectId;
-                product.allAuth=0;
+                product.shareAuth=0;
                 product.myAuth=0;
                 this.list.unshift(product);
                 history.back();
@@ -466,22 +466,22 @@ class ProductList extends Component {
                 {/*有营销活动权限的*/}
                 <div style={marketPromission?styles.line:styles.hide}>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'共享授权'+' : '}</span>
-                        <span style={styles.span_right}>{ele.allAuth}</span>
+                        <span style={styles.span_left}>{___.share_auth+' : '}</span>
+                        <span style={styles.span_right}>{ele.shareAuth}</span>
                     </span>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'我的授权'+' : '}</span>
+                        <span style={styles.span_left}>{___.my_auth+' : '}</span>
                         <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.authorize(ele,0)}>{ele.myAuth}</span>
                     </span>
                 </div>
                 {/*无营销活动权限的*/}
                 <div style={marketPromission?styles.hide:styles.line}>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'授权状态'+' : '}</span>
+                        <span style={styles.span_left}>{___.auth_status+' : '}</span>
                         <span style={styles.span_right}>{strAuthStatus[ele.authStatus]}</span>
                     </span>
                     <span style={styles.spans}>
-                        <span style={styles.span_left}>{'预约车主'+' : '}</span>
+                        <span style={styles.span_left}>{___.booked_carowner+' : '}</span>
                         <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.toOrder(ele)}>{ele.bookNum}</span>
                     </span>
                 </div>
@@ -650,14 +650,14 @@ function countIt(data){
                     if(obj.approveCompanyId==_user.customer.objectId){
                         arr[j].myAuth++;
                     }else{
-                        arr[j].allAuth++;
+                        arr[j].shareAuth++;
                     }
                     break;
                 }
                 if(j==0){
                     arr.push({
                         actProductId:obj.actProductId,
-                        allAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
+                        shareAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
                         myAuth:(obj.approveCompanyId==_user.customer.objectId?1:0)
                     });
                 }
@@ -665,7 +665,7 @@ function countIt(data){
         }else{
             arr.push({
                 actProductId:obj.actProductId,
-                allAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
+                shareAuth:(obj.approveCompanyId==_user.customer.objectId?0:1),
                 myAuth:(obj.approveCompanyId==_user.customer.objectId?1:0)
             });
         }

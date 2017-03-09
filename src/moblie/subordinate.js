@@ -18,6 +18,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import AppBar from '../_component/base/appBar';
 import QrImg from '../_component/base/qrImg';
+import SonPage from '../_component/base/sonPage';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
 import {changeToLetter} from '../_modules/tool';
 
@@ -28,40 +29,41 @@ thisView.setTitle(___.subordinate);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
-let sUrl='';
-let qrLinkData={
-    uid:_user.customer.objectId,
-    type:4,
-    // i:0
-};
 
+let sUrl='Gy';//测试用
 
-Wapi.qrLink.get(function(res) {
-    let wx_app_id=W.getCookie('current_wx');
-    if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
-        setUrl(res.data.id);
-    }else{
-        let data=Object.assign({},qrLinkData);
-        data.i=0;
-        let custType=(_user.customer.custTypeId==1)?5:8;
-        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
-        Wapi.qrLink.add(res=>{
-            Wapi.qrLink.get(r=>{
-                let id=changeToLetter(r.data.i);
-                setUrl(id);
-                Wapi.qrLink.update(null,{
-                    _objectId:res.objectId,
-                    id
-                });
-            },{objectId:res.objectId});
-        },data);
-    }
-},qrLinkData);
+// let sUrl='';
+// let qrLinkData={
+//     uid:_user.customer.objectId,
+//     type:4,
+//     // i:0
+// };
+// Wapi.qrLink.get(function(res) {
+//     let wx_app_id=W.getCookie('current_wx');
+//     if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
+//         setUrl(res.data.id);
+//     }else{
+//         let data=Object.assign({},qrLinkData);
+//         data.i=0;
+//         let custType=(_user.customer.custTypeId==1)?5:8;
+//         data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+//         Wapi.qrLink.add(res=>{
+//             Wapi.qrLink.get(r=>{
+//                 let id=changeToLetter(r.data.i);
+//                 setUrl(id);
+//                 Wapi.qrLink.update(null,{
+//                     _objectId:res.objectId,
+//                     id
+//                 });
+//             },{objectId:res.objectId});
+//         },data);
+//     }
+// },qrLinkData);
 
-function setUrl(id){
-    sUrl='http://autogps.cn/?s='+id;
-    W.emit(thisView,'sUrlIsReady');//触发事件
-}
+// function setUrl(id){
+//     sUrl='http://autogps.cn/?s='+id;
+//     W.emit(thisView,'sUrlIsReady');//触发事件
+// }
 
 function askSetShare() {
     if(sUrl){
@@ -98,15 +100,30 @@ class App extends Component{
         this.state={
             active:0
         };
+
+        this.showManager=false;
+        this.cust={};
+        this.changeManager = this.changeManager.bind(this);
+        this.managerBack = this.managerBack.bind(this);
+
         this.showQr = this.showQr.bind(this);
         this.hideQr = this.hideQr.bind(this);
     }
     getChildContext(){
         return{
-            'VIEW':thisView
+            'VIEW':thisView,
+            changeManager:this.changeManager
         }
     }
-    
+    changeManager(cust){
+        this.cust=cust;
+        this.showManager=true;
+        this.forceUpdate();
+    }
+    managerBack(){
+        this.showManager=false;
+        this.forceUpdate();
+    }
     showQr(){
         this.setState({active:1});
         this._timeout=false;
@@ -128,12 +145,16 @@ class App extends Component{
                     <CustList data={this._data} add={this.showQr}/>
                 </div>
                 <QrBox show={show} onClick={this.hideQr}/>
+                <SonPage open={this.showManager} back={this.managerBack}>
+                    <Manager data={this.cust}/>
+                </SonPage>
             </ThemeProvider>
         );
     }
 }
 App.childContextTypes={
     VIEW:React.PropTypes.object,
+    changeManager:React.PropTypes.func,
 }
 
 const _strVa=[___.group_marketing,___.distribution,___.enterprises,___.carowner_seller];
@@ -195,6 +216,9 @@ class UserItem extends Component{
                     'isInstall':isInstall
                 });
                 break;
+            case 6://更改业务经理
+                this.context.changeManager(this.props.data);
+                break;
             default:
                 break;
         }
@@ -248,6 +272,7 @@ UserItem.contextTypes ={
     VIEW:React.PropTypes.object,
     delete:React.PropTypes.func,
     showCount:React.PropTypes.func,
+    changeManager:React.PropTypes.func,
 }
 
 class RightIconMenu extends Component{    
@@ -283,6 +308,7 @@ class RightIconMenu extends Component{
                 }}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
+                <MenuItem onTouchTap={()=>this.props.onClick(6)}>{___.change_manager}</MenuItem>
                 {/*<MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>*/}
                 <MenuItem style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
             </IconMenu>
@@ -375,6 +401,20 @@ class SharePage extends Component {
         );
     }
 }
+
+class Manager extends Component {
+    constructor(props,context){
+        super(props,context);
+    }
+    render() {
+        return (
+            <div>
+                sth;
+            </div>
+        );
+    }
+}
+
 
 function setRole(cust,callback,add){
     let rid='795552341104398300';
