@@ -617,4 +617,5 @@ window.___={
 	'my_auth':'我的授权',
 	'edit_type':'修改分类',
 	'type_no_person':'该分类下暂无人员',
+	'no_select':'暂未选择',
 }

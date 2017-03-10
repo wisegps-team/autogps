@@ -91,6 +91,7 @@ function setShare(){
 }
 
 
+let _managers=[];
 class App extends Component{
     constructor(props, context) {
         super(props, context);
@@ -117,6 +118,13 @@ class App extends Component{
             changeManager:this.changeManager
         }
     }
+    componentDidMount() {
+        Wapi.employee.list(res=>{
+            _managers=res.data;
+            W.emit(window,'cust_list_update',this._data);
+        },{companyId:_user.customer.objectId,type:'<>1'})
+    }
+    
     changeManager(cust){
         this.cust=cust;
         this.showManager=true;
@@ -231,9 +239,17 @@ class UserItem extends Component{
             let type=types.find(type=>this.props.data.custTypeId==type.id);
             this.props.data.custType=type?type.name:this.props.data.custType;
         }
-        let tr=(<div style={cust_item_sty.tab}>
+        /*let tr=(<div style={cust_item_sty.tab}>
                 <span style={cust_item_sty.td}>{this.props.data.contact}</span>
                 <span style={cust_item_sty.td}>{this.props.data.tel}</span>
+            </div>);*/
+        let manager={name:___.no_select};
+        if(_managers.length && this.props.data.parentEme){
+            manager=_managers.find(ele=>ele.objectId==this.props.data.parentEme[_user.customer.objectId]);
+        }
+        let tr=(<div style={cust_item_sty.tab}>
+                <span style={{marginRight:'30px'}}>{___.business_namager}</span>
+                <span>{manager.name}</span>
             </div>);
 
         let arrVa=(this.props.data.other&&this.props.data.other.va) ? this.props.data.other.va.split(',') : [];
@@ -254,11 +270,12 @@ class UserItem extends Component{
         if(this.props.data.custTypeId==8 && this.props.data.isInstall==0){
             cType=___.service_provider;
         }
+        let strAddress=(this.props.data.province+this.props.data.city+this.props.data.area) || ' ';
         let title=(<span>
             {this.props.data.name}
             <small style={cust_item_sty.sm}>{cType}</small>
             <small style={cust_item_sty.sm}>{strVa}</small>
-            <small style={cust_item_sty.sm}>{this.props.data.province+this.props.data.city+this.props.data.area}</small>
+            <small style={cust_item_sty.sm}>{strAddress}</small>
         </span>);
         return (
             <ListItem
@@ -416,26 +433,29 @@ class Manager extends Component {
         
     }
     componentDidMount(){
-        Wapi.employee.list(res=>{
-            this.setState({data:res.data})
-        },{companyId:_user.customer.objectId,type:'<>1'})
+        this.setState({data:_managers})
     }
     componentWillReceiveProps(nextProps) {
-        if(nextProps&&nextProps.data){
+        this.setState({data:_managers});
+        if(nextProps.data&&nextProps.data.parentEme){
             this.objectId = nextProps.data.parentEme[_user.customer.objectId]
         }
     }
     
     check(e){
         this.objectId = e.target.value;
-        console.log(e.target.value)
     }
     submit(){
         var objectId = String(_user.customer.objectId);
         let manage = String(this.objectId);
         var op = {};
         op[objectId]=manage;
+        
+        let oldEme=Object.assign({},this.props.data.parentEme);
+        op=Object.assign(oldEme,op);
         Wapi.customer.update(res =>{
+            this.props.data.parentEme=op;
+            W.emit(window,'cust_list_update',{});
             history.back();
         },{
             _objectId:this.props.data.objectId,
@@ -443,7 +463,6 @@ class Manager extends Component {
         })
     }
     render() {
-        console.log(this.state.data,'33')
         const items = this.state.data.map((ele,index) =>{
             return(<RadioButton
                     key={index}

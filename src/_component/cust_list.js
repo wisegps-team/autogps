@@ -87,6 +87,12 @@ export function CustListHC(Com,isList){
             Wapi.customer.list(res=>{
                 this.setState(res);
             },this.props.data,this.op);
+
+            window.addEventListener('cust_list_update',e=>{
+                Wapi.customer.list(res=>{
+                    this.setState(res);
+                },this.props.data,this.op);
+            })
         }
         shouldComponentUpdate(nextProps, nextState) {
             return (nextState!=this.state);
