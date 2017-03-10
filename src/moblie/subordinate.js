@@ -15,6 +15,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 import AppBar from '../_component/base/appBar';
 import QrImg from '../_component/base/qrImg';
@@ -24,46 +25,47 @@ import {changeToLetter} from '../_modules/tool';
 
 
 
+
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.subordinate);
 thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
 
-let sUrl='Gy';//测试用
+// let sUrl='Gy';//测试用
 
-// let sUrl='';
-// let qrLinkData={
-//     uid:_user.customer.objectId,
-//     type:4,
-//     // i:0
-// };
-// Wapi.qrLink.get(function(res) {
-//     let wx_app_id=W.getCookie('current_wx');
-//     if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
-//         setUrl(res.data.id);
-//     }else{
-//         let data=Object.assign({},qrLinkData);
-//         data.i=0;
-//         let custType=(_user.customer.custTypeId==1)?5:8;
-//         data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
-//         Wapi.qrLink.add(res=>{
-//             Wapi.qrLink.get(r=>{
-//                 let id=changeToLetter(r.data.i);
-//                 setUrl(id);
-//                 Wapi.qrLink.update(null,{
-//                     _objectId:res.objectId,
-//                     id
-//                 });
-//             },{objectId:res.objectId});
-//         },data);
-//     }
-// },qrLinkData);
+let sUrl='';
+let qrLinkData={
+    uid:_user.customer.objectId,
+    type:4,
+    // i:0
+};
+Wapi.qrLink.get(function(res) {
+    let wx_app_id=W.getCookie('current_wx');
+    if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
+        setUrl(res.data.id);
+    }else{
+        let data=Object.assign({},qrLinkData);
+        data.i=0;
+        let custType=(_user.customer.custTypeId==1)?5:8;
+        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+        Wapi.qrLink.add(res=>{
+            Wapi.qrLink.get(r=>{
+                let id=changeToLetter(r.data.i);
+                setUrl(id);
+                Wapi.qrLink.update(null,{
+                    _objectId:res.objectId,
+                    id
+                });
+            },{objectId:res.objectId});
+        },data);
+    }
+},qrLinkData);
 
-// function setUrl(id){
-//     sUrl='http://autogps.cn/?s='+id;
-//     W.emit(thisView,'sUrlIsReady');//触发事件
-// }
+function setUrl(id){
+    sUrl='http://autogps.cn/?s='+id;
+    W.emit(thisView,'sUrlIsReady');//触发事件
+}
 
 function askSetShare() {
     if(sUrl){
@@ -405,12 +407,63 @@ class SharePage extends Component {
 class Manager extends Component {
     constructor(props,context){
         super(props,context);
+        this.state={
+            data:[]
+        }
+        this.objectId;
+        this.check = this.check.bind(this);
+        this.submit = this.submit.bind(this);
+        
+    }
+    componentDidMount(){
+        Wapi.employee.list(res=>{
+            this.setState({data:res.data})
+        },{companyId:_user.customer.objectId,type:'<>1'})
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps&&nextProps.data){
+            this.objectId = nextProps.data.parentEme[_user.customer.objectId]
+        }
+    }
+    
+    check(e){
+        this.objectId = e.target.value;
+        console.log(e.target.value)
+    }
+    submit(){
+        var objectId = String(_user.customer.objectId);
+        let manage = String(this.objectId);
+        var op = {};
+        op[objectId]=manage;
+        Wapi.customer.update(res =>{
+            history.back();
+        },{
+            _objectId:this.props.data.objectId,
+            parentEme: op
+        })
     }
     render() {
+        console.log(this.state.data,'33')
+        const items = this.state.data.map((ele,index) =>{
+            return(<RadioButton
+                    key={index}
+                    value={ele.objectId.toString()}
+                    label={ele.name}
+                    style={{marginBottom: 16}}
+                />)  
+        })
         return (
-            <div>
-                sth;
-            </div>
+            <ThemeProvider>
+                <div style={{padding:20}}>
+                    <div style={{marginBottom:20}}>业务经理</div>
+                    <RadioButtonGroup name="shipSpeed" onChange={this.check} valueSelected={this.objectId}>
+                       {items} 
+                    </RadioButtonGroup>
+                    <div style={{width:'100%',display:'block',textAlign:'center',paddingTop:'5px'}}>
+                        <RaisedButton label={___.ok} primary={true} onClick={this.submit} />
+                    </div>
+                </div>
+            </ThemeProvider>
         );
     }
 }
