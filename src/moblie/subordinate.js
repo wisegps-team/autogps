@@ -307,6 +307,16 @@ class RightIconMenu extends Component{
         // let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;//开启车主营销显示字符 [关闭/开启]车主营销
         let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置安装网点 菜单是否显示
         let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置安装网点菜单字符 [取消/设置]安装网点
+        let menu=[
+            <MenuItem key={0} onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>,
+            <MenuItem key={1} onTouchTap={()=>this.props.onClick(6)}>{___.change_manager}</MenuItem>,
+            // <MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>,
+            <MenuItem key={2} style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
+        ];
+        let showMenu=[menu[0],menu[1],menu[2]];
+        if(_user.employee){
+            showMenu=[menu[0]];
+        }
         return (
             <IconMenu
                 iconButtonElement={
@@ -326,10 +336,7 @@ class RightIconMenu extends Component{
                     margin: 'auto'
                 }}
             >
-                <MenuItem onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(6)}>{___.change_manager}</MenuItem>
-                {/*<MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>*/}
-                <MenuItem style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
+                {showMenu}
             </IconMenu>
         );
     }
@@ -384,7 +391,7 @@ class QrBox extends Component{
         if(this.state.active)imgSty.display='none';
         return (
             <div style={dis}>
-                <div style={imgSty} {...this.props} show={null}>
+                <div style={imgSty}>
                     <div style={qrSty}>
                         <h4>{_user.customer.name}</h4>
                         <div>{___.subordinate_register}</div>
@@ -408,7 +415,7 @@ class SharePage extends Component {
         let styReturn={width:'100px',height:'30px',marginLeft:(window.innerWidth*0.9-100)/2+'px',marginTop:'30px',lineHeight:'30px',borderRadius:'4px',border:'solid 1px #ff9900',color:'#ff9900'};
         if(this.props.show)sty.display='block';
         return (
-            <div style={sty} {...this.props} show={null}>
+            <div style={sty}>
                 {___.share_page}<br/>
                 {___.can_regist}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
