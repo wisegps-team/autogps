@@ -647,7 +647,7 @@ makeGetOp('qrData','objectId,id,data');
 makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
 makeGetOp('authorize','objectId,id,productId,actProductId,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
-makeGetOp('promotion','objectId,id,type,qrcodeId,actpersonId,activityId');
+makeGetOp('promotion','objectId,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
 
 
 

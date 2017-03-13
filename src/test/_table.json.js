@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=101;//版本号
+let version=102;//版本号
 
 //地区表
 export const area={
@@ -2782,7 +2782,7 @@ export const promotion={
             'query': true,
         },{
             'name': 'type',
-            'desc': '类别',
+            'desc': '类别', //发送给朋友0／分享到朋友圈1／扫码阅读2／微信阅读3 
             'type': 'Number',
             'query': true,
         },{
@@ -2791,13 +2791,68 @@ export const promotion={
             'type': 'String',
             'query': true,
         },{
-            'name': 'actpersonId',
+            'name': 'marpersonId',
             'desc': '营销人员Id',
             'type': 'String',
             'query': true,
         },{
-            'name': 'activityId',
+            'name': 'maractivityId',
             'desc': '营销活动Id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'publiceId',
+            'desc': '公众号Id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'readerId',
+            'desc': '阅读人Id',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'marcompanyId',
+            'desc': '营销人员所属公司ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'maractcompanyId',
+            'desc': '营销活动所属公司ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'martypeId',
+            'desc': '营销类别ID', //（0，车主营销，1，集团营销，2，员工营销，3渠道营销）
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'pertypeId',
+            'desc': '人员类别ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'commission',
+            'desc': '计算提成',
+            'type': 'Boolean',
+            'query': true,
+        },{
+            'name': 'busmanageId',
+            'desc': '业务经理ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'marproductId',
+            'desc': '营销产品ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'brandId',
+            'desc': '产品品牌',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'productId',
+            'desc': '产品型号',
             'type': 'String',
             'query': true,
         }
