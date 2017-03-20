@@ -40,7 +40,7 @@ import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
 import ModuleCard from '../_component/base/moduleCard';
 import AutoList from '../_component/base/autoList';
-import {getOpenIdKey} from '../_modules/tool';
+import {getOpenIdKey,changeToLetter} from '../_modules/tool';
 
 import STORE from '../_reducers/main';
 import {user_type_act,brand_act,department_act,product_act,role_act} from '../_reducers/dictionary';
@@ -53,6 +53,7 @@ const styles = {
     table_left:{width:window.innerWidth*0.62+'px',height:'125px',padding:'0px',backgroundColor:'#ffffff'},
     table_right:{width:window.innerWidth*0.38+'px'}
 };
+
 //加载各种字典数据,权限啊等等
 function loadDictionary(){
     STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
@@ -390,6 +391,7 @@ if(typeof(_user.employee)=='undefined'){//临时用系统设置菜单
 
 //营销平台首页如果无菜单，显示推荐有礼下面的内容
 if(cards.length == 0){
+    thisView.style.backgroundColor='#eeeeee';
     cards.push(<ActivityList key={'my_marketing'}/>)
 }
 
@@ -466,7 +468,7 @@ class DList extends Component{
         
         Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
             let linkUrl='';
-            if(res.data){
+            if(res.data && res.data.id){
                 linkUrl='http://autogps.cn/?s='+res.data.id;
                 history.replaceState('home.html','home.html','home.html');
                 window.location=linkUrl;
@@ -503,19 +505,6 @@ class DList extends Component{
             uid:data.uid,
             type:3
         });
-
-        // history.replaceState('home.html','home.html','home.html');
-        // window.location='http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
-        //     +'&title='+encodeURIComponent(data.name)
-        //     +'&wxAppKey='+data.wxAppKey
-        //     +'&activityId='+data.objectId
-        //     +'&seller_name='+encodeURIComponent(data._seller)
-        //     +'&sellerId='+data._sellerId
-        //     +'&mobile='+data._sellerTel
-        //     +'&uid='+_user.customer.objectId
-        //     +'&agent_tel='+_user.customer.tel
-        //     +'&seller_open_id='+_user.authData.openId
-        //     +'&timerstamp='+Number(new Date());
             
     }
     toCountPage(page,data){
@@ -548,7 +537,7 @@ class DList extends Component{
 
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
-                if(res.data){
+                if(res.data && res.data.id){
                     linkUrl='http://autogps.cn/?s='+res.data.id;
                     setWxShare(linkUrl);
                 }else{
@@ -597,29 +586,6 @@ class DList extends Component{
                 that.context.share(data);
             }
 
-
-            // var op={
-            //     title: data.name, // 分享标题
-            //     desc: data.booking_offersDesc, // 分享描述
-            //     link:'http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
-            //         +'&title='+encodeURIComponent(data.name)
-            //         +'&uid='+data.uid
-            //         +'&seller_name='+encodeURIComponent(data._seller)
-            //         +'&sellerId='+data._sellerId
-            //         +'&mobile='+data._sellerTel
-            //         +'&agent_tel='+_user.customer.tel
-            //         +'&wxAppKey='+data.wxAppKey
-            //         +'&activityId='+data.objectId
-            //         +strOpenId
-            //         +'&timerstamp='+Number(new Date()),
-            //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-            //     success: function(){},
-            //     cancel: function(){}
-            // }
-            // wx.onMenuShareTimeline(op);
-            // wx.onMenuShareAppMessage(op);
-            // setShare=null;
-            // that.context.share(data);
         }
         if(W.native){
             setShare();
