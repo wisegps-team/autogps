@@ -618,4 +618,5 @@ window.___={
 	'edit_type':'修改分类',
 	'type_no_person':'该分类下暂无人员',
 	'no_select':'暂未选择',
+	'promotion_statistical':'推广统计',
 }

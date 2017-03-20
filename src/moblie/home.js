@@ -35,6 +35,7 @@ import EditorMonetizationOn from 'material-ui/svg-icons/editor/monetization-on';
 import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
 import ImageFilterCenterFocus from 'material-ui/svg-icons/image/filter-center-focus';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
+import AvEqualizer from 'material-ui/svg-icons/av/equalizer'
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -205,6 +206,11 @@ const _pages=[//所有的页面
     //     name:___.system_set,
     //     icon:<ActionSettings style={sty.icon}/>
     // };
+    {
+        href:'promotion_statistical',
+        name:___.promotion_statistical,
+        icon:<AvEqualizer style={sty.icon}/>
+    }
 ];
 
 // if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
