@@ -386,7 +386,7 @@ class DList extends Component{
         
         Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
             let linkUrl='';
-            if(res.data){
+            if(res.data && res.data.id){
                 linkUrl='http://autogps.cn/?s='+res.data.id;
                 history.replaceState('home.html','home.html','home.html');
                 window.location=linkUrl;
@@ -468,7 +468,7 @@ class DList extends Component{
 
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
-                if(res.data){
+                if(res.data && res.data.id){
                     linkUrl='http://autogps.cn/?s='+res.data.id;
                     setWxShare(linkUrl);
                 }else{
@@ -503,43 +503,76 @@ class DList extends Component{
             });
             
             function setWxShare(url){
-                var op={
+                // var op={
+                //     title: data.name, // 分享标题
+                //     desc: data.offersDesc, // 分享描述
+                //     link: url,
+                //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                //     success: function(){},
+                //     cancel: function(){}
+                // }
+                // wx.onMenuShareTimeline(op);
+                // wx.onMenuShareAppMessage(op);
+                // setShare=null;
+                // that.context.share(data);
+                var opTimeLine={
                     title: data.name, // 分享标题
                     desc: data.offersDesc, // 分享描述
                     link: url,
                     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){},
+                    success: function(){
+                        timelineSuccess();
+                    },
                     cancel: function(){}
                 }
-                wx.onMenuShareTimeline(op);
-                wx.onMenuShareAppMessage(op);
+                var opMessage={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        messageSuccess();
+                    },
+                    cancel: function(){}
+                }
+                // console.log(opTimeLine);
+
+                wx.onMenuShareTimeline(opTimeLine);
+                wx.onMenuShareAppMessage(opMessage);
                 setShare=null;
                 that.context.share(data);
+
+
+                let params={
+                    id:1,
+                    // qrcodeId:3,
+                    marpersonId:data._sellerId,
+                    maractivityId:data.objectId,
+                    publiceId:W.getCookie('current_wx'),
+                    marcompanyId:_user.customer.objectId,
+                    maractcompanyId:data.uid,
+                    martypeId:data.type,
+                    pertypeId:_user.employee?_user.employee.departId:_user.customer.objectId,
+                    commission:data.count,
+                    busmanageId:data.principalId||'',//需要获取
+                    marproductId:data.actProductId,
+                }
+                function timelineSuccess(){
+                    let par=Object.assign({},params);
+                    par.type=1
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
+                function messageSuccess(){
+                    let par=Object.assign({},params);
+                    par.type=0;
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
             }
-
-
-            // var op={
-            //     title: data.name, // 分享标题
-            //     desc: data.booking_offersDesc, // 分享描述
-            //     link:'http://'+WiStorm.config.domain.wx+'/autogps/action.html?intent=logout&action='+encodeURIComponent(data.url)
-            //         +'&title='+encodeURIComponent(data.name)
-            //         +'&uid='+data.uid
-            //         +'&seller_name='+encodeURIComponent(data._seller)
-            //         +'&sellerId='+data._sellerId
-            //         +'&mobile='+data._sellerTel
-            //         +'&agent_tel='+_user.customer.tel
-            //         +'&wxAppKey='+data.wxAppKey
-            //         +'&activityId='+data.objectId
-            //         +strOpenId
-            //         +'&timerstamp='+Number(new Date()),
-            //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-            //     success: function(){},
-            //     cancel: function(){}
-            // }
-            // wx.onMenuShareTimeline(op);
-            // wx.onMenuShareAppMessage(op);
-            // setShare=null;
-            // that.context.share(data);
+            
         }
         if(W.native){
             setShare();

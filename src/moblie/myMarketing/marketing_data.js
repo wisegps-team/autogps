@@ -223,7 +223,6 @@ class App extends Component {
                         let activity=this.activity;                        
                         activity._seller=_user.employee?_user.employee.name:_user.customer.contact;
                         activity._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
-                        // activity._sellerTel=_user.employee?_user.employee.tel:_user.mobile;
                         activity._sellerTel=_user.employee?_user.employee.tel:_user.customer.tel;
 
                         let strOpenId='';
@@ -260,23 +259,43 @@ class App extends Component {
                             //     +'&timerstamp='+Number(new Date()),
                         }
 
+                        let parPm={
+                            id:1,
+                            type:4,
+                            qrcodeId:data.id,
+                            marpersonId:data.sellerId,
+                            maractivityId:data.act,
+                            publiceId:W.getCookie('current_wx'),
+                            marcompanyId:_user.customer.objectId,
+                            maractcompanyId:activity.uid,
+                            martypeId:activity.type,
+                            pertypeId:_user.employee?_user.employee.departId:_user.customer.objectId,
+                            commission:activity.count,
+                            busmanageId:activity.principalId||'',//需要获取
+                            marproductId:activity.actProductId,
+                        }
+
                         if(created){
                             data._objectId=res.data.objectId;
                             Wapi.qrLink.update(r=>{//更新二维码
-                                console.log(r);
-                                W.alert(___.bind_success);
 
                                 data.objectId=data._objectId;
                                 delete data._objectId;
-                                this.getData();
+                                
+                                Wapi.promotion.add(pro=>{
+                                    W.alert(___.bind_success);
+                                    this.getData();
+                                },parPm);
                             },data);
                         }else{
                             Wapi.qrLink.add(r=>{
-                                console.log(r);
-                                W.alert(___.bind_success);
 
-                                this.getData();
+                                Wapi.promotion.add(pro=>{
+                                    W.alert(___.bind_success);
+                                    this.getData();
+                                },parPm);
                             },data);
+                            
                         }
 
                     },{
