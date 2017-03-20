@@ -56,9 +56,10 @@ class EditEmployee extends React.Component{
         this.submit=this.submit.bind(this);
     }
     componentDidMount() {
-        Wapi.role.list(res=>{
-            this.roles=res.data;
-        },{uid:_user.customer.objectId})
+        this.roles=STORE.getState().role;
+        // Wapi.role.list(res=>{
+        //     this.roles=res.data;
+        // },{uid:_user.customer.objectId})
     }
     
     componentWillReceiveProps(nextProps){
@@ -140,7 +141,6 @@ class EditEmployee extends React.Component{
         let data=this.data;
         let _this=this;
         this.props.submit(data,this.state.allowLogin,function(){
-            console.log('call back');
             _this.data=initData();
             _this.forceUpdate();
         });

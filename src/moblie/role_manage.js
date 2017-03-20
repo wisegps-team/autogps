@@ -90,6 +90,11 @@ class App extends React.Component {
             W.alert(___.permission+___.not_null);
             return;
         }
+        let params={
+            name:data.name,
+            uid:_user.customer.objectId,
+            appId:WiStorm.config.objectId
+        };
         Wapi.role.add(res=>{    //新建一个角色
             let par={
                 _objectId:data.pages.join('|'),
@@ -100,13 +105,10 @@ class App extends React.Component {
                 this.setState({
                     show_sonpage:false,
                 });
+                STORE.dispatch(role_act.add(params));
                 STORE.dispatch(role_act.get({uid:_user.customer.objectId}));//角色
             },par)
-        },{
-            name:data.name,
-            uid:_user.customer.objectId,
-            appId:WiStorm.config.objectId
-        });
+        },params);
     }
     editRole(role){
         Wapi.page.list(res=>{
@@ -157,6 +159,7 @@ class App extends React.Component {
                     if(b){
                         Wapi.role.delete(res=>{//delete a role
                             _this.roles=_this.roles.filter(ele=>ele.objectId!=role.objectId);
+                            STORE.dispatch(role_act.delete(role.objectId));
                             _this.forceUpdate();
                         },{objectId:role.objectId});
                     }

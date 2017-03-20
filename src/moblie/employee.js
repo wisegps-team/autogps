@@ -162,9 +162,9 @@ class App extends React.Component {
                 if(this.state.edit_employee.roleId!=params.roleId){//如果当前人员的角色更改了，需要修改旧的角色和新的角色表
 
                     let parDelete={
-                        _objectId:params.roleId,
+                        _objectId:this.state.edit_employee.roleId,
                         users:'-"'+params._uid+'"'
-                    };//从之前的角色的users中删除当前人员
+                    };//从之前的角色的users中删除所选人员
                     Wapi.role.update(reDelete=>{
                         console.log('reDelete');
                     },parDelete);
@@ -172,7 +172,7 @@ class App extends React.Component {
                     let parAdd={
                         _objectId:params.roleId,
                         users:'+"'+params._uid+'"'
-                    };//在当前的角色的users中添加当前人员
+                    };//在当前的角色的users中添加所选人员
                     Wapi.role.update(reAdd=>{
                         console.log('reAdd');
                     },parAdd);
@@ -305,6 +305,11 @@ class App extends React.Component {
             this.setState({search:res.data});
         },data);
     }
+    componentWillUpdate(nextProps, nextState) {
+        submited=false;
+    }
+    
+    
     render() {
         let listDis={};
         let searchList=null;
