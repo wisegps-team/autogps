@@ -137,7 +137,7 @@ class App extends Component{
     showQr(){
         this.setState({active:1});
         this._timeout=false;
-        setTimeout(e=>this._timeout=true,2000);
+        setTimeout(e=>this._timeout=true,500);
         thisView.setTitle(___.scan_regist);
     }
     hideQr(){
@@ -154,7 +154,7 @@ class App extends Component{
                 <div style={dis}>
                     <CustList data={this._data} add={this.showQr}/>
                 </div>
-                <QrBox show={show} onClick={this.hideQr}/>
+                <QrBox show={show} hide={this.hideQr}/>
                 <SonPage open={this.showManager} back={this.managerBack}>
                     <Manager data={this.cust}/>
                 </SonPage>
@@ -244,8 +244,12 @@ class UserItem extends Component{
                 <span style={cust_item_sty.td}>{this.props.data.tel}</span>
             </div>);*/
         let manager={name:___.no_select};
-        if(_managers.length && this.props.data.parentEme){
-            manager=_managers.find(ele=>ele.objectId==this.props.data.parentEme[_user.customer.objectId]);
+        if(_managers.length && this.props.data.parentMng && this.props.data.parentMng.length){
+            let str=this.props.data.parentMng.find(ele=>ele.includes(_user.customer.objectId));
+            if(str){
+                let managerId = str.split('in')[0];
+                manager=_managers.find(ele=>ele.objectId==managerId);
+            }
         }
         let tr=(<div style={cust_item_sty.tab}>
                 <span style={{marginRight:'30px'}}>{___.business_namager}</span>
@@ -305,8 +309,8 @@ class RightIconMenu extends Component{
     render() {
         // let styOpenCS=_user.customer.custTypeId==1 ? null : {display:'none'};//开启车主营销 菜单是否显示 仅品牌商(custTypeId==1)显示 //20170223去掉此功能
         // let strOpenCS=this.props.openCS.isOpened ? ___.close_carowner_seller : ___.open_carowner_seller;//开启车主营销显示字符 [关闭/开启]车主营销
-        let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置安装网点 菜单是否显示
-        let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置安装网点菜单字符 [取消/设置]安装网点
+        let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置经销商 菜单是否显示
+        let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置经销商菜单字符 [取消/设置]经销商
         let menu=[
             <MenuItem key={0} onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>,
             <MenuItem key={1} onTouchTap={()=>this.props.onClick(6)}>{___.change_manager}</MenuItem>,
@@ -361,7 +365,7 @@ class QrBox extends Component{
         thisView.addEventListener('setShareOver',e=>{
             this.setState({active:1});
             this._timeout=false;
-            setTimeout(e=>{this._timeout=true},2000);
+            setTimeout(e=>{this._timeout=true},500);
             thisView.setTitle(___.invite_regist);     
         });
     }
@@ -400,11 +404,11 @@ class QrBox extends Component{
                     <br/>
                     {/*<span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>*/}
                     <div style={btnSty}>
-                        <RaisedButton label={___.return} secondary={true} style={{marginRight:'10px'}}/>
+                        <RaisedButton label={___.return} onClick={this.props.hide} secondary={true} style={{marginRight:'10px'}}/>
                         <RaisedButton label={___.invite_regist} onClick={this.tip} primary={true}/>
                     </div>
                 </div>
-                <SharePage show={this.state.active} onClick={this.hide}/>
+                <SharePage show={this.state.active} hide={this.hide}/>
             </div>
         );
     }
@@ -420,7 +424,7 @@ class SharePage extends Component {
                 {___.can_regist}
                 <img src='../../img/shareTo.jpg' style={{width:'100%'}}/>
                 {/*<span style={{color:'#ccc'}}>{___.touch_back}</span>*/}
-                <div style={styReturn}>
+                <div onClick={this.props.hide} style={styReturn}>
                     {___.return}
                 </div>
             </div>
@@ -444,8 +448,11 @@ class Manager extends Component {
     }
     componentWillReceiveProps(nextProps) {
         this.setState({data:_managers});
-        if(nextProps.data&&nextProps.data.parentEme){
-            this.objectId = nextProps.data.parentEme[_user.customer.objectId]
+        if(nextProps.data&&nextProps.data.parentMng&&nextProps.data.parentMng.length){
+            let str=nextProps.data.parentMng.find(ele=>ele.includes(_user.customer.objectId));
+            if(str){
+                this.objectId = str.split('in')[0];
+            }
         }
     }
     
@@ -455,18 +462,17 @@ class Manager extends Component {
     submit(){
         var objectId = String(_user.customer.objectId);
         let manage = String(this.objectId);
-        var op = {};
-        op[objectId]=manage;
+        let strMng=manage+'in'+objectId;
         
-        let oldEme=Object.assign({},this.props.data.parentEme);
-        op=Object.assign(oldEme,op);
+        let Mng=this.props.data.parentMng.filter(ele=>!ele.includes(objectId));
+        Mng.push(manage+'in'+objectId);
+
         Wapi.customer.update(res =>{
-            this.props.data.parentEme=op;
             W.emit(window,'cust_list_update',{});
             history.back();
         },{
             _objectId:this.props.data.objectId,
-            parentEme: op
+            parentMng: Mng
         })
     }
     render() {
