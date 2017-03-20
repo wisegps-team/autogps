@@ -128,20 +128,65 @@ class Form extends Component {
             act_url:ACT.url,
             actProductId:ACT.actProductId
         };
-        if(ACT.count)
-            submit_data.managerId=ACT.principalId;//活动负责人id
-
+        submit_data.deposit=ACT.deposit;
+        submit_data.offersDesc=ACT.offersDesc;
+        // if(ACT.count)
+            // submit_data.managerId=ACT.principalId;//活动负责人id
+        
         W.loading(true,___.booking_now);
         let _this=this;
-        bonkingRegister(submit_data.mobile,this._valid,submit_data.name,submit_data.openId,function(user){
-            let uid=user.uid;
-            submit_data.userId=uid;
-            Wapi.booking.add(function(res){
-                submit_data.objectId=res.objectId;
-                W.loading();
-                _this.props.onSuccess(submit_data,uid);
-            },submit_data);
-        });
+        
+        if(ACT.type==1 || ACT.type==3){
+            //_g.sellerId 可能有3种情况：活动创建公司员工/活动创建公司所属经销商/活动创建公司所属经销商员工
+            Wapi.employee.get(resEpl=>{
+                if(resEpl.data){
+                    let eply=res.data;
+                    if(resEpl.companyId==_g.uid){//seller为活动创建公司员工
+                        Wapi.department.get(resDpt=>{
+                            submit_data.managerId=resDpt.data.adminId||'';
+                            submit_data.marcompanyId=eply.companyId;
+                            submit_data.sellerTypeId=resDpt.data.objectId;
+                            register();
+                        },{objectId:eply.departId});
+                    }else{//seller为活动创建公司所属经销商的员工
+                        Wapi.customer.get(resCust=>{
+                            let cust=resCust.data;
+                            let str=cust.parentMng.find(ele=>ele.includes(ACT.uid));
+                            if(str){
+                                submit_data.managerId=str.split('in')[0];
+                                submit_data.marcompanyId=eply.companyId;
+                            }
+                            register();
+                        },{objectId:eply.companyId});
+                    }
+                }else{//seller为活动创建公司所属经销商
+                    Wapi.customer.get(resCust=>{
+                        let cust=resCust.data;
+                        let str=cust.parentMng.find(ele=>ele.includes(ACT.uid));
+                        if(str){
+                            submit_data.managerId=str.split('in')[0];
+                            submit_data.marcompanyId=cust.objectId;
+                        }
+                        register();
+                    },{objectId:_g.sellerId});
+                }
+            },{objectId:_g.sellerId});
+        }else{
+            register();
+        }
+
+        function register(){
+            console.log(submit_data);
+            bonkingRegister(submit_data.mobile,this._valid,submit_data.name,submit_data.openId,function(user){
+                let uid=user.uid;
+                submit_data.userId=uid;
+                Wapi.booking.add(function(res){
+                    submit_data.objectId=res.objectId;
+                    W.loading();
+                    _this.props.onSuccess(submit_data,uid);
+                },submit_data);
+            });
+        }
     }
     render() {
         let ACT=this.props.act;
