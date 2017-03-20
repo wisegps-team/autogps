@@ -11,7 +11,7 @@ thisView.addEventListener('load',function(){
     ReactDOM.render(<App/>,thisView);
 });
 
-_user.customer.custTypeId=9; //测试专用
+// _user.customer.custTypeId=9; //测试专用
 
 var uid,activityId,activityType,sellerId,marcompanyId,pertypeId,busmanageId;
 class App extends Component {
@@ -79,6 +79,7 @@ class App extends Component {
         if(_user.employee){
             this.display1 = {display:'none'}
             this.display2 = {display:'block'}
+            this.setState({statiType:'1'})
         }
 
         //判断是否为顶级账号
@@ -400,9 +401,9 @@ class App extends Component {
         // console.log(this.data,'arrBook1')
         // console.log(this.state.managelen,'rf')
         //平台总览
-        let top = this.state.topAccount.map((ele,index) => {return(<MenuItem key={index+1} value={index} primaryText={ele.name}/>)})
+        let top = this.state.topAccount.map((ele,index) => (<MenuItem key={index+1} value={index} primaryText={ele.name}/>))
         //营销活动
-        let marke_act = this.state.marke_act.map((ele,index) => {return(<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>)})
+        let marke_act = this.state.marke_act.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
         //业务经理
         let bus_manage = this.state.bus_manage.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
         //集团营销
@@ -467,7 +468,7 @@ class App extends Component {
                     <div style={this.display}>
                         {
                             _user.employee ?
-                            <SelectField floatingLabelText="统计类别" value="1"  style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
+                            <SelectField floatingLabelText="统计类别" value={this.state.statiType}  style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
                                 <MenuItem key="1" value="1" primaryText="按营销渠道统计"/>
                             </SelectField> :
                             <SelectField floatingLabelText="统计类别" value={this.state.statiType}  onChange={this.stypeChange} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
@@ -512,12 +513,13 @@ class App extends Component {
 }
 
 let styles = {
-    head:{listStyle:'none',height:24,paddingRight: 16,paddingTop: 3,backgroundColor:'#ccc'},
-    hebgc:{height:24,backgroundColor:'#ccc',marginTop:20,paddingTop:3},
+    head:{listStyle:'none',height:24,padding: '5px',backgroundColor:'#f7f7f7',color:'#333',paddingRight:20},
+    hebgc:{height:24,backgroundColor:'#f7f7f7',marginTop:20,padding:5,color:'#333'},
     height20:{height:24},
-    liborder:{float:'right',borderLeft:'1px solid #000',padding: '0 4px',minWidth:32},
-    liborder2:{float:'right',borderLeft:'1px solid #ccc',padding: '0 4px',minWidth:32},
-    linoborder:{float:'right',padding: '0 4px',minWidth:32},
+    liborder1: {float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#666'},
+    liborder2:{float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#333'},
+    liborder3:{float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#999'},
+    // liborder:{float:'right',padding: '0 4px',minWidth:32,textAlign:'center',color:'#333'},
     list:{listStyle:'none',margin:0},
     left:{display:'inlineBlock',float:'left'},
     right:{display:'inlineBlock',float:'right',fontSize:16},
@@ -533,7 +535,9 @@ class Static extends Component {
             bshow:true,
             zshow:true,
             arrBook:[],
-            arrPro:[]
+            arrPro:[],
+            allPro:[],
+            product:[],
         }
         this.proshow = this.proshow.bind(this);
         this.readshow = this.readshow.bind(this);
@@ -541,21 +545,24 @@ class Static extends Component {
         this.regisshow = this.regisshow.bind(this);
         this.getTimes = this.getTimes.bind(this);
         this.date = this.date.bind(this);
+        this.only = this.only.bind(this);
     }
 
     componentDidMount() {
         
     }
+   
     componentWillReceiveProps(nextProps){
         if(nextProps&&nextProps.data){
             let op = {
                 uid:nextProps.data.topuid,             
                 activityId: nextProps.data.marke_act,  
                 activityType:nextProps.data.marType,   
+                managerId: nextProps.data.busmanageId,
+                sellerTypeId: nextProps.data.pertypeId,
+                sellerCompanyId: nextProps.data.marcompanyId,
                 sellerId: nextProps.data.count,
-                busmanageId:null,
-                marcompanyId:null,
-                pertypeId:null        
+
             }
             let pop = {
                 maractcompanyId: nextProps.data.topuid,
@@ -583,6 +590,22 @@ class Static extends Component {
                 })
                 this.setState({arrPro:arr})
             },pop,{limit:-1})
+
+            //获取所有的产品型号
+            Wapi.promotion.list(res => {
+                let arr = res.data;
+                let newArr = this.only(res.data)
+                var that = this;
+                newArr.map((ele,index) => {
+                    ele.name='';
+                    Wapi.activityProduct.get(res => {
+                        let name = res.data.brand+res.data.name
+                        ele.name = name;
+                        that.setState({product:newArr});
+                    },{objectId:ele.marproductId})
+                })
+                this.setState({allPro:arr});
+            },{marcompanyId:nextProps.data.topuid},{limit:-1})  
         } 
     }
 
@@ -597,6 +620,26 @@ class Static extends Component {
     }
     regisshow(){
         this.setState({zshow:!this.state.zshow})
+    }
+    //去重
+    only(data){
+        var newArr = [];
+        var json = {};
+        for(var i = 0; i < data.length; i++){
+            if(data[i].marproductId){
+                if(!json[data[i].marproductId]){
+                    newArr.push(data[i]);
+                    json[data[i].marproductId] = 1;
+                }
+            }else {
+                if(!json[data[i]]){
+                    newArr.push(data[i]);
+                    json[data[i]] = 1;
+                }
+            }
+            
+        }
+        return newArr
     }
     
     //获取毫秒数
@@ -656,8 +699,10 @@ class Static extends Component {
         let stype1 = [];      //赠送好友
         let fripaySta0 = [];  //零元预订
         let fripaySta1 = [];  //付款预订
+
+
         let H10 = [];         //自由者H10
-        let A9 = [];          //自由者H10
+        let G9 = [];          //自由者H10
 
         let type0 = [];      //发送给朋友0 
         let type1 = [];      //分享到朋友圈1
@@ -665,6 +710,14 @@ class Static extends Component {
         let type3 = [];      //微信阅读3
         let type4 = [];      //营销资料4
 
+        // let newArr = [];
+        // let arrres = [];
+        // this.state.product.forEach((ele,index) => {
+        //     newArr.push(ele.name)
+        //     console.log(ele.name)
+        //     arrres[index] = {name:'',data:[]}
+        // })
+        
         this.state.arrBook.forEach(ele => {
             if(this.props.data.type != 0){//判断统计类别/按营销渠道统计
                 if(ele.activityType==1||ele.activityType==3){//按营销渠道统计中的渠道营销和集团营销
@@ -674,8 +727,8 @@ class Static extends Component {
                             status1.push(ele);
                             if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
                                 H10.push(ele)
-                            }else if(ele.product.brand == "自由者"&&ele.product.name == "A9"){
-                                A9.push(ele)
+                            }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
+                                G9.push(ele)
                             }
                         }
                         if(ele.type == 0){
@@ -702,9 +755,10 @@ class Static extends Component {
                         status1.push(ele);
                         if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
                             H10.push(ele)
-                        }else if(ele.product.brand == "自由者"&&ele.product.name == "A9"){
-                            A9.push(ele)
+                        }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
+                            G9.push(ele)
                         }
+                        
                     }
                     if(ele.type == 0){
                         stype0.push(ele)
@@ -746,7 +800,22 @@ class Static extends Component {
                     }
                 }
             }else {
-
+                switch(ele.type){
+                    case 0:
+                        type0.push(ele);
+                        break;
+                    case 1:
+                        type1.push(ele);
+                        break;
+                    case 2:
+                        type2.push(ele);
+                        break;
+                    case 3:
+                        type3.push(ele);
+                        break;
+                    case 4:
+                        type4.push(ele);
+                }
             }
                     
         })
@@ -760,146 +829,153 @@ class Static extends Component {
         // console.log(fripaySta1,'赠送付款预订')
         // console.log(H10,'H10')
         // console.log(A9,'A9')
-
+        // console.log(arrres,'arrres')
 
         // console.log(type0,'发送给朋友')
         // console.log(type1,'分享到朋友圈')
         // console.log(type2,'扫码阅读')
         // console.log(type3,'微信阅读')
         // console.log(type4,'营销资料')
-    
+        
+        
+
+
+        // console.log(newArr,'newArr111')
+        // console.log(this.state.product,'product')
         console.log(this.props.data,'arrBook111')
         console.log(this.state.arrBook,'sr')
         console.log(this.state.arrPro,'arrPro')
+        // console.log(this.state.allPro,'allPro')
         let promo = (
-            <div >
+            <div style={{padding:'0 5px'}}>
                 <div style={styles.height20}>
                     <span style={styles.left}>营销资料</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{type4.length}</li>
-                        <li style={styles.liborder}>{this.date(type4,3)}</li>
-                        <li style={styles.liborder}>{this.date(type4,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type4,1)}</li>
+                        <li style={styles.liborder2}>{type4.length}</li>
+                        <li style={styles.liborder2}>{this.date(type4,3)}</li>
+                        <li style={styles.liborder2}>{this.date(type4,2)}</li>
+                        <li style={styles.liborder2}>{this.date(type4,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.height20}>
                     <span style={styles.left}>发送给朋友</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{type0.length}</li>
-                        <li style={styles.liborder}>{this.date(type0,3)}</li>
-                        <li style={styles.liborder}>{this.date(type0,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type0,1)}</li>
+                        <li style={styles.liborder2}>{type0.length}</li>
+                        <li style={styles.liborder2}>{this.date(type0,3)}</li>
+                        <li style={styles.liborder2}>{this.date(type0,2)}</li>
+                        <li style={styles.liborder2}>{this.date(type0,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.height20}>
                     <span style={styles.left}>分享到朋友圈</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{type1.length}</li>
-                        <li style={styles.liborder}>{this.date(type1,3)}</li>
-                        <li style={styles.liborder}>{this.date(type1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type1,1)}</li>
+                        <li style={styles.liborder2}>{type1.length}</li>
+                        <li style={styles.liborder2}>{this.date(type1,3)}</li>
+                        <li style={styles.liborder2}>{this.date(type1,2)}</li>
+                        <li style={styles.liborder2}>{this.date(type1,1)}</li>
                     </ul>
                 </div>
             </div>
         );
         let read = (
-            <div >
+            <div style={{padding:'0 5px'}}>
                 <div style={styles.height20}>
                     <span style={styles.left}>扫码</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{type2.length}</li>
-                        <li style={styles.liborder}>{this.date(type2,3)}</li>
-                        <li style={styles.liborder}>{this.date(type2,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type2,1)}</li>
+                        <li style={styles.liborder2}>{type2.length}</li>
+                        <li style={styles.liborder2}>{this.date(type2,3)}</li>
+                        <li style={styles.liborder2}>{this.date(type2,2)}</li>
+                        <li style={styles.liborder2}>{this.date(type2,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.height20}>
                     <span style={styles.left}>微信</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{type3.length}</li>
-                        <li style={styles.liborder}>{this.date(type3,3)}</li>
-                        <li style={styles.liborder}>{this.date(type3,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type3,1)}</li>
+                        <li style={styles.liborder2}>{type3.length}</li>
+                        <li style={styles.liborder2}>{this.date(type3,3)}</li>
+                        <li style={styles.liborder2}>{this.date(type3,2)}</li>
+                        <li style={styles.liborder2}>{this.date(type3,1)}</li>
                     </ul>
                 </div>
             </div>
         );
         let booking=(
-            <div >
+            <div style={{padding:'0 5px'}}>
                 <div style={styles.height20}>
                     <span style={styles.left}>本人预订</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{payStatus0.length+payStatus1.length}</li>
-                        <li style={styles.liborder}>{this.date(payStatus0,3)+this.date(payStatus1,3)}</li>
-                        <li style={styles.liborder}>{this.date(payStatus0,2)+this.date(payStatus1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(payStatus0,1)+this.date(payStatus1,1)}</li>
+                        <li style={styles.liborder2}>{payStatus0.length+payStatus1.length}</li>
+                        <li style={styles.liborder2}>{this.date(payStatus0,3)+this.date(payStatus1,3)}</li>
+                        <li style={styles.liborder2}>{this.date(payStatus0,2)+this.date(payStatus1,2)}</li>
+                        <li style={styles.liborder2}>{this.date(payStatus0,1)+this.date(payStatus1,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.color}>
                     <span style={styles.left}>零元预订</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{payStatus0.length}</li>
-                        <li style={styles.liborder2}>{this.date(payStatus0,3)}</li>
-                        <li style={styles.liborder2}>{this.date(payStatus0,2)}</li>
-                        <li style={styles.linoborder}>{this.date(payStatus0,1)}</li>
+                        <li style={styles.liborder3}>{payStatus0.length}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus0,3)}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus0,2)}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus0,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.color}>
                     <span style={styles.left}>付款预订</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{payStatus1.length}</li>
-                        <li style={styles.liborder2}>{this.date(payStatus1,3)}</li>
-                        <li style={styles.liborder2}>{this.date(payStatus1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(payStatus1,1)}</li>
+                        <li style={styles.liborder3}>{payStatus1.length}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus1,3)}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus1,2)}</li>
+                        <li style={styles.liborder3}>{this.date(payStatus1,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.height20}>
                     <span style={styles.left}>赠送好友</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{fripaySta0.length+fripaySta1.length}</li>
-                        <li style={styles.liborder}>{this.date(fripaySta0,3)+this.date(fripaySta1,3)}</li>
-                        <li style={styles.liborder}>{this.date(fripaySta0,2)+this.date(fripaySta1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(fripaySta0,1)+this.date(fripaySta1,1)}</li>
+                        <li style={styles.liborder2}>{fripaySta0.length+fripaySta1.length}</li>
+                        <li style={styles.liborder2}>{this.date(fripaySta0,3)+this.date(fripaySta1,3)}</li>
+                        <li style={styles.liborder2}>{this.date(fripaySta0,2)+this.date(fripaySta1,2)}</li>
+                        <li style={styles.liborder2}>{this.date(fripaySta0,1)+this.date(fripaySta1,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.color}>
                     <span style={styles.left}>零元预订</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{fripaySta0.length}</li>
-                        <li style={styles.liborder2}>{this.date(fripaySta0,3)}</li>
-                        <li style={styles.liborder2}>{this.date(fripaySta0,2)}</li>
-                        <li style={styles.linoborder}>{this.date(fripaySta0,1)}</li>
+                        <li style={styles.liborder3}>{fripaySta0.length}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta0,3)}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta0,2)}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta0,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.color}>
                     <span style={styles.left}>付款预订</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{fripaySta1.length}</li>
-                        <li style={styles.liborder2}>{this.date(fripaySta1,3)}</li>
-                        <li style={styles.liborder2}>{this.date(fripaySta1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(fripaySta1,1)}</li>
+                        <li style={styles.liborder3}>{fripaySta1.length}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta1,3)}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta1,2)}</li>
+                        <li style={styles.liborder3}>{this.date(fripaySta1,1)}</li>
                     </ul>
                 </div>
             </div>
         );
+
         let regis = (
-            <div >
+            <div style={{padding:'0 5px'}}>
                 <div style={styles.height20}>
                     <span style={styles.left}>自由者H10</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{H10.length}</li>
-                        <li style={styles.liborder}>{this.date(H10,3)}</li>
-                        <li style={styles.liborder}>{this.date(H10,2)}</li>
-                        <li style={styles.linoborder}>{this.date(H10,1)}</li>
+                        <li style={styles.liborder2}>{H10.length}</li>
+                        <li style={styles.liborder2}>{this.date(H10,3)}</li>
+                        <li style={styles.liborder2}>{this.date(H10,2)}</li>
+                        <li style={styles.liborder2}>{this.date(H10,1)}</li>
                     </ul>
                 </div>
                 <div style={styles.height20}>
-                    <span style={styles.left}>自由者A9</span>
+                    <span style={styles.left}>自由者G9</span>
                     <ul style={styles.listright}>
-                        <li style={styles.liborder}>{A9.length}</li>
-                        <li style={styles.liborder}>{this.date(A9,3)}</li>
-                        <li style={styles.liborder}>{this.date(A9,2)}</li>
-                        <li style={styles.linoborder}>{this.date(A9,1)}</li>
+                        <li style={styles.liborder2}>{G9.length}</li>
+                        <li style={styles.liborder2}>{this.date(G9,3)}</li>
+                        <li style={styles.liborder2}>{this.date(G9,2)}</li>
+                        <li style={styles.liborder2}>{this.date(G9,1)}</li>
                     </ul>
                 </div>
             </div>
@@ -907,19 +983,19 @@ class Static extends Component {
         return (
             <div>
                 <ul style={styles.head}>
-                    <li style={styles.liborder}>累计</li>
-                    <li style={styles.liborder}>上月</li>
-                    <li style={styles.liborder}>本月</li>
-                    <li style={styles.linoborder}>昨日</li>
+                    <li style={styles.liborder1}>累计</li>
+                    <li style={styles.liborder1}>上月</li>
+                    <li style={styles.liborder1}>本月</li>
+                    <li style={styles.liborder1}>昨日</li>
                 </ul>
                 <div style={styles.hebgc} onClick={this.proshow}>
                     <span style={styles.left}>推广</span>
                     <span style={styles.right}>{this.state.pshow?'▼':'▲'}</span>
                     <ul style={styles.list}>
-                        <li style={styles.liborder}>{type0.length+type1.length+type4.length}</li>
-                        <li style={styles.liborder}>{this.date(type0,3)+this.date(type1,3)+this.date(type4,3)}</li>
-                        <li style={styles.liborder}>{this.date(type0,2)+this.date(type1,2)+this.date(type4,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type0,1)+this.date(type1,1)+this.date(type4,1)}</li>
+                        <li style={styles.liborder1}>{type0.length+type1.length+type4.length}</li>
+                        <li style={styles.liborder1}>{this.date(type0,3)+this.date(type1,3)+this.date(type4,3)}</li>
+                        <li style={styles.liborder1}>{this.date(type0,2)+this.date(type1,2)+this.date(type4,2)}</li>
+                        <li style={styles.liborder1}>{this.date(type0,1)+this.date(type1,1)+this.date(type4,1)}</li>
                     </ul>
                 </div>
                 {this.state.pshow?'':promo}
@@ -927,10 +1003,10 @@ class Static extends Component {
                     <span style={styles.left}>阅读</span>
                     <span style={styles.right}>{this.state.rshow?'▼':'▲'}</span>
                     <ul style={styles.list}>
-                        <li style={styles.liborder}>{type2.length+type3.length}</li>
-                        <li style={styles.liborder}>{this.date(type2,3)+this.date(type3,3)}</li>
-                        <li style={styles.liborder}>{this.date(type2,2)+this.date(type3,2)}</li>
-                        <li style={styles.linoborder}>{this.date(type2,1)+this.date(type3,1)}</li>
+                        <li style={styles.liborder1}>{type2.length+type3.length}</li>
+                        <li style={styles.liborder1}>{this.date(type2,3)+this.date(type3,3)}</li>
+                        <li style={styles.liborder1}>{this.date(type2,2)+this.date(type3,2)}</li>
+                        <li style={styles.liborder1}>{this.date(type2,1)+this.date(type3,1)}</li>
                     </ul>
                 </div>
                 {this.state.rshow?'':read}
@@ -938,10 +1014,10 @@ class Static extends Component {
                     <span style={styles.left}>预订</span>
                     <span style={styles.right}>{this.state.bshow?'▼':'▲'}</span>
                     <ul style={styles.list}>
-                        <li style={styles.liborder}>{payStatus0.length+payStatus1.length+fripaySta0.length+fripaySta1.length}</li>
-                        <li style={styles.liborder}>{this.date(payStatus0,3)+this.date(payStatus1,3)+this.date(fripaySta0,3)+this.date(fripaySta1,3)}</li>
-                        <li style={styles.liborder}>{this.date(payStatus0,2)+this.date(payStatus1,2)+this.date(fripaySta0,2)+this.date(fripaySta1,2)}</li>
-                        <li style={styles.linoborder}>{this.date(payStatus0,1)+this.date(payStatus1,1)+this.date(fripaySta0,1)+this.date(fripaySta1,1)}</li>
+                        <li style={styles.liborder1}>{payStatus0.length+payStatus1.length+fripaySta0.length+fripaySta1.length}</li>
+                        <li style={styles.liborder1}>{this.date(payStatus0,3)+this.date(payStatus1,3)+this.date(fripaySta0,3)+this.date(fripaySta1,3)}</li>
+                        <li style={styles.liborder1}>{this.date(payStatus0,2)+this.date(payStatus1,2)+this.date(fripaySta0,2)+this.date(fripaySta1,2)}</li>
+                        <li style={styles.liborder1}>{this.date(payStatus0,1)+this.date(payStatus1,1)+this.date(fripaySta0,1)+this.date(fripaySta1,1)}</li>
                     </ul>
                 </div>
                 {this.state.bshow?'':booking}
@@ -949,10 +1025,10 @@ class Static extends Component {
                     <span style={styles.left}>注册</span>
                     <span style={styles.right}>{this.state.zshow?'▼':'▲'}</span>
                     <ul style={styles.list}>
-                        <li style={styles.liborder}>{H10.length+A9.length}</li>
-                        <li style={styles.liborder}>{this.date(H10,3)+this.date(A9,3)}</li>
-                        <li style={styles.liborder}>{this.date(H10,2)+this.date(A9,2)}</li>
-                        <li style={styles.linoborder}>{this.date(H10,1)+this.date(A9,1)}</li>
+                        <li style={styles.liborder1}>{H10.length+G9.length}</li>
+                        <li style={styles.liborder1}>{this.date(H10,3)+this.date(G9,3)}</li>
+                        <li style={styles.liborder1}>{this.date(H10,2)+this.date(G9,2)}</li>
+                        <li style={styles.liborder1}>{this.date(H10,1)+this.date(G9,1)}</li>
                     </ul>
                 </div>
                 {this.state.zshow?'':regis}
