@@ -625,7 +625,7 @@ function makeGetOp(name,fields,lop){
 	Object.assign(Wapi[name].list_op,lop);
 }
 
-makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,wxAppKey,parentEme');
+makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,wxAppKey,parentEme,parentMng');
 makeGetOp('deviceLog','objectId,uid,did,type,createdAt,from,to,fromName,toName,brand,brandId,model,modelId,outCount,inCount,status');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
@@ -646,8 +646,8 @@ makeGetOp('activity','creator,objectId,uid,type,name,url,imgUrl,status,reward,pa
 makeGetOp('qrData','objectId,id,data');
 makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
-makeGetOp('authorize','objectId,id,productId,actProductId,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
-makeGetOp('promotion','objectId,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
+makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
+makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
 
 
 

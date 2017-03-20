@@ -227,9 +227,7 @@ class RightIconMenu extends Component{
                 }
                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                style={{
-                    float: 'right'
-                }}
+                style={_user.employee?{display:'none'}:{float: 'right'}}
             >
                 <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.delete}</MenuItem>
                 <MenuItem onTouchTap={()=>this.props.onClick(1)}>{___.edit_type}</MenuItem>

@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=102;//版本号
+let version=107;//版本号
 
 //地区表
 export const area={
@@ -335,8 +335,13 @@ export const customer={
             'desc': '父级的客户经理',
             'type': 'Object',//由于多对多关系，所以以父级uid为键名，父级指定的人员id为值；如父级uid为1233，客户经理为1234，则本字段则为{"1233":"1234"}
             'query': true,
-        },
-        {
+        },{
+            'name': 'parentMng',//由于不方便查找，上一个字段改成这一个，改为使用数组存储
+            'desc': '父级的客户经理',
+            'type': 'Array',//格式改为['一个父级公司id|一个对应的客户经理id','另一个父级公司id|另一个对应的客户经理id']
+            'display': 'TextBox',
+            'query': true,
+        },{
             'name': 'appId',
             'desc': '对应的appid',
             'type': 'Number',
@@ -1550,7 +1555,7 @@ export const product={
     desc: '产品表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
@@ -1960,7 +1965,7 @@ export const booking={
             'type': 'String',
             'query': true
         },{
-            'name': 'uid',
+            'name': 'uid',//活动创建者公司的id
             'desc': '代理商id',
             'type': 'String',
             'query': true,    //可查询字段
@@ -2629,7 +2634,7 @@ export const qrLink={
             'query':true
         },{
             'name':'uid',
-            'desc':'所属客户',
+            'desc':'所属客户',//当前用户所属公司ID
             'type':'String',
             'query':true
         }
@@ -2645,7 +2650,7 @@ export const authorize={
     desc: '营销产品授权表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
@@ -2656,13 +2661,28 @@ export const authorize={
             'default':'@AutoInc',
             'query': true, 
         },{
+            'name': 'actProductId',
+            'desc': '营销产品ID',
+            'type': 'String',
+            'query': true,
+        },{
             'name': 'productId',
             'desc': '产品型号ID',
             'type': 'String',
             'query': true,
         },{
-            'name': 'actProductId',
-            'desc': '营销产品ID',
+            'name': 'productName',
+            'desc': '产品名称',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'brandId',
+            'desc': '品牌ID',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'brandName',
+            'desc': '品牌名称',
             'type': 'String',
             'query': true,
         },{
@@ -2765,7 +2785,7 @@ export const promotion={
     desc: '推广统计表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
-    isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
@@ -2782,7 +2802,7 @@ export const promotion={
             'query': true,
         },{
             'name': 'type',
-            'desc': '类别', //发送给朋友0／分享到朋友圈1／扫码阅读2／微信阅读3 
+            'desc': '类别', //发送给朋友0／分享到朋友圈1／扫码阅读2／微信阅读3 /绑定二维码4
             'type': 'Number',
             'query': true,
         },{
@@ -2827,7 +2847,7 @@ export const promotion={
             'query': true,
         },{
             'name': 'pertypeId',
-            'desc': '人员类别ID',
+            'desc': '营销人员类别ID',
             'type': 'String',
             'query': true,
         },{

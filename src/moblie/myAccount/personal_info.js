@@ -50,6 +50,7 @@ const sty={
         marginRight:'30px'
     },
 }
+const strSex=[___.female,___.male];
 
 class App extends Component {
     render() {
@@ -135,35 +136,33 @@ class ShowBox extends Component{
                 onTouchTap={this.saveName}
             />
         ];
-        let company_item='';
+        /*let company_item='';
         if(_user.customer.custTypeId!=7){
             company_item=<ListItem 
                     primaryText={___.company}
                     rightAvatar={<span style={sty.list_right}>{_user.customer.name}</span>}
                     style={sty.list_item}
                 />;
-        }
+        }*/
         
+        let sex=_user.employee ? strSex[_user.employee.sex] : strSex[_user.customer.sex];
         return (
             <div>
                 <List>
-                    {company_item}
-                    <ListItem 
-                        primaryText={___.mobile_phone}
-						rightAvatar={<span style={sty.list_right}>{_user.mobile}</span>}
-                        style={sty.list_item}
-                    />
+                    {/*{company_item}*/}
                     <ListItem 
                         primaryText={___.person_name}
 						rightAvatar={<span style={sty.list_right}>{_user.employee?_user.employee.name:_user.customer.contact}</span>}
-                        rightIcon={<NavigationChevronRight />}
                         style={sty.list_item}
-                        onClick={this.userName}
                     />
                     <ListItem 
                         primaryText={___.sex} 
-						rightAvatar={<span style={sty.list_right}>{_user.customer.sex==1?"男":"女"}</span>}
-                        rightIcon={<NavigationChevronRight />}
+						rightAvatar={<span style={sty.list_right}>{sex}</span>}
+                        style={sty.list_item}
+                    />
+                    <ListItem 
+                        primaryText={___.mobile_phone}
+						rightAvatar={<span style={sty.list_right}>{_user.mobile}</span>}
                         style={sty.list_item}
                     />
                     {/*<ListItem 

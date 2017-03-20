@@ -125,6 +125,9 @@ class AppDeviceManage extends Component{
             uid:_user.customer.objectId,
             type:1
         };
+        if(_user.employee){
+            data.adminId=_user.employee.objectId;
+        };
         data.name='^'+val;
         Wapi.department.list(res=>{
             this.setState({search:res.data});
@@ -145,7 +148,12 @@ class AppDeviceManage extends Component{
                             onChange={this.search} 
                             hintText={___.search} 
                         />
-                        <IconButton onClick={this.openBox} style={{flex:'0 0'}}><ContentAdd/></IconButton>
+                        <IconButton 
+                            onClick={this.openBox} 
+                            style={_user.employee?{display:'none'}:{flex:'0 0'}}
+                        >
+                            <ContentAdd/>
+                        </IconButton>
                     </div>
                     <div name='list' style={listDis}>
                         <TypeAutoList/>
@@ -182,12 +190,14 @@ class TypeItem extends Component{
         thisView.goTo('share_register.js',url);
     }
     toUpdate(){
-        window.addEventListener(EVENT.typeUpdate,this.update);
+        // window.addEventListener(EVENT.typeUpdate,this.update);
+        window.addEventListener('eventudpate'+this.props.data.objectId,this.update);
         W.emit(window,EVENT.openAddBox,Object.assign({},this.props.data));
     }
     update(e){
         Object.assign(this.props.data,e.params);
-        window.removeEventListener(EVENT.typeUpdate,this.update);
+        // window.removeEventListener(EVENT.typeUpdate,this.update);
+        window.removeEventListener('eventudpate'+this.props.data.objectId,this.update);
         this.forceUpdate();
     }
     delete(){
@@ -250,6 +260,15 @@ class TypeItem extends Component{
 
 class RightIconMenu extends Component{    
     render() {
+        let item=[
+            <MenuItem key={0} onTouchTap={()=>this.props.onClick(0)}>{___.edit}</MenuItem>,
+            <MenuItem key={1} onTouchTap={()=>this.props.onClick(1)}>{___.register}</MenuItem>,
+            <MenuItem key={2} onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
+        ];
+        let items=item;
+        if(_user.employee){
+            items=[item[1]];
+        }
         return (
             <IconMenu
                 iconButtonElement={
@@ -267,9 +286,7 @@ class RightIconMenu extends Component{
                     float: 'right'
                 }}
             >
-                <MenuItem onTouchTap={()=>this.props.onClick(0)}>{___.edit}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(1)}>{___.invite_regist}</MenuItem>
-                <MenuItem onTouchTap={()=>this.props.onClick(2)}>{___.delete}</MenuItem>
+                {items}
             </IconMenu>
         );
     }
@@ -340,6 +357,9 @@ class TypeAutoList extends Component {
             uid:_user.customer.objectId,
             type:1
         }
+        if(_user.employee){
+            this._data.adminId=_user.employee.objectId;
+        };
     }
     
     componentDidMount() {//初始化数据
@@ -451,7 +471,8 @@ class AddBox extends Component{
             Wapi.department.update(res=>{
                 data.objectId=data._objectId;
                 delete data._objectId;
-                W.emit(window,EVENT.typeUpdate,data);
+                // W.emit(window,EVENT.typeUpdate,data);
+                W.emit(window,'eventudpate'+data.objectId,data);
                 this.cancel();
             },data);
         }else{

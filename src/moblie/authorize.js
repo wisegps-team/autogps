@@ -90,16 +90,27 @@ class App extends Component {
             this.authorized=res.data;
             let cids=this.authorized.map(ele=>Number(ele.applyCompanyId));
 
+            let params={};
+            if(_user.customer.custTypeId==1){
+                params={
+                    parentId:_user.customer.objectId,
+                    custTypeId:5
+                }
+            }else if(_user.customer.custTypeId==5){
+                params={
+                    parentId:_user.customer.objectId,
+                    custTypeId:8,
+                    isInstall:1
+                }
+            }
             Wapi.customer.list(re=>{
                 W.loading();
                 let cust=re.data.filter(ele=>!cids.includes(ele.objectId));
                 this.authorizing=cust;
                 this.setState({intent:1});
-            },{
-                parentId:_user.customer.objectId
-            },{
+            },params,{
                 limit:-1
-            })
+            });
 
         },{
             actProductId:id,
@@ -110,13 +121,13 @@ class App extends Component {
     addAuth(cids){
         let custs=this.authorizing.filter(ele=>cids.includes(ele.objectId));
         let i=custs.length;
-                    // thisView.postMessage('selling_product.js',{
-                    //     actProductId:this.actProduct.objectId,
-                    //     num:custs.length
-                    // });
-                    // W.alert(___.auth_success,()=>{
-                    //     history.back();
-                    // })
+            // thisView.postMessage('selling_product.js',{
+            //     actProductId:this.actProduct.objectId,
+            //     num:custs.length
+            // });
+            // W.alert(___.auth_success,()=>{
+            //     history.back();
+            // })
         custs.forEach(item=>{
             Wapi.authorize.add(res=>{
                 i--;
@@ -131,6 +142,10 @@ class App extends Component {
                 }
             },{
                 actProductId:this.actProduct.objectId,
+                productId:this.actProduct.productId,
+                productName:this.actProduct.name,
+                brandId:this.actProduct.brandId,
+                brandName:this.actProduct.brand,
                 applyCompanyId:item.objectId,
                 applyCompanyName:item.name,
                 approveCompanyName:_user.customer.name,

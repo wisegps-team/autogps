@@ -92,7 +92,7 @@ export function CustListHC(Com,isList){
                 Wapi.customer.list(res=>{
                     if(_user.employee){
                         res.data=res.data.filter(ele=>{
-                            if(ele.parentEme && ele.parentEme[_user.customer.objectId]==_user.employee.objectId){
+                            if(ele.parentMng && ele.parentMng.includes(_user.employee.objectId)){
                                 return ele;
                             }
                         });

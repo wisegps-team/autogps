@@ -331,8 +331,8 @@ view.prototype.static=function(){
 view.prototype.onDom=function(type,callback,useCapture){
     var that=this;
     var _type='dom-'+type;
-    this.dom.addEventListener(type,function(){
-        that.emit(_type);
+    this.dom.addEventListener(type,function(e){
+        that.emit(_type,e);
     },useCapture);
     this.on(_type,callback);
 }
@@ -360,7 +360,7 @@ view.scriptError=function(e){
 /**
  * 处理view显示或者消失的动画结束事件
  */
-view.animationend= function () {
+view.animationend= function (event) {
     if(event.target!==this.dom)return;//避免子节点事件冒泡误触发
     var that=this;
     switch(this.state){
