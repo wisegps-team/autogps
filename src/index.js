@@ -222,7 +222,7 @@ class App extends Component {
         }:null;
         let actives=[
             <Login onSuccess={this.loginSuccess} style={login_sty} ssoLoginFail={this.showBind}/>,
-            <AgentShowBox success={this.registerCallback} parentId={_g.parentId}/>,
+            <AgentShowBox success={this.registerCallback} parentId={_g.parentId} managerId={_g.managerId||'none'}/>,
             <Forget onSuccess={this.forgetSuccess} user={this._res?this._res.data:null}/>,
             <BindBox onSuccess={this.bindSuccess} openId={_g.openid}/>,
             <QrBox />

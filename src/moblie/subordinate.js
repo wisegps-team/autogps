@@ -49,6 +49,9 @@ Wapi.qrLink.get(function(res) {
         data.i=0;
         let custType=(_user.customer.custTypeId==1)?5:8;
         data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+        if(_user.employee){
+            data.url=data.url+'&managerId='+_user.employee.objectId;
+        }
         Wapi.qrLink.add(res=>{
             Wapi.qrLink.get(r=>{
                 let id=changeToLetter(r.data.i);
@@ -100,6 +103,9 @@ class App extends Component{
             custTypeId:'5|8',
             appId:WiStorm.config.objectId
         };
+        if(_user.employee){
+            this._data.parentMng=_user.employee.objectId+'in'+_user.customer.objectId;
+        }
         this.state={
             active:0
         };

@@ -440,7 +440,6 @@ class DList extends Component{
                 </div>
                 <div style={combineStyle(['line','span_right'])}>
                     {activityType[ele.type]
-                    +(ele.count?'/'+___.calculate_commission+'':'')
                     +(Number.isInteger(ele.channel)?('/'+strChannel[ele.channel]):'')}
                 </div>
                 <div style={{marginTop: '0.5em',fontSize: '0.8em',display: 'block',height: '1.5em'}}>

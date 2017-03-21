@@ -284,18 +284,14 @@ class EditActivity extends Component {
             delete _data.status2;
 
             Wapi.activity.update(res=>{
-                // Wapi.activityProduct.update(re=>{
-                    this.props.editSubmit(data);
-                    this.data=getInitData();
-                    this.forceUpdate();
-                // },{
-                //     _objectId:data.actProductId,
-                //     createdActivity:true
-                // })
+                this.props.editSubmit(data);
+                this.data=getInitData();
+                this.forceUpdate();
             },_data);
 
         }else{  //添加
             data.uid=_user.customer.objectId;
+
             Wapi.activity.add(res=>{
                 data.objectId=res.objectId;
                 data.createdAt=W.dateToString(new Date());
@@ -306,14 +302,9 @@ class EditActivity extends Component {
                 data.status2=0;
                 data.status3=0;
 
-                Wapi.activityProduct.update(re=>{
-                    this.props.addSubmit(data);
-                    this.data=getInitData();
-                    this.forceUpdate();
-                },{
-                    _objectId:data.actProductId,
-                    // createdActivity:true
-                })
+                this.props.addSubmit(data);
+                this.data=getInitData();
+                this.forceUpdate();
 
             },data);
         }

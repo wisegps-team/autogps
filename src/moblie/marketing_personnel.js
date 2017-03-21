@@ -72,7 +72,7 @@ thisView.addEventListener('load',function(){
     Wapi.employee.list(res=>{
         _emply=res.data;
         ReactDOM.render(<AppDeviceManage/>,thisView);
-    },{companyId:_user.customer.objectId})
+    },{companyId:_user.customer.objectId},{limit:-1,fields:'name,objectId'})
 
     thisView.prefetch('person_list.js',2);
     thisView.prefetch('share_register.js',2);
@@ -257,15 +257,19 @@ class TypeItem extends Component{
         }
     }
     render() {
-        let adminName=_emply.find(ele=>ele.objectId==this.props.data.adminId).name;
+        let admin=_emply.find(ele=>ele.objectId==this.props.data.adminId);
+        let adminName=___.unconfig;
+        if(admin){
+            adminName=_emply.find(ele=>ele.objectId==this.props.data.adminId).name||'';
+        }
         return (
             <div style={styles.box}>
                 <div style={{marginBottom:'1em'}}>
                     {this.props.data.name}
                     <RightIconMenu onClick={this.click}/>
                 </div>
-                <div>
-                    <span style={{marginRight:'10px'}}>{___.business_namager+':'+adminName||___.unconfig}</span>
+                <div style={{fontSize:'12px',color:'#666'}}>
+                    <span style={{marginRight:'15px'}}>{___.business_namager+'：'+adminName}</span>
                     <span>{___.register_num+'：'}</span>
                     <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
                 </div>

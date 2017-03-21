@@ -80,6 +80,10 @@ class AgentRegisterBox extends Component{
         }
         let cust=Object.assign({},this.data,{tel:user.mobile,custTypeId:tid});
         cust.parentId=[pid];
+        if(this.props.managerId!='none'){
+            let strMng=this.props.managerId+'in'+this.props.parentId;
+            cust.parentMng=[strMng];
+        }
 
         let token=user.access_token;
         cust.access_token=token;
@@ -181,7 +185,9 @@ class AgentRegisterBox extends Component{
 
 class AgentShowBox extends Component{
     render(){
-        let box=_user?<JoinBox success={this.props.success}/>:<AgentRegisterBox success={this.props.success} parentId={this.props.parentId} key='register' />;
+        let box=_user?
+            <JoinBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId}/>:
+            <AgentRegisterBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId} key='register' />;
         return (
             <div>
                 <h4 style={{textAlign:'center'}}>{_g.name}</h4>
@@ -250,15 +256,19 @@ function customerCheck(user,that,nullCallback){
             user.customer=cust.data;
             if(user.customer.custTypeId==getCustType()){//判断类型
                 if(!user.customer.parentId||!user.customer.parentId.includes(that.props.parentId.toString())){
+                    let params={
+                        access_token:user.access_token,
+                        _objectId:user.customer.objectId,
+                        parentId:'+"'+that.props.parentId+'"',
+                    };
+                    if(that.props.managerId!='none'){
+                        params.parentMng='+"'+that.props.managerId+'in'+that.props.parentId+'"'
+                    }
                     Wapi.customer.update(res=>{
                         W.loading();
                         user._code=0;
                         that.props.success(user);
-                    },{
-                        access_token:user.access_token,
-                        _objectId:user.customer.objectId,
-                        parentId:'+"'+that.props.parentId+'"'
-                    });
+                    },params);
                 }else{
                     W.loading();
                     user._code=0;
