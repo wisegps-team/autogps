@@ -274,10 +274,11 @@ class UserItem extends Component{
         if(this.props.data.custTypeId==8 && this.props.data.isInstall==0){
             cType=___.service_provider;
         }
+        let strContact=(this.props.data.contact||'')+' '+(this.props.data.tel||'');
         let strAddress=(this.props.data.province+this.props.data.city+this.props.data.area) || ' ';
         let title=(<span>
             {this.props.data.name}
-            <small style={cust_item_sty.sm}>{cType}</small>
+            <small style={cust_item_sty.sm}>{cType+' '+strContact}</small>
             <small style={cust_item_sty.sm}>{strVa}</small>
             <small style={cust_item_sty.sm}>{strAddress}</small>
         </span>);

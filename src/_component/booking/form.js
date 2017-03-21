@@ -177,7 +177,7 @@ class Form extends Component {
 
         function register(){
             console.log(submit_data);
-            bonkingRegister(submit_data.mobile,this._valid,submit_data.name,submit_data.openId,function(user){
+            bonkingRegister(submit_data.mobile,_this._valid,submit_data.name,submit_data.openId,function(user){
                 let uid=user.uid;
                 submit_data.userId=uid;
                 Wapi.booking.add(function(res){
