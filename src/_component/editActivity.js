@@ -354,14 +354,14 @@ class EditActivity extends Component {
                 </SelectField>
 
                 {/*营销人员（类型）*/}
-                <div style={ this.data.type==1 ? {textAlign:'left'} : {display:'none'} }>
+                {/*<div style={ this.data.type==1 ? {textAlign:'left'} : {display:'none'} }>
                     <SelectField name='sellerTypeId' floatingLabelText={___.seller} value={this.data.sellerTypeId} onChange={this.sellerTypeChange} style={styles.select} maxHeight={200} disabled={noEdit}>
                         {selleTypeItems}
                     </SelectField>
-                </div>
+                </div>*/}
                 
                 {/*计算提成*/}
-                <div style={ (this.data.type==1||this.data.type==3) ? styles.input_group : {display:'none'} }>
+                {/*<div style={ (this.data.type==1||this.data.type==3) ? styles.input_group : {display:'none'} }>
                     <Checkbox 
                         name='count' 
                         checked={this.data.count}
@@ -369,7 +369,7 @@ class EditActivity extends Component {
                         onCheck={this.dataChange} 
                         disabled={noEdit}
                     />
-                </div>
+                </div>*/}
 
                 {/*营销产品型号*/}
                 <SelectField name='actProductId' floatingLabelText={___.product_type} value={Number(this.data.actProductId)} onChange={this.productChange} style={styles.select} maxHeight={300} disabled={noEdit}>
@@ -379,18 +379,18 @@ class EditActivity extends Component {
                 {/*产品链接*/}
 
                 {/*终端价格*/}
-                <Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price.toFixed(2)} disabled={true} />
+                {/*<Input name='price' floatingLabelText={___.device_price+___.yuan} value={this.data.price.toFixed(2)} disabled={true} />*/}
 
                 {/*安装费用*/}
-                <Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee.toFixed(2)} disabled={true} />
+                {/*<Input name='installationFee' floatingLabelText={___.install_price+___.yuan} value={this.data.installationFee.toFixed(2)} disabled={true} />*/}
 
                 {/*佣金标准*/}
-                <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward.toFixed(2)} disabled={true} />
+                {/*<Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={this.data.reward.toFixed(2)} disabled={true} />*/}
                 
                 {/*支付方式*/}
-                <SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={noEdit}>
+                {/*<SelectField name='pay' floatingLabelText={___.pay_type} value={this.data.pay} style={styles.select} maxHeight={200} disabled={noEdit}>
                     <MenuItem value={0} primaryText={___.wxPay} />
-                </SelectField>
+                </SelectField>*/}
 
                 {/*订金标准*/}
                 <Input name='deposit' floatingLabelText={___.deposit+___.yuan} value={this.data.deposit} onChange={this.dataChange} disabled={noEdit} />
@@ -412,7 +412,7 @@ class EditActivity extends Component {
                 </div>
 
                 {/*客户经理开卡*/}
-                <div style={styles.input_group}>
+                {/*<div style={styles.input_group}>
                     <Checkbox 
                         name='getCard' 
                         style={{paddingTop:'10px'}} 
@@ -421,7 +421,7 @@ class EditActivity extends Component {
                         onCheck={this.dataChange} 
                         disabled={noEdit}
                     />
-                </div>
+                </div>*/}
 
                 {/*活动状态*/}
                 <div style={styles.input_group}>

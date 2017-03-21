@@ -440,7 +440,6 @@ class DList extends Component{
                 </div>
                 <div style={combineStyle(['line','span_right'])}>
                     {activityType[ele.type]
-                    +(ele.sellerTypeId==_user.customer.objectId ? '' : ('/'+ele.sellerType))
                     +(ele.count?'/'+___.calculate_commission+'':'')
                     +(Number.isInteger(ele.channel)?('/'+strChannel[ele.channel]):'')}
                 </div>

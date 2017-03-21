@@ -67,8 +67,13 @@ if(!_user.customer.sellerWxAppKey)
 
 var thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.group_marketing);
+let _emply=[];
 thisView.addEventListener('load',function(){
-    ReactDOM.render(<AppDeviceManage/>,thisView);
+    Wapi.employee.list(res=>{
+        _emply=res.data;
+        ReactDOM.render(<AppDeviceManage/>,thisView);
+    },{companyId:_user.customer.objectId})
+
     thisView.prefetch('person_list.js',2);
     thisView.prefetch('share_register.js',2);
 });
@@ -205,23 +210,32 @@ class TypeItem extends Component{
             W.alert(___.mp_delete);
             return;
         }
-        Wapi.activity.list(res => {
-            if(res.data&&res.data.length){
-                W.alert(___.activity_no_delete)
-            }else{
-                W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
-                    e?Wapi.department.delete(res=>{
-                        W.alert(___.delete_success);
-                        this.props.reload();
-                        // this.forceUpdate();
-                    },{
-                        objectId:this.props.data.objectId
-                    }):null;
-                });
-            }
-        },{
-            sellerTypeId: this.props.data.objectId
-        })
+        W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
+            e?Wapi.department.delete(res=>{
+                W.alert(___.delete_success);
+                this.props.reload();
+                // this.forceUpdate();
+            },{
+                objectId:this.props.data.objectId
+            }):null;
+        });
+        // Wapi.activity.list(res => {
+        //     if(res.data&&res.data.length){
+        //         W.alert(___.activity_no_delete)
+        //     }else{
+        //         W.confirm(___.confirm_remove.replace('<%name%>',this.props.data.name),e=>{
+        //             e?Wapi.department.delete(res=>{
+        //                 W.alert(___.delete_success);
+        //                 this.props.reload();
+        //                 // this.forceUpdate();
+        //             },{
+        //                 objectId:this.props.data.objectId
+        //             }):null;
+        //         });
+        //     }
+        // },{
+        //     sellerTypeId: this.props.data.objectId
+        // })
         
     }
     getPerson(){
@@ -243,6 +257,7 @@ class TypeItem extends Component{
         }
     }
     render() {
+        let adminName=_emply.find(ele=>ele.objectId==this.props.data.adminId).name;
         return (
             <div style={styles.box}>
                 <div style={{marginBottom:'1em'}}>
@@ -250,6 +265,7 @@ class TypeItem extends Component{
                     <RightIconMenu onClick={this.click}/>
                 </div>
                 <div>
+                    <span style={{marginRight:'10px'}}>{___.business_namager+':'+adminName||___.unconfig}</span>
                     <span>{___.register_num+'：'}</span>
                     <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
                 </div>

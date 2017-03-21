@@ -136,7 +136,7 @@ class App extends Component {
             //兼职营销账号，显示所属公司的集团营销活动。
             let par0={
                 uid:_user.employee.companyId,
-                sellerTypeId:_user.employee.departId,
+                // sellerTypeId:_user.employee.departId,
                 status:1,
                 type:1,
             }
@@ -167,8 +167,8 @@ class App extends Component {
                 limit:-1,
             });
 
-        }else if(_user.customer.custTypeId==8||_user.customer.custTypeId==5){//经销商和代理商账号，显示上一级创建的渠道营销活动。
-
+        }else if(_user.customer.custTypeId==8||_user.customer.custTypeId==5){
+            //经销商和代理商账号，显示上一级创建的渠道营销活动。
             let parents=_user.customer.parentId.join('|');
             let par1={
                 uid:_user.customer.objectId + '|' + parents,
@@ -542,7 +542,6 @@ class DList extends Component{
                 setShare=null;
                 that.context.share(data);
 
-
                 let params={
                     id:1,
                     // qrcodeId:3,
@@ -552,11 +551,17 @@ class DList extends Component{
                     marcompanyId:_user.customer.objectId,
                     maractcompanyId:data.uid,
                     martypeId:data.type,
-                    pertypeId:_user.employee?_user.employee.departId:_user.customer.objectId,
+                    pertypeId:_user.customer.objectId,
                     commission:data.count,
                     busmanageId:data.principalId||'',//需要获取
                     marproductId:data.actProductId,
                 }
+                if(_user.employee){
+                    let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
+                    params.busmanageId=depart.adminId||'';
+                    params.pertypeId=_user.employee.departId;
+                }
+                // console.log(params);
                 function timelineSuccess(){
                     let par=Object.assign({},params);
                     par.type=1
@@ -578,6 +583,7 @@ class DList extends Component{
             setShare();
         }
         else{
+            // setShare();
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }

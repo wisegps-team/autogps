@@ -91,10 +91,12 @@ export function CustListHC(Com,isList){
             window.addEventListener('cust_list_update',e=>{
                 Wapi.customer.list(res=>{
                     if(_user.employee){
+                        let strMng=_user.employee.objectId+'in'+_user.customer.objectId;
                         res.data=res.data.filter(ele=>{
-                            if(ele.parentMng && ele.parentMng.includes(_user.employee.objectId)){
-                                return ele;
+                            if( ele.parentMng && ele.parentMng.includes(strMng) ){
+                                return true;
                             }
+                            return false;
                         });
                     }
                     this.setState(res);

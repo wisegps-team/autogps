@@ -131,7 +131,7 @@ class ActivityList extends Component {
             this.forceUpdate();
         },{
             uid:_user.customer.objectId,
-            sellerTypeId:_user.employee.departId,
+            // sellerTypeId:_user.employee.departId,
             status:1,
             type:1,
         },{

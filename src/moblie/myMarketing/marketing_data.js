@@ -269,12 +269,16 @@ class App extends Component {
                             marcompanyId:_user.customer.objectId,
                             maractcompanyId:activity.uid,
                             martypeId:activity.type,
-                            pertypeId:_user.employee?_user.employee.departId:_user.customer.objectId,
+                            pertypeId:_user.customer.objectId,
                             commission:activity.count,
                             busmanageId:activity.principalId||'',//需要获取
                             marproductId:activity.actProductId,
                         }
-
+                        if(_user.employee){
+                            let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
+                            parPm.busmanageId=depart.adminId||'';
+                            parPm.pertypeId=_user.employee.departId;
+                        }
                         if(created){
                             data._objectId=res.data.objectId;
                             Wapi.qrLink.update(r=>{//更新二维码
@@ -349,7 +353,7 @@ class App extends Component {
                     iconElementRight={<IconButton onClick={this.scanToBind}><ContentAdd/></IconButton>}
                 />*/}
                 <div style={styles.search_head}>
-                    <ContentAdd style={styles.add_icon} onClick={this.scanToBind}/>
+                    <ContentAdd style={styles.add_icon} color="#2196f3" onClick={this.scanToBind}/>
                     <div style={styles.search_box}>
                         <Input 
                             style={{height:'36px'}}

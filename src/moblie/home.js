@@ -60,7 +60,7 @@ function loadDictionary(){
     STORE.dispatch(user_type_act.get({useType:_user.customer.custTypeId}));//用户类型
     STORE.dispatch(brand_act.get({uid:_user.customer.objectId}));//品牌
     STORE.dispatch(product_act.get({uid:_user.customer.objectId}));//品牌
-    STORE.dispatch(department_act.get({uid:_user.customer.objectId,type:0}));//部门
+    STORE.dispatch(department_act.get({uid:_user.customer.objectId}));//部门
     STORE.dispatch(role_act.get({uid:_user.customer.objectId}));//角色
 }
 loadDictionary();
@@ -72,6 +72,7 @@ thisView.addEventListener('load',function(){
     if(_g.loginLocation){
         thisView.goTo(_g.loginLocation+'.js');
     }
+    thisView.prefetch('./myMarketing/marketing_data.js',2);
 });
 
 
@@ -242,7 +243,7 @@ class ActivityList extends Component {
             //兼职营销账号，显示所属公司的集团营销活动。
             let par0={
                 uid:_user.employee.companyId,
-                sellerTypeId:_user.employee.departId,
+                // sellerTypeId:_user.employee.departId,
                 status:1,
                 type:1,
             }
@@ -578,25 +579,75 @@ class DList extends Component{
             });
             
             function setWxShare(url){
-                var op={
+                var opTimeLine={
                     title: data.name, // 分享标题
                     desc: data.offersDesc, // 分享描述
                     link: url,
                     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){},
+                    success: function(){
+                        timelineSuccess();
+                    },
                     cancel: function(){}
                 }
-                wx.onMenuShareTimeline(op);
-                wx.onMenuShareAppMessage(op);
+                var opMessage={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        messageSuccess();
+                    },
+                    cancel: function(){}
+                }
+                // console.log(opTimeLine);
+
+                wx.onMenuShareTimeline(opTimeLine);
+                wx.onMenuShareAppMessage(opMessage);
                 setShare=null;
                 that.context.share(data);
-            }
 
+                let params={
+                    id:1,
+                    // qrcodeId:3,
+                    marpersonId:data._sellerId,
+                    maractivityId:data.objectId,
+                    publiceId:W.getCookie('current_wx'),
+                    marcompanyId:_user.customer.objectId,
+                    maractcompanyId:data.uid,
+                    martypeId:data.type,
+                    pertypeId:_user.customer.objectId,
+                    commission:data.count,
+                    busmanageId:data.principalId||'',//需要获取
+                    marproductId:data.actProductId,
+                }
+                if(_user.employee){
+                    let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
+                    params.busmanageId=depart.adminId||'';
+                    params.pertypeId=_user.employee.departId;
+                }
+                // console.log(params);
+                function timelineSuccess(){
+                    let par=Object.assign({},params);
+                    par.type=1
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
+                function messageSuccess(){
+                    let par=Object.assign({},params);
+                    par.type=0;
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
+            }
+            
         }
         if(W.native){
             setShare();
         }
         else{
+            // setShare();
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }

@@ -37,8 +37,8 @@ class DepartmentTree extends Component{
     }
     componentDidMount() {
         this.unsubscribe = STORE.subscribe(() =>{
-            if(this.department!=STORE.getState().department){
-                this.department=STORE.getState().department;
+            if(this.department!=getEmplyDepart()){
+                this.department=getEmplyDepart();
                 this.setState({data:this.getData()});
             }
         })
@@ -59,7 +59,7 @@ class DepartmentTree extends Component{
     
     
     getData(){
-        let arr=STORE.getState().department;
+        let arr=getEmplyDepart();
         let data={
             name:_user.customer.name,
             open:this._open,
@@ -227,7 +227,7 @@ export class DepartmentSelcet extends React.Component{
         this.setState({isOpen:false});
     }
     componentWillReceiveProps(nextProps){
-        let arr=STORE.getState().department;
+        let arr=getEmplyDepart();
         let depart=arr.find(ele=>ele.objectId==nextProps.value);
         if(depart){
             this.setState({value:depart.name});
@@ -265,6 +265,11 @@ function touchStart(e){
 }
 function touchEnd(e){
     e.target.style.background='#fff';
+}
+function getEmplyDepart(){
+    let allDepart=STORE.getState().department;
+    let emplyDepart=allDepart.filter(ele=>ele.type==0);
+    return emplyDepart;
 }
 
 export default DepartmentTree;
