@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
+import HardwareKeyboardArrowDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
+import HardwareKeyboardArrowUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
 
 import {ThemeProvider} from '../_theme/default';
 
@@ -513,17 +515,17 @@ class App extends Component {
 }
 
 let styles = {
-    head:{listStyle:'none',height:24,padding: '5px',backgroundColor:'#f7f7f7',color:'#333',paddingRight:20},
-    hebgc:{height:24,backgroundColor:'#f7f7f7',marginTop:20,padding:5,color:'#333'},
+    head:{listStyle:'none',height:24,padding: '5px 28px 5px 5px',backgroundColor:'#f7f7f7',color:'#333'},
+    hebgc:{height:24,backgroundColor:'#f7f7f7',marginTop:20,padding: '5px',color:'#333'},
     height20:{height:24},
-    liborder1: {float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#666'},
-    liborder2:{float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#333'},
-    liborder3:{float:'right',padding:'0 5px',padding: '0 4px',minWidth:32,textAlign:'center',color:'#999'},
+    liborder1: {float:'right',padding:'0 5px',minWidth:32,textAlign:'center',color:'#666',fontSize:'14px',lineHeight:'24px'},
+    liborder2:{float:'right',padding:'0 5px',minWidth:32,textAlign:'center',color:'#333',fontSize:'14px',lineHeight:'24px'},
+    liborder3:{float:'right',padding:'0 5px',minWidth:32,textAlign:'center',color:'#999',fontSize:'14px',lineHeight:'24px'},
     // liborder:{float:'right',padding: '0 4px',minWidth:32,textAlign:'center',color:'#333'},
     list:{listStyle:'none',margin:0},
-    left:{display:'inlineBlock',float:'left'},
-    right:{display:'inlineBlock',float:'right',fontSize:16},
-    listright:{listStyle:'none',paddingRight:16,height:24},
+    left:{display:'inlineBlock',float:'left',fontSize:'14px',lineHeight:'24px'},
+    right:{display:'inlineBlock',float:'right',fontSize:'14px',lineHeight:'24px'},
+    listright:{listStyle:'none',paddingRight:24,height:24},
     color:{height:20,color:'#ccc'}
 }
 class Static extends Component {
@@ -536,7 +538,6 @@ class Static extends Component {
             zshow:true,
             arrBook:[],
             arrPro:[],
-            allPro:[],
             product:[],
         }
         this.proshow = this.proshow.bind(this);
@@ -593,18 +594,22 @@ class Static extends Component {
 
             //获取所有的产品型号
             Wapi.promotion.list(res => {
-                let arr = res.data;
-                let newArr = this.only(res.data)
+                // let arr = res.data;
+                let newArr = this.only(res.data) //去掉相同的marproductId
                 var that = this;
-                newArr.map((ele,index) => {
-                    ele.name='';
-                    Wapi.activityProduct.get(res => {
-                        let name = res.data.brand+res.data.name
-                        ele.name = name;
-                        that.setState({product:newArr});
-                    },{objectId:ele.marproductId})
-                })
-                this.setState({allPro:arr});
+                if(res.data.length == 0){ //没有数据恢复默认值
+                    that.setState({product:[]}); 
+                }else{
+                    newArr.map((ele,index) => {
+                        ele.name='';
+                        Wapi.activityProduct.get(res => {
+                            let name = res.data.brand+res.data.name
+                            ele.name = name;
+                            that.setState({product:newArr}); //Wapi是异步加载
+                        },{objectId:ele.marproductId})
+                    })
+                }
+                // this.setState({allPro:arr});
             },{marcompanyId:nextProps.data.topuid},{limit:-1})  
         } 
     }
@@ -691,8 +696,8 @@ class Static extends Component {
         }
     }
     render() {
-        let status0 = [];     //已预订
-        let status1 = [];     //已注册
+        // let status0 = [];     //已预订
+        // let status1 = [];     //已注册
         let stype0 = [];      //本人预订
         let payStatus0 = [];  //零元预订
         let payStatus1 = [];  //付款预订
@@ -701,8 +706,8 @@ class Static extends Component {
         let fripaySta1 = [];  //付款预订
 
 
-        let H10 = [];         //自由者H10
-        let G9 = [];          //自由者H10
+        // let H10 = [];         //自由者H10
+        // let G9 = [];          //自由者H10
 
         let type0 = [];      //发送给朋友0 
         let type1 = [];      //分享到朋友圈1
@@ -710,27 +715,25 @@ class Static extends Component {
         let type3 = [];      //微信阅读3
         let type4 = [];      //营销资料4
 
-        // let newArr = [];
-        // let arrres = [];
-        // this.state.product.forEach((ele,index) => {
-        //     newArr.push(ele.name)
-        //     console.log(ele.name)
-        //     arrres[index] = {name:'',data:[]}
-        // })
-        
+       //添加存储容器
+        this.state.product.forEach((ele,index) => {
+            ele.data=[];
+        });
+
+        //筛选预订
         this.state.arrBook.forEach(ele => {
             if(this.props.data.type != 0){//判断统计类别/按营销渠道统计
                 if(ele.activityType==1||ele.activityType==3){//按营销渠道统计中的渠道营销和集团营销
                     if(ele.status0 == 1){
-                        status0.push(ele)
-                        if(ele.status1 == 1){
-                            status1.push(ele);
-                            if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
-                                H10.push(ele)
-                            }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
-                                G9.push(ele)
-                            }
-                        }
+                        // status0.push(ele)
+                        // if(ele.status1 == 1){
+                        //     status1.push(ele);
+                        //     if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
+                        //         H10.push(ele)
+                        //     }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
+                        //         G9.push(ele)
+                        //     }
+                        // }
                         if(ele.type == 0){
                             stype0.push(ele)
                             if(ele.payStatus == 0){
@@ -750,16 +753,15 @@ class Static extends Component {
                 }
             }else {//按营销活动统计
                 if(ele.status0 == 1){
-                    status0.push(ele)
-                    if(ele.status1 == 1){
-                        status1.push(ele);
-                        if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
-                            H10.push(ele)
-                        }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
-                            G9.push(ele)
-                        }
-                        
-                    }
+                    // status0.push(ele)
+                    // if(ele.status1 == 1){
+                    //     status1.push(ele);
+                    //     if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
+                    //         H10.push(ele)
+                    //     }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
+                    //         G9.push(ele)
+                    //     }
+                    // }
                     if(ele.type == 0){
                         stype0.push(ele)
                         if(ele.payStatus == 0){
@@ -779,6 +781,63 @@ class Static extends Component {
             }    
         })
         
+        let sum = 0;    //统计注册累计
+        let sum1 = 0;   //统计注册上月
+        let sum2 = 0;   //统计注册本月
+        let sum3 = 0;   //统计注册昨日
+        if(this.state.product){
+            //筛选注册
+            this.state.product.forEach(res =>{
+                this.state.arrBook.forEach(ele => {
+                    if(this.props.data.type != 0){//判断统计类别/按营销渠道统计
+                        if(ele.activityType==1||ele.activityType==3){//按营销渠道统计中的渠道营销和集团营销
+                            if(ele.status0 == 1){
+                                if(ele.status1 == 1){
+                                   if(ele.product.brand+ele.product.name == res.name){
+                                        res.data.push(ele);
+                                   }
+                                }
+                            }
+                        }
+                    }else {//按营销活动统计
+                        if(ele.status0 == 1){
+                            if(ele.status1 == 1){
+                                if(ele.status1 == 1){
+                                   if(ele.product.brand+ele.product.name == res.name){
+                                       res.data.push(ele)
+                                   }
+                                }
+                            }
+                        }
+                    }    
+                })
+            });
+            
+            var products = this.state.product.map((ele,index) => {
+                sum += ele.data.length;
+                sum1 += this.date(ele.data,3);
+                sum2 += this.date(ele.data,2);
+                sum3 += this.date(ele.data,1)
+                return (
+                    <div style={styles.height20} key={index}>
+                        <span style={styles.left}>{ele.name}</span>
+                        <ul style={styles.listright}>
+                            <li style={styles.liborder2}>{ele.data.length}</li>
+                            <li style={styles.liborder2}>{this.date(ele.data,3)}</li>
+                            <li style={styles.liborder2}>{this.date(ele.data,2)}</li>
+                            <li style={styles.liborder2}>{this.date(ele.data,1)}</li>
+                        </ul>
+                </div>
+                )
+            })
+        }    
+        
+        // console.log(sum,'sum')
+        // console.log(sum1,'sum1')
+        // console.log(sum2,'sum2')
+        // console.log(sum3,'sum3')
+
+        //筛选推广和阅读
         this.state.arrPro.forEach(ele => {
             if(this.props.data.type != 0){
                 if(ele.martypeId==1||ele.martypeId==3){
@@ -839,12 +898,13 @@ class Static extends Component {
         
         
 
-
-        // console.log(newArr,'newArr111')
+        
+        // console.log(newArr,'newArr111');
+        // console.log(arrres,'arrres')
         // console.log(this.state.product,'product')
-        console.log(this.props.data,'arrBook111')
-        console.log(this.state.arrBook,'sr')
-        console.log(this.state.arrPro,'arrPro')
+        // console.log(this.props.data,'arrBook111')
+        // console.log(this.state.arrBook,'sr')
+        // console.log(this.state.arrPro,'arrPro')
         // console.log(this.state.allPro,'allPro')
         let promo = (
             <div style={{padding:'0 5px'}}>
@@ -960,7 +1020,7 @@ class Static extends Component {
 
         let regis = (
             <div style={{padding:'0 5px'}}>
-                <div style={styles.height20}>
+                {/*<div style={styles.height20}>
                     <span style={styles.left}>自由者H10</span>
                     <ul style={styles.listright}>
                         <li style={styles.liborder2}>{H10.length}</li>
@@ -977,7 +1037,8 @@ class Static extends Component {
                         <li style={styles.liborder2}>{this.date(G9,2)}</li>
                         <li style={styles.liborder2}>{this.date(G9,1)}</li>
                     </ul>
-                </div>
+                </div>*/}
+                {products}
             </div>
         );
         return (
@@ -990,7 +1051,7 @@ class Static extends Component {
                 </ul>
                 <div style={styles.hebgc} onClick={this.proshow}>
                     <span style={styles.left}>推广</span>
-                    <span style={styles.right}>{this.state.pshow?'▼':'▲'}</span>
+                    <span style={styles.right}>{this.state.pshow?<HardwareKeyboardArrowDown />:<HardwareKeyboardArrowUp />}</span>
                     <ul style={styles.list}>
                         <li style={styles.liborder1}>{type0.length+type1.length+type4.length}</li>
                         <li style={styles.liborder1}>{this.date(type0,3)+this.date(type1,3)+this.date(type4,3)}</li>
@@ -1001,7 +1062,7 @@ class Static extends Component {
                 {this.state.pshow?'':promo}
                 <div style={styles.hebgc} onClick={this.readshow}>
                     <span style={styles.left}>阅读</span>
-                    <span style={styles.right}>{this.state.rshow?'▼':'▲'}</span>
+                    <span style={styles.right}>{this.state.rshow?<HardwareKeyboardArrowDown />:<HardwareKeyboardArrowUp />}</span>
                     <ul style={styles.list}>
                         <li style={styles.liborder1}>{type2.length+type3.length}</li>
                         <li style={styles.liborder1}>{this.date(type2,3)+this.date(type3,3)}</li>
@@ -1012,7 +1073,7 @@ class Static extends Component {
                 {this.state.rshow?'':read}
                 <div style={styles.hebgc} onClick={this.bookingshow}>
                     <span style={styles.left}>预订</span>
-                    <span style={styles.right}>{this.state.bshow?'▼':'▲'}</span>
+                    <span style={styles.right}>{this.state.bshow?<HardwareKeyboardArrowDown />:<HardwareKeyboardArrowUp />}</span>
                     <ul style={styles.list}>
                         <li style={styles.liborder1}>{payStatus0.length+payStatus1.length+fripaySta0.length+fripaySta1.length}</li>
                         <li style={styles.liborder1}>{this.date(payStatus0,3)+this.date(payStatus1,3)+this.date(fripaySta0,3)+this.date(fripaySta1,3)}</li>
@@ -1021,7 +1082,7 @@ class Static extends Component {
                     </ul>
                 </div>
                 {this.state.bshow?'':booking}
-                <div style={styles.hebgc} onClick={this.regisshow}>
+                {/*<div style={styles.hebgc} onClick={this.regisshow}>
                     <span style={styles.left}>注册</span>
                     <span style={styles.right}>{this.state.zshow?'▼':'▲'}</span>
                     <ul style={styles.list}>
@@ -1029,6 +1090,16 @@ class Static extends Component {
                         <li style={styles.liborder1}>{this.date(H10,3)+this.date(G9,3)}</li>
                         <li style={styles.liborder1}>{this.date(H10,2)+this.date(G9,2)}</li>
                         <li style={styles.liborder1}>{this.date(H10,1)+this.date(G9,1)}</li>
+                    </ul>
+                </div>*/}
+                 <div style={styles.hebgc} onClick={this.regisshow}>
+                    <span style={styles.left}>注册</span>
+                    <span style={styles.right}>{this.state.zshow?<HardwareKeyboardArrowDown />:<HardwareKeyboardArrowUp />}</span>
+                    <ul style={styles.list}>
+                        <li style={styles.liborder1}>{sum}</li>
+                        <li style={styles.liborder1}>{sum1}</li>
+                        <li style={styles.liborder1}>{sum2}</li>
+                        <li style={styles.liborder1}>{sum3}</li>
                     </ul>
                 </div>
                 {this.state.zshow?'':regis}
