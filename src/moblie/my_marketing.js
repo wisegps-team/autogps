@@ -515,33 +515,8 @@ class DList extends Component{
                 // wx.onMenuShareAppMessage(op);
                 // setShare=null;
                 // that.context.share(data);
-                var opTimeLine={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        timelineSuccess();
-                    },
-                    cancel: function(){}
-                }
-                var opMessage={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        messageSuccess();
-                    },
-                    cancel: function(){}
-                }
-                // console.log(opTimeLine);
 
-                wx.onMenuShareTimeline(opTimeLine);
-                wx.onMenuShareAppMessage(opMessage);
-                setShare=null;
-                that.context.share(data);
-
+                
                 let params={
                     id:1,
                     // qrcodeId:3,
@@ -576,6 +551,35 @@ class DList extends Component{
                         console.log(pro);
                     },par);
                 }
+
+                var opTimeLine={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        timelineSuccess();
+                    },
+                    cancel: function(){}
+                }
+                var opMessage={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        messageSuccess();
+                    },
+                    cancel: function(){}
+                }
+                // console.log(opTimeLine);
+                // console.log(opMessage);
+
+                wx.onMenuShareTimeline(opTimeLine);
+                wx.onMenuShareAppMessage(opMessage);
+                // setShare=null;
+                that.context.share(data);
+
             }
             
         }
@@ -583,7 +587,7 @@ class DList extends Component{
             setShare();
         }
         else{
-            // setShare();
+            // setShare();//测试用
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }

@@ -140,7 +140,7 @@ class Form extends Component {
             //_g.sellerId 可能有3种情况：活动创建公司员工/活动创建公司所属经销商/活动创建公司所属经销商员工
             Wapi.employee.get(resEpl=>{
                 if(resEpl.data){
-                    let eply=res.data;
+                    let eply=resEpl.data;
                     if(resEpl.companyId==_g.uid){//seller为活动创建公司员工
                         Wapi.department.get(resDpt=>{
                             submit_data.managerId=resDpt.data.adminId||'';

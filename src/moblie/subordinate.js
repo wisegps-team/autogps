@@ -38,32 +38,51 @@ let sUrl='';
 let qrLinkData={
     uid:_user.customer.objectId,
     type:4,
-    // i:0
+    i:0
 };
-Wapi.qrLink.get(function(res) {
-    let wx_app_id=W.getCookie('current_wx');
-    if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接
-        setUrl(res.data.id);
-    }else{
-        let data=Object.assign({},qrLinkData);
-        data.i=0;
-        let custType=(_user.customer.custTypeId==1)?5:8;
-        data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
-        if(_user.employee){
-            data.url=data.url+'&managerId='+_user.employee.objectId;
-        }
-        Wapi.qrLink.add(res=>{
-            Wapi.qrLink.get(r=>{
-                let id=changeToLetter(r.data.i);
-                setUrl(id);
-                Wapi.qrLink.update(null,{
-                    _objectId:res.objectId,
-                    id
-                });
-            },{objectId:res.objectId});
-        },data);
-    }
-},qrLinkData);
+let wx_app_id=W.getCookie('current_wx');
+let data=Object.assign({},qrLinkData);
+let custType=(_user.customer.custTypeId==1)?5:8;
+data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+if(_user.employee){
+    data.url=data.url+'&managerId='+_user.employee.objectId;
+}
+Wapi.qrLink.add(res=>{
+    Wapi.qrLink.get(r=>{
+        let id=changeToLetter(r.data.i);
+        setUrl(id);
+        Wapi.qrLink.update(null,{
+            _objectId:res.objectId,
+            id
+        });
+    },{objectId:res.objectId});
+},data);
+
+//20170322，改：直接新建，不判断以前是否分享过，因为要使用营销人员分享
+// Wapi.qrLink.get(function(res) {
+//     let wx_app_id=W.getCookie('current_wx');
+//     if(res.data && res.data.url.includes(wx_app_id)){//如果以前有过分享且公众号为当前公众号，直接设置分享链接，
+//         setUrl(res.data.id);
+//     }else{
+//         let data=Object.assign({},qrLinkData);
+//         data.i=0;
+//         let custType=(_user.customer.custTypeId==1)?5:8;
+//         data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+//         if(_user.employee){
+//             data.url=data.url+'&managerId='+_user.employee.objectId;
+//         }
+//         Wapi.qrLink.add(res=>{
+//             Wapi.qrLink.get(r=>{
+//                 let id=changeToLetter(r.data.i);
+//                 setUrl(id);
+//                 Wapi.qrLink.update(null,{
+//                     _objectId:res.objectId,
+//                     id
+//                 });
+//             },{objectId:res.objectId});
+//         },data);
+//     }
+// },qrLinkData);
 
 function setUrl(id){
     sUrl='http://autogps.cn/?s='+id;
