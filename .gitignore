@@ -60,5 +60,3 @@ Temporary Items
 
 /build/src/test/*
 /src/test/test*
-
-/*.webpack.config.js
