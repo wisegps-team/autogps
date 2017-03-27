@@ -99,6 +99,7 @@ class App extends Component {
             success: function(){},
             cancel: function(){}
         }
+        history.replaceState('home.html','home.html','home.html');
         wx.onMenuShareTimeline(op);
         wx.onMenuShareAppMessage(op);
         this.setState({show:true});

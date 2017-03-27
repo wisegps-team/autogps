@@ -107,6 +107,7 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
+    history.replaceState('home.html','home.html','home.html');
     wx.onMenuShareTimeline(op);
     wx.onMenuShareAppMessage(op);
     W.emit(thisView,'setShareOver');
