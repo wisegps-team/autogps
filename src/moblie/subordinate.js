@@ -148,7 +148,7 @@ class App extends Component{
         Wapi.employee.list(res=>{
             _managers=res.data;
             W.emit(window,'cust_list_update',this._data);
-        },{companyId:_user.customer.objectId,type:'<>1'})
+        },{companyId:_user.customer.objectId,type:'<>1',isQuit:false})
     }
     
     changeManager(cust){
