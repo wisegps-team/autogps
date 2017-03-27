@@ -602,11 +602,14 @@ class Static extends Component {
                 }else{
                     newArr.map((ele,index) => {
                         ele.name='';
-                        Wapi.activityProduct.get(res => {
-                            let name = res.data.brand+res.data.name
-                            ele.name = name;
-                            that.setState({product:newArr}); //Wapi是异步加载
-                        },{objectId:ele.marproductId})
+                        if(ele.marproductId){
+                            Wapi.activityProduct.get(res => {
+                                let name = res.data.brand+res.data.name
+                                ele.name = name;
+                                that.setState({product:newArr}); //Wapi是异步加载
+                            },{objectId:ele.marproductId})
+                        }
+                        
                     })
                 }
                 // this.setState({allPro:arr});
