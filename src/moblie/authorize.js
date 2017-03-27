@@ -254,6 +254,7 @@ class Authorizing extends Component {
             <ListItem 
                 key={i} 
                 primaryText={ele.name} 
+                secondaryText={ele.address}
                 onTouchTap={()=>this.select(ele)} 
                 leftCheckbox={
                     <Checkbox 

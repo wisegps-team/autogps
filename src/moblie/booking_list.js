@@ -19,6 +19,7 @@ import {makeRandomEvent} from '../_modules/tool';
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 let _par=null;
+thisView.setTitle(___.order);
 thisView.addEventListener('load',function(e){
     ReactDOM.render(<App/>,thisView);
     _par=e.params;
@@ -31,19 +32,13 @@ const EVENT=makeRandomEvent({
 
 const styles={
     appbar:{position:'fixed',top:'0px'},
-    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'60px',paddingBottom:'20px',},
+    main:{width:'90%',paddingLeft:'5%',paddingRight:'5%',paddingTop:'10px',paddingBottom:'20px',},
     card:{marginTop:'5px',padding:'10px',lineHeight: '30px',borderBottom:'solid 1px #999999'},
-    w:{
-        width:'50%',
-        display:'inline-block'
-    },
-    a:{
-        color: 'rgb(26, 140, 255)',
-        marginLeft: '2em'
-    },
-    p:{
-        'padding': '0 1em'
-    }
+    w:{width:'50%',display:'inline-block'},
+    a:{color: 'rgb(26, 140, 255)'},
+    p:{'padding': '0 1em'},
+    hide:{display:'none'},
+    no_book:{width:'100%',display:'block',marginTop:'30px',textAlign:'center'},
 }
 
 
@@ -57,31 +52,61 @@ class App extends React.Component {
         }
         this.page=1;
         this._data={};
+        this.gotData=false;
 
+        this.getData = this.getData.bind(this);
         this.loadNextPage=this.loadNextPage.bind(this);
         this.toList = this.toList.bind(this);
     }
     componentDidMount(){
         let _this=this;
         thisView.addEventListener('show',function (e) {
-            _this.setState({
-                books:[],
-                total:0,
-            });
-            _this.page=1;
+            // _this.setState({
+            //     books:[],
+            //     total:0,
+            // });
+            // _this.page=1;
             if(e.params){
                 _this._data=e.params;
             }else{
                 _this._data=_par;
             }
+            this.gotData=false;
+            _this.getData(_this._data);
+        });
+        window.addEventListener(EVENT.openDetails,e=>this.setState({bookData:e.params}));
+    }
+    
+    getData(data){
+        if(data._more_params){
+            let len=data.params.length;
+            let books=[];
+            let total=0;
+            data.params.forEach(ele=>{
+                Wapi.booking.list(re=>{
+                    books=books.concat(re.data);
+                    total=total+re.total;
+                    len--;
+                    if(len==0){
+                        this.gotData=true;
+                        if(this.state.total!=0 && this.state.total==total)return;
+                        this.setState({
+                            books:books,
+                            total:total
+                        });
+                    }
+                },ele,{limit:-1});
+            })
+        }else{
             Wapi.booking.list(res=>{
-                _this.setState({
+                this.gotData=true;
+                if(this.state.total!=0 && this.state.total==res.total)return;
+                this.setState({
                     books:res.data,
                     total:res.total
                 });
-            },_this._data);
-        });
-        window.addEventListener(EVENT.openDetails,e=>this.setState({bookData:e.params}));
+            },data,{limit:-1});
+        }
     }
 
     loadNextPage(){
@@ -106,10 +131,10 @@ class App extends React.Component {
     render(){
         return(
             <ThemeProvider>
-                <AppBar 
+                {/*<AppBar 
                     title={___.booked_cust} 
                     style={styles.appbar}
-                />
+                />*/}
                 <div style={styles.main}>
                     <Alist 
                         max={this.state.total} 
@@ -117,6 +142,9 @@ class App extends React.Component {
                         data={this.state.books} 
                         next={this.loadNextPage} 
                     />
+                    <div style={(this.state.total==0 && this.gotData) ? styles.no_book : styles.hide}>
+                        当前用户暂无相关订单
+                    </div>
                 </div>
                 
                 <SonPage title={___.details} open={this.state.bookData!=null} back={this.toList}>
@@ -132,7 +160,11 @@ class DumbList extends React.Component{
         super(props,context);
     }
     open(data){
-        W.emit(window,EVENT.openDetails,data);
+        console.log('line160');
+        history.replaceState('home.html','home.html','home.html');
+        window.location=WiStorm.root+'order.html?bookingId='+data.objectId;
+
+        // W.emit(window,EVENT.openDetails,data);
     }
     render() {
         let cards=this.props.data.map((ele,index)=>{
@@ -146,7 +178,7 @@ class DumbList extends React.Component{
                     </div>
                     <div>{___.book_date+'：'+W.dateToString(W.date(ele.createdAt)).slice(0,10)}</div>
                     <div style={{marginLeft:'2px',color:colors[i]}}>
-                        {___.status+'：'+___.booking_status[i]}
+                        {/*{___.status+'：'+___.booking_status[i]}*/}
                         <a style={styles.a} onClick={e=>this.open(ele)}>{___.details}</a>
                     </div>
                 </div>
@@ -174,22 +206,22 @@ class DetailBox extends Component{
     componentWillReceiveProps(nextProps) {
         if(nextProps.data&&this.props.data!=nextProps.data){
             this.setState({data:nextProps.data});
-            let that=this;
-            if(nextProps.data.activityId)
-                Wapi.activity.get(function(res){
-                    if(res.data){
-                        let act={
-                            deposit:res.data.deposit,
-                            price:res.data.price,
-                            installationFee:res.data.installationFee,
-                            product:res.data.product
-                        }
-                        let data=Object.assign({},nextProps.data,act);
-                        that.setState({data});
-                    }
-                },{
-                    objectId:nextProps.data.activityId
-                });
+            // let that=this;
+            // if(nextProps.data.activityId)
+            //     Wapi.activity.get(function(res){
+            //         if(res.data){
+            //             let act={
+            //                 deposit:res.data.deposit||' ',
+            //                 price:res.data.price||' ',
+            //                 installationFee:res.data.installationFee||' ',
+            //                 product:res.data.product||' '
+            //             }
+            //             let data=Object.assign({},nextProps.data,act);
+            //             that.setState({data});
+            //         }
+            //     },{
+            //         objectId:nextProps.data.activityId
+            //     });
         }  
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -212,9 +244,9 @@ class DetailBox extends Component{
                 {/*车主姓名*/}
                 <h4>{___.carowner_info+'：'+d.userName+'/'+d.userMobile}</h4>
                 {/*产品型号*/}
-                <h4>{___.booking_product+'：'+(d.product||___.loading)}</h4>
+                <h4>{___.booking_product+'：'+( d.product ? (d.product.brand+d.product.name) : ___.loading)}</h4>
                 {/*产品价格*/}
-                <h4>{___.product_price+'：'+(d.price||___.loading)}</h4>
+                <h4>{___.product_price+'：'+( d.product ? d.product.price : ___.loading)}</h4>
                 {/*付款时间*/}
                 {/*付款金额*/}
                 {/*付款方式*/}
@@ -232,7 +264,7 @@ class DetailBox extends Component{
                 {/*支付金额*/}
 
                 <h4>{___.recommender+'：'+d.sellerName}</h4>
-                <h4>{___.install_price+'：'+(d.installationFee||___.loading)}</h4>
+                <h4>{___.install_price+'：'+( d.product ? d.product.installationFee : ___.loading )}</h4>
                 {resTime}
             </div>
         );
@@ -243,4 +275,30 @@ class DetailBox extends Component{
 //工具方法 金额转字符
 function toMoneyFormat(money){
     return '￥' + money.toFixed(2);
+}
+
+function Equal(x,y){
+    let kx=Object.keys(x);
+    let ky=Object.keys(y);
+
+    if(kx.length!=ky.length)return false;
+    
+    let flag=0;
+    for(let i=kx.length-1;i>=0;i--){
+        let p=kx[i];
+        if(!y[p])return false;
+        if(y[p]!=x[p])return false;
+        
+        if(i==0)flag++;
+    }
+    
+    for(let j=ky.length-1;j>=0;j--){
+        let q=ky[j];
+        if(!x[q])return false;
+        if(x[q]!=y[q])return false;
+
+        if(j==0)flag++;
+    }
+
+    return flag==2;
 }

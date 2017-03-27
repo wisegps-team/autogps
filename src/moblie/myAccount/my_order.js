@@ -123,10 +123,11 @@ class App extends React.Component {
         }
         this.page=0;
         this._data={
-            mobile:_user.mobile
+            installId:_user.customer.objectId
         };
         this.bookData=null;
         this.detail=this.detail.bind(this);
+        this.getData = this.getData.bind(this);
         this.load=this.load.bind(this);
         this.toList = this.toList.bind(this);
     }
@@ -138,32 +139,65 @@ class App extends React.Component {
     componentDidMount(){
         this.load();
         let _this=this;
+        if(!_par)_par=this._data;
         thisView.addEventListener('show',function (e) {
-            _this.gotData=true;
-            _this._data=e.params;
-            _this.load();
+            if(e.params){
+                _par=e.params;
+            }
+            // _this.gotData=true;
+            // _this.load();
+            _this.getData(_par);
         });
     }
-    detail(data){
-        // this.setState({bookData:data});
-        // location.href='http://'+WiStorm.config.domain.wx+'/autogps/order.html?intent=logout&bookingId='+data.objectId;
-        history.replaceState('','','../my_account.html');
-        location.href=WiStorm.root+'order.html?intent=logout&bookingId='+data.objectId;
+    getData(data){
+        if(data._more_params){
+            let len=data.params.length;
+            let books=[];
+            let total=0;
+            data.params.forEach(ele=>{
+                Wapi.booking.list(re=>{
+                    books=noRepeat(books.concat(re.data));
+                    total=total+re.total;
+                    len--;
+                    if(len==0){
+                        this.gotData=true;
+                        if(this.state.total!=0 && this.state.total==total)return;
+                        this.setState({
+                            books:books,
+                            total:total
+                        });
+                    }
+                },ele,{limit:-1});
+            })
+        }else{
+            Wapi.booking.list(res=>{
+                this.gotData=true;
+                if(this.state.total!=0 && this.state.total==res.total)return;
+                this.setState({
+                    books:res.data,
+                    total:res.total
+                });
+            },data,{limit:-1});
+        }
     }
     load(){
         let arr=this.state.books;
-        this.page++;
 
         Wapi.booking.list(res=>{
             this.setState({
                 books:res.data,
             });
         },this._data,{
-            limit:20,
-            page_no:this.page
+            limit:-1
         });
     }
-
+    detail(data){
+        // this.setState({bookData:data});
+        // location.href='http://'+WiStorm.config.domain.wx+'/autogps/order.html?intent=logout&bookingId='+data.objectId;
+        // history.replaceState('','','../my_account.html');
+        history.replaceState('home','home','../home.html');
+        location.href=WiStorm.root+'order.html?intent=logout&bookingId='+data.objectId;
+    }
     toList(){
         this.setState({
             bookData:null
@@ -272,4 +306,16 @@ function Status(data){
 //工具方法 数据库的时间转格式
 function timeFormat(time){
     return W.dateToString(new Date(time))
+}
+
+function noRepeat(arr){
+    let _arr=[];
+    for(let i=arr.length-1;i>=0;i--){
+        let obj=arr[i];
+        if(_arr.find(ele=>ele.objectId==obj.objectId)){
+            continue;
+        }
+        _arr.push(obj);
+    }
+    return _arr;
 }
