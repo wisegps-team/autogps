@@ -104,6 +104,7 @@ class DetailBox extends Component{
         this.confirmInstall = this.confirmInstall.bind(this);
         this.contactInstall = this.contactInstall.bind(this);
         this.changeInstall = this.changeInstall.bind(this);
+        this.payCommission = this.payCommission.bind(this);
         this.payBack = this.payBack.bind(this);
     }    
     componentDidMount() {
@@ -209,6 +210,12 @@ class DetailBox extends Component{
         }
         if(data.resTime){
             s=5;
+        }
+        if(data.payTime){
+            s=6;
+        }
+        if(data.resTime && data.carType && data.carType.noPay==1){
+            s=6;
         }
         if(data.payTime){
             s=7;
@@ -340,22 +347,48 @@ class DetailBox extends Component{
 
         let booking=this.booking;
 
-        let _url='http://'+WiStorm.config.domain.user+'/autogps/commission.php'
-            +'?bookingId='+booking.objectId
-            +'&cid='+_user.customer.objectId
-            +'&receipt='+this.act.price
-            +'&title='+encodeURIComponent(booking.sellerName+'的佣金')
-            +'&amount='+this.act.reward
-            +'&remark='+encodeURIComponent($remark)
-            +'&uid='+booking.installId
-            +'&to_uid='+booking.sellerId;
-        
-        let url='https://open.weixin.qq.com/connect/oauth2/authorize'
-            +'?appid='+Wapi.pay.wxAppKey
-            +'&redirect_uri='+encodeURIComponent(_url)
-            +'&response_type=code&scope=snsapi_base&state=state#wechat_redirect';
-        
-        location.href=url;
+        Wapi.device.get(res=>{
+            // let sid=res.data.serverId;
+
+            // let remark='IMEI：'+booking.did+'佣金';
+            
+            // let b_reward=Number(booking.product.reward);
+            // let r_reward=Number(booking.res.reward);
+            // let amount=r_reward;
+            // if(r_reward>b_reward){
+            //     amount=(b_reward+r_reward)/2;
+            // }
+            
+            // let _url='http://'+WiStorm.config.domain.user+'/commission.php'
+            //     +'?bookingId='+booking.objectId
+            //     +'&cid='+_user.customer.objectId
+            //     +'&sid='+sid
+            //     +'&title='+encodeURIComponent(booking.sellerName+'的佣金')
+            //     +'&amount='+amount
+            //     +'&remark='+encodeURIComponent(remark)
+            //     +'&uid='+booking.installId
+            //     +'&to_uid='+booking.sellerId;
+            
+            // let url='https://open.weixin.qq.com/connect/oauth2/authorize'
+            //     +'?appid='+Wapi.pay.wxAppKey
+            //     +'&redirect_uri='+encodeURIComponent(_url)
+            //     +'&response_type=code&scope=snsapi_base&state=state#wechat_redirect';
+
+            
+            if(_g.url){
+                url=_g.url;
+            }else{
+                url=booking.res.commissionUrl;
+                if(!url){
+                    W.alert('佣金支付异常,请联系系统管理员');
+                    return;
+                }
+            }
+
+            location.href=url;
+            
+        },{did:booking.did});
+
     }
     payBack(){
         this.payPage=false;
@@ -381,6 +414,9 @@ class DetailBox extends Component{
         let time4 = d.confirmTime ? W.dateToString(W.date(d.confirmTime)) : '' ;
         let time5 = d.resTime ? W.dateToString(W.date(d.resTime)) : '' ;
         let time6 = d.payTime ? W.dateToString(W.date(d.payTime)) : '' ;
+        if(d.resTime && d.carType&&(d.carType.noPay==1)){
+            time6='未支付';
+        }
         let time7 = d.commissionDate ? W.dateToString(W.date(d.commissionDate)) : '' ;
 
         if(this.user.booker||this.user.carowner){
@@ -528,7 +564,10 @@ class DetailBox extends Component{
 
                     <div name='step6' style={this.state.step==6 ? show : hide}>
                         {/*支付金额*/}
-                        <div style={styles.childLine}>{___.paid_amount+'：'+(d.money ? d.money.toFixed(2) : '--')}</div>
+                        {time2=='未支付'?
+                            <div style={styles.childLine}>零元预订</div>:
+                            <div style={styles.childLine}>{___.paid_amount+'：'+(d.receipt ? d.receipt.toFixed(2) : '--')}</div>
+                        }
                     </div>
 
                     <div style={(time6 && !time7) ? {} : hide}>

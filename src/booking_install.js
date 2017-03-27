@@ -241,7 +241,7 @@ class App extends Component {
                 type:'1',
                 // link:'http://192.168.3.201:8081/booking_install_date.html?bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
                 // link:'http://'+WiStorm.config.domain.wx+'/autogps/booking_install_date.html?intent=logout&bookingId='+_g.bookingId+'&cust_open_id='+_g.openid,
-                link:'http://'+WiStorm.config.domain.wx+'/wo365_user/order.html?intent=logout&bookingId='+_g.bookingId,
+                link:'http://'+WiStorm.config.domain.wx+'/autogps/order.html?intent=logout&bookingId='+_g.bookingId,
                 data:{
                     "first": {//标题
                         "value": ___.bookingId+'：'+_g.bookingId,
