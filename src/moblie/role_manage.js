@@ -166,7 +166,7 @@ class App extends React.Component {
                 })  
             }     
         },{
-            roleId:role.objectId
+            roleId:role.objectId,isQuit:false
         })
     }
     render(){
