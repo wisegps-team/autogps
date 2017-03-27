@@ -48,11 +48,13 @@ import {user_type_act,brand_act,department_act,product_act,role_act} from '../_r
 
 require('../_sass/home.scss');
 const styles = {
-    main:{paddingTop:'0px',paddingBottom:'0px'},
+    main:{paddingTop:'0px',paddingBottom:'0px',width:'100%'},
     card:{marginTop:'15px',width:'100%',backgroundColor:'#ffffff'},//170118
     hide:{display:'none'},
     table_left:{width:window.innerWidth*0.62+'px',height:'125px',padding:'0px',backgroundColor:'#ffffff'},
-    table_right:{width:window.innerWidth*0.38+'px'}
+    table_right:{width:window.innerWidth*0.38+'px'},
+    no_act:{marginTop:'30px',width:'100%',display:'block',textAlign:'center'},
+    share_page:{width:'100%',height:window.innerHeight+'px',display:'block',backgroundColor:'#ffffff',position:'fixed',top:'0px',left:'0px'},
 };
 
 //加载各种字典数据,权限啊等等
@@ -73,6 +75,7 @@ thisView.addEventListener('load',function(){
         thisView.goTo(_g.loginLocation+'.js');
     }
     thisView.prefetch('./myMarketing/marketing_data.js',2);
+    thisView.prefetch('./myAccount/my_order.js',2);
 });
 
 
@@ -143,11 +146,11 @@ function checkWallet(){
 checkWallet();
 
 const _pages=[//所有的页面
-    {   /*供应商管理 */
-        href:'superior',
-        name:___.superior,
-        icon:<ActionSupervisorAccount style={sty.icon}/>
-    },
+    // {   /*供应商管理 */
+    //     href:'superior',
+    //     name:___.superior,
+    //     icon:<ActionSupervisorAccount style={sty.icon}/>
+    // },
     {   /*渠道管理 */
         href:'subordinate',
         name:___.subordinate,
@@ -173,26 +176,26 @@ const _pages=[//所有的页面
         name:___.activity_agent,
         icon:<ToggleStar style={sty.icon}/>
     },
-    {   /*营销产品 */
-        href:'selling_product',
-        name:___.selling_product,
-        icon:<ActionShopTwo style={sty.iconActive}/>
-    },
-    {   /*营销活动链接 */
-        href:'seller_activity',
-        name:___.seller_activity,
-        icon:<ActionEvent style={sty.iconActive}/>
-    },
+    // {   /*营销产品 */
+    //     href:'selling_product',
+    //     name:___.selling_product,
+    //     icon:<ActionShopTwo style={sty.iconActive}/>
+    // },
+    // {   /*营销活动链接 */
+    //     href:'seller_activity',
+    //     name:___.seller_activity,
+    //     icon:<ActionEvent style={sty.iconActive}/>
+    // },
     {   /*营销人员 */
         href:'marketing_personnel',
         name:___.marketing_personnel,
         icon:<ActionRecordVoiceOver style={sty.iconActive}/>
     },
-    {   /*二维码管理 */
-        href:'qrcode',
-        name:___.qrcode_manage,
-        icon:<ImageFilterCenterFocus style={sty.iconActive}/>
-    },
+    // {   /*二维码管理 */
+    //     href:'qrcode',
+    //     name:___.qrcode_manage,
+    //     icon:<ImageFilterCenterFocus style={sty.iconActive}/>
+    // },
     {   /*代理商，经销商的企业账户 */
         href:'financial_manage',
         name:___.financial_manage,
@@ -221,7 +224,7 @@ const _pages=[//所有的页面
 let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
 // let pages=_pages;
 
-let set=<ModuleCard title={___.system_set} icon={<ActionSettings style={sty.icon}/>} href={'myAccount/system_set'} key={'myAccount/system_set'}/>
+// let set=<ModuleCard title={___.system_set} icon={<ActionSettings style={sty.icon}/>} href={'myAccount/system_set'} key={'myAccount/system_set'}/>
 
 //推荐有礼活动列表
 class ActivityList extends Component {
@@ -376,13 +379,12 @@ class ActivityList extends Component {
     render() {
         return (
             <div name='list1' style={styles.main}>
-                {/*items*/}
                 <Alist 
                     max={this.total} 
                     limit={this.limit} 
                     data={this.activities} 
                 />
-                <div style={this.activities.length==0?{marginTop:'30px',textAlign:'center'}:styles.hide}>
+                <div style={this.activities.length==0?styles.no_act:styles.hide}>
                     暂无活动
                 </div>
             </div>
@@ -392,9 +394,7 @@ class ActivityList extends Component {
 
 // const cards = [];//测试用
 const cards=pages.map(e=>(<ModuleCard title={e.name} icon={e.icon} href={e.href} key={e.href}/>));
-if(typeof(_user.employee)=='undefined'){//临时用系统设置菜单
-    cards.push(set);
-}
+
 
 //营销平台首页如果无菜单，显示推荐有礼下面的内容
 if(cards.length == 0){
@@ -414,13 +414,38 @@ class App extends Component {
     personalInfo(){
         thisView.goTo('./myAccount/personal_info.js');
     }
+    bookingList(){
+        let par={installId:_user.customer.objectId};
+        if(_user.employee){
+            let par2={sellerId:_user.employee.objectId}//员工,营销人员
+            par={
+                _more_params:true,
+                params:[par,par2]
+            };
+        }else{
+            if(_user.customer.custTypeId==5 || _user.customer.custTypeId==1){
+                par={uid:_user.customer.objectId}
+            }
+        }
+        // thisView.goTo('booking_list.js',par);
+        thisView.goTo('./myAccount/my_order.js',par);
+    }
     recommend(){
         thisView.goTo('my_marketing.js');
+        // window.location='my_marketing.html';
+    }
+    set(){
+        thisView.goTo('./myAccount/system_set.js');
     }
     wallet(){
         thisView.goTo('./myAccount/wallet.js');
     }
     render() {
+        let headRight=<div style={{display:'table-cell',width:'33%'}} onClick={this.wallet}>{___.wallet}</div>
+        if(typeof(_user.employee)=='undefined'){//如果是管理员，用 ‘系统设置’ 替换 ‘钱包’ 
+            headRight=<div style={{display:'table-cell',width:'33%'}} onClick={this.set}>{___.set}</div>
+        }
+        
         return (
             <ThemeProvider>
             <div style={sty.main}>
@@ -432,9 +457,9 @@ class App extends Component {
                         </div>
                     </div>
                     <div style={sty.head_links}>
-                        <div style={sty.head_link}>{___.order}</div>
+                        <div style={sty.head_link} onClick={this.bookingList}>{___.order}</div>
                         <div style={sty.head_link} onClick={this.recommend}>{___.recommend}</div>
-                        <div style={{display:'table-cell',width:'33%'}} onClick={this.wallet}>{___.wallet}</div>
+                        {headRight}
                     </div>
                 </div>
                 <div className='main'>
@@ -455,12 +480,15 @@ class DList extends Component{
         super(props,context);
         this.activityUrl='';
         this.state={
-            iframe:false
+            iframe:false,
+            isShare:false,
+            reward:0
         };
         this.toActivityPage = this.toActivityPage.bind(this);
-        this.toCountPage = this.toCountPage.bind(this);
         this.activityData = this.activityData.bind(this);
         this.toggleIframe = this.toggleIframe.bind(this);
+        this.sharePage = this.sharePage.bind(this);
+        this.shareBack = this.shareBack.bind(this);
     }
     toActivityPage(data){
         data._seller=_user.employee?_user.employee.name:_user.customer.contact;
@@ -513,17 +541,6 @@ class DList extends Component{
             type:3
         });
             
-    }
-    toCountPage(page,data){
-        let par={
-            activityId:data.objectId,
-            sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
-            status:1
-        }
-        if(page=='booking'){
-            par.status=0
-        }
-        thisView.goTo('booking_list.js',par);
     }
     share(data){
         if(!data.wxAppKey){
@@ -579,33 +596,6 @@ class DList extends Component{
             });
             
             function setWxShare(url){
-                var opTimeLine={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        timelineSuccess();
-                    },
-                    cancel: function(){}
-                }
-                var opMessage={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        messageSuccess();
-                    },
-                    cancel: function(){}
-                }
-                // console.log(opTimeLine);
-
-                wx.onMenuShareTimeline(opTimeLine);
-                wx.onMenuShareAppMessage(opMessage);
-                setShare=null;
-                that.context.share(data);
-
                 let params={
                     id:1,
                     // qrcodeId:3,
@@ -621,25 +611,75 @@ class DList extends Component{
                     marproductId:data.actProductId,
                 }
                 if(_user.employee){
-                    let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
-                    params.busmanageId=depart.adminId||'';
-                    params.pertypeId=_user.employee.departId;
+                    // let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
+                    // if(depart){
+                    //     params.busmanageId=depart.adminId||'';
+                    //     params.pertypeId=_user.employee.departId;
+                    // }
+
+                    Wapi.department.get(resDpt=>{
+                        let depart=resDpt.data;
+                        if(depart && (depart.uid==_user.customer.objectId) ){//活动创建公司的员工,集团营销人员
+                            params.busmanageId=depart.adminId||'';
+                            params.pertypeId=_user.employee.departId;
+                        }
+                        if(depart && (depart.uid!=_user.customer.objectId) ){//下级经销商的员工
+                            let strMng=_user.customer.parentMng.find(ele=>ele.includes(activity.uid));
+                            if(strMng){
+                                params.busmanageId=strMng.split('in')[0];
+                            }
+                        }
+                        finalShare();
+                    },{objectId:_user.employee.departId});
+                }else{
+                    finalShare();
                 }
                 // console.log(params);
-                function timelineSuccess(){
-                    let par=Object.assign({},params);
-                    par.type=1
-                    Wapi.promotion.add(pro=>{
-                        console.log(pro);
-                    },par);
+                function finalShare(){
+                    function timelineSuccess(){
+                        let par=Object.assign({},params);
+                        par.type=1
+                        Wapi.promotion.add(pro=>{
+                            console.log(pro);
+                        },par);
+                    }
+                    function messageSuccess(){
+                        let par=Object.assign({},params);
+                        par.type=0;
+                        Wapi.promotion.add(pro=>{
+                            console.log(pro);
+                        },par);
+                    }
+
+                    var opTimeLine={
+                        title: data.name, // 分享标题
+                        desc: data.offersDesc, // 分享描述
+                        link: url,
+                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                        success: function(){
+                            timelineSuccess();
+                        },
+                        cancel: function(){}
+                    }
+                    var opMessage={
+                        title: data.name, // 分享标题
+                        desc: data.offersDesc, // 分享描述
+                        link: url,
+                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                        success: function(){
+                            messageSuccess();
+                        },
+                        cancel: function(){}
+                    }
+                    // console.log(opTimeLine);
+                    // console.log(opMessage);
+                    history.replaceState('home.html','home.html','home.html');
+                    wx.onMenuShareTimeline(opTimeLine);
+                    wx.onMenuShareAppMessage(opMessage);
+                    // setShare=null;
+                    that.context.share(data);
                 }
-                function messageSuccess(){
-                    let par=Object.assign({},params);
-                    par.type=0;
-                    Wapi.promotion.add(pro=>{
-                        console.log(pro);
-                    },par);
-                }
+
             }
             
         }
@@ -647,10 +687,22 @@ class DList extends Component{
             setShare();
         }
         else{
-            // setShare();
+            // setShare();//测试用
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }
+    }
+    sharePage(activity){
+        this._share_time=new Date()*1;
+        this.setState({
+            isShare:true,
+            reward:activity.reward||0
+        });
+    }
+    shareBack(){
+        let now=new Date()*1;
+        if(now-this._share_time<3000)return;//3秒后才可以关闭
+        this.setState({isShare:false});
     }
     activityData(data){
         thisView.goTo('./myMarketing/marketing_data.js',data);
@@ -722,6 +774,10 @@ class DList extends Component{
                     </p>
                     <p>好友打开链接即可了解活动详情并咨询预订！</p>
                 </div>
+                
+                <div style={this.state.isShare ? styles.share_page : styles.hide} onClick={this.shareBack}>
+                    <SharePage reward={this.state.reward}/>
+                </div>
             </div>
         )
     }
@@ -732,3 +788,19 @@ DList.contextTypes={
 };
 
 let Alist=AutoList(DList);
+
+class SharePage extends Component {
+    render() {
+        return (
+            <div style={{marginTop:(window.innerHeight-240)/2+'px'}}>
+                <img src='../../img/shareTo.jpg' style={{width:'100%',display:'block'}}/>
+                <br/>
+                <div style={{textAlign:'center',display:'block',width:'100%'}}>
+                    <div style={{width:'100px',marginLeft:(window.innerWidth-100)/2+'px',height:'30px',lineHeight:'30px',borderRadius:'4px',border:'solid 1px #ff9900',color:'#ff9900'}}>
+                        返回
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

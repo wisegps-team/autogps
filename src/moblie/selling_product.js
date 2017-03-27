@@ -539,6 +539,7 @@ class EditProduct extends Component {
         }
         Wapi.deviceLog.aggr(res=>{
             let products=res.data.map(ele=>ele._id);
+            products=products.filter(ele=>ele.modelId);
             this.types=products;
             this.forceUpdate();
         },par);

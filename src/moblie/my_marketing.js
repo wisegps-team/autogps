@@ -532,53 +532,74 @@ class DList extends Component{
                     marproductId:data.actProductId,
                 }
                 if(_user.employee){
-                    let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
-                    params.busmanageId=depart.adminId||'';
-                    params.pertypeId=_user.employee.departId;
+                    // let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
+                    // if(depart){
+                    //     params.busmanageId=depart.adminId||'';
+                    //     params.pertypeId=_user.employee.departId;
+                    // }
+
+                    Wapi.department.get(resDpt=>{
+                        let depart=resDpt.data;
+                        if(depart && (depart.uid==_user.customer.objectId) ){//活动创建公司的员工,集团营销人员
+                            params.busmanageId=depart.adminId||'';
+                            params.pertypeId=_user.employee.departId;
+                        }
+                        if(depart && (depart.uid!=_user.customer.objectId) ){//下级经销商的员工
+                            let strMng=_user.customer.parentMng.find(ele=>ele.includes(activity.uid));
+                            if(strMng){
+                                params.busmanageId=strMng.split('in')[0];
+                            }
+                        }
+                        finalShare();
+                    },{objectId:_user.employee.departId});
+                }else{
+                    finalShare();
                 }
                 // console.log(params);
-                function timelineSuccess(){
-                    let par=Object.assign({},params);
-                    par.type=1
-                    Wapi.promotion.add(pro=>{
-                        console.log(pro);
-                    },par);
-                }
-                function messageSuccess(){
-                    let par=Object.assign({},params);
-                    par.type=0;
-                    Wapi.promotion.add(pro=>{
-                        console.log(pro);
-                    },par);
-                }
+                function finalShare(){
+                    function timelineSuccess(){
+                        let par=Object.assign({},params);
+                        par.type=1
+                        Wapi.promotion.add(pro=>{
+                            console.log(pro);
+                        },par);
+                    }
+                    function messageSuccess(){
+                        let par=Object.assign({},params);
+                        par.type=0;
+                        Wapi.promotion.add(pro=>{
+                            console.log(pro);
+                        },par);
+                    }
 
-                var opTimeLine={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        timelineSuccess();
-                    },
-                    cancel: function(){}
+                    var opTimeLine={
+                        title: data.name, // 分享标题
+                        desc: data.offersDesc, // 分享描述
+                        link: url,
+                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                        success: function(){
+                            timelineSuccess();
+                        },
+                        cancel: function(){}
+                    }
+                    var opMessage={
+                        title: data.name, // 分享标题
+                        desc: data.offersDesc, // 分享描述
+                        link: url,
+                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                        success: function(){
+                            messageSuccess();
+                        },
+                        cancel: function(){}
+                    }
+                    // console.log(opTimeLine);
+                    // console.log(opMessage);
+                    history.replaceState('home.html','home.html','home.html');
+                    wx.onMenuShareTimeline(opTimeLine);
+                    wx.onMenuShareAppMessage(opMessage);
+                    // setShare=null;
+                    that.context.share(data);
                 }
-                var opMessage={
-                    title: data.name, // 分享标题
-                    desc: data.offersDesc, // 分享描述
-                    link: url,
-                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                    success: function(){
-                        messageSuccess();
-                    },
-                    cancel: function(){}
-                }
-                // console.log(opTimeLine);
-                // console.log(opMessage);
-
-                wx.onMenuShareTimeline(opTimeLine);
-                wx.onMenuShareAppMessage(opMessage);
-                // setShare=null;
-                that.context.share(data);
 
             }
             
