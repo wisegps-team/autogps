@@ -677,7 +677,8 @@ class DList extends Component{
                     wx.onMenuShareTimeline(opTimeLine);
                     wx.onMenuShareAppMessage(opMessage);
                     // setShare=null;
-                    that.context.share(data);
+                    // that.context.share(data);
+                    that.sharePage(data);
                 }
 
             }
