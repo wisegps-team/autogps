@@ -76,7 +76,7 @@ function combineStyle(arr){
 //     scanner:{
 //         start:function(callback){
 //             setTimeout(function(){
-//                 callback('http://autogps.cn/?s=15');
+//                 callback('http://autogps.cn/?s=274');
 //             },100);
 //         }
 //     }
@@ -180,6 +180,7 @@ class App extends Component {
         // thisView.goTo('scan_count.js',data.act);
     }
     scanToBind(){
+        let _this=this;
         history.replaceState('home.html','home.html','../home.html');
         if(isWxSdk){
             W.native.scanner.start(link=>{//扫码
@@ -197,12 +198,18 @@ class App extends Component {
                     let uid=re.data.uid;
                     let batchId=re.data.objectId;
                     let batchName=re.data.name;
+                    
+                    let activity=_this.activity;
 
                     if(_user.employee && _user.employee.companyId==uid){//如果当前用户为(营销人员|员工),则判断其所属公司id是否和二维码uid相同
                         canBind=true;
                     }
                     if(_user.customer.custTypeId==8 && _user.customer.parentId.includes(uid)){//如果当前用户为经销商，则判断其上一级id是否和二维码uid相同
                         canBind=true;
+                    }
+                    if(activity.uid!=uid){//活动创建者和二维码拥有者不是同一个公司
+                        W.alert(___.not_same_user);
+                        return;
                     }
                     if(!canBind){
                         W.alert(___.not_belong);
@@ -219,8 +226,7 @@ class App extends Component {
                         if(res.data!=null){//未被创建，则需要创建
                             created=true;
                         }
-
-                        let activity=this.activity;                        
+                        
                         activity._seller=_user.employee?_user.employee.name:_user.customer.contact;
                         activity._sellerId=_user.employee?_user.employee.objectId:_user.customer.objectId;
                         activity._sellerTel=_user.employee?_user.employee.tel:_user.customer.tel;
@@ -235,7 +241,7 @@ class App extends Component {
                             uid:String(_user.customer.objectId),
                             id:code,
                             sellerId:String(_user.objectId),
-                            act:String(this.activity.objectId),
+                            act:String(_this.activity.objectId),
                             type:1,
                             batchId:batchId,
                             batchName:batchName,
@@ -276,30 +282,53 @@ class App extends Component {
                         }
                         if(_user.employee){
                             let depart=STORE.getState().department.find(ele=>ele.objectId==_user.employee.departId);
-                            parPm.busmanageId=depart.adminId||'';
-                            parPm.pertypeId=_user.employee.departId;
-                        }
-                        if(created){
-                            data._objectId=res.data.objectId;
-                            Wapi.qrLink.update(r=>{//更新二维码
+                            if(depart){
+                                parPm.busmanageId=depart.adminId||'';
+                                parPm.pertypeId=_user.employee.departId;
+                            }
 
-                                data.objectId=data._objectId;
-                                delete data._objectId;
-                                
-                                Wapi.promotion.add(pro=>{
-                                    W.alert(___.bind_success);
-                                    this.getData();
-                                },parPm);
-                            },data);
+                            Wapi.department.get(resDpt=>{
+                                let depart=resDpt.data;
+                                if(depart && (depart.uid==_user.customer.objectId) ){//活动创建公司的员工
+                                    parPm.busmanageId=depart.adminId||'';
+                                    parPm.pertypeId=_user.employee.departId;
+                                }
+                                if(depart && (depart.uid!=_user.customer.objectId) ){//下级经销商的员工
+                                    let strMng=_user.customer.parentMng.find(ele=>ele.includes(activity.uid));
+                                    if(strMng){
+                                        parPm.busmanageId=strMng.split('in')[0];
+                                    }
+                                }
+                                updateQr();
+                            },{objectId:_user.employee.departId});
                         }else{
-                            Wapi.qrLink.add(r=>{
+                            updateQr();
+                        }
+                        
+                        function updateQr(){
 
-                                Wapi.promotion.add(pro=>{
-                                    W.alert(___.bind_success);
-                                    this.getData();
-                                },parPm);
-                            },data);
-                            
+                            if(created){
+                                data._objectId=res.data.objectId;
+                                Wapi.qrLink.update(r=>{//更新二维码
+
+                                    data.objectId=data._objectId;
+                                    delete data._objectId;
+                                    
+                                    Wapi.promotion.add(pro=>{
+                                        W.alert(___.bind_success);
+                                        _this.getData();
+                                    },parPm);
+                                },data);
+                            }else{
+                                Wapi.qrLink.add(r=>{
+
+                                    Wapi.promotion.add(pro=>{
+                                        W.alert(___.bind_success);
+                                        _this.getData();
+                                    },parPm);
+                                },data);
+                            }
+
                         }
 
                     },{

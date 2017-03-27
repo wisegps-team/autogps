@@ -490,7 +490,8 @@ window.___={
 	'employee':'人员',
 	'public_number':'公众号',
 	'qrcode_bound':'该二维码已被绑定',
-	'not_belong':'该二维码与您不属于同一代理商，无法绑定',
+	'not_belong':'您与该二维码不属于同一代理商，无法绑定',
+	'not_same_user':'该活动与该二维码不属于同一代理商，无法绑定',
 	'qrcode_unknown':'无法识本平台以外的二维码',
 	'remove_bind':'解除绑定',
 	'bind_success':'绑定成功',
@@ -621,4 +622,5 @@ window.___={
 	'type_no_person':'该分类下暂无人员',
 	'no_select':'暂未选择',
 	'promotion_statistical':'推广统计',
+	'set':'设置',
 }
