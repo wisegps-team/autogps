@@ -12,7 +12,10 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		
-		<script src='wslib/WiStorm.js'></script>
+		<!--<script src='wslib/WiStorm.js'></script>-->
+		<script>
+			document.write('<script src="_WiStorm.js?v=' + Math.random() + '&u="><\/script>');
+		</script>		
 		<script>
 			function booking(){
 				var g=Object.assign({},_g);

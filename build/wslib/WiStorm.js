@@ -195,6 +195,12 @@ function W(select,needAll){
 		return document.querySelector(select);
 }
 
+
+/** 
+ * 全局版本标识，更新文件时同时要更新此版本
+ */
+W.version = "1.0";
+
 /**
  * 空方法，用于需要空方法的地方，免得每次都创建
  */
@@ -563,7 +569,7 @@ W.logout=function(param){
 	W.setSetting("user",null);
 	W.setSetting("pwd",null);
 	W._login=false;
-	top.location=WiStorm.root+'index.html?intent=logout'+param;
+	top.location=WiStorm.root+'index.html?intent=logout'+param+'&r=' + Math.random();
 }
 
 W.wxLogin=function(s){
@@ -695,8 +701,19 @@ W.replace=function(text,data){
 		return data[word]||'';
 	});
 }
-	
 
+var getScriptRequest = function() {
+	var urlparse;
+	urlparse=document.scripts[document.scripts.length-1].src.split("\?");
+	var parms = urlparse[1].split("&");
+	var values = {};
+	for(var i = 0; i < parms.length; i++) {
+		var parm = parms[i].split("=");
+		values[parm[0]] = parm[1];
+	}
+	return values;
+}
+	
 /**
  * 5+的Ready事件封装，如果执行此方法时5+的ready事件已经触发过了，则会立即执行；
  * 其中第一个参数为要执行的方法，第二参数web是一个标志，为true时，则不管是普通浏览器环境下，还是在打包成原生应用的情况下，都会执行；
@@ -771,10 +788,6 @@ window.WiStorm={
 u=undefined;
 _d=undefined;
 
-
-	
-
-
 //根据页面路径获取绝对路径
 var tem=location.href;
 var s=tem.search("/www/")+5;
@@ -835,7 +848,7 @@ if(!W._login&&location.pathname.indexOf("index.html")<0&&_g.intent!="logout"){
 		}
 	}else{
 		W.setCookie("__login_redirect_uri__",location.href,-15);
-		top.location=WiStorm.root+"index.html";
+		top.location=WiStorm.root+"index.html?r=" + Math.random();
 	}
 }else if(W._login){
 	window.addEventListener("load",function(){

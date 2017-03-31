@@ -11,12 +11,16 @@ module.exports = {
                 NODE_ENV: JSON.stringify("production")
             }
         }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./manifest.json'),
+        }),
         new webpack.optimize.UglifyJsPlugin({
             output: {
                 comments: false,  // remove all comments
             },
             compress: {
-                // warnings: false,
+                warnings: false,
                 drop_console:true,//去掉console.*一切代码
                 // drop_debugger:true,//去掉debugger
                 // conditionals:true, //使用表达式代替if语句

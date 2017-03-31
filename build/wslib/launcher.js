@@ -266,7 +266,8 @@ view.prototype.loadScript=function(){
 	script.onerror=view.scriptError;
     script.async=true;
     document.head.appendChild(script);
-    script.src=this.data.url;
+    var v = W.version || '1.0';
+    script.src=this.data.url + '?v=' + v;
     STATE.moduleList.push(script.src);
     window.LAUNCHER.moduleList=STATE.moduleList.concat();
 
@@ -489,7 +490,7 @@ var divFunction={
         if(!this.show_state)return;
         document.title = this.title||' ';
         var i = document.createElement('iframe');
-        i.src = 'http://m.baidu.com/favicon.ico';
+        // i.src = 'http://m.baidu.com/favicon.ico';
         // i.src = '../img/favicon.ico';
         i.style.display = 'none';
         i.onload = function() {
@@ -512,7 +513,8 @@ window.addEventListener('load',function(){
 });
 window.addEventListener('popstate',function(e){
     var name=e.state;//跳转之后的地址
-    var i=window.LAUNCHER.moduleList.indexOf(name);
+    var v = W.version || '1.0';
+    var i=window.LAUNCHER.moduleList.indexOf(name+'?v=' + v);
     //判断这个地址是不是一个模块地址
     if(i!=-1){
         if(!i||window.LAUNCHER.historyList[window.LAUNCHER.historyIndex-1]==name){

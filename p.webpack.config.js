@@ -1,5 +1,7 @@
 //生产环境下对booking.js等页面以外的文件打包文件
 var webpack = require('webpack');
+var path = require('path')
+var AssetsPlugin = require('assets-webpack-plugin')
 var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
 var fs = require('fs');
 
@@ -17,7 +19,7 @@ function getAllFile(path,entry_json){
 }
 var entry_json={};
 getAllFile('/src',entry_json);
-entry_json['common.js']=['react','react-dom','react-tap-event-plugin','redux','material-ui','./src/_reducers/main.js','./src/_theme/default.js','./src/_modules/Wapi'];
+entry_json['common.js']=['./src/_reducers/main.js','./src/_theme/default.js','./src/_modules/Wapi'];
 delete entry_json['/src/booking.js'];
 delete entry_json['/src/booking_install.js'];
 delete entry_json['/src/booking_install_date.js'];
@@ -32,17 +34,27 @@ module.exports = {
                 NODE_ENV: JSON.stringify("production")
             }
         }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./manifest.json'),
+        }),
         new webpack.optimize.UglifyJsPlugin({
             output: {
                 comments: false,  // remove all comments
             },
             compress: {
-                // warnings: false,
+                warnings: false,
                 drop_console:true,//去掉console.*一切代码
-                // drop_debugger:true,//去掉debugger
+                drop_debugger:true,//去掉debugger
                 // conditionals:true, //使用表达式代替if语句
                 // evaluate:true, //常量表达式求值，如a>5*4转换成a>20
             },
+        }),
+        new AssetsPlugin({
+            filename: './build/webpack.assets.js',
+            processOutput: function (assets) {
+                return 'window.WEBPACK_ASSETS = ' + JSON.stringify(assets);
+            }
         })
     ],
     //页面入口文件配置

@@ -139,7 +139,7 @@ class App extends Component {
             this.setState({active:1});
             return;
         }
-        let home="src/moblie/home.html";
+        let home="src/moblie/home.html?r=" + Math.random();
         let loginLocation=_g.loginLocation||home;
         if(loginLocation.indexOf('.html')==-1)//需要到home.html跳转
             loginLocation=home+"?loginLocation="+encodeURIComponent(_g.loginLocation);
