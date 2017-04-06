@@ -1,0 +1,5 @@
+http://localhost:8081/?location=%2Fautogps%2Fbooking.html&intent=logout&activityId=804144967210635300&title=能免单会赚钱的开车神器&agent_tel=4001655006&uid=781376479639507000&seller_name=乌鲁木齐美丽美车&sellerId=845283130339364900&mobile=13106486048&seller_open_id=o0GARxCJZG9uFKSjrFgMtIW9F0YA&timerstamp=1490664084734&from=singlemessage&wx_app_id=wx0025e9fcf90e5adc&needOpenId=true
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0025e9fcf90e5adc&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth2.php%3Fwx_app_id%3Dwx0025e9fcf90e5adc&response_type=code&scope=snsapi_base&state=getOpenId#wechat_redirect
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0025e9fcf90e5adc&redirect_uri=http%3A%2F%2Fuser.autogps.cn%3A8081%2Foauth2.php%3Fwx_app_id%3Dwx0025e9fcf90e5adc&response_type=code&scope=snsapi_base&state=getOpenId#wechat_redirect

@@ -323,7 +323,6 @@ function WPageApi(token){
 }
 WPageApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 
-
 /**
  * 功能表
  */
@@ -502,9 +501,6 @@ WGps.prototype.getGpsList=function(callback,data){
 	// 		callback({data});
 	// 	},data.did,st);
 	// }
-	
-
-	
 }
 WGps.prototype.getGpsListOnday=function(callback,did,date,index,map='BAIDU'){
 	//http://web.file.myqcloud.com/files/v1/2016-09-13/696502000007496_2016-09-13.gz
@@ -611,9 +607,6 @@ const Wapi={
 	promotion:new WAPI('promotion',_user?_user.access_token:null),
 };
 
-
-
-
 function makeGetOp(name,fields,lop){
 	Wapi[name].get_op={fields};
 	Wapi[name].list_op={
@@ -648,9 +641,6 @@ makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
 makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
 makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
-
-
-
 
 window.Wapi=Wapi;
 export default Wapi;

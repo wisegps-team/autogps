@@ -14,7 +14,7 @@
 
 		<!--<script src="wslib/WiStorm.js"></script>-->
 		<script>
-			document.write('<script src="_WiStorm.js?v=' + Math.random() + '&u="><\/script>');
+			document.write('<script src="_WiStorm.js?r=' + Math.random() + '&u="><\/script>');
 		</script>		
 		<script src="http://lib.chease.cn/common.js"></script>
 		<script src="http://lib.chease.cn/lib.js"></script>		
@@ -22,12 +22,12 @@
 			document.write('<title>'+___.service_booking_confirm+'</title>');
 			var config={
 				src:'src',    //静态资源根目录
-				defaultModule:'src/booking_install_date.js',//主页面模块
+				defaultModule:'src/booking_install_date.js?r=' + Math.random(),//主页面模块
 				loading:'<div class="loader"><div></div><div></div><div></div><span>正在加载</span></div>',//模块加载中显示的内容，可以是html
 				animation:0  //0：双动画模式（转场时两个模块均有动画） 1：单动画模式（只有入或者只有出的动画）
 			}
 		</script>
-		<script src="wslib/launcher.js?v=1.1"></script>
+		<script src="wslib/launcher.js?v=1.2"></script>
 		<script src="wslib/toolkit/WxSdk.js"></script>
 	</head>
 	<body>
