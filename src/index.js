@@ -220,42 +220,26 @@ class App extends Component {
         let login_sty = WiStorm.agent.weixin ? {
             display: 'none'
         } : null;
-        let actives = [ <
-            Login onSuccess = { this.loginSuccess }
-            style = { login_sty }
-            ssoLoginFail = { this.showBind }
-            />, <
-            AgentShowBox success = { this.registerCallback }
-            parentId = { _g.parentId }
-            managerId = { _g.managerId || 'none' }
-            />, <
-            Forget onSuccess = { this.forgetSuccess }
-            user = { this._res ? this._res.data : null }
-            />, <
-            BindBox onSuccess = { this.loginSuccess }
-            openId = { _g.openid }
-            />, <
-            QrBox / >
+        let actives = [ 
+            <Login onSuccess = { this.loginSuccess } style = { login_sty }ssoLoginFail = { this.showBind }/>, 
+            <AgentShowBox success = { this.registerCallback } parentId = { _g.parentId } managerId = { _g.managerId || 'none' }/>, 
+            <Forget onSuccess = { this.forgetSuccess } user = { this._res ? this._res.data : null }/>, 
+            <BindBox onSuccess = { this.loginSuccess } openId = { _g.openid }/>, 
+            <QrBox />
         ]
         let buttons = (this.state.active && this.state.active != 3) ?
-            ( < FlatButton label = { ___.login }
-                primary = { true }
+            ( <FlatButton label = { ___.login } primary = { true }
                 onClick = {
                     () => this.setState({ active: 0 })
                 }
-                key = 'login' / > ) :
+                key = 'login' /> ) :
             null;
-        return ( <
-                ThemeProvider >
-                <
-                div className = 'login'
-                style = { _sty } > { actives[this.state.active] } <
-                /div> {
+        return ( <ThemeProvider>
+                <div className = 'login' style = { _sty } > { actives[this.state.active] } </div> {
                 /*<div className='login' style={_sty}>
                                     {actives[1]}
                                 </div>*/
-            } <
-            /ThemeProvider>
+            } </ThemeProvider>
     );
 }
 }
