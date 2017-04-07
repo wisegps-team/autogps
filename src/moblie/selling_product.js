@@ -34,7 +34,7 @@ const styles = {
     to:{horizontal: 'right', vertical: 'top'},
     variable:{color:'#009688'},
     link:{color:'#0000cc'},
-    line:{marginTop:'10px'},
+    line:{marginTop:'10px',width:'106%'},
     spans:{width:'140px',display:'table-cell'},
     menu_item:{height:'40px'},
     no_data:{marginTop:'15px',display:'block',width:'100%',textAlign:'center'},
@@ -42,8 +42,8 @@ const styles = {
     search_head:{width:'100%',display:'block'},
     add_icon:{float:'right',marginRight:'15px',color:"#2196f3"},
     search_box:{marginLeft:'15px',marginTop:'15px',width:'80%',display:'block'},
-    span_left:{fontSize:'0.8em',color:'#666666'},
-    span_right:{fontSize:'0.8em'},
+    span_left:{fontSize:'0.5em',color:'#666666'},
+    span_right:{fontSize:'0.5em'},
     a:{color:'rgb(26, 140, 255)'},
 };
 function combineStyle(arr){
@@ -84,7 +84,8 @@ class App extends Component {
         super(props,context);
         this.state={
             isEdit:false,
-            keyword:''
+            keyword:'',
+            edit:false,
         }
         this.curProduct={};
         this.originalList=[];
@@ -162,7 +163,7 @@ class App extends Component {
             limit:-1
         });
         
-
+        //获取共享授权和我的授权
         function Permission(data){
             _this.originalList=data;
             // _this.list=data;
@@ -279,6 +280,7 @@ class App extends Component {
         setTouch();
         this.curProduct=product;
         this.setState({isEdit:true});
+        this.setState({edit:true})
     }
     editSubmit(product){
         let data=Object.assign({},product);
@@ -302,6 +304,7 @@ class App extends Component {
     }
     editBack(){
         this.setState({isEdit:false});
+        this.setState({edit:false})
     }
     delete(product){
         if(!canTouch)return;
@@ -393,7 +396,7 @@ class App extends Component {
                         />
                     </div>
                     <SonPage title={___.edit_selling_product} open={this.state.isEdit} back={this.editBack}>
-                        <EditProduct data={this.curProduct} editSubmit={this.editSubmit} addSubmit={this.addSubmit}/>
+                        <EditProduct data={Object.assign({},this.curProduct,{edit:this.state.edit})} editSubmit={this.editSubmit} addSubmit={this.addSubmit}/>
                     </SonPage>
                 </div>
             </ThemeProvider>
@@ -419,16 +422,16 @@ class ProductList extends Component {
                     targetOrigin={styles.to}
                     anchorOrigin={styles.to}
                     >
-                    <MenuItem 
+                    {/*<MenuItem //预览
                         style={styles.menu_item} 
                         primaryText={___.preview} 
                         onTouchTap={()=>this.props.url(ele)}
-                    />
-                    <MenuItem 
+                    />*/}
+                    {/*<MenuItem //授权
                         style={marketPromission ? styles.menu_item : styles.hide}
                         primaryText={___.authorize} 
                         onTouchTap={()=>this.props.authorize(ele,1)}
-                    />
+                    />*/}
                     <MenuItem 
                         style={ele.uid==_user.customer.objectId ? styles.menu_item : styles.hide} 
                         primaryText={___.edit} 
@@ -441,30 +444,39 @@ class ProductList extends Component {
                     />
                 </IconMenu>
                 <div style={styles.line}>
-                    {ele.brand +' '+ ele.name}
+                    <span style={{marginRight:10}}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>
+                    <span>{ele.brand +' '+ ele.name}</span>
                 </div>
                 <div style={styles.line}>
-                    <span style={styles.spans}>
+                    {/*<span style={styles.spans}>
                         <span style={styles.span_left}>{___.marketing_channel+' : '}</span>
                         <span style={styles.span_right}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>
-                    </span>
+                    </span>*/}
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.activity_reward+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.reward)}</span>
                     </span>
-                </div>
-                <div style={styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.device_price+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.price)}</span>
                     </span>
+                    {/*<span style={styles.spans}>
+                        <span style={styles.span_left}>{___.install_paymen+' : '}</span>
+                        <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
+                    </span>*/}
+                </div>
+                <div style={styles.line}>
+                    {/*<span style={styles.spans}>
+                        <span style={styles.span_left}>{___.device_price+' : '}</span>
+                        <span style={styles.span_right}>{moneyFont(ele.price)}</span>
+                    </span>*/}
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.install_paymen+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
                     </span>
                 </div>
-                {/*有营销活动权限的*/}
-                <div style={marketPromission?styles.line:styles.hide}>
+                {/*有营销活动权限的 查看共享授权和我的授权*/}
+                {/*<div style={marketPromission?styles.line:styles.hide}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.share_auth+' : '}</span>
                         <span style={styles.span_right}>{ele.shareAuth}</span>
@@ -473,9 +485,9 @@ class ProductList extends Component {
                         <span style={styles.span_left}>{___.my_auth+' : '}</span>
                         <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.authorize(ele,0)}>{ele.myAuth}</span>
                     </span>
-                </div>
-                {/*无营销活动权限的*/}
-                <div style={marketPromission?styles.hide:styles.line}>
+                </div>*/}
+                {/*无营销活动权限的 查看授权状态和我的车主*/}
+                {/*<div style={marketPromission?styles.hide:styles.line}>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.auth_status+' : '}</span>
                         <span style={styles.span_right}>{strAuthStatus[ele.authStatus]}</span>
@@ -484,7 +496,7 @@ class ProductList extends Component {
                         <span style={styles.span_left}>{___.booked_carowner+' : '}</span>
                         <span style={combineStyle(['span_right','a'])} onClick={()=>this.props.toOrder(ele)}>{ele.bookNum}</span>
                     </span>
-                </div>
+                </div>*/}
 
             </div>
         );
@@ -499,7 +511,7 @@ class ProductList extends Component {
 function initData(){
     return{
         uid:_user.customer.objectId,
-        productId:'0',
+        productId:0,
         name:'',
         brandId:'',
         brand:'',
@@ -557,6 +569,7 @@ class EditProduct extends Component {
     }
     
     dataChange(e,value,key){
+        console.log(e.target,'re')
         if(e.target&&e.target.name){
             this.data[e.target.name]=value;
         }else{  //SelectField不能返回name，而且需要取key
@@ -568,7 +581,7 @@ class EditProduct extends Component {
                 this.data.brand=type.brand;
                 this.forceUpdate();
             }else{
-                this.data.productId='0';
+                this.data.productId=0;
                 this.forceUpdate();
             }
         }
@@ -592,10 +605,10 @@ class EditProduct extends Component {
             W.alert(___.activity_reward + ___.not_null);
             return;
         }
-        if(data.productUrl==0){
-            W.alert(___.product_url + ___.not_null);
-            return;
-        }
+        // if(data.productUrl==0){
+        //     W.alert(___.product_url + ___.not_null);
+        //     return;
+        // }
 
         if(this.intent=='edit'){
             this.props.editSubmit(data);
@@ -605,13 +618,17 @@ class EditProduct extends Component {
     }
     render() {
         let types=this.types;
+        console.log(this.data.productId,'this.data')
+        console.log(this.props.data,'this.props.data')
+
+        // let typeItems=[];
         let typeItems=types.map(ele=><MenuItem key={ele.modelId} value={ele.modelId} primaryText={ele.brand+ele.model}/>);
         typeItems.unshift(<MenuItem key={0} value={0} primaryText={___.please_select_model} />);
         return (
             <div style={styles.input_page}>
 
                 {/*产品型号*/}
-                <SelectField name='pay' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.dataChange} style={styles.select} maxHeight={200} disabled={this.noEdit}>
+                <SelectField name='pay' floatingLabelText={___.product_type} value={this.data.productId} onChange={this.dataChange} style={styles.select} maxHeight={200} disabled={this.props.data.edit?this.props.data.edit:this.noEdit}>
                     {typeItems}
                 </SelectField>
 
@@ -625,7 +642,7 @@ class EditProduct extends Component {
                 <Input name='reward' floatingLabelText={___.activity_reward+___.yuan} value={moneyFont(this.data.reward)} onChange={this.dataChange} disabled={this.noEdit} />
 
                 {/*产品介绍*/}
-                <Input name='productUrl' floatingLabelText={___.product_description} value={this.data.productUrl} onChange={this.dataChange} disabled={this.noEdit} />
+                {/*<Input name='productUrl' floatingLabelText={___.product_description} value={this.data.productUrl} onChange={this.dataChange} disabled={this.noEdit} />*/}
             
                 {/*提交*/}
                 <div style={styles.bottom_btn_center}>

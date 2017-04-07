@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=130;//版本号
+let version=136;//版本号
 
 //地区表
 export const area={
@@ -2584,6 +2584,7 @@ export const qrLink={
     isApi: true,           //是否开放API
     isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate: false,      //是否更新数据表
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -2647,11 +2648,12 @@ export const qrLink={
 //营销产品授权表
 export const authorize={
     name: 'authorize',             //表名
-    desc: '营销产品授权表',             //表描述
+    desc: '授权表',             //表描述
     type: 1,             //类型(0:基础表, 1:用户表)
     isApi: true,           //是否开放API
     isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate: true,      //是否更新数据表
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -2661,7 +2663,7 @@ export const authorize={
             'default':'@AutoInc',
             'query': true, 
         },{
-            'name': 'actProductId',
+            'name': 'actProductId', //!!170406 业务（1营销推广/2政企业务/3平台运行/4扫码移车）//服务（serviceProject）
             'desc': '营销产品ID',
             'type': 'String',
             'query': true,
@@ -2669,6 +2671,11 @@ export const authorize={
             'name': 'productId',
             'desc': '产品型号ID',
             'type': 'String',
+            'query': true,
+        },{
+            'name': 'authorizeType', //++170406  1产品/2服务/3业务
+            'desc': '授权类型',
+            'type': 'Number',
             'query': true,
         },{
             'name': 'productName',
@@ -2787,6 +2794,7 @@ export const promotion={
     isApi: true,           //是否开放API
     isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate: false,      //是否更新数据表
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -2881,12 +2889,47 @@ export const promotion={
         {uid:1}
     ]
 } 
+export const serviceProject={
+    name: 'serviceProject',             //表名
+    desc: '服务项目表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    isUpdate: false,      //是否更新数据表
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'itemType',
+            'desc': '服务项目',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'itemName',
+            'desc': '服务内容',
+            'type': 'Array',
+            'query': true,
+        },{
+            'name': 'serverId',
+            'desc': '服务商id',
+            'type': 'String',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
 
+}
+
+// let TABLES=[
+//     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
+//     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
+//     weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
+// ];
 let TABLES=[
-    area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
-    ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
-    weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
-];
+    
+]
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
 window._fields={};

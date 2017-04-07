@@ -155,7 +155,7 @@ class App extends Component {
                     objectId:cids.join('|'),
                 })
             },parAuth,{
-                fields:'objectId,applyCompanyId'
+                fields:'objectId,applyCompanyId',limit:-1
             });
 
         },{objectId:_g.bookingId});

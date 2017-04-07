@@ -609,6 +609,7 @@ const Wapi={
 	qrLink:new WAPI('qrLink',_user?_user.access_token:null),
 	authorize:new WAPI('authorize',_user?_user.access_token:null),
 	promotion:new WAPI('promotion',_user?_user.access_token:null),
+	serviceProject:new WAPI('serviceProject',_user?_user.access_token:null),
 };
 
 
@@ -648,8 +649,8 @@ makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
 makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
 makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
-
-
+// makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
+makeGetOp('serviceProject','objectId,itemType,itemName,serverId');
 
 
 window.Wapi=Wapi;
