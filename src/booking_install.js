@@ -143,6 +143,7 @@ class App extends Component {
                     status:1
                 };
             }
+            debugger;
             Wapi.authorize.list(auths=>{
                 let cids=auths.data.map(ele=>ele.applyCompanyId);
                 Wapi.customer.list(custs=>{
@@ -155,7 +156,8 @@ class App extends Component {
                     objectId:cids.join('|'),
                 })
             },parAuth,{
-                fields:'objectId,applyCompanyId',limit:-1
+                fields:'objectId,applyCompanyId',
+                limit: -1
             });
 
         },{objectId:_g.bookingId});

@@ -91,12 +91,9 @@ class DetailBox extends Component{
             installer:false
         };
         this.payPage=false;
-
         this.getData = this.getData.bind(this);
-
         this.setStep = this.setStep.bind(this);
         this.changeStep = this.changeStep.bind(this);
-
         this.cancelBook = this.cancelBook.bind(this);
         this.payBook = this.payBook.bind(this);
         this.selectInstall = this.selectInstall.bind(this);
@@ -289,8 +286,8 @@ class DetailBox extends Component{
         let booking=this.booking;
         location.href='http://'+WiStorm.config.domain.user+'/autogps/booking_install.html?intent=logout'
             +'&needOpenId=true'
-            +'&bookingId='+booking.objectId
-            +'&wx_app_id='+_user.customer.wxAppKey
+            +'&bookingId='+ booking.objectId
+            +'&wx_app_id='+ (WiStorm.config.wx_app_id || _user.customer.wxAppKey)
             +'&openid='+booking.openId;
     }
     confirmInstall(){//installer
@@ -336,7 +333,7 @@ class DetailBox extends Component{
             location.href='http://'+WiStorm.config.domain.user+'/autogps/booking_install.html?intent=logout'
                 +'&needOpenId=true'
                 +'&bookingId='+booking.objectId
-                +'&wx_app_id='+_user.customer.wxAppKey
+                +'&wx_app_id='+(WiStorm.config.wx_app_id || _user.customer.wxAppKey)
                 +'&openid='+booking.openId;
         }
     }

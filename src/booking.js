@@ -44,7 +44,6 @@ thisView.addEventListener('load',function(){
                         Wapi.activityProduct.get(re=>{
                             if(re.data){
                                 let product=re.data;
-
                                 ACT.productId=product.productId;
                                 ACT.brand=product.brand;
                                 ACT.product=product.name;

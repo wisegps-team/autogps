@@ -267,7 +267,11 @@ view.prototype.loadScript=function(){
     script.async=true;
     document.head.appendChild(script);
     var v = W.version || '1.0';
-    script.src=this.data.url + '?v=' + v;
+    if(this.data.url.indexOf('?') > -1){
+        script.src=this.data.url + '&v=' + v;
+    }else{
+        script.src=this.data.url + '?v=' + v; 
+    }
     STATE.moduleList.push(script.src);
     window.LAUNCHER.moduleList=STATE.moduleList.concat();
 

@@ -5,26 +5,30 @@ var fs = require('fs');
 
 module.exports = {
     //插件项
-    // plugins: [
-    //     commonsPlugin,//智能提取公共模块插件
-    //     new webpack.DefinePlugin({
-    //         "process.env": {
-    //             NODE_ENV: JSON.stringify("production")
-    //         }
-    //     }),
-    //     new webpack.optimize.UglifyJsPlugin({
-    //         output: {
-    //             comments: false,  // remove all comments
-    //         },
-    //         compress: {
-    //             // warnings: false,
-    //             drop_console:true,//去掉console.*一切代码
-    //             // drop_debugger:true,//去掉debugger
-    //             // conditionals:true, //使用表达式代替if语句
-    //             // evaluate:true, //常量表达式求值，如a>5*4转换成a>20
-    //         },
-    //     })
-    // ],
+    plugins: [
+        // commonsPlugin,//智能提取公共模块插件
+        // new webpack.DefinePlugin({
+        //     "process.env": {
+        //         NODE_ENV: JSON.stringify("production")
+        //     }
+        // }),
+        // new webpack.optimize.UglifyJsPlugin({
+        //     output: {
+        //         comments: false,  // remove all comments
+        //     },
+        //     compress: {
+        //         // warnings: false,
+        //         drop_console:true,//去掉console.*一切代码
+        //         // drop_debugger:true,//去掉debugger
+        //         // conditionals:true, //使用表达式代替if语句
+        //         // evaluate:true, //常量表达式求值，如a>5*4转换成a>20
+        //     },
+        // })
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./manifest.json'),
+        })
+    ],
     //页面入口文件配置
     entry: {
         '/src/order.js':'./src/order.js',
