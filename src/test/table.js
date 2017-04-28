@@ -23,12 +23,25 @@ window.getTableFields=function getTableFields(table){
 }
 
 window.addTable=function addTable(table){
-    if(T.find(ele=>ele.name==table.name)){
-        Wapi.table.delete(function(res){
-            console.log('删除表成功');
-            Wapi.table.add(res=>console.log('重新创建表成功',res,getTableFields(table)),table);
+    if(T.find(ele=>ele.name==table.name&&table.isUpdate)){
+        // Wapi.table.delete(function(res){
+        //     console.log('删除表成功');
+        //     Wapi.table.add(res=>console.log('重新创建表成功',res,getTableFields(table)),table);
+        // },{
+        //     name:table.name
+        // })
+        Wapi.table.update(function(res) {
+            console.log('更新表成功')
         },{
-            name:table.name
+            _name: table.name,
+            desc: table.desc,
+            type: table.type,
+            isApi: table.type,
+            isPrivate: table.isPrivate,
+            isCache: table.isCache,
+            cacheField: table.cacheField,
+            fieldDefine: table.fieldDefine,
+            indexDefine: table.indexDefine
         })
     }else{
         Wapi.table.add(res=>console.log('创建表成功',res,getTableFields(table)),table);

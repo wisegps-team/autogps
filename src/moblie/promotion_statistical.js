@@ -95,7 +95,8 @@ class App extends Component {
                 this.setState({bus_manage:res.data})
             },{
                 companyId:_user.customer.objectId,
-                type:'<>1'
+                type:'<>1',
+                isQuit:false
             })
         }
 
@@ -116,7 +117,8 @@ class App extends Component {
                 this.setState({busMan:'0'})
             },{
                 companyId:this.state.topAccount[v].objectId,
-                type:'<>1'
+                type:'<>1',
+                isQuit:false
             })
         }
         this.stypeChange();

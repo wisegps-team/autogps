@@ -82,8 +82,7 @@ class App extends React.Component {
 
         this._data={
             companyId:_user.customer.objectId,
-            type:'<>1',
-            isQuit:false
+            type:'<>1'
         };
         // this._data.companyId='798351359882694700';
     }
@@ -364,7 +363,7 @@ class DumbList extends React.Component{
                     <tbody >
                         <tr style={styles.table_tr}>
                             <td style={styles.td_left}>{___.person_name}</td>
-                            <td style={styles.td_right}>{ele.name}</td>
+                            <td style={styles.td_right}>{ele.name+(ele.isQuit?'/已离职':'')}</td>
                         </tr>
                         <tr style={styles.table_tr}>
                             <td style={styles.td_left}>{___.sex}</td>
