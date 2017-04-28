@@ -375,15 +375,13 @@ class DetailBox extends Component{
             if(_g.url){
                 url=_g.url;
             }else{
-                url=booking.res.commissionUrl;
+                url=decodeURI(booking.res.commissionUrl);
                 if(!url){
                     W.alert('佣金支付异常,请联系系统管理员');
                     return;
                 }
             }
-
             location.href=url;
-            
         },{did:booking.did});
 
     }

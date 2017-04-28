@@ -275,12 +275,22 @@ class DeviceIn extends Component{
 
                     ids[ids.length]=res;
                     _this.setState({product_ids:ids});
-                    W.native.scanner.start(getCode);
+                    history.replaceState('home.html','home.html','home.html');
+                    if(isWxSdk){
+                        W.native.scanner.start(getCode);
+                    }else{
+                        W.alert(___.please_wait);
+                    }
                 }else if(re.data && re.data.uid=='0'){// data存在且设备不属于其他用户，将设备号存入state
                     let ids=_this.state.product_ids;
                     ids[ids.length]=res;
                     _this.setState({product_ids:ids});
-                    W.native.scanner.start(getCode);
+                    history.replaceState('home.html','home.html','home.html');
+                    if(isWxSdk){
+                        W.native.scanner.start(getCode);
+                    }else{
+                        W.alert(___.please_wait);
+                    }
                 }else if(re.data && re.data.uid==_user.customer.objectId){// data存在且设备已属于当前用户，弹出警告，不存入state
                     W.alert(___.device_repeat_own);
                     return;
@@ -291,6 +301,7 @@ class DeviceIn extends Component{
                 return;
             },{did:res});
         }
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(getCode);
         }else{
@@ -300,6 +311,7 @@ class DeviceIn extends Component{
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
@@ -473,18 +485,29 @@ class DeviceOut extends Component{
                     }
                     ids=ids.concat(res);
                     _this.setState({product_ids:ids});
-                    W.native.scanner.start(get);
+                    history.replaceState('home.html','home.html','home.html');
+                    if(isWxSdk){
+                        W.native.scanner.start(get);
+                    }else{
+                        W.alert(___.please_wait);
+                    }
                 }else{
                     Wapi.product.get((pro)=>{
                         _this.product = pro.data;
                         ids=ids.concat(res);
                         _this.setState({product_ids:ids});
-                        W.native.scanner.start(get);
+                        history.replaceState('home.html','home.html','home.html');
+                        if(isWxSdk){
+                            W.native.scanner.start(get);
+                        }else{
+                            W.alert(___.please_wait);
+                        }
                     },{objectId: dev.data.modelId})
                 }
             },{did:res})
             
         }
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(get);
         }else{
@@ -494,6 +517,7 @@ class DeviceOut extends Component{
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
@@ -764,6 +788,7 @@ class DeviceReturn extends Component {
             },{did:res})
             
         }
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(get);
         }else{
@@ -773,6 +798,7 @@ class DeviceReturn extends Component {
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
+        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
@@ -938,7 +964,7 @@ function emptyProduct(){
 
 function emptyUser(){
     return{
-        objectId:'',
-        name:''
+        // objectId:'',
+        // name:''
     }
 }

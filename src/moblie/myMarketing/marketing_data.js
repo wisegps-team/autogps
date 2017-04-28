@@ -185,7 +185,6 @@ class App extends Component {
         if(isWxSdk){
             W.native.scanner.start(link=>{//扫码
                 console.log(link);
-
                 link=reCode(link);
                 let reg=/http:\/\/autogps\.cn\/\?s=.*/;
                 if(!reg.test(link)){//判断二维码是否是卫网平台创建的

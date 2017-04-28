@@ -685,6 +685,18 @@ W.checkIfLogin = function(callback){
     });
 }
 
+W.activityTimeout = function(callback){
+    //http://wx.autogps.cn/server_api.php?openId=oV8WEwm3Iq_zl5YtDVkBvy8KJ2bM&method=checkIfLogin
+    var url = 'http://wx.autogps.cn/server_api.php?activityId=' + _g.activityId +'&method=activityTimeout';
+    W.getJSON(url, {}, function(json){
+        if(!json.data){
+            var errorUrl = WiStorm.root + 'action_timeout.html';
+            top.location = errorUrl;
+        }
+        return callback();
+    });
+}
+
 W.login = function() {
     if (_g.sso_login && _g.access_token) { //已经授权
         //登录成功
@@ -834,9 +846,11 @@ try {
     WiStorm.config.wx_app_id = keys.wxAppKey;
 } catch (error) {
     if (_g.intent != 'logout') {
-        var loc = encodeURIComponent((location.origin + location.pathname).replace(WiStorm.root, ''));
-        loc = (loc == 'index.html') ? '' : '&location=' + loc;
-        location = location.origin + (location.search || '?') + loc;
+        // var loc = encodeURIComponent((location.origin + location.pathname).replace(WiStorm.root, ''));
+        // loc = (loc == 'index.html') ? '' : '&location=' + loc;
+        // location = location.origin + (location.search || '?') + loc;
+        var wxId = _g.wx_app_id ? _g.wx_app_id: W.getSetting("wx_app_id") || WiStorm.config.wx_app_id;
+        W.logout('&logout=true&needOpenId=true&wx_app_id='+wxId);
     }
 }
 keys = undefined;
@@ -890,6 +904,11 @@ if (!W._login && location.pathname.indexOf("index.html") < 0 && _g.intent != "lo
         evt.initEvent("W.loginSuccess", false, false); //当页面load事件触发并且已经登录成功则会触发该事件,用于某些需要不经过登录页也可以直接访问，但是又需要用户授权登录的页面
         window.dispatchEvent(evt);
     });
+}
+
+// 如果为活动页面，则判断活动是否无效，无效则跳到出错界面
+if (location.pathname.indexOf("action.html") > -1){
+    W.activityTimeout(function(){});
 }
 
 //获取语言资源
