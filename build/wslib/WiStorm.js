@@ -689,13 +689,26 @@ W.activityTimeout = function(callback){
     //http://wx.autogps.cn/server_api.php?openId=oV8WEwm3Iq_zl5YtDVkBvy8KJ2bM&method=checkIfLogin
     var url = 'http://wx.autogps.cn/server_api.php?activityId=' + _g.activityId +'&method=activityTimeout';
     W.getJSON(url, {}, function(json){
-        if(!json.data){
+        if(!json.data || json.data.status_code === 0){
             var errorUrl = WiStorm.root + 'action_timeout.html';
             top.location = errorUrl;
+        }else{
+            if(!_g.action){
+                var url = location.href
+                    +'&action='+encodeURIComponent(json.data.url)
+                    +'&title='+encodeURIComponent(json.data.name)
+                    +'&seller_name='+encodeURIComponent(json.data.sellerType)
+                    +'&mobile='+json.data.tel
+                    +'&agent_tel='+json.data.tel
+                    +'&wxAppKey='+json.data.wxAppKey;
+                top.location = url;  
+            }        
         }
         return callback();
     });
 }
+
+
 
 W.login = function() {
     if (_g.sso_login && _g.access_token) { //已经授权
@@ -799,6 +812,12 @@ window.WiStorm = {
             'wo': 'w.wo365.net',
             'wowx': 'wx.wo365.net'
         }
+        // domain:{
+		// 	'wx':'wx.autogps.chease.cn',
+		// 	'user':'user.autogps.chease.cn',
+		// 	'wo':'w.wo365.chease.cn',
+		// 	'wxwo':'wx.wo365.chease.cn'
+		// }
     },
     setting: {}, //用户设置，由W.getSetting(name)和W.setSetting(key,val)操作
     included: [], //当前页面使用include(url)来包含的文件名
@@ -820,7 +839,7 @@ window.WiStorm = {
 u = undefined;
 _d = undefined;
 
-debugger;
+// debugger;
 //根据页面路径获取绝对路径
 var tem = location.href;
 var s = tem.search("/www/") + 5;

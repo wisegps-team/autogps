@@ -322,7 +322,16 @@ function WPageApi(token){
 	}
 }
 WPageApi.prototype=new WiStormAPI();//继承父类WiStormAPI
-
+/**
+ * 语音呼叫
+ */
+function WCallApi(token){
+	WiStormAPI.call(this,'call',token,config.app_key,config.app_secret);
+	this.get_op={
+		fields:'mobile,callid,content,result'//默认返回的字段
+	}
+}
+WCallApi.prototype=new WiStormAPI();//继承父类WiStormAPI
 /**
  * 功能表
  */
@@ -568,6 +577,7 @@ const Wapi={
     user:new WUserApi(_user?_user.access_token:null,_user?_user.session_token:null),
     developer:new WDeveloperApi(_user?_user.access_token:null),
     app:new WAppApi(_user?_user.access_token:null),
+	call:new WCallApi(_user?_user.access_token:null),
     table:new WTableApi(_user?_user.access_token:null),
     file:new WFileApi(_user?_user.access_token:null),
     comm:new WCommApi(_user?_user.access_token:null),
@@ -619,7 +629,7 @@ function makeGetOp(name,fields,lop){
 	Object.assign(Wapi[name].list_op,lop);
 }
 
-makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,wxAppKey,parentEme,parentMng');
+makeGetOp('customer','createdAt,objectId,uid,name,treePath,parentId,tel,custTypeId,custType,province,provinceId,city,cityId,area,areaId,address,contact,logo,sex,dealer_id,other,isInstall,wxAppKey,parentEme,parentMng,Authorize,onecar_bind,onecar_move,car_bind,car_move');
 makeGetOp('deviceLog','objectId,uid,did,type,createdAt,from,to,fromName,toName,brand,brandId,model,modelId,outCount,inCount,status');
 makeGetOp('deviceTotal','custId,type,inNet,register,onLine,woGuanChe,zhangWoChe');
 makeGetOp('vehicle','objectId,name,uid,departId,brandId,brand,model,modelId,type,typeId,desc,frameNo,engineNo,buyDate,mileage,maintainMileage,insuranceExpireIn,inspectExpireIn,serviceType,feeType,serviceRegDate,serviceExpireIn,did,drivers,managers');
@@ -628,7 +638,7 @@ makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,
 makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,day');
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit,role,roleId');
-makeGetOp('weixin','objectId,uid,name,type,wxAppKey');
+makeGetOp('weixin','objectId,uid,name,type,wxAppKey,fileName');
 makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl,channel');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
@@ -638,9 +648,9 @@ makeGetOp('product','objectId,name,company,uid,brand,brandId',{limit:-1,sorts:'n
 makeGetOp('booking','userId,activityId,mobile,sellerId,sellerName,uid,status,status0,status1,status2,status3,name,carType,resTime,payTime,confirmTime,money,did,openId,installId,install,installDate,type,userName,userMobile,payMoney,payStatus,orderId,activityType,userOpenId,product,receiptDate,selectInstallDate,res,receipt,receiptId,commission,commissionId,commissionDate,managerId,objectId,createdAt,updatedAt');
 makeGetOp('activity','creator,objectId,uid,type,name,url,imgUrl,status,reward,pay,deposit,offersDesc,price,installationFee,getCard,principal,principalId,principalTel,sellerType,sellerTypeId,brand,product,productId,wxAppKey,count,tel,createdAt,updatedAt,channel,actProductId');
 makeGetOp('qrData','objectId,id,data');
-makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
+makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min,bind_num,move_num');
 makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,status');
-makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status');
+makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status,authorizeType');
 makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
 // makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('serviceProject','objectId,itemType,itemName,serverId');

@@ -36,6 +36,9 @@ import ActionShopTwo from 'material-ui/svg-icons/action/shop-two';
 import ImageFilterCenterFocus from 'material-ui/svg-icons/image/filter-center-focus';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
 import AvEqualizer from 'material-ui/svg-icons/av/equalizer'
+import MapsDirectionsCar from 'material-ui/svg-icons/maps/directions-car'
+import ActionViewQuilt from 'material-ui/svg-icons/action/view-quilt'
+import ActionExtension from'material-ui/svg-icons/action/extension'
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -156,11 +159,6 @@ const _pages=[//所有的页面
         name:___.subordinate,
         icon:<ActionPermContactCalendar style={sty.icon}/>
     },
-    {   /*政企客户 */
-        href:'user_manage',
-        name:___.user_manage,
-        icon:<ActionPermIdentity style={sty.iconActive}/>
-    },
     {   /*库存管理（出入库相关信息） */
         href:'device_manage',
         name:___.device_manage,
@@ -216,20 +214,76 @@ const _pages=[//所有的页面
         name:___.promotion_statistical,
         icon:<AvEqualizer style={sty.icon}/>
     },
-    {
-        href:'platform_manager',
-        name:'平台管理',
-        icon:<AvEqualizer style={sty.icon}/>
-    }
+    
 ];
 
 // if(_user.customer.custTypeId==8){   //如果当前用户是经销商，则不显示【车主营销】页面
 //     _user.pages=_user.pages.filter(ele=>ele.objectId!='791907964700201000');  //name!='车主营销'
 // }
-// let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
-let pages=_pages;
+Wapi.customer.get(res => {
+    _user.customer = res.data
+    // console.log(res.data,'res')
+    W.setSetting("user", _user) //每次刷新重置一下_user
+    // console.log(_user.customer,'_user.customer')
+},{
+    objectId:_user.customer.objectId
+})
+console.log(_user.customer,'_user.customer')
+let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
+// let pages=_pages;
+// let
+// Wapi.customer.get(res => {
+    let plat = null;
+    let move = null;
+    let user_manage = null;
+    // console.log(res)
+    // if(_user.customer.custTypeId == 1 || _user.custoemr.custTypeId == 5){//品牌商代理商
+        if(_user.customer.Authorize){
+            _user.customer.Authorize.forEach(ele => {
+                if(ele == 0){ //营销推广
+                    plat = 1
+                }else if(ele == 3){ //扫码移车
+                    move = 3
+                }else if(ele == 1){ //政企客户
+                    user_manage = 1
+                }
+            })
+        }
+    // }
+    if(plat == 1|| _user.customer.custTypeId == 5 || _user.customer.custTypeId == 8){
+        pages.push({
+            href:'business_manage',
+            name:'业务管理',
+            icon:<ActionExtension style={sty.icon}/>
+        })
+    }
+    //扫码移车/营销推广/品牌商可见
+    if(move == 3 || _user.customer.custTypeId == 1 || plat == 1){
+        pages.push({
+            href:'carowner_platform',
+            name:'扫码挪车',
+            icon:<MapsDirectionsCar style={sty.icon}/>
+        })
+    }
+    if(_user.customer.custTypeId == 9){
+        pages.push({
+            href:'platform_manage',
+            name:'平台管理',
+            icon:<ActionViewQuilt style={sty.icon}/>
+        })
+    }
+    if(user_manage == 1){
+        pages.push({   /*政企客户 */
+            href:'user_manage',
+            name:___.user_manage,
+            icon:<ActionPermIdentity style={sty.iconActive}/>
+        })
+    }
+// },{
+//     objectId:_user.customer.objectId
+// })
 
-
+console.log(pages)
 // let set=<ModuleCard title={___.system_set} icon={<ActionSettings style={sty.icon}/>} href={'myAccount/system_set'} key={'myAccount/system_set'}/>
 
 //推荐有礼活动列表

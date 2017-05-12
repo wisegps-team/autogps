@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=136;//版本号
+let version=149;//版本号
 
 //地区表
 export const area={
@@ -107,6 +107,7 @@ export const customer={
     isApi: true,           //是否开放API
     isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate: true,      //是否更新数据表
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -342,8 +343,33 @@ export const customer={
             'display': 'TextBox',
             'query': true,
         },{
+            'name': 'Authorize',//++170412方便查找客户权限
+            'desc': '父级的客户经理',
+            'type': 'Array',
+            'query': true,
+        },{
             'name': 'appId',
             'desc': '对应的appid',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'onecar_bind',  //++170427统计一物一码绑定次数
+            'desc': '一物一码绑定次数',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'onecar_move', //++170427统计一物一码挪车次数
+            'desc': '一物一码挪车次数',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'car_bind', //++170427统计普通二维码绑定次数
+            'desc': '普通绑定次数',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'car_move', //++170427统计普通二维码挪车次数
+            'desc': '普通挪车次数',
             'type': 'Number',
             'query': true,
         }
@@ -734,6 +760,7 @@ export const vehicle={
     isApi: true,           //是否开放API
     isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate:true,
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -960,6 +987,11 @@ export const vehicle={
             'name': 'isDispatch',
             'desc': '是否调度管理',
             'type': 'Boolean',
+            'query': true
+        },{
+            'name': 'mid', //++170421
+            'desc': '一物一码id',
+            'type': 'String',
             'query': true
         }
     ],
@@ -2374,6 +2406,7 @@ export const weixin={
     isApi: true,           //是否开放API
     isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate:true,
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -2411,7 +2444,13 @@ export const weixin={
             'desc': '自定义菜单',
             'type': 'Object',
             'query': true
-        },
+        },{
+            'name': 'fileName',
+            'desc': '文件凭证名',
+            'type': 'String',
+            'query': true
+        }
+
     ],
     indexDefine: [
         {uid:1},
@@ -2532,6 +2571,7 @@ export const qrDistribution={
     isApi: true,           //是否开放API
     isPrivate: true,       //是否隐私数据, 如果是调用API时需要访问令牌
     isCache: true,         //数据是否启用缓存
+    isUpdate: true,
     cacheField: 'updatedAt',       //缓存日期字段
     fieldDefine: [
         {
@@ -2567,6 +2607,16 @@ export const qrDistribution={
         },{
             'name': 'min',
             'desc': '最小编号',//当前批次二维码的最小编号
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'bind_num',
+            'desc': '绑定次数',//当前批次绑定次数 //++170427
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'move_num',
+            'desc': '挪车次数',//当前批次挪车次数  //++170427
             'type': 'Number',
             'query': true,
         }
@@ -2922,13 +2972,52 @@ export const serviceProject={
 
 }
 
+//事件表
+export const iotEvent = {
+    name: 'iotEvent',             //表名
+    desc: '事件表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    isUpdate: true,      //是否更新数据表
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'uid',
+            'desc': '用户ID',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'did',
+            'desc': '设备标识号',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'eventType',
+            'desc': '事件类型',
+            'type': 'Number',
+            'query': true,
+        },{
+            'name': 'eventStatus',
+            'desc': '事件状态',
+            'type': 'Number',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+
+
 // let TABLES=[
 //     area,customer,custType,department,employee,vehicle,iotDevice,iotGpsData,iotLog
 //     ,brand,product,deviceTotal,deviceLog,iotStat,iotCommand,iotAlert,booking,activity,
 //     weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
 // ];
 let TABLES=[
-    
+    weixin
 ]
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);

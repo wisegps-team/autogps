@@ -47,7 +47,7 @@
 		</script>
 		
 		<script>
-			document.write('<title>'+_g.title+'</title>')
+			document.write('<title>'+(_g.title||'')+'</title>')
 		</script>
 		<style type="text/css">
 			body{
@@ -142,7 +142,11 @@
 	</head>
 	<body>
 		<script>
-			document.write('<iframe src="'+_g.action+'"></iframe>')
+			if(_g.action){
+				document.write('<iframe src="'+_g.action+'"></iframe>')
+			}else{
+				W.loading(true,'加载中');
+			}
 		</script>
 		<button id="b" onclick="booking()">
 			咨询预订

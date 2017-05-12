@@ -12,6 +12,8 @@ function WiStormAPI(name,token,key,secret,opt){
     Object.defineProperties(this, {//添加只读属性
         "url": {
 			value:'https://wop-api.chease.cn/router/rest'
+			//  value:'http://wop-api3.chease.cn/router/rest'
+			//  value:'http://192.168.3.86:8089/router/rest'
 			// value:'http://192.168.3.120:8089/router/rest'
             // value: "http://o.bibibaba.cn/router/rest"
         },
@@ -62,11 +64,11 @@ WiStormAPI.prototype.getApi=function(data,callback,op){
 	var url=this.makeUrl(D);
 	var ajaxSetting={
 		dataType:D.format,//服务器返回json格式数据
-		type:'get',//HTTP请求类型
+		type:'GET',//HTTP请求类型
 		timeout:10000,//超时时间设置为10秒；
 		success:callback||function(res){console.log(res)},
 		error:function(xhr,type,errorThrown){//异常处理；
-			throw ("apiError:"+type);
+			// throw ("apiError:"+type);
 		}
 	}
 	this.ajax(url,ajaxSetting);
@@ -84,11 +86,12 @@ WiStormAPI.prototype.postApi=function(getData,callback,data){
 
 	var url=this.makeUrl(D);
 	var ajaxSetting={
+		headers:{'Content-Type':'application/json'},
 		data:data,
 		dataType:D.format,//服务器返回json格式数据
-		type:'post',//HTTP请求类型
+		type:'POST',//HTTP请求类型
 		timeout:10000,//超时时间设置为10秒；
-		success:callback(res),
+		success:callback||function(res){console.log(res)},
 		error:function(xhr,type,errorThrown){//异常处理；
 			throw ("apiError:"+type);
 		}
@@ -190,7 +193,7 @@ WiStormAPI.prototype.ajax=function(url,options) {
 	var headers = {
 		"X-Requested-With": "XMLHttpRequest",
 		"Accept": "*/*",
-		"Content-Type": "application/x-www-form-urlencoded"
+		"Content-Type": "application/json"
 	};
 	json.url=url;
 	Object.assign(json,options);
@@ -199,14 +202,16 @@ WiStormAPI.prototype.ajax=function(url,options) {
 	json.type=json.type.toUpperCase();
     var data="";
     if(json.data){
-	    for (let items in json.data){
-			data+="&"+items+"="+json.data[items];
-		}
 		if(json.type=="GET"){
+			for (let items in json.data){
+				data+="&"+items+"="+json.data[items];
+			}
 			if(json.url.indexOf('?')==-1)
 				json.url+="?"+data.slice(1);
 			else
 				json.url+=data;
+		}else{
+			data = JSON.stringify(json.data);
 		}
     }
 	
@@ -249,10 +254,10 @@ WiStormAPI.prototype.ajax=function(url,options) {
 	}
 	xmlhttp.open(json.type,json.url,true);
 	
+	// xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	for (var name in json.headers) {
 		xmlhttp.setRequestHeader(name,json.headers[name]);
 	}
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.send(data);
     
     return xmlhttp;
@@ -270,6 +275,32 @@ WiStormAPI.prototype.add=function(callback,data,op){
 	delete OP.err;
 	this.getApi(data,callback,OP);
 }
+
+WiStormAPI.prototype.addBatch=function(callback,data,op){
+	var OP={
+		fields:'status_code'
+	};
+	Object.assign(OP,op);
+	OP.method=this.apiName+".createBatch"; //接口名称
+	if(!OP.err){
+		callback=W.err(callback);
+	}
+	delete OP.err;
+	this.postApi(OP,callback,data);
+}
+// WiStormAPI.prototype._createBatch = function (table, create_json, access_token, callback) {
+//     this.sign_obj.method = 'wicare.' + table + '.createBatch';
+//     this.sign_obj.dev_key = dev_key;
+//     this.sign_obj.access_token = access_token;
+//     this.sign_obj.sign = this.sign();
+//     var params = raw2(this.sign_obj);
+//     var path = define.API_URL + "/router/rest?" + params;
+//     _post(path, create_json, function (obj) {
+//         callback(obj);
+//     });
+// };
+
+
 WiStormAPI.prototype.delete=function(callback,data,op){
 	var OP={
 		fields:'status_code'

@@ -444,32 +444,32 @@ class ProductList extends Component {
                     />
                 </IconMenu>
                 <div style={styles.line}>
-                    <span style={{marginRight:10}}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>
+                    {/*<span style={{marginRight:10}}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>*/}
                     <span>{ele.brand +' '+ ele.name}</span>
                 </div>
                 <div style={styles.line}>
-                    {/*<span style={styles.spans}>
+                    <span style={styles.spans}>
                         <span style={styles.span_left}>{___.marketing_channel+' : '}</span>
                         <span style={styles.span_right}>{Number.isInteger(ele.channel)?(strChannel[ele.channel]):''}</span>
-                    </span>*/}
+                    </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.activity_reward+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.reward)}</span>
                     </span>
-                    <span style={styles.spans}>
+                    {/*<span style={styles.spans}>
                         <span style={styles.span_left}>{___.device_price+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.price)}</span>
-                    </span>
+                    </span>*/}
                     {/*<span style={styles.spans}>
                         <span style={styles.span_left}>{___.install_paymen+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>
                     </span>*/}
                 </div>
                 <div style={styles.line}>
-                    {/*<span style={styles.spans}>
+                    <span style={styles.spans}>
                         <span style={styles.span_left}>{___.device_price+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.price)}</span>
-                    </span>*/}
+                    </span>
                     <span style={styles.spans}>
                         <span style={styles.span_left}>{___.install_paymen+' : '}</span>
                         <span style={styles.span_right}>{moneyFont(ele.installationFee)}</span>

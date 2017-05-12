@@ -11,7 +11,7 @@ import {randomStr} from '../../_modules/tool';
 const sty={
     main:{
         position: 'fixed',
-        height:'100vh',
+        minHeight:'100vh',
         zIndex:1300,
         top:0,
         left:0,

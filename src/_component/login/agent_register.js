@@ -96,6 +96,25 @@ class AgentRegisterBox extends Component{
             Wapi.customer.add(function(res){
                 cust.objectId=res.objectId;
                 user.customer=cust;
+                if(tid == 10){ //给印刷客户授权
+                    Wapi.authorize.add(auth => {
+                        // console.log('印刷客户授权') 
+                        Wapi.customer.update(cus => {
+                            // console.log('印刷客户授权')
+                        },{
+                            _objectId:res.objectId,
+                            Authorize:'+3'
+                        })  
+                    },{
+                        access_token:token,
+                        authorizeType:3,
+                        applyCompanyId:res.objectId,
+                        applyCompanyName:cust.name,
+                        applyUserName:cust.contact,
+                        actProductId: 4,
+                        status:1
+                    })
+                }
                 Wapi.role.update(function(role){
                     W.loading();
                     user._code=0;
@@ -291,7 +310,7 @@ function customerCheck(user,that,nullCallback){
 
 function getCustType(){
     let t=parseInt(_g.custType);
-    let type=[5,8];
+    let type=[1,5,8,10];
     if(type.includes(t))
         return t;
     else
