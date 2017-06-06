@@ -181,7 +181,8 @@ class App extends Component {
     }
     scanToBind(){
         let _this=this;
-        history.replaceState('home.html','home.html','../home.html');
+        // history.replaceState('home.html','home.html','../home.html');
+        W.fixPath();
         if(isWxSdk){
             W.native.scanner.start(link=>{//扫码
                 console.log(link);

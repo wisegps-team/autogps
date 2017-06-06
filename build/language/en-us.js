@@ -149,5 +149,6 @@ window.___={
 	'user_type_error':'The customer type is wrong, cannot add Supplier',
 	'finish_register':'Finish Register',
 	'add_data':'Complete information',
-	'verification_phone':'Email Verification'
+	'verification_phone':'Email Verification',
+	'confirm_remove_authorize': 'Confirm to remove authorize?'
 }

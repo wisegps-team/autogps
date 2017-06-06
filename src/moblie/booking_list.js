@@ -161,7 +161,8 @@ class DumbList extends React.Component{
     }
     open(data){
         console.log('line160');
-        history.replaceState('home.html','home.html','home.html');
+        // history.replaceState('home.html','home.html','home.html');
+        W.fixPath();
         window.location=WiStorm.root+'order.html?bookingId='+data.objectId;
 
         // W.emit(window,EVENT.openDetails,data);

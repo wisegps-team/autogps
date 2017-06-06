@@ -31,6 +31,7 @@ class RegisterOrig extends Component {
             valid_type:1
         };
         this.correct='';
+        this.type = _g.custType === '10' ? (_g.Authorize === '3'? 5:6): 1;
         this.canSubmit=false;
         this.change = this.change.bind(this);
         this.verifiSuccess = this.verifiSuccess.bind(this);
@@ -107,7 +108,7 @@ class RegisterOrig extends Component {
                     <div style={{display:'flex',alignItems:'flex-end',padding:'3px 10px'}}>
                         <VerificationOrig 
                             name='valid_code'
-                            type={1}
+                            type={this.type}
                             account={this.state.account} 
                             onSuccess={this.verifiSuccess}
                             onChange={this.change}

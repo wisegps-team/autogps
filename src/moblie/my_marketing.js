@@ -388,7 +388,8 @@ class DList extends Component{
             let linkUrl='';
             if(res.data && res.data.id){
                 linkUrl='http://autogps.cn/?s='+res.data.id;
-                history.replaceState('home.html','home.html','home.html');
+                // history.replaceState('home.html','home.html','home.html');
+                W.fixPath();
                 window.location=linkUrl;
                 // console.log(linkUrl);
             }else{
@@ -396,7 +397,8 @@ class DList extends Component{
                     let _id=changeToLetter(re.autoId);
                     linkUrl='http://autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
-                        history.replaceState('home.html','home.html','home.html');
+                        // history.replaceState('home.html','home.html','home.html');
+                        W.fixPath();
                         window.location=linkUrl;
                         // console.log(linkUrl);
                     },{
@@ -594,7 +596,9 @@ class DList extends Component{
                     }
                     // console.log(opTimeLine);
                     // console.log(opMessage);
-                    history.replaceState('home.html','home.html','home.html');
+                    // history.replaceState('home.html','home.html','home.html');
+                    W.fixPath();
+                    // window.location=url;
                     wx.onMenuShareTimeline(opTimeLine);
                     wx.onMenuShareAppMessage(opMessage);
                     // setShare=null;
@@ -605,10 +609,10 @@ class DList extends Component{
             
         }
         if(W.native){
-            setShare();
+            setShare(); 
         }
         else{
-            // setShare();//测试用
+            setShare();//测试用
             W.toast(___.ready_activity_url);
             window.addEventListener('nativeSdkReady',setShare);
         }

@@ -531,8 +531,4 @@ window.addEventListener('popstate',function(e){
         }
     }
 });
-
-
-
-
 })();

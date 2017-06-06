@@ -19,9 +19,7 @@ import AreaSelect from '../base/areaSelect';
 import Input from '../base/input';
 import SexRadio from '../base/sexRadio';
 
-
-
-/**
+/*
  * 接受的props：
  *      parentId 新注册的客户的上级id
  *      typeId 注册客户的类型
@@ -30,7 +28,6 @@ import SexRadio from '../base/sexRadio';
  *          不存在或为0是注册成功，等于1为密码错误且之前已经注册过用户，
  *          等于2是输入了正确的密码，而且已经是一个客户，客户表中已有数据，所以不能注册
  */
-
 
 const sty={
     f:{
@@ -96,7 +93,7 @@ class AgentRegisterBox extends Component{
             Wapi.customer.add(function(res){
                 cust.objectId=res.objectId;
                 user.customer=cust;
-                if(tid == 10){ //给印刷客户授权
+                if(_g.Authorize === '3'){ //给印刷客户授权扫码代理权限
                     Wapi.authorize.add(auth => {
                         // console.log('印刷客户授权') 
                         Wapi.customer.update(cus => {
@@ -156,6 +153,7 @@ class AgentRegisterBox extends Component{
 
             if(user.status_code==8){//如果是之前就已经注册过用户则先校验一下有没有添加过客户表
                 customerCheck(user,that,function(){
+                    // 如果为品牌商，代理商，服务商，则增加扫码挪车代理权限
                     that.registerSuccess();
                 });
             }else{
@@ -204,13 +202,18 @@ class AgentRegisterBox extends Component{
 
 class AgentShowBox extends Component{
     render(){
-        let box=_user?
+        let box=_user && _g.custType !== '10'?
             <JoinBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId}/>:
             <AgentRegisterBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId} key='register' />;
         return (
             <div>
                 <h4 style={{textAlign:'center'}}>{_g.name}</h4>
-                <p style={{textAlign:'center'}}>{___.agent_register}</p>
+                <p style={{textAlign:'center'}}>
+                    {
+                        _g.Authorize === '3'? ___.movecar_agent_register: 
+                        _g.custType === '10' ? ___.movecar_customer_register: ___.agent_register
+                    }
+                </p>
                 {box}
             </div>
         );
@@ -273,8 +276,12 @@ function customerCheck(user,that,nullCallback){
     Wapi.customer.get(function(cust){
         if(cust.data){//如果有，则校验类型
             user.customer=cust.data;
-            if(user.customer.custTypeId==getCustType()){//判断类型
-                if(!user.customer.parentId||!user.customer.parentId.includes(that.props.parentId.toString())){
+            if(_g.custType === '10' || user.customer.custTypeId==getCustType()){//判断类型
+                if(_g.custType === '10' && !((user.user_type === 5 || user.user_type === 2 || user.user_type === 4))) {// 已注册扫码代理商
+                    W.loading();
+                    user._code=3;
+                    that.props.success(user);  
+                }else if(!user.customer.parentId||!user.customer.parentId.includes(that.props.parentId.toString())){
                     let params={
                         access_token:user.access_token,
                         _objectId:user.customer.objectId,
@@ -285,11 +292,47 @@ function customerCheck(user,that,nullCallback){
                     }
                     Wapi.customer.update(res=>{
                         W.loading();
+                        if(_g.custType === '10' && (user.user_type === 5 || user.user_type === 2 || user.user_type === 4)){
+                        Wapi.authorize.add(auth => {
+                            // console.log('印刷客户授权') 
+                                Wapi.customer.update(cus => {
+                                },{
+                                    _objectId:user.customer.objectId,
+                                    Authorize:'+3'
+                                })  
+                            },{
+                                access_token:user.token,
+                                authorizeType:3,
+                                applyCompanyId:user.customer.objectId,
+                                applyCompanyName:user.customer.name,
+                                applyUserName:user.customer.contact,
+                                actProductId: 4,
+                                status:1
+                            })               
+                        }
                         user._code=0;
                         that.props.success(user);
                     },params);
                 }else{
                     W.loading();
+                    if (_g.custType === '10' && (user.user_type === 5 || user.user_type === 2 || user.user_type === 4)) {
+                        Wapi.authorize.add(auth => {
+                            // console.log('印刷客户授权') 
+                            Wapi.customer.update(cus => {
+                            }, {
+                                    _objectId: user.customer.objectId,
+                                    Authorize: '+3'
+                                })
+                        }, {
+                                access_token: user.token,
+                                authorizeType: 3,
+                                applyCompanyId: user.customer.objectId,
+                                applyCompanyName: user.customer.name,
+                                applyUserName: user.customer.contact,
+                                actProductId: 4,
+                                status: 1
+                            })
+                    }                    
                     user._code=0;
                     that.props.success(user);
                 }

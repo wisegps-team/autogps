@@ -318,24 +318,6 @@ class BussList extends Component {
                 <div style={{background:'#fff'}}>
                      {item}
                 </div>
-                {/*具有扫码挪车权限的代理商得可见*/}
-                {
-                   (this.state.move&&_user.customer.custTypeId==5)?
-                    <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 16px',background:'#fff'}}>
-                        <div style={{marginBottom:'1em'}}>
-                            <span>{'扫码挪车'}</span>
-                            <Checkbox onCheck={this.goMove} style={{float:'right',height:24,width:24,right:'-15px'}} />
-                        </div>
-                        <div style={{fontSize:'12px',color:'#666'}}>
-                            <span style={{display:'inline-block',width:width}}>{'启用'+'：'+(this.state.customerTotal||0)}</span>
-                            <span style={{display:'inline-block',width:width}}>{'绑定统计'+'：0'}</span>
-                            <span style={{display:'inline-block',width:width}}>{'挪车次数'+'：0'}</span>
-                        </div>
-                    </div>
-                    :
-                    null
-                }
-                
             </div>
         );
     }

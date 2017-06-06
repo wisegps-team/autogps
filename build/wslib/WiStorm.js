@@ -63,14 +63,16 @@ window.addEventListener('load', function() {
     if (__errorLog) {
         try {
             __errorList = JSON.parse(__errorLog);
+            for (var __i = 0; __i < __errorList.length; __i++) {
+                if(Wapi){
+                    Wapi.crash.add(function(res) {}, __errorList[__i]);
+                }
+            }
+            localStorage.removeItem("errorList");
         } catch (e) {
             //TODO handle the exception
             __errorList = [];
         }
-        for (var __i = 0; __i < __errorList.length; __i++) {
-            Wapi.crash.add(function(res) {}, __errorList[__i]);
-        }
-        localStorage.removeItem("errorList");
     }
 });
 
@@ -580,15 +582,21 @@ W.wxLogin = function(s) {
     // 2017-03-31 删除公众号对应的用户信息
     // W.setSetting("user" + WiStorm.config.wx_app_id, null);
     var state = s || 'sso_login';
+    var wx_app_id = _g.wx_app_id;
+    if(WiStorm.config.wx_app_id && WiStorm.config.wx_app_id !== 'undefined'){
+        wx_app_id = WiStorm.config.wx_app_id;
+    }else if(W.getSetting('wx_app_id') && W.getSetting('wx_app_id') !== 'undefined'){
+        wx_app_id =W.getSetting('wx_app_id');
+    }
     if (WiStorm.test_mode) {
         var url = WiStorm.config.wx_login; //测试使用
         url = url.replace(/\?\S*/, "");
         url = W.encoded(url);
-        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + WiStorm.config.wx_app_id + "&redirect_uri=http://h5.bibibaba.cn/jump.html&response_type=code&scope=snsapi_userinfo&state=" + url + "#wechat_redirect";
+        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + wx_app_id + "&redirect_uri=http://h5.bibibaba.cn/jump.html&response_type=code&scope=snsapi_userinfo&state=" + url + "#wechat_redirect";
     } else {
         W.setCookie("__login_redirect_uri__", location.href, -15);
         var u = encodeURIComponent(WiStorm.config.wx_login);
-        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + WiStorm.config.wx_app_id + "&redirect_uri=" + u + "&response_type=code&scope=snsapi_base&state=" + state + "#wechat_redirect";
+        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +wx_app_id + "&redirect_uri=" + u + "&response_type=code&scope=snsapi_base&state=" + state + "#wechat_redirect";
     }
 }
 
@@ -784,6 +792,13 @@ W.plusReady = function(fun, web) {
     }
 }
 
+/**
+ * 替换浏览器地址，解决微信不能扫码和分享的问题
+ */
+W.fixPath = function () {
+    history.replaceState('home.html', 'home.html', WiStorm.config.home_url);
+}
+
 ///下面是一些进入应用则需要执行的代码，例如加载配置文件，语言文件等
 //获取跳转参数 即 http://127.0.0.1:8020/baba_wx/src/customer_add.html?a=123&b=asd  问号后面部分
 window._g = W.getSearch();
@@ -802,6 +817,7 @@ window.WiStorm = {
         "skin": "default",
         "default_language": "zh-cn",
         "update_url": WiStorm_root + "update/version.json",
+        "home_url": "/autogps/src/moblie/home.html",
         "wx_ticket_url": location.origin + "/WX.TokenAndTicket.php?action=ticket",
         "wx_sdk": "http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
         "wx_login": location.origin + "/oauth2.php",
@@ -873,12 +889,14 @@ try {
     }
 }
 keys = undefined;
-if (_g.wx_app_id) {
+if (_g.wx_app_id && _g.wx_app_id !== 'undefined') {
     W.setSetting("wx_app_id", _g.wx_app_id);
     WiStorm.config.wx_app_id = _g.wx_app_id;
     WiStorm.config.wx_login = WiStorm.config.wx_login + '?wx_app_id=' + WiStorm.config.wx_app_id;
 } else {
-    WiStorm.config.wx_app_id = W.getSetting("wx_app_id") || WiStorm.config.wx_app_id;
+    if(W.getSetting("wx_app_id") && W.getSetting("wx_app_id") !== 'undefined'){
+        WiStorm.config.wx_app_id = W.getSetting("wx_app_id") || WiStorm.config.wx_app_id;
+    }
     WiStorm.config.wx_login = WiStorm.config.wx_login + '?wx_app_id=' + WiStorm.config.wx_app_id;
 }
 

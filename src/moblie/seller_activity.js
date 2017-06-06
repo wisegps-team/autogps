@@ -340,7 +340,8 @@ class DList extends Component{
             let linkUrl='';
             if(res.data){
                 linkUrl='http://autogps.cn/?s='+res.data.id;
-                history.replaceState('home.html','home.html','home.html');
+                // history.replaceState('home.html','home.html','home.html');
+                W.fixPath();
                 window.location=linkUrl;
                 // console.log(linkUrl);
             }else{
@@ -348,7 +349,8 @@ class DList extends Component{
                     let _id=changeToLetter(re.autoId);
                     linkUrl='http://autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
-                        history.replaceState('home.html','home.html','home.html');
+                        // history.replaceState('home.html','home.html','home.html');
+                        W.fixPath();
                         window.location=linkUrl;
                         // console.log(linkUrl);
                     },{
