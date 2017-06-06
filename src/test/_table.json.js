@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=149;//版本号
+let version=150;//版本号
 
 //地区表
 export const area={
@@ -3017,7 +3017,7 @@ export const iotEvent = {
 //     weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
 // ];
 let TABLES=[
-    weixin
+    
 ]
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
