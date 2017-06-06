@@ -219,7 +219,6 @@ class DeviceIn extends Component{
         pushPage.addEventListener('show',e=>{
             console.log('show device in');
             this.init();
-            history.replaceState('home','home','home.html');
         });
     }
     init(){
@@ -275,7 +274,6 @@ class DeviceIn extends Component{
 
                     ids[ids.length]=res;
                     _this.setState({product_ids:ids});
-                    history.replaceState('home.html','home.html','home.html');
                     if(isWxSdk){
                         W.native.scanner.start(getCode);
                     }else{
@@ -285,7 +283,6 @@ class DeviceIn extends Component{
                     let ids=_this.state.product_ids;
                     ids[ids.length]=res;
                     _this.setState({product_ids:ids});
-                    history.replaceState('home.html','home.html','home.html');
                     if(isWxSdk){
                         W.native.scanner.start(getCode);
                     }else{
@@ -301,7 +298,6 @@ class DeviceIn extends Component{
                 return;
             },{did:res});
         }
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(getCode);
         }else{
@@ -311,7 +307,6 @@ class DeviceIn extends Component{
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
@@ -432,7 +427,6 @@ class DeviceOut extends Component{
         popPage.addEventListener('show',e=>{
             console.log('show pop page');
             this.init();
-            history.replaceState('home','home','home.html');
         })
     }
     init(){
@@ -485,7 +479,6 @@ class DeviceOut extends Component{
                     }
                     ids=ids.concat(res);
                     _this.setState({product_ids:ids});
-                    history.replaceState('home.html','home.html','home.html');
                     if(isWxSdk){
                         W.native.scanner.start(get);
                     }else{
@@ -496,7 +489,6 @@ class DeviceOut extends Component{
                         _this.product = pro.data;
                         ids=ids.concat(res);
                         _this.setState({product_ids:ids});
-                        history.replaceState('home.html','home.html','home.html');
                         if(isWxSdk){
                             W.native.scanner.start(get);
                         }else{
@@ -507,7 +499,6 @@ class DeviceOut extends Component{
             },{did:res})
             
         }
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(get);
         }else{
@@ -517,7 +508,6 @@ class DeviceOut extends Component{
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);
@@ -705,7 +695,6 @@ class DeviceReturn extends Component {
         returnPage.addEventListener('show',e=>{
             console.log('show return page');
             this.init();
-            history.replaceState('home','home','home.html');
         })
     }
     init(){
@@ -788,7 +777,6 @@ class DeviceReturn extends Component {
             },{did:res})
             
         }
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(get);
         }else{
@@ -798,7 +786,6 @@ class DeviceReturn extends Component {
     deleteId(){
         let _this=this;
         let ids=_this.state.product_ids;
-        history.replaceState('home.html','home.html','home.html');
         if(isWxSdk){
             W.native.scanner.start(function(res){//扫码，did添加到当前用户
                 res=reCode(res);

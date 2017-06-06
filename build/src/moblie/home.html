@@ -32,11 +32,25 @@
 			document.write('<script src="../../_common.js?r=' + Math.random() + '&u=..\/..\/"><\/script>');
 		</script>
 		<script src="../../wslib/launcher.js?v=1.2"></script>
+		<script src="../../wslib/toolkit/clipboard.min.js"></script>
 		<script src="../../wslib/toolkit/WxSdk.js" async="async"></script>
 		<script type="text/javascript">
 			___.app_name=_user.customer.name;
 			document.write('<title>'+___.app_name+'</title>');
 		</script>
+			<script>
+				window.addEventListener("load", function () {
+					var clipboard = new Clipboard('.copyToClip');
+
+					clipboard.on('success', function (e) {
+						W.alert("已复制到剪切板");
+					});
+
+					clipboard.on('error', function (e) {
+						console.log(e);
+					});
+				});
+			</script>
 	</head>
 	<body>
 	</body>

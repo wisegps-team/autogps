@@ -15,7 +15,7 @@ import SexRadio from './_component/base/sexRadio';
 import QrBox from './_component/login/qr_box';
 
 import {getOpenIdKey,setTitle} from './_modules/tool';
-import Wapi from './_modules/Wapi';
+import Wapi from './_modules/Wapi'; 
 
 require('./_sass/index.scss');//包含css
 setTitle(___.invite_regist);

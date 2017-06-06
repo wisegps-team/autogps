@@ -115,7 +115,10 @@ class ShowBox extends Component{
     logout(){
         W.loading('正在退出');
         let key=getOpenIdKey();
-        let wxId=_user.authData[key+'_wx'];//上次登录的公众号id
+        let wxId = null;
+        if(_user && _user.authData){
+            wxId=_user.authData[key+'_wx'];//上次登录的公众号id
+        }
         if(wxId)
             W.logout('&logout=true&needOpenId=true&wx_app_id='+wxId);
         else

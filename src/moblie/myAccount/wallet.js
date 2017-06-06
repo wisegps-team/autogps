@@ -197,7 +197,8 @@ class WalletApp extends Component {
         }
         this.setState({isInputAmount:false});
         
-        history.replaceState('home','home','home.html');
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
         Wapi.pay.wxPay({
             uid:_user.uid,
             order_type:3,
@@ -362,7 +363,8 @@ class WithdrawPage extends Component {
             return;
         }
 
-        history.replaceState('home','home','home.html');
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
         Wapi.pay.wxPay({
             uid:_user.uid,
             order_type:3,

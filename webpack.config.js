@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
 var fs = require('fs');
 
-var notPack = ['order.js', 'booking.js', 'booking_install.js', 'booking_install_date.js']; //不打包的文件
+var notPack = ['order.js', 'booking.js', 'booking_install.js', 'booking_install_date.js', 'temp_register.js']; //不打包的文件
 //递归获取path下的所有文件
 function getAllFile(path, entry_json) {
     fs.readdirSync(__dirname + path).reduce(function(entries, dir) {

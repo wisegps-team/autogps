@@ -14,13 +14,9 @@ import {Menu, MenuItem} from 'material-ui/Menu'
 import Checkbox from 'material-ui/Checkbox'
 import RaisedButton from 'material-ui/RaisedButton';
 
-
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import {blue500} from 'material-ui/styles/colors';
 import QrImg from '../_component/base/qrImg';
-
-
-
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle("扫码移车");
@@ -87,17 +83,12 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
-    history.replaceState('home.html','home.html','home.html');
+    // history.replaceState('home.html','home.html','home.html');
+    W.fixPath();
     wx.onMenuShareTimeline(op);
     wx.onMenuShareAppMessage(op);
     W.emit(thisView,'setShareOver');
 }
-
-
-
-
-
-
 
 class App extends Component {
     constructor(props,context){
@@ -186,8 +177,6 @@ class App extends Component {
     }
 }
 
-
-
 class Item extends Component{
     constructor(props,context){
         super(props,context)
@@ -223,9 +212,6 @@ class Item extends Component{
         )
     }
 }
-
-
-
 
 // 邀约注册
 class QrBox extends Component {

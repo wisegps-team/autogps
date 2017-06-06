@@ -78,15 +78,12 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
-    history.replaceState('home.html','home.html','home.html');
+    // history.replaceState('home.html','home.html','home.html');
+    W.fixPath();
     wx.onMenuShareTimeline(op);
     wx.onMenuShareAppMessage(op);
     W.emit(thisView,'setShareOver');
 }
-
-
-
-
 
 class App extends Component {
     constructor(props,context){
@@ -291,7 +288,7 @@ class UserItem extends Component{
         W.emit(window,'getAuthorize',e)
     }
     render() {
-        let item = ['营销推广','政企业务','平台运营','扫码移车']
+        let item = ['营销推广','政企业务','平台运营']
         let items = item.map((ele,index)=> (<MenuItem 
                                         rightIcon={<Checkbox style={{float:'right'}} />}
                                         primaryText={ele}
@@ -338,7 +335,7 @@ class AuthorizeList extends Component{
     render(){
         // console.log(this.state.showAuth,'hhhhh')
         // console.log(this.state.data,'获取到的授权表中业务类型')
-        let type =['营销推广','政企业务','平台运营','扫码移车']
+        let type =['营销推广','政企业务','平台运营']
         return(
             <div style={{background:'#f7f7f7',minHeight:'100%'}}>
                 <span style={{display:'inline-block',lineHeight:'48px',paddingLeft:'16px'}}>{type[this.state.type-1]}</span>
@@ -1019,7 +1016,7 @@ class ComTypeAuthed extends Component {
     render() {
         console.log(this.props.data,'ddff')
         let dataLength = [];
-        let authorizeType=['营销推广','政企业务','平台运营','扫码移车'];
+        let authorizeType=['营销推广','政企业务','平台运营'];
         let sevice = ['销售','安装','洗车','轮胎']
         let Item = null;
         this.props.data.forEach((ele,index) => {
@@ -1117,7 +1114,7 @@ class ComTypeAuthing extends Component {
         // console.log(JSON.parse(e.target.value),'dd')
     }
     submit(){
-        let type = ['营销推广','政企业务','平台运营','扫码移车']
+        let type = ['营销推广','政企业务','平台运营']
         let serType = ['销售','安装','洗车','轮胎']
         let haobj = []; //已存在未授权
         let aobj = [];  //不存在authorize
@@ -1196,7 +1193,7 @@ class ComTypeAuthing extends Component {
     render() {
         console.log(this.props.data,'ddff')
         let dataLength = [];
-        let authorizeType=['营销推广','政企业务','平台运营','扫码移车'];
+        let authorizeType=['营销推广','政企业务','平台运营'];
         let sevice = ['销售','安装','洗车','轮胎']
         let addAuth = []
         let noauthLength = [];

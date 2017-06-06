@@ -159,7 +159,8 @@ class App extends React.Component {
         });
     }
     getUrl(){
-        history.replaceState('home','home','home.html');
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
         if(_user.customer.other&&_user.customer.other.url){
             location=WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(_user.customer.other.url)
                 +'&uid='+_user.customer.objectId

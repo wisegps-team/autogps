@@ -125,6 +125,11 @@ const sty={
         display:'table-cell',
         width:'33%',
         borderRight:'1px solid #ffffff'
+    },
+    head_link2:{
+        display:'table-cell',
+        width:'50%',
+        borderRight:'1px solid #ffffff'
     }
 }
 
@@ -258,7 +263,7 @@ let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
         })
     }
     //扫码移车/营销推广/品牌商可见
-    if(move == 3 || _user.customer.custTypeId == 1 || plat == 1){
+    if(_user.customer.custTypeId == 9 || _user.customer.custTypeId == 10 || move == 3){
         pages.push({
             href:'carowner_platform',
             name:'扫码挪车',
@@ -474,6 +479,12 @@ class App extends Component {
     personalInfo(){
         thisView.goTo('./myAccount/personal_info.js');
     }
+    companyInfo(){
+        thisView.goTo('./company_info.js');
+    }
+    financialManage(){
+        thisView.goTo('./financial_manage.js');
+    }
     bookingList(){
         let par={installId:_user.customer.objectId};
         if(_user.employee){
@@ -516,11 +527,19 @@ class App extends Component {
                             {_user.employee ? _user.employee.name : (_user.customer.contact||_user.customer.name)}
                         </div>
                     </div>
-                    <div style={sty.head_links}>
-                        <div style={sty.head_link} onClick={this.bookingList}>{___.order}</div>
-                        <div style={sty.head_link} onClick={this.recommend}>{___.recommend}</div>
-                        {headRight}
-                    </div>
+                    {
+                        _user.customer.custTypeId === 10?
+                        <div style={sty.head_links}>
+                            <div style={sty.head_link2} onClick={this.financialManage}>{'企业账户'}</div>
+                            <div style={{display:'table-cell',width:'50%'}} onClick={this.companyInfo}>{'公司信息'}</div>
+                        </div>:
+                        <div style={sty.head_links}>
+                            <div style={sty.head_link} onClick={this.bookingList}>{___.order}</div>
+                            <div style={sty.head_link} onClick={this.recommend}>{___.recommend}</div>
+                            {headRight}
+                        </div>
+                    }
+
                 </div>
                 <div className='main'>
                     {cards}
@@ -565,7 +584,8 @@ class DList extends Component{
             let linkUrl='';
             if(res.data && res.data.id){
                 linkUrl='http://autogps.cn/?s='+res.data.id;
-                history.replaceState('home.html','home.html','home.html');
+                // history.replaceState('home.html','home.html','home.html');
+                W.fixPath();
                 window.location=linkUrl;
                 // console.log(linkUrl);
             }else{
@@ -573,7 +593,8 @@ class DList extends Component{
                     let _id=changeToLetter(re.autoId);
                     linkUrl='http://autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
-                        history.replaceState('home.html','home.html','home.html');
+                        // history.replaceState('home.html','home.html','home.html');
+                        W.fixPath();
                         window.location=linkUrl;
                         // console.log(linkUrl);
                     },{
@@ -733,7 +754,8 @@ class DList extends Component{
                     }
                     // console.log(opTimeLine);
                     // console.log(opMessage);
-                    history.replaceState('home.html','home.html','home.html');
+                    // history.replaceState('home.html','home.html','home.html');
+                    W.fixPath();
                     wx.onMenuShareTimeline(opTimeLine);
                     wx.onMenuShareAppMessage(opMessage);
                     // setShare=null;

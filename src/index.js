@@ -50,7 +50,8 @@ class App extends Component {
             this.setTitle(this.state.active);
     }
     setTitle(i) {
-        let titles = [___.login, ___.invite_regist, ___.forget_pwd, ___.logined_bind, ___.invite_regist];
+        var _title = _g.custType === '10'? '账号注册': ___.invite_regist;
+        let titles = [___.login, _title, ___.forget_pwd, ___.logined_bind, _title];
         setTitle(titles[i]);
     }
 
@@ -199,6 +200,9 @@ class App extends Component {
                 case 2:
                     //已经是客户了，但不是代理商
                     W.alert(___.user_type_error, () => this.setState({ active: 0 }));
+                    break;
+                case 3:
+                    W.alert('该手机已注册！');
                     break;
                 default:
                     W.alert(___.unknown_err);

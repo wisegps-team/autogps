@@ -9,6 +9,8 @@ W._nativeSdkReady=function(){
 	if(WiStorm.agent.weixin){//微信sdk加载完，封装微信sdk，使之与html5+统一
 		W.native.scanner={//微信二维码扫描
 			start:function(callback){
+				// 修复浏览器地址的问题
+				W.fixPath();
 				wx._scanner_callback=callback;
 				wx.scanQRCode({
 					needResult: 1,

@@ -177,7 +177,8 @@ class RechargePage extends Component {
         console.log('wxpay_recharge');
         console.log(pay_data);
         // W.alert(pay_data.uid,e=>{Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);});//测试用，弹出uid
-        history.replaceState('home','home','home.html');
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
         Wapi.pay.wxPay(pay_data,'wxPay_recharge',location.href);
     }
     render() {
@@ -244,7 +245,8 @@ class WithdrawPage extends Component {
             W.alert(___.code_err);
             return;
         }
-        history.replaceState('home','home','home.html');
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
         Wapi.pay.wxPay({
             uid:companyBillUid,
             order_type:3,
