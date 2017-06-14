@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "assets-webpack-plugin": "^3.5.1",
     "babel-core": "6.13.2",
     "babel-loader": "6.2.4",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-class-properties": "6.11.5",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "6.24.0",
     "babel-preset-react": "6.23.0",
     "babel-preset-stage-0": "6.5.0",
