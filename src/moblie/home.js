@@ -4,6 +4,7 @@
  * 管理平台的主页，主要功能是 按用户权限展示功能模块的入口
  */
 "use strict";
+import 'babel-polyfill';
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '../_theme/default';
@@ -262,7 +263,7 @@ let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
             icon:<ActionExtension style={sty.icon}/>
         })
     }
-    //扫码移车/营销推广/品牌商可见
+    //平台/扫码客户/扫码移车可见
     if(_user.customer.custTypeId == 9 || _user.customer.custTypeId == 10 || move == 3){
         pages.push({
             href:'carowner_platform',

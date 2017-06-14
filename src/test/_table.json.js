@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=150;//版本号
+let version=151;//版本号
 
 //地区表
 export const area={
@@ -2591,7 +2591,7 @@ export const qrDistribution={
             'query': true,
         },{
             'name': 'type',
-            'desc': '二维码类型',//0普通短链接，1营销资料，2移车卡等
+            'desc': '二维码类型',//0普通短链接，1营销资料，2一物一码，3单一编码等
             'type': 'Number',
             'query': true,
         },{
@@ -2618,6 +2618,11 @@ export const qrDistribution={
             'name': 'move_num',
             'desc': '挪车次数',//当前批次挪车次数  //++170427
             'type': 'Number',
+            'query': true,
+        },{
+            'name': 'wxAppKey',
+            'desc': '公众号Id',//                //++170608
+            'type': 'String',
             'query': true,
         }
     ],
@@ -3017,7 +3022,7 @@ export const iotEvent = {
 //     weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
 // ];
 let TABLES=[
-    
+    qrDistribution
 ]
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
