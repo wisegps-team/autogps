@@ -1,7 +1,7 @@
 /**
  * 应用数据库定义，每做一个更改必须更改版本号
  */
-let version=151;//版本号
+let version=152;//版本号
 
 //地区表
 export const area={
@@ -2841,7 +2841,7 @@ export const authorize={
         {uid:1}
     ]
 }
-
+//推广统计表
 export const promotion={
     name: 'promotion',             //表名
     desc: '推广统计表',             //表描述
@@ -2944,6 +2944,7 @@ export const promotion={
         {uid:1}
     ]
 } 
+//服务项目表
 export const serviceProject={
     name: 'serviceProject',             //表名
     desc: '服务项目表',             //表描述
@@ -2977,6 +2978,119 @@ export const serviceProject={
 
 }
 
+//微信系统菜单表
+export const wxMenu={
+    name: 'wxMenu',             //表名
+    desc: '微信系统菜单',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    isUpdate: true,      //是否更新数据表
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+            'name': 'wxAppKey',
+            'desc': '微信appid',
+            'type': 'String',
+            'query': true
+        },{
+            'name': 'menuName',
+            'desc': '菜单名',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'menuUrl',
+            'desc': '菜单链接',
+            'type': 'String',
+            'query': true,
+        },{
+            'name': 'type',
+            'desc': '类型',
+            'type': 'String',
+            'query': true,
+        }
+    ],
+    indexDefine: [
+        {uid:1}
+    ]
+}
+export const moveCarBill={
+    name: 'moveCarBill',             //表名
+    desc: '扫码挪车汇总结算表',             //表描述
+    type: 1,             //类型(0:基础表, 1:用户表)
+    isApi: true,           //是否开放API
+    isPrivate: false,       //是否隐私数据, 如果是调用API时需要访问令牌
+    isCache: true,         //数据是否启用缓存
+    isUpdate: true,      //是否更新数据表
+    cacheField: 'updatedAt',       //缓存日期字段
+    fieldDefine: [
+        {
+			"query" : true,
+			"type" : "String",
+			"desc" : "结算日期",
+			"name" : "day"
+		},
+		{
+			"query" : true,
+			"type" : "String",
+			"desc" : "用户ID",
+			"name" : "uid"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "绑定总数",
+			"name" : "bindTotal"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "呼叫总数",
+			"name" : "callTotal"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "用户类别",
+			"name" : "custType"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "待支付金额",
+			"name" : "payAmount"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "上级代理商",
+			"name" : "dealerId"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "上级代理商佣金结算金额",
+			"name" : "commission"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "订单ID",
+			"name" : "oid"
+		},
+		{
+			"query" : true,
+			"type" : "Number",
+			"desc" : "订单状态",
+			"name" : "status"
+		}
+    ],
+    indexDefine: [
+        {uid:1},
+        {day:1}
+    ]
+}
 //事件表
 export const iotEvent = {
     name: 'iotEvent',             //表名
@@ -3022,7 +3136,7 @@ export const iotEvent = {
 //     weixin,qrData,activityProduct,qrDistribution,qrLink,authorize,promotion
 // ];
 let TABLES=[
-    qrDistribution
+    wxMenu
 ]
 let old_vareion=localStorage.getItem('table.json.js.version');
 localStorage.setItem('table.json.js.version',version);
