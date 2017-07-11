@@ -12,13 +12,30 @@ W._nativeSdkReady=function(){
 				// 修复浏览器地址的问题
 				W.fixPath();
 				wx._scanner_callback=callback;
-				wx.scanQRCode({
-					needResult: 1,
-					desc: 'scanQRCode desc',
-					success: function(res) {
-						wx._scanner_callback(res.resultStr);
-					}
-				});
+				wx.ready(function(){
+					wx.scanQRCode({
+						needResult: 1,
+						desc: 'scanQRCode desc',
+						success: function(res) {
+							wx._scanner_callback(res.resultStr);
+						},
+						fail:function(res){
+							// console.log(res)
+							W.native.scanner.start(wx._scanner_callback) //调用接口失败后再次调用
+							W.wx.onload()  //重新配置jssdk
+						}
+					});
+				})
+				// wx.scanQRCode({
+				// 	needResult: 1,
+				// 	desc: 'scanQRCode desc',
+				// 	success: function(res) {
+				// 		wx._scanner_callback(res.resultStr);
+				// 	},
+				// 	fail:function(res){
+				// 		console.log(res)
+				// 	}
+				// });
 			}
 		};
 		W.native.close=wx.closeWindow;//关闭窗口
@@ -119,7 +136,17 @@ if(WiStorm.agent.weixin){//如果是微信端
 	
 //	W.wx.ticket=W.getCookie("wxTicket");//获取jssdk的ticket，调用任何api都需要用到
 	if(!W.wx.ticket){//ticket过期，则重新获取ticket
-		W.getJSON(WiStorm.config.wx_ticket_url,{HTTP_HOST:location.host},
+		// W.getJSON(WiStorm.config.wx_ticket_url,{HTTP_HOST:location.host},
+		// 	function(data){
+		// 		W.wx.ticket=data.ticket;
+		// 		var expires=-parseInt(data.expires/60);//计算有效时间，转换成分钟
+		// 		W.setCookie("wxTicket",data.ticket,expires);//保存到cookie里
+		// 		if(W.wx.loaded){//如果此时已经加载完微信的jssdk，则马上执行配置方法
+		// 			W.wx.onload();
+		// 		}
+		// 	}
+		// );
+		W.getJSON(WiStorm.config.wx_ticket_url,{wxAppKey:WiStorm.config.wx_app_id},
 			function(data){
 				W.wx.ticket=data.ticket;
 				var expires=-parseInt(data.expires/60);//计算有效时间，转换成分钟

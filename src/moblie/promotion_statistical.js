@@ -20,16 +20,16 @@ class App extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            platform:"",
+            platform:null,
             statiType:"0",
             marAct:"0",
             busMan:'0',
             marType:'0',
             mType:true,
-            subordinate:'',
-            submarcount:'',
-            markPerson:'',
-            marcount:'',
+            subordinate:null,
+            submarcount:null,
+            markPerson:null,
+            marcount:null,
             topAccount:[],
             marke_act:[],
             bus_manage:[],
@@ -183,9 +183,9 @@ class App extends Component {
         this.setState({busMan:adminId})
         this.marTypeChange();//刷新一下
         this.setState({marType:'0'})//恢复营销类别默认值
-        this.setState({markPerson:''})//恢复集团营销默认值
-        this.setState({marcount:''})//恢复集团营销账号默认值
-        this.setState({subordinate:''})//恢复渠道营销默认值
+        this.setState({markPerson:null})//恢复集团营销默认值
+        this.setState({marcount:null})//恢复集团营销账号默认值
+        this.setState({subordinate:null})//恢复渠道营销默认值
         this.display3={display:'none'}
         if(v>0){
             this.setState({managelen:false})
@@ -311,17 +311,17 @@ class App extends Component {
         this.setState({marType:adminId })
         this.setState({mark_person:[]})//恢复集团营销列表默认值
         this.setState({mark_per_count:[]})//恢复集团营销账号列表默认值
-        this.setState({markPerson:''})//恢复集团营销默认值
-        this.setState({marcount:''})//恢复集团营销账号默认值
+        this.setState({markPerson:null})//恢复集团营销默认值
+        this.setState({marcount:null})//恢复集团营销账号默认值
         this.setState({subord:[]})//恢复渠道营销列表默认值
         this.setState({subord_count:[]})//恢复渠道营销账号列表默认值
-        this.setState({submarcount:''})//恢复渠道营销账号默认值
-        this.setState({subordinate:''})//恢复渠道营销默认值
+        this.setState({submarcount:null})//恢复渠道营销账号默认值
+        this.setState({subordinate:null})//恢复渠道营销默认值
     }
     //渠道营销
     subordinateChange(e,v,adminId){
         this.setState({subordinate:adminId})
-        this.setState({submarcount:''})
+        this.setState({submarcount:null})
         if(v<0){
             this.display4={display:'none'}
         }else{
@@ -372,7 +372,7 @@ class App extends Component {
             this.setState({mark_per_count:res.data});
         },{departId:this.state.mark_person[v].objectId});
 
-        this.setState({marcount:''});
+        this.setState({marcount:null});
 
         pertypeId = this.state.mark_person[v].objectId
         this.data = {
@@ -406,18 +406,23 @@ class App extends Component {
         // console.log(this.state.managelen,'rf')
         //平台总览
         let top = this.state.topAccount.map((ele,index) => (<MenuItem key={index+1} value={index} primaryText={ele.name}/>))
+        top.push(<MenuItem key={0} value={null} primaryText=' '/>)
         //营销活动
         let marke_act = this.state.marke_act.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
         //业务经理
         let bus_manage = this.state.bus_manage.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
         //集团营销
         let mark_person = this.state.mark_person.map((ele,index) => (<MenuItem key={index} value={index} primaryText={ele.name}/>))
+        mark_person.push(<MenuItem key={-1} value={null} primaryText=' '/>)
         //集团营销账号
         let mark_per_count = this.state.mark_per_count.map((ele,index) => (<MenuItem key={index} value={index} primaryText={ele.name}/>))
+        mark_per_count.push(<MenuItem key={-1} value={null} primaryText=' '/>)
         //渠道营销
         let subord = this.state.subord.map((ele,index) => (<MenuItem key={index} value={index} primaryText={ele.name}/>))
+        subord.push(<MenuItem key={-1} value={null} primaryText=' '/>)
         //渠道营销账号
         let subord_count = this.state.subord_count.map((ele,index) => (<MenuItem key={index} value={index} primaryText={ele.name}/>))
+        subord_count.push(<MenuItem key={-1} value={null} primaryText=' '/>)
         // console.log(this.state.topAccount,'平台总览')
         // console.log(this.state.marke_act,'营销活动')
         // console.log(this.state.bus_manage,'业务经理')
@@ -426,10 +431,10 @@ class App extends Component {
         // console.log(this.state.subord,'渠道营销')
         // console.log(this.state.subord_count,'渠道营销账号')
 
-        let floatsubord = (<div style={{position:'relative'}}>渠道营销<span style={{position:'absolute',right:22}}>{this.state.subordinate===''?this.state.subord.length:''}</span></div>)
-        let floatsubord_count = (<div style={{position:'relative'}}>营销账号<span style={{position:'absolute',right:22}}>{this.state.submarcount===''?this.state.subord_count.length:''}</span></div>)
-        let floatmark_person = (<div style={{position:'relative'}}>集团营销<span style={{position:'absolute',right:22}}>{this.state.markPerson===''?this.state.mark_person.length:''}</span></div>)
-        let floatmark_per_count = (<div style={{position:'relative'}}>营销账号<span style={{position:'absolute',right:22}}>{this.state.marcount===''?this.state.mark_per_count.length:''}</span></div>)
+        let floatsubord = (<div style={{position:'relative'}}>渠道营销<span style={{position:'absolute',right:22}}>{this.state.subordinate===null?this.state.subord.length:''}</span></div>)
+        let floatsubord_count = (<div style={{position:'relative'}}>营销账号<span style={{position:'absolute',right:22}}>{this.state.submarcount===null?this.state.subord_count.length:''}</span></div>)
+        let floatmark_person = (<div style={{position:'relative'}}>集团营销<span style={{position:'absolute',right:22}}>{this.state.markPerson===null?this.state.mark_person.length:''}</span></div>)
+        let floatmark_per_count = (<div style={{position:'relative'}}>营销账号<span style={{position:'absolute',right:22}}>{this.state.marcount===null?this.state.mark_per_count.length:''}</span></div>)
         let subordinate = (
             <div>
                 <SelectField floatingLabelText={floatsubord} value={this.state.subordinate} onChange={this.subordinateChange} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px',width:'100%'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>

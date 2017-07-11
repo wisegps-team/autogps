@@ -7,7 +7,6 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import { Menu, MenuItem } from 'material-ui/Menu';
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField';
-import AutoList from '../_component/base/autoList';
 import { List, ListItem } from 'material-ui/List';
 import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
@@ -18,13 +17,14 @@ import { blue500 } from 'material-ui/styles/colors';
 import Input from '../_component/base/input';
 import SocialPeople from 'material-ui/svg-icons/social/people'
 import QrImg from '../_component/base/qrImg';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
+import Dialog from 'material-ui/Dialog';
 import ActionSupervisorAccount from 'material-ui/svg-icons/action/supervisor-account'
 import HardwareKeyboard from 'material-ui/svg-icons/hardware/keyboard';
 import ActionReportProblem from 'material-ui/svg-icons/action/report-problem'
 import ActionPermIdentity from 'material-ui/svg-icons/action/perm-identity'
 import ActionExtension from'material-ui/svg-icons/action/extension'
+import ContentClear from 'material-ui/svg-icons/content/clear'
 
 import SonPage from '../_component/base/sonPage';
 import { getOpenIdKey, changeToLetter } from '../_modules/tool';
@@ -87,10 +87,25 @@ const stys={
     son_menu:{
         display:'inline-block',
         border: '1px solid #aaa',
-        borderBottom: '0px',
+        background:'#fafafa',
+        // borderBottom: '0px',
+        position: 'absolute',
+        left: 0,
+        bottom: 57,
+        width: '98%'
+    },
+    so_menu1:{
+        display:'inline-block',
+        border: '1px solid #aaa',
+        background:'#fafafa',
+        // borderBottom: '0px',
+        position: 'absolute',
+        left: 0,
+        bottom: 57,
+        width: '98%'
     },
     sm:{
-        padding:'0 1em',
+        // padding:'0 1em',
         borderBottom:'1px solid #aaa'
     },
     sw:{
@@ -103,8 +118,11 @@ const stys={
         margin:' 0 1.5em',
         verticalAlign: 'middle',
     },
+    add1:{
+        verticalAlign: 'middle',
+    },
     save:{
-        marginTop:'40vh',
+        marginTop:'20vh',
         marginLeft:'30%',
         width:'40%'
     }
@@ -198,9 +216,9 @@ function setUrl(id, type){
     // console.log('----------------------------'+id+'-----------------')
     // debugger;
     if(type === 2){
-        sUrl2 = 'http://autogps.cn/?s='+id;
+        sUrl2 = 'https://autogps.cn/?s='+id;
     }else{
-        sUrl='http://autogps.cn/?s='+id;
+        sUrl='https://autogps.cn/?s='+id;
     }
     // sUrl='http://h5test.bibibaba.cn/url.php?s='+id;
     W.emit(thisView,'sUrlIsReady');//触发事件
@@ -225,10 +243,15 @@ function setShare(){
         cancel: function(){}
     }
     // history.replaceState(WiStorm.config.home_url,WiStorm.config.home_url,WiStorm.config.home_url);
-    W.fixPath();
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
-    W.emit(thisView,'setShareOver');
+    let data = {};
+    data.op = op;
+    // data.share_url = sUrl;
+    W.setCookie('share_data',JSON.stringify(data));
+    top.location = WiStorm.root + "wx_share.html"
+    // W.fixPath();
+    // wx.onMenuShareTimeline(op);
+    // wx.onMenuShareAppMessage(op);
+    // W.emit(thisView,'setShareOver');
 }
 
 class App extends Component {
@@ -302,47 +325,6 @@ class App extends Component {
         console.log('配置')
     }
     configSuccess(wx) {
-        // debugger;
-        // Wapi.qrLink.list(qr => {
-        //     if (qr.data.length) {
-        //         let data = [];
-        //         qr.data.forEach(ele => { data.push(ele.objectId) })
-        //         Wapi.qrLink.delete(up => {
-        //             AddQrLink(wx.wxAppKey, op => {
-        //                 console.log(op)
-        //                 this.setState({ qrLink: op })
-        //             })
-        //         }, {
-        //                 objectId: data.join('|')
-        //             })
-        //     }
-        // }, {
-        //         uid: _user.customer.objectId,
-        //         type: 2
-        //     })
-        // console.log(wx, 'wx')
-        // let data = this.state.data.concat();
-        // if (this.state.type == 0) {
-        //     data[0] = wx;
-        //     // debugger;
-        //     Wapi.customer.update(res => {
-        //         // Wapi.device.update(res=>{//把现有的设备都改serverId
-        //         _user.customer.wxAppKey = wx.wxAppKey;
-        //         W.setSetting('user', _user);
-        //         // W.alert(___.setting_success);
-        //         this.goPush(0)
-        //         // },{
-        //         //     _uid:_user.customer.objectId,
-        //         //     serverId:_user.customer.objectId
-        //         // });
-        //     }, {
-        //             _objectId: _user.customer.objectId,
-        //             wxAppKey: wx.wxAppKey,
-        //             wxAppSecret: wx.wxAppSecret
-        //         });
-
-        // }
-        // this.setState({ data });
         Wapi.weixin.list(res => {
             this.setState({ data: res.data })
         }, {
@@ -456,7 +438,7 @@ class App extends Component {
         // let custType = 10;
         // let that = this;
         // AddRegisterQrLink(custType, function(id){
-        //     let sUrl='http://autogps.cn/?s='+id;
+        //     let sUrl='https://t.autogps.cn/?s='+id;
             // that.setState({qrUrl: sUrl});
             W.alert(this.state.type === 2 ? '代理注册链接：' + sUrl2: '客户注册链接：' + sUrl);
             // that.setState({showQr: true});
@@ -528,10 +510,6 @@ class App extends Component {
                         this.state.type === 1 ? <IconButton style={{ float: 'right' }} onClick={this.showAddQrDis}><ContentAdd color={blue500} /></IconButton>:                          
                         this.state.type === 2 ? <IconButton style={{ float: 'right' }} onClick={this.showQr}><ContentAdd color={blue500} /></IconButton>:null  
                     }
-                    {/*<RightIconMenu onClick={this.click}/>*/}
-                    {/*this.state.type === 3 ? <IconButton style={{ float: 'right' }} onClick={this.showQr}><ContentAdd color={blue500} /></IconButton>:*/}
-                    {/*<span style={{float:'right',color:'#2196f3',display:'inline-block',width:48,lineHeight:'48px',textAlign:'center'}}>{'配置'}</span>*/}
-                    {/*this.state.type === 0 ? <WxList data={this.state.data} showQr={this._showQr} />*/}
                 </div>
                 <div>
                     {
@@ -547,9 +525,6 @@ class App extends Component {
                 <SonPage open={this.state.showCar} back={this.hideCar}>
                     <MoveCar />
                 </SonPage>
-                {/*<SonPage open={this.state.showCarManager} back={this.hideCarManager}>
-                    <CarManager data={this.state.data} qr={this.state.qrLink} />
-                </SonPage>*/}
                 {/*创建挪车卡*/}
                 <SonPage open={this.state.showQrDis} back={this.hideAddQrDis}>
                     <AddQrDis change={this.getQrDistribution} data={this.state.wxData}/>
@@ -563,117 +538,6 @@ class App extends Component {
     }
 }
 
-
-//公众号（平台总览）
-class WxList extends Component {
-    constructor(props, context) {
-        super(props, context)
-        this.state = {
-            data: props.data,
-            user: 0
-        }
-        // this.getUrl = this.getUrl.bind(this);
-        // this.showQr = this.showQr.bind(this);
-    }
-    // showQr(){
-    //     this.props.showQr();
-    // }
-    componentDidMount() {
-        Wapi.weixin.get(res => {
-            // console.log(res,'ressssssssss')
-            if (res.data) {
-                Wapi.serverApi.getWeixinUser((json) => {
-                    // debugger;
-                    // console.log(json,'json')
-                    if (json.list) {
-                         if (json.list.length) {
-                            let subscribe = json.list[0].cumulate_user;
-                            this.setState({ user: subscribe });
-                            // 更新客户表中的关注数，以便系统管理员及代理商可以进行统计
-                            Wapi.customer.update(res => {
-                                console.log(res, 'update customer subscribe');
-                            }, {
-                                _objectId: _user.customer.objectId,
-                                subscribe: subscribe
-                            })
-                        }
-                    }
-                }, {
-                        wxAppKey: res.data.wxAppKey
-                    })
-            }
-        }, {
-                uid: _user.customer.objectId,
-                type: 0
-            }, {
-                fields: 'objectId,uid,name,type,wxAppKey,wxAppSecret,menu'
-            })
-    }
-    componentWillReceiveProps(nextProps) {
-        if (nextProps) {
-            this.setState({ user: null })
-            this.setState({ data: nextProps.data })
-            // console.log(nextProps.data[0].wxAppKey,'wxaaaaaaaaaaaaaaaaaaaaa')
-            if (nextProps.data[0]) {
-                Wapi.serverApi.getWeixinUser((json) => {
-                    // debugger;
-                    // console.log(json)
-                    if (json.list) {
-                        if (json.list.length) {
-                            let subscribe = json.list[0].cumulate_user;
-                            this.setState({ user: subscribe });
-                            // 更新客户表中的关注数，以便系统管理员及代理商可以进行统计
-                            Wapi.customer.update(res => {
-                                console.log(res, 'update customer subscribe');
-                            }, {
-                                _objectId: _user.customer.objectId,
-                                subscribe: subscribe
-                            })
-                        }
-                    }
-                }, {
-                        wxAppKey: nextProps.data[0].wxAppKey
-                    })
-            }
-        }
-    }
-    // getUrl(i) {
-    //     let wxAppKey = this.state.data[0].wxAppKey;
-    //     let context = '将车主服务链接配置到公众号<%wx%>的自定义菜单里，既能通过为车主提供刚需服务增加公众号的活跃度，还能借助平台服务和本地汽车后市场服务商建立互惠共赢的合作。'.replace('<%wx%>', this.state.data[0].name)
-
-    //     let text = ''
-    //     if (i == -1) {
-    //         text = 'http://' + domain[1] + '/?wx_app_id=' + wxAppKey
-    //     }
-    //     W.alert(text + ' ' + context)
-
-    // }
-    render() {
-        console.log(this.state.data, 'state.data')
-        console.log(this.props.data, 'data')
-        // conso
-        // let name = [];
-        // if(this.state.data){
-        //      name = this.state.data.map((ele, index) => (<span key={index} style={{ display: 'inline-block', lineHeight: '48px', paddingLeft: '10px' }}>{ele.name}</span>))
-        // }
-        // console.log(name,'name')
-        return (
-            <div style={{ background: '#fff' }}>
-                <div style={{textAlign:'center',paddingTop:10}}><ActionSupervisorAccount color={'#fff'} style={{width:108,height:108,background:'#8FD87D'}} /></div>
-                {
-                    this.state.data ?(this.state.data.length ?
-                        <div><UserTotal /></div>
-                        :
-                        (_user.customer.custTypeId === 5 || _user.customer.custTypeId === 10 || _user.customer.custTypeId === 9 ?
-                        <div style={{ padding: '0px 10px 0px 10px', minHeight: 44}}>
-                            <div style={{padding: 11, fontSize: 14, lineHeight: '30px'}}>使用扫码挪车前请在平台总览》右上角菜单中先配置公众号，认证公众号和开通模版消息需要几天时间，可先了解如何制作挪车贴后根据需要在挪车贴管理页面生成相应二维码后委托第三方设计印刷。</div>
-                        </div>
-                        :null)):null
-                }
-            </div>
-        );
-    }
-}
 //平台总览
 class PlatAll extends Component {
     constructor(props,context){
@@ -698,6 +562,7 @@ class PlatAll extends Component {
             ops.wx = wx.data;
             ops.qrD = [];
             this.setState({wx:wx.data})
+            this.setState({ops:ops})
             let par={
                 "group":{
                     "_id":{"objectId":'$objectId'},
@@ -744,7 +609,7 @@ class PlatAll extends Component {
         },{
             uid: _user.customer.objectId,
             type: 0
-        });
+        },{fields:'objectId,uid,name,type,wxAppKey,fileName,menu,wxAppSecret,template'});
     }
     showB(){
         this.setState({showB:true})
@@ -826,9 +691,11 @@ class QrDis extends Component {
             num:null,
             bind_num:null,
             move_num:null,
-            wx:{}
+            wx:{},
+            showMenu:false
         }
         this.showMenu = this.showMenu.bind(this);
+        this.hideMenu = this.hideMenu.bind(this);
     }
     componentDidMount(){
         this.setState({wx:this.props.wx[0]})
@@ -842,7 +709,12 @@ class QrDis extends Component {
         }
     }
     showMenu(){
-        W.alert('功能正在开发中...')
+        // W.alert('功能正在开发中...');
+        // this.setState({showMenu:true});
+        thisView.goTo('wx_menu.js',this.state.wx)
+    }
+    hideMenu(){
+        this.setState({showMenu:false})
     }
     render(){
         let num,bind_num,move_num;
@@ -866,6 +738,9 @@ class QrDis extends Component {
                         <span style={{width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{(move_num||0)}</span></span>
                     </div>
                 </div>
+                <SonPage open={this.state.showMenu} back={this.hideMenu}>
+                    <MenuBox data={this.state.wx}/>
+                </SonPage>
             </div>
         )
     }
@@ -901,49 +776,6 @@ class NoQrDis extends Component {
                     <a href="http://www.autogps.cn/bmzk.html" style={sty.wl2}>{'了解一物一码和单一编码'}</a>
                 </div>
             </div>
-        )
-    }
-}
-
-//平台总览下的关注绑定和挪车
-class UserTotal extends Component{
-    constructor(props,context){
-        super(props,context)
-        this.state = {
-            subscribe:null,
-            bind_num:null,
-            move_num:null
-        }
-        Wapi.customer.get(res => {
-            console.log(res,'get user car move total')
-            this.setState({subscribe:res.data.subscribe || 0})
-            this.setState({bind_num:(res.data.onecar_bind||0)+(res.data.car_bind||0)})
-            this.setState({move_num:(res.data.onecar_move||0)+(res.data.car_move||0)})
-        },{
-            objectId:_user.customer.objectId,
-        })
-    }
-    componentWillReceiveProps(nextProps){
-    }
-
-    render(){
-        let item = null;
-        let width = (window.screen.width-32)/3+'px'
-        let subscribe = this.state.subscribe;
-        let bind_num = this.state.bind_num;
-        let move_num = this.state.move_num
-        return(
-            subscribe !== null ?
-            <div>
-               <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 16px',background:'#fff'}}>
-                    <div style={{fontSize:'12px',color:'#666'}}>
-                        <span style={{display:'inline-block',width:width}}>{'关注'+'：'+(subscribe||0)}</span>
-                        <span style={{display:'inline-block',width:width}}>{'绑定'+'：'+(bind_num||0)}</span>
-                        <span style={{display:'inline-block',width:width}}>{'挪车'+'：'+(move_num||0)}</span>
-                    </div>
-                </div>
-            </div>:
-            null
         )
     }
 }
@@ -986,7 +818,7 @@ class CarManage extends Component {
                return(<OneAndNorm data={ele} key={index}/>)
                 /*let data = W.dateToString(W.date(ele.createdAt))
                 // console.log(data,'datadaata')
-                let url = 'http://autogps.cn/?s='+ele.min+'-'+ele.max
+                let url = 'https://t.autogps.cn/?s='+ele.min+'-'+ele.max
                 return(
                     <div style={{background:'#fff',padding:'0 7px'}} key={index}>
                         <div style={sty.pd}>{ele.name}</div>
@@ -1079,10 +911,10 @@ class OneAndNorm extends Component {
         // console.log(data,'datadaata')
         let url = null,typename='';
         if(this.state.data.type == 3){
-             url = 'http://autogps.cn/?s='+this.state.data.objectId+'A'
+             url = 'https://t.autogps.cn/?s='+this.state.data.objectId+'A'
              typename = '单一编码'
         }else {
-            url = 'http://autogps.cn/?s='+this.state.data.min+'-'+this.state.data.max
+            url = 'https://t.autogps.cn/?s='+this.state.data.min+'-'+this.state.data.max
             typename = '一物一码'
         }
         let width = (window.screen.width-14)/3+'px'
@@ -1121,9 +953,6 @@ class OneAndNorm extends Component {
         )
     }
 }
-// class OneCK extends Component {
-
-// }
 
 
 //创建挪车卡
@@ -1309,8 +1138,9 @@ class AddQrDis extends Component {
                         underlineStyle={{ bottom: 0, borderBottomColor: '#f7f7f7' }}
                         onChange={this.typeChange}
                     >
-                        <MenuItem value={2} key={0} primaryText={'一物一码'} />
-                        <MenuItem value={3} key={1} primaryText={'单一编码'} />
+                        <MenuItem value={null} key={-1} primaryText=' ' />
+                        <MenuItem value={2} key={1} primaryText={'一物一码'} />
+                        <MenuItem value={3} key={2} primaryText={'单一编码'} />
                     </SelectField>
                     <TextField
                         hintText="印刷数量"
@@ -1335,168 +1165,7 @@ class AddQrDis extends Component {
     }
 }
 
-//挪车卡管理
-class CarManager extends Component {
-    constructor(props, context) {
-        super(props, context)
-        this._data = {//筛选条件
-            uid: _user.customer.objectId,
-            type: 2
-        };
-        this.op = {//控制排序字段与页数
-            page: 'objectId',
-            sorts: 'objectId',
-            page_no: 1
-        };
-        this.state = {
-            total: 0,
-            data: null,
-            type1: null,
-            type2: null,
-            qrdata: [],
-            noneWx: null
-        };
-        this.goList = this.goList.bind(this);
-        this.goNormalList = this.goNormalList.bind(this);
-        this.added = this.added.bind(this);
-    }
-    componentDidMount() {
-        Wapi.qrDistribution.list(res => this.setState(res), this._data);
-        window.addEventListener('addOneQr', this.added);
-        let sUrl = '';
-        Wapi.weixin.get(wx => {
-            if (wx.data) {
-                let wxAppKey = wx.data.wxAppKey
-                AddQrLink(wxAppKey, (op) => {
-                    console.log(op, 'op')
-                    // debugger;
-                    if (op.type1) {
-                        this.setState({ type1: op.type1 })
-                        this.setState({ type2: op.type2 })
-                    } else {
-                        this.setState({ qrdata: op })
-                    }
-                })
-                this.setState({ noneWx: 0 })
-            } else {
-                console.log(1)
-                this.setState({ noneWx: 1 })
-            }
-        }, {
-                uid: _user.customer.objectId,
-                type: 0
-            })
-    }
-    componentWillUnmount() {
-        window.removeEventListener('addOneQr', this.added);
-    }
-    componentWillReceiveProps(nextProps) {
-        if (nextProps && nextProps.data.length) {
-            this.setState({ noneWx: 0 })
-            // console.log(nextProps.data,'dd')
-        }
-        if (nextProps && nextProps.qr) {
-            if (nextProps.qr.length && nextProps.qr.type1) {
-                this.setState({ type1: nextProps.qr.type1 })
-                this.setState({ type2: nextProps.qr.type2 })
-            }
 
-        }
-    }
-    goList() {
-        thisView.goTo('one_qr.js')
-    }
-    goNormalList() {
-        thisView.goTo('normal_qr.js')
-    }
-    added(e) {//添加了一个
-        let item = e.params;
-        this.setState({
-            total: this.state.total + 1,
-            data: this.state.data.concat([item])
-        });
-    }
-    render() {
-        console.log(this.state.noneWx, 'noneWx')
-        let type1, type2;
-        console.log(this.state.qrdata, 'qrdata')
-        if (this.state.qrdata.length) {
-            // //    console.log(this.state.qrdata[0].url)
-            let surl = 'http://autogps.cn/?s='
-            this.state.qrdata.forEach(ele => {
-                ele.url.split('&').forEach(el => {
-                    if (el == "type=1") {
-                        type1 = surl + ele.id
-                    } else if (el == "type=2") {
-                        type2 = surl + ele.id
-                    }
-                })
-            })
-
-        } else {
-            type1 = this.state.type1;
-            type2 = this.state.type2
-        }
-        // console.log(type1,type2,this.data,'type1','type2')
-        console.log(this.state.data)
-        let all = 0
-        if (this.state.data) {
-            this.state.data.forEach(ele => {
-                all += ele.num;
-            })
-        }
-        let width = (window.screen.width - 20) / 3 + 'px'
-        return (
-            <div style={{ backgroundColor: '#f7f7f7', minHeight: '100%'}}>
-                {
-                    this.state.noneWx === null ? null:
-                    this.state.noneWx === 0 ?
-                        <div>
-                            <div style={{ borderBottom: '1px solid #f7f7f7', padding: '10px', backgroundColor: '#f7f7f7' }}>
-                                <div style={{ marginBottom: '1em' }}>
-                                    {/*{this.props.data.name}*/}
-                                    {'一物一码'}
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                    <span style={{ display: 'inline-block', width: width }}>
-                                        {/*<span >{"号码" + '：'}</span>*/}
-                                        <a onClick={this.goList} style={{ color: '#1a8cff', marginRight: '2em' }}>{'挪车二维码'}</a>
-                                    </span>
-                                    <span style={{ display: 'inline-block', width: width }}>{'绑定' + '：' + (_user.customer.onecar_bind || 0)}</span>
-                                    <span style={{ display: 'inline-block', width: width }}>{'挪车' + '：' + (_user.customer.onecar_move || 0)}</span>
-                                </div>
-                            </div>
-                            <div style={{ borderBottom: '1px solid #f7f7f7', padding: '10px', background: '#fff' }}>
-                                <div style={{ marginBottom: '1em' }}>
-                                    {'普通挪车'}
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                    <span style={{ display: 'inline-block', width: width }}>
-                                        <a onClick={this.goNormalList} style={{ color: '#1a8cff', marginRight: '2em' }}>{'挪车二维码'}</a>
-                                    </span>
-                                    <span style={{ display: 'inline-block', width: width }}>{'绑定' + '：' + (_user.customer.car_bind || 0)}</span>
-                                    <span style={{ display: 'inline-block', width: width }}>{'挪车' + '：' + (_user.customer.car_move || 0)}</span>
-                                </div>
-                                {/*<div style={{ fontSize: '12px', color: '#666' }}>
-                                    <span style={{ display: 'block', lineHeight: '20px' }}>{'车主绑定车辆链接' + '：' + type1}</span>
-                                    <span style={{ display: 'block', lineHeight: '20px' }}>{'他人呼叫车主链接' + '：' + type2}</span>
-                                </div>*/}
-                            </div>
-                            <div style={{ borderBottom: '1px solid #f7f7f7', padding: '10px', background: '#fff', fontSize: 12 }}>
-                                {/*<p style={{ textIndent: '2em', marginTop: 0 }}>{'制作一物一码挪车贴，点击＋根据印刷数量创建挪车贴号段后生成二维码，制作普通挪车卡，使用车主绑定车辆链接和他人呼叫车主链接生成二维码。 '}</p>*/}
-                                <p style={{ textIndent: '2em',  marginTop: 0, marginBottom: 0 }}>{'资费标准：绑定时产生一条验证码短信，按0.10元收取，挪车时产生一条验证码短信和一条车主语音通知短信，按0.20元收取，在次日统一结算并从企业账号自动扣款，如帐户余额不足，将暂停使用挪车功能。'}</p>
-                            </div>
-                        </div>
-                        :
-                        <div style={{ padding: '0px 10px 0px 10px', minHeight: 44, backgroundColor: '#f7f7f7'}}>
-                            <div style={{padding: 11, fontSize: 14, lineHeight: '30px'}}>使用扫码挪车前请在平台总览》右上角菜单中先配置公众号，认证公众号和开通模版消息需要几天时间，可先了解如何制作挪车贴后根据需要在挪车贴管理页面生成相应二维码后委托第三方设计印刷。</div>
-                        </div>
-                }
-            </div>
-
-        )
-    }
-}
 function AddQrL(wxAppKey,id,disid ,callback){
      let qrLinkData = {
         uid: _user.customer.objectId,
@@ -1511,59 +1180,11 @@ function AddQrL(wxAppKey,id,disid ,callback){
     };
     Wapi.qrLink.add(re => {
         // Wapi.qrLink.get(rs => {
-            // let type2 = 'http://autogps.cn/?s=' + rs.data.id;
+            // let type2 = 'https://t.autogps.cn/?s=' + rs.data.id;
             // op.type2 = type2
             callback();
         // }, { objectId: re.objectId });
     }, qrLinkData);
-}
-function AddQrLink(wxAppKey, callback) {
-    let qrLinkData = {
-        uid: _user.customer.objectId,
-        type: 2,
-        i: 0,
-        id: _user.customer.objectId + 'A',
-        url: 'http://' + WiStorm.config.domain.user + '/wo365_user' + '/movecar.html?intent=logout'
-        + '&needOpenId=' + true
-        + '&creator=' + _user.customer.objectId
-        + '&type=' + 1
-        + '&wx_app_id=' + wxAppKey
-    };
-    let qrLinkData2 = {
-        uid: _user.customer.objectId,
-        type: 2,
-        i: 0,
-        id: _user.customer.objectId + 'B',
-        url: 'http://' + WiStorm.config.domain.user + '/wo365_user' + '/movecar.html?intent=logout'
-        + '&needOpenId=' + true
-        + '&creator=' + _user.customer.objectId
-        + '&type=' + 2
-        + '&wx_app_id=' + wxAppKey
-    }
-    let op = {};
-    Wapi.qrLink.list(res => {
-        // op.data = res.data
-        if (!res.data.length) {
-            Wapi.qrLink.add(res => {
-                Wapi.qrLink.get(r => {
-                    let type1 = 'http://autogps.cn/?s=' + r.data.id;
-                    op.type1 = type1
-                    Wapi.qrLink.add(re => {
-                        Wapi.qrLink.get(rs => {
-                            let type2 = 'http://autogps.cn/?s=' + rs.data.id;
-                            op.type2 = type2
-                            callback(op);
-                        }, { objectId: re.objectId });
-                    }, qrLinkData2);
-                }, { objectId: res.objectId });
-            }, qrLinkData);
-        } else {
-            callback(res.data)
-        }
-    }, {
-            uid: _user.customer.objectId,
-            type: 2
-        })
 }
 
 
@@ -1817,13 +1438,13 @@ class Wxbox extends Component {
                         <p style={sty.inputContent}>
                             <Input style={sty.input} inputStyle={sty.input} name='name' onChange={this.change} hintText={name ? name : ___.wx_name} value={name} />
                         </p>
-                        <p style={sty.subtitle}>{___.find_appid}</p>
+                        <p style={sty.subtitle}>{"登录微信公众号，打开左边菜单栏》开发》基本配置，IP白名单设为"}<span style={{color:'#2196f3'}}>{'182.254.215.229'}</span>{'和'}<span style={{color:'#2196f3'}}>{'182.254.214.210'}</span>{"，将AppID和AppSecret填入下框。"}</p>
                         <p style={sty.inputContent}>
                             <Input style={sty.input} inputStyle={sty.input} name='wxAppKey' onChange={this.change} hintText={wxAppKey ? wxAppKey : 'AppId'} value={wxAppKey} />
                             <Input style={sty.input} inputStyle={sty.input} name='wxAppSecret' onChange={this.change} hintText={wxAppSecret ? wxAppSecret : 'AppSecret'} value={wxAppSecret} />
                         </p>
-                        <p style={sty.subtitle}>{'IP白名单设为182.254.215.229和182.254.214.210。'}</p>
-                        <p style={sty.subtitle}>{'"打开左边菜单栏》设置》公众号设置》功能设置》网页授权域名》设置，将授权回调页面域名中中注意事项3的'}<span style={{color:'#2196f3'}}>MP_????.txt</span>{'文件全名填入下框"'}</p>
+                        {/*<p style={sty.subtitle}>{'IP白名单设为182.254.215.229和182.254.214.210。'}</p>*/}
+                        <p style={sty.subtitle}>{'打开左边菜单栏》设置》公众号设置》功能设置》网页授权域名》设置，将授权回调页面域名中中注意事项3的'}<span style={{color:'#2196f3'}}>MP_????.txt</span>{'文件全名填入下框。'}</p>
                         <p style={sty.inputContent}>
                             <Input style={sty.input} inputStyle={sty.input} name='fileName' onChange={this.change} hintText={___.wx_file_name} value={fileName} />  
                         </p>
@@ -1858,163 +1479,693 @@ class Wxbox extends Component {
                         </div>   
                     </div>: null                                                           
                 }
-                {/*<h4 style={sty.h4}>{___.certification}</h4>
-                <Input name='name' onChange={this.change} hintText={name ? name : ___.wx_name} value={name} />
-                <p style={sty.h4}>{___.find_appid}</p>
-                <Input name='wxAppKey' onChange={this.change} hintText={wxAppKey ? wxAppKey : 'AppId'} value={wxAppKey} />
-                <Input name='wxAppSecret' onChange={this.change} hintText={wxAppSecret ? wxAppSecret : 'AppSecret'} value={wxAppSecret} />
-                <p style={sty.h4}>{___.input_file_name}</p>
-                <Input name='fileName' onChange={this.change} hintText={___.wx_file_name} value={fileName} />
-                <p style={sty.h4}>{save_wx_data}</p>
-                <p style={sty.h4}>{'4、' + ___.wx_config_last + text}</p>
-                <FlatButton label={___.cancel} onClick={() => { history.back() }} primary={true} />
-                <FlatButton label={___.save} onClick={this.save} primary={true} />*/}
-                {/*<SonPage open={this.state.show_menu} back={this.goMenu}>
-                    <MenuBox data={(this.state.datas)?this.state.datas.menu:null} goback={this.goMenu}/>
-                </SonPage>*/}
+                
             </div>
         )
     }
 }
-
+//自定义菜单
 class MenuBox extends Component{
     constructor(props, context) {
         super(props, context);
-        this.state=this.getDate(props.data);
+        this.state={
+            button:[],
+            showDilog:false,
+            wx:null,
+            edit:false,
+            name:null,
+            url:null,
+            showurl:false,
+            wxMenu:null,
+            value:0,
+            menuValue:0,
+            menuSort:false
+        }
+        // this.getDate = this.getDate.bind(this);
+        this.addFirstButton = this.addFirstButton.bind(this);
+        this.addSecondButton = this.addSecondButton.bind(this);
+        this.selectFirst = this.selectFirst.bind(this);
+        this.selectSecond = this.selectSecond.bind(this);
+        this.getValueName = this.getValueName.bind(this);
+        this.getValueUrl = this.getValueUrl.bind(this);
+        this.submit = this.submit.bind(this);
+        this.menuValue = this.menuValue.bind(this);
+        // this.test = this.test.bind(this);
+        this.close = this.close.bind(this);
+        this.finish = this.finish.bind(this);
+        this.delete = this.delete.bind(this);
+        this.firstBut = 0;
+        this.secondBut = null;
+        this.value = {};
+        this.flat = 0;
+        this.same = null;
+        
+    }
 
-        this.changeName = this.changeName.bind(this);
-        this.addOne = this.addOne.bind(this);
-        this.deleteOne = this.deleteOne.bind(this);
-        this.changeNames = this.changeNames.bind(this);
-        this.save = this.save.bind(this);
-    }
-    componentWillReceiveProps(nextProps) {
-        this.setState(this.getDate(nextProps.data));   
-    }
-    getDate(data){
-        data=data||{};
-        let _data={
-            menus:data.sub_button||[],
-            name:data.name||___.edit_name,
-            names:''
-        };
-        if(!_data.menus.length)
-            this._url=data.url;
-        return _data;
-    }
+    
 
-    changeName(){
-        W.prompt({
-            text:'',
-            title:___.input_menu_name
-        },'',res=>this.setState({name:res||___.edit_name}));
-    }
 
-    addOne(){
-        W.prompt({
-            text:'',
-            title:___.input_menu_name
-        },'',name=>{
-            if(name)
-                W.prompt({
-                    text:'',
-                    title:___.input_menu_url
-                },'',url=>{
-                    if(url){
-                        let menus=this.state.menus.concat();
-                        menus.unshift({name,url});
-                        this.setState({menus});
+    componentDidMount(){
+        var item = {
+            "menu": {
+                "button": [
+                    {
+                        "type": "view", 
+                        "name": "车主平台", 
+                        "url": "https://user.autogps.cn", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "歌手简介", 
+                        "url": "http://www.soso.com/", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "name": "菜单", 
+                        "sub_button": [
+                            {
+                                "type": "view", 
+                                "name": "搜索", 
+                                "url": "http://www.soso.com/"
+                            }, 
+                            {
+                                "type": "view", 
+                                "name": "美图", 
+                                "url": "http://www.baidu.com/"
+                            }, 
+                            {
+                                "type": "view", 
+                                "name": "小沙皮", 
+                                "url": "http://www.xiezu.com/"
+                            }
+                        ]
                     }
-                });
-        });
-    }
-    deleteOne(name){
-        let menus=this.state.menus.filter(m=>m.name!=name);
-        this.setState({menus});
-    }
-
-    save(){
-        let data;
-        if(!this.state.menus.length){
-            debugger;
-            if(this.state.name!==___.edit_name&&!this._url){
-                W.prompt({
-                    text:'',
-                    title:___.input_menu_url
-                },'',url=>{
-                    this._url=url;
-                    this.save();
-                });
-            }
-            data={
-                "type": "view",
-                "name": this.state.name,
-                "url": this._url
-            };
-        }else{
-            data={
-                "name": this.state.name,
-                "sub_button": this.state.menus.map(m=>Object.assign({},m,{type:'view'}))
+                ]
             }
         }
-        if(data.type&&!data.url)
-            data={none:true};
-
-        let names = this.state.names?this.state.names:'车主服务'
-        Wapi.weixin.update(res=>{
-            Wapi.serverApi.setMenu(res=>{
-                if(!res.errcode)
-                    W.alert(___.update_su,e=>{this.props.goback()});
-                else
-                    W.alert(___.menu_fail);
-            },{
-                wxAppKey:_user.customer.wxAppKey,
-                name: names
-            });
-        },{
-            _wxAppKey:_user.customer.wxAppKey,
-            menu:data
-        });
+        console.log(item,'menu');
+        // this.setState({button:item.menu.button})
+        console.log(this.props.data,'this.opro.datl')
     }
-    changeNames(){
-        W.prompt({
-            text:'',
-            title:___.input_menu_name
-        },'',name=>{
-            this.setState({names:name})
-        });
+
+    componentWillReceiveProps(nextProps){
+        console.log(nextProps,'nextpros.sjd')
+        this.setState({wx:nextProps.data});
+        // this.setState({button:nextProps.data.menu.button||[]})
+        // debugger;
+        if(nextProps&&nextProps.data){
+            Wapi.weixin.get(res => {
+                console.log(res,'resresres');
+                // this.setState({wx:res.data})
+                 this.setState({button:res.data.menu.button||[]})
+            },{
+                wxAppKey:nextProps.data.wxAppKey
+            },{
+                fields:'objectId,uid,name,type,wxAppKey,fileName,menu,wxAppSecret,template'
+            })
+            Wapi.wxMenu.list(res => {
+                // console.log(res,res)
+                this.setState({wxMenu:res.data})
+                if(res.data.length){
+                    this.setState({value:0})
+                    this.value.name = res.data[0].menuName;
+                    this.value.url = res.data[0].menuUrl;
+                }else{
+                    this.setState({value:1})
+                }
+            },{
+                wxAppKey:nextProps.data.wxAppKey
+            })
+        }
+        
+    }
+    addFirstButton(){
+        // console.log(12)
+        // this.state.menu.button.push([]);
+        // console.log(this.state.menu)
+        this.setState({showDilog:true})
+        this.state.button.forEach(ele => {
+            ele.isshow = false
+        })
+        let op = {
+            "type": "view", 
+            "name": "菜单名称", 
+            "url": "", 
+            "isshow":true,
+            "sub_button": [ ]
+        }
+        this.state.button.push(op)
+        this.firstBut = this.state.button.length-1;
+        console.log(this.state.button)
+        this.setState({button:this.state.button});
+        if(this.state.value === 0){
+            if(this.state.wxMenu.length){
+                this.value.name = this.state.wxMenu[0].menuName;
+                this.value.url = this.state.wxMenu[0].menuUrl;
+            }
+        }
+    }
+    addSecondButton(ele,index){
+        // console.log(ele,index);
+        if(ele.sub_button.length){
+            this.setState({showDilog:true})
+            ele.sub_button.forEach(eles => {
+                eles.isshow = false;
+            })
+            let op = {
+                "type": "view", 
+                "name": "二级菜单", 
+                "url": "", 
+                "isshow":true,
+            }
+            ele.sub_button.push(op);
+            this.secondBut = ele.sub_button.length-1
+            // console.log(this.secondBut,'thissecondbut')
+            this.state.button[index] = ele;
+            this.firstBut = index
+            this.setState({button:this.state.button});
+            if(this.state.value === 0){
+                if(this.state.wxMenu.length){
+                    this.value.name = this.state.wxMenu[0].menuName;
+                    this.value.url = this.state.wxMenu[0].menuUrl;
+                }
+            }
+        }else{
+            W.confirm('添加子菜单后，一级菜单的内容将被清除。确定添加子菜单？',e=>{
+                if(e){
+                    this.setState({showDilog:true})
+                    ele.sub_button.forEach(eles => {
+                        eles.isshow = false;
+                    })
+                    let op = {
+                        "type": "view", 
+                        "name": "二级菜单", 
+                        "url": "", 
+                        "isshow":true,
+                    }
+                    ele.sub_button.push(op);
+                    this.secondBut = ele.sub_button.length-1
+                    // console.log(this.secondBut,'thissecondbut')
+                    this.state.button[index] = ele;
+                    this.firstBut = index
+                    this.setState({button:this.state.button});
+                    if(this.state.value === 0){
+                        if(this.state.wxMenu.length){
+                            this.value.name = this.state.wxMenu[0].menuName;
+                            this.value.url = this.state.wxMenu[0].menuUrl;
+                        }
+                    }
+                }else{
+                    return false;
+                }
+            })
+        }
+    }
+    selectFirst(e,i){
+        // if(this.flat<1){
+            // this.flat?this.same == i?this.flat=1:this.flat=0:this.same = i
+            this.state.menuSort?null:this.state.button[i].isshow?this.setState({edit:true}):null;
+            this.state.button.forEach(ele => {
+                ele.isshow = false;
+                ele.sub_button.forEach(e=>{
+                    e.isshow = false;
+                })
+            })
+            this.state.menuSort?null:e.isshow = true;
+            this.state.button[i] = e;
+            this.setState({name:e.name});
+            this.value.name = e.name
+            if(e.sub_button.length){
+                // this.setState({url:'http://'})
+                this.value.url="http://"
+            }else{
+                this.value.url = e.url
+                this.setState({url:e.url});
+                this.setState({showurl:true})
+            }
+            if(this.state.value === 0){
+                if(this.state.wxMenu.length){
+                    this.value.name = this.state.wxMenu[0].menuName;
+                    this.value.url = this.state.wxMenu[0].menuUrl;
+                }
+            }
+            console.log(this.flat,'flat')
+            
+
+            this.setState({button:this.state.button})
+            console.log(e,i);
+            this.firstBut = i;
+            this.flat++;
+        // }
+        
+        
+    }
+    selectSecond(el,id,ele,index){
+        console.log('selectSecond');
+        console.log(el,id,ele,index)
+        ele.sub_button.forEach(e => {
+            e.isshow = false;
+        })
+        this.state.menuSort?null:el.isshow = true
+        ele.sub_button[id] = el;
+        this.state.button[index] = ele
+        this.setState({button:this.state.button})
+
+        this.state.menuSort?null:this.setState({edit:true});
+        this.setState({showurl:true})
+        this.secondBut = id;
+        this.firstBut = index;
+        this.setState({name:el.name})
+        this.setState({url:el.url})
+        this.value.name = el.name;
+        this.value.url = el.url;
+        if(this.state.value === 0){
+            if(this.state.wxMenu.length){
+                this.value.name = this.state.wxMenu[0].menuName;
+                this.value.url = this.state.wxMenu[0].menuUrl;
+            }
+        }
+        // if(this.state.edit){
+
+        // }
+        // this.firstBut = index;
+        // this.secondBut = id;    
+    }
+    getValueName(e,i){
+        this.value.name = i;
+        this.setState({name:i})
+        // console.log(this.value)
+        // if(this.state.edit){
+            
+        // }else{
+            // this.value.name = i;
+        // }
+    }
+    getValueUrl(e,i){
+        this.value.url = i;
+        this.setState({url:i})
+        console.log(this.value);
+    }
+    
+    submit(){
+        // if(this.state.showDilog){
+            if(!this.value.name){
+                W.alert('请输入菜单名称');
+                return;
+            }
+            var reg = /^[a-zA-z]+:\/\/[^\s]*/
+            // console.log(reg.test(this.value.url))
+            
+            if(!this.value.url){
+                W.alert('请输入跳转网址');
+                return
+            }
+            if(!reg.test(this.value.url)){
+                W.alert('请输入正确的网址');
+                return;
+            }
+        
+            console.log(this.firstBut,'flat');
+            let i = this.firstBut;
+            if(typeof this.secondBut == "number" && this.secondBut >= 0){
+                this.state.button[i].sub_button[this.secondBut].name = this.value.name;
+                this.state.button[i].sub_button[this.secondBut].url = this.value.url
+            }else{
+                console.log(this.secondBut);
+                console.log(this.state.button[i])
+                this.state.button[i].name = this.value.name;
+                this.state.button[i].url= this.value.url;
+            }
+        // }else if(this.state.edit){
+
+        // }
+            
+        this.setState({button:this.state.button})
+        // console.log(this.state.button)
+        this.setState({showDilog:false});
+        this.setState({edit:false});
+        this.setState({url:null});
+        this.setState({name:null});
+        this.setState({showurl:false})
+        this.state.wxMenu.length?this.setState({value:0}):this.setState({value:1})
+        this.setState({menuValue:0})
+        this.state.value?this.value = {}:null;
+        this.secondBut = null;
+        this.flat = 0;
+        // this.firstBut = 0;
+        // this.setState({showDilog:false})
+    }
+    close(){
+        if(this.state.showDilog){
+            if(typeof this.secondBut == "number" && this.secondBut >= 0){
+                this.state.button[this.firstBut].sub_button.splice(this.secondBut,1);
+            }else{
+                this.state.button.splice(this.firstBut,1)
+            }
+        }
+        this.setState({button:this.state.button})
+        // console.log(this.state.button,'btt')
+        this.setState({showDilog:false});
+        this.setState({edit:false});
+        this.setState({showurl:false})
+        this.setState({url:null});
+        this.setState({name:null});
+        this.state.wxMenu.length?this.setState({value:0}):this.setState({value:1})
+        this.setState({menuValue:0})
+        this.state.value?this.value = {}:null;
+        this.secondBut = null;
+        this.flat = 0;
+        // this.value = {};
+    }
+    finish(){
+        this.state.button.forEach((ele,index) => {
+            if(ele.sub_button.length){
+                delete ele.url;
+                delete ele.type;
+                ele.sub_button.forEach(e => {
+                    delete e.isshow
+                })
+            }else{
+                if(!ele.url){
+                    W.alert('第'+(index+1)+'个菜单'+ele.name+'未设置链接')
+                }
+            }
+            delete ele.isshow
+        })
+        W.loading(true,'正在更新')
+        Wapi.weixin.update(res => {
+            if(res.status_code == 0){
+                Wapi.serverApi.setMenu(re => {
+                    W.loading(false)
+                    if(!re.errcode){
+                        W.alert(___.update_su);
+                    }
+                    else{
+                        if(this.state.button.length){
+                            W.alert(___.menu_fail);
+                        }else{
+                            W.alert('菜单不能为空，'+___.menu_fail)
+                        }
+                    } 
+                },{
+                    wxAppKey:this.state.wx.wxAppKey
+                })
+            }
+        },{
+            _objectId:this.state.wx.objectId,
+            menu:{'button':this.state.button}
+        })
+        console.log(this.state.button,'this.button');
+        this.setState({button:this.state.button});
+        this.flat = 0;
+    }
+    delete(es,i,ess,j){
+        console.log(es,i,ess,j)
+        if(j >= 0){ //二级菜单
+            W.confirm('确定要删除该菜单？',e => {
+                if(e){
+                    es.sub_button.splice(j,1);
+                    this.state.button[i] = es;
+                    // this.setState({button:this.state.button});
+                    if(!es.sub_button.length){
+                        this.state.button[i].type = 'view';
+                    }
+                    this.setState({button:this.state.button});
+                }else{
+                    return;
+                }
+            })
+        }else{ //以及菜单
+            W.confirm('确定要删除该菜单？',e => {
+                if(e){
+                    this.state.button.splice(i,1)
+                    this.setState({button:this.state.button})
+                }else{
+                    return
+                }
+            })
+        }
+    }
+
+    // onmove(e){
+    //     let event = e||window.event
+    //     console.log(event.clientX,'thismove')
+    // }
+
+    changeValue(e,i,v){
+        this.setState({value:v})
+        if(v === 1){
+            this.value.name = this.state.name;
+            this.value.url = this.state.url
+        }else{
+            if(this.state.wxMenu.length){
+                this.value.name = this.state.wxMenu[0].menuName;
+                this.value.url = this.state.wxMenu[0].menuUrl;
+            }
+            
+        }
+    }
+    menuValue(e,i,v){
+        this.setState({menuValue:v})
+        this.value.name = this.state.wxMenu[v].menuName;
+        this.value.url = this.state.wxMenu[v].menuUrl;
+        console.log(this.value,'this.value')
+    }
+
+    menuSort(){
+        this.setState({menuSort:!this.state.menuSort});
+        this.state.button.forEach(ele =>{
+            ele.isshow = false;
+            ele.sub_button.forEach(e =>{
+                e.isshow = false
+            })
+        })
+        this.setState({button:this.state.button})
+    }
+
+    getPage(e){
+        e.preventDefault();
+        console.log(e.pageX,e.clientX)
+    }
+    getPages(e){
+        console.log(e.pageX,e.clientX)
     }
     render() {
+        // console.log()
+        console.log(this.state.menu,'wxzmenu')
+        const actions = [
+            <FlatButton
+                label="取消"
+                primary={true}
+                onTouchTap={this.close}
+            />,
+            <FlatButton
+                label="确定"
+                primary={true}
+                keyboardFocused={true}
+                onTouchTap={this.submit}
+            />,
+        ];
         let dis=Object.assign({},stys.mi);
         dis.color='#aaa';
-        let menus=this.state.menus.map(m=>(
-            <div key={m.name} style={stys.sm} onClick={e=>this.deleteOne(m.name)}>
-                {m.name}
-            </div>)
-        );
-        menus.unshift(<div key={'add'} style={stys.sm} onClick={this.addOne}>
-            <ContentAdd style={stys.add}/>
-        </div>);
-
-        let names = this.state.names?this.state.names:'车主服务'
+        let  menu = null;
+        let icon1 = {
+            bottom: '-5px',
+            display: 'inline-block',
+            width: 0,
+            height: 0,
+            borderWidth:'6px',
+            borderStyle: 'dashed',
+            borderColor: 'transparent',
+            borderBottomWidth: 0,
+            borderTopColor: '#fafafa',
+            borderTopStyle: 'solid',
+            position: 'absolute',
+            left: '50%',
+            marginLeft: '-6px',
+        }
+        let icon2 = {
+            bottom: '-6px',
+            display: 'inline-block',
+            width: 0,
+            height: 0,
+            borderWidth: '6px',
+            borderStyle: 'dashed',
+            borderColor: 'transparent',
+            borderBottomWidth: 0,
+            borderTopColor: '#d0d0d0',
+            borderTopStyle: 'solid',
+            position: 'absolute',
+            left: '50%',
+            marginLeft: '-6px',
+        }
+        let item = this.state.button.map((ele,index)=>{
+            let its = ele.sub_button.map((el,id) => {
+                return(
+                    <div style={el.isshow?{border:'1px solid #44b549',color:'#44b549',fontSize:14,position:'relative'}:{fontSize:14,position:'relative'}}  key={id} >
+                        <span onClick={() => this.selectSecond(el,id,ele,index)} style={id==4?{margin:'0 5px 0 5px',display:'block'}:{display:'block',margin:'0 5px 0 5px',borderBottom:'1px solid #ccc'}}>{this.state.menuSort?<span>☰</span>:null}{el.name}</span>
+                        {this.state.menuSort?null:<span onClick={() =>{this.delete(ele,index,el,id)}} style={{position:'absolute',top:0,right:3}}><ContentClear style={{height:15,width:15,position:'relative',top:3}}/></span>}
+                    </div>
+                )
+            })
+            this.state.menuSort?null:its.length < 5?its.push(<div key={6} onClick={() =>this.addSecondButton(ele,index)}><ContentAdd style={stys.add} /></div>):null
+            return(<div style={stys.mi} key={index}>
+                        <span  style={ele.isshow?{position:'relative',fontSize:14,border:'1px solid #44b549',color:'#44b549',display:'inline-block',width:'99%',height:'96%',whiteSpace: 'nowrap',textOverflow: 'ellipsis'}:{position:'relative',fontSize:14,display:'inline-block',width:'99%',height:'100%',whiteSpace: 'nowrap',textOverflow: 'ellipsis'}} onClick={()=>this.selectFirst(ele,index)} >
+                            {this.state.menuSort?<span>☰</span>:ele.sub_button.length?<span style={{background:'#44b549',borderRadius:'5px',width:'7px',height: '7px', verticalAlign: 'middle', display: "inline-block",marginRight: '2px',marginTop: '-2px'}}></span>:null}
+                            {ele.name}
+                        </span>
+                        {!this.state.menuSort?<span onClick={() =>{this.delete(ele,index)}} style={{position:'absolute',top:0,right:3}}><ContentClear style={{height:15,width:15,position:'relative',top:3}}/></span>:null}
+                            {/*{*/}
+                                {/*ele.isshow?*/}
+                                <div style={its.length?stys.son_menu:{}}>
+                                    {its}
+                                    {
+                                        !its.length?
+                                        null
+                                        :
+                                        <span>
+                                            <i style={icon2}></i>
+                                            <i style={icon1}></i>
+                                        </span>
+                                    }
+                                </div>
+                                {/*:*/}
+                                {/*null*/}
+                            {/*}*/}
+                    </div>)
+        })
+        console.log(this.state.button,'button')
+        let wxMenu = null;
+        if(this.state.wxMenu){
+            wxMenu = this.state.wxMenu.map((ele,index) => {
+                return(
+                     <MenuItem key={index} value={index} primaryText={ele.menuName} />
+                )
+            })            
+        }
+        let sorts = this.state.button.length>1?false:true
         return (
             <div>
-                <RaisedButton label={___.submit} primary={true} style={stys.save} onClick={this.save}/>
+                <RaisedButton disabled={this.state.menuSort} label={___.submit} primary={true} style={stys.save} onClick={this.state.menuSort?()=>{}:this.finish}/>
+                {/*<RaisedButton disabled={sorts} label="排序" primary={true} style={{display:'block',marginTop:10,width:'40%',marginLeft:'30%'}} onClick={this.menuSort.bind(this)}/>*/}
                 <div style={stys.menu}>
-                    <div style={stys.k}>
+                    <div style={stys.k} onDoubleClick={() =>this.test()}>
                         <HardwareKeyboard/>
                     </div>
-                    <div onClick={this.changeNames} style={stys.mi}>{names}</div>
-                    <div style={stys.mi}>
-                        <span onClick={this.changeName}>{this.state.name}</span>
-                        <div style={stys.sw}>
-                            <div style={stys.son_menu}>
-                                {menus}
-                            </div>
-                        </div>
-                    </div>
-                    <div style={dis}>{___.more}</div>
+                    {item}
+                    {
+                        !this.state.menuSort?(this.state.button.length<3?<div onClick={this.addFirstButton} style={stys.mi}>{this.state.button.length>0?<ContentAdd style={stys.add} />:<span><ContentAdd style={stys.add1}/>添加菜单</span>}</div>:null):null
+                    }
                 </div>
+                <Dialog
+                    title="请输入"
+                    titleStyle={{borderBottom:'none',lineHeight:'43px',height:43,padding:'5px 0',textAlign:'center',fontSize:'16px'}}
+                    actions={actions}
+                    modal={false}
+                    style={{zIndex:1499}}
+                    open={this.state.showDilog}
+                    contentStyle={{width:'85%',zIndex:1499}}
+                    onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
+                    bodyStyle={{padding:'0 24px'}}
+                    actionsContainerStyle={{textAlign:'center',fontSize:'14px',borderTop:0}}
+                    >
+                    <div>
+                        <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.changeValue.bind(this)} >
+                            {
+                                this.state.wxMenu?(
+                                this.state.wxMenu.length?
+                                <MenuItem value={0} primaryText="系统菜单" />
+                                :
+                                <MenuItem value={0} primaryText={null} />)
+                                :
+                                <MenuItem value={0} primaryText={null} />
+                            }
+                            <MenuItem value={1} primaryText="自定义菜单" />
+                        </SelectField>
+                       {
+                            this.state.value==0?
+                            <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.menuValue} >
+                                {wxMenu}
+                            </SelectField>
+                            :
+                            <div>
+                            <TextField
+                                hintText="名称"
+                                style={{ width: '100%' }}
+                                onChange={this.getValueName}
+                            />
+                            <TextField
+                                hintText="链接"
+                                style={{ width: '100%' }}
+                                onChange={this.getValueUrl}
+                            />
+                            </div>
+                       } 
+                    </div>
+                </Dialog>
+                <Dialog
+                    title="编辑"
+                    titleStyle={{borderBottom:'none',lineHeight:'43px',height:43,padding:'5px 0',textAlign:'center',fontSize:'16px'}}
+                    actions={actions}
+                    modal={false}
+                    style={{zIndex:1499}}
+                    open={this.state.edit}
+                    contentStyle={{width:'85%',zIndex:1499}}
+                    onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
+                    bodyStyle={{padding:'0 24px'}}
+                    actionsContainerStyle={{textAlign:'center',fontSize:'16px',borderTop:0}}
+                    >
+                    <div>
+                        {
+                            this.state.showurl?
+                            <div>
+                                <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.changeValue.bind(this)} >
+                                    {
+                                        this.state.wxMenu?(
+                                        this.state.wxMenu.length?
+                                        <MenuItem value={0} primaryText="系统菜单" />
+                                        :
+                                        <MenuItem value={0} primaryText={null} />)
+                                        :
+                                        <MenuItem value={0} primaryText={null} />
+                                    }
+                                    <MenuItem value={1} primaryText="自定义菜单" />
+                                </SelectField>
+                                {
+                                    this.state.value==0?
+                                    <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.menuValue} >
+                                        {wxMenu}
+                                    </SelectField>
+                                    :
+                                    <div>
+                                        <TextField
+                                            hintText="菜单名称"
+                                            value={this.state.name}
+                                            style={{ width: '100%' }}
+                                            onChange={this.getValueName}
+                                        />
+                                        <TextField
+                                            hintText="跳转网页"
+                                            value={this.state.url}
+                                            style={{ width: '100%' }}
+                                            onChange={this.getValueUrl}
+                                        />
+                                    </div>
+                                }
+                            </div>
+                            :
+                            <TextField
+                                hintText="菜单名称"
+                                value={this.state.name}
+                                style={{ width: '100%' }}
+                                onChange={this.getValueName}
+                            />
+                        }
+                    </div>
+                </Dialog>
             </div>
         );
     }
@@ -2130,14 +2281,6 @@ class AuthorizeList extends Component {
         this.backAuth = this.backAuth.bind(this);
     }
     componentDidMount() {
-        // this.setState({ type: 4 })
-        // Wapi.authorize.list(res => {
-        //     console.log(res.data, 'res.data')
-        //     this.setState({ data: res.data })
-        // }, {
-        //     authorizeType: '3',
-        //     actProductId: 4,
-        // })
         this.setState({ type: 4 });
         W.loading('加载中...');
         Wapi.customer.list(res => {
@@ -2192,15 +2335,8 @@ class AuthorizeList extends Component {
         this.setState({ showAuth: 0 })
     }
     render() {
-        // console.log(this.state.showAuth,'hhhhh')
-        // console.log(this.state.data,'获取到的授权表中业务类型')
         return (
             <div style={{ background: '#f7f7f7', minHeight: '100%' }}>
-                {/*<span style={{ display: 'inline-block', lineHeight: '48px', paddingLeft: '16px' }}>扫码挪车</span>
-                <DropDownMenu value={this.state.showAuth} onChange={this.showAuth} underlineStyle={{ borderTop: 0 }} style={{ float: 'right' }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
-                    <MenuItem value={0} primaryText="已授权" />
-                    <MenuItem value={1} primaryText="新增授权" />
-                </DropDownMenu>*/}
                 <div>
                     <Authorized
                         data={this.state.data}
@@ -2222,7 +2358,7 @@ class Authorized extends Component {
         }
         this.check = this.check.bind(this);
         this.search = this.search.bind(this);
-        this.submit = this.submit.bind(this);
+        // this.submit = this.submit.bind(this);
         this.searchKey = '';
         this.data = [];
         this.obj = [];
@@ -2257,39 +2393,39 @@ class Authorized extends Component {
         this.searchKey = val;
         this.forceUpdate();
     }
-    submit() {
-        let custobj = [];
-        let auobj = [];
-        let that = this;
-        // let type = ['营销推广','政企业务','平台运营','扫码移车']
-        W.confirm(___.confirm_remove_authorize,function(b){
-        	if(b){
-                that.data.forEach(ele => {
-                    custobj.push(ele.applyCompanyId);
-                    auobj.push(ele.objectId);
-                })
-                Wapi.authorize.update(res => {
-                    // console.log(res,'ddddfdfdfd')
-                    // history.back();
-                    Wapi.customer.update(res => {
-                        // history.back();
-                        // this.props.back()
-                        Wapi.authorize.list(res => {
-                            console.log(res.data, 'refresh authorize list.')
-                            that.props.data = res.data;
-                            that.forceUpdate();
-                        }, {
-                            authorizeType: 3,
-                            actProductId: 4,
-                        })
-                    }, {
-                            _objectId: custobj.join('|'),
-                            Authorize: '-3'
-                        })
-                }, { _objectId: auobj.join('|'), status: 2 })
-        	}
-        });
-    }
+    // submit() {
+    //     let custobj = [];
+    //     let auobj = [];
+    //     let that = this;
+    //     // let type = ['营销推广','政企业务','平台运营','扫码移车']
+    //     W.confirm(___.confirm_remove_authorize,function(b){
+    //     	if(b){
+    //             that.data.forEach(ele => {
+    //                 custobj.push(ele.applyCompanyId);
+    //                 auobj.push(ele.objectId);
+    //             })
+    //             Wapi.authorize.update(res => {
+    //                 // console.log(res,'ddddfdfdfd')
+    //                 // history.back();
+    //                 Wapi.customer.update(res => {
+    //                     // history.back();
+    //                     // this.props.back()
+    //                     Wapi.authorize.list(res => {
+    //                         console.log(res.data, 'refresh authorize list.')
+    //                         that.props.data = res.data;
+    //                         that.forceUpdate();
+    //                     }, {
+    //                         authorizeType: 3,
+    //                         actProductId: 4,
+    //                     })
+    //                 }, {
+    //                         _objectId: custobj.join('|'),
+    //                         Authorize: '-3'
+    //                     })
+    //             }, { _objectId: auobj.join('|'), status: 2 })
+    //     	}
+    //     });
+    // }
     showSC(obj){
         this.setState({obj:obj})
         this.setState({showSC:true});
@@ -2396,25 +2532,29 @@ class CustMSC extends Component {
         let item = null;
         let that = this;
         if(this.state.data){
-        item = this.state.data.filter(function(ele){
-            return (that.searchKey === '' || ele.name.indexOf(that.searchKey) > -1)
-        });
-        item = item.map((ele,index) => {
-            return(<CsItem key={index} data={ele}/>)
-        })
+            item = this.state.data.filter(function(ele){
+                return (that.searchKey === '' || ele.name.indexOf(that.searchKey) > -1)
+            });
+            item = item.map((ele,index) => {
+                return(<CsItem key={index} data={ele}/>)
+            })
         }
+        let width = window.screen.width;
+        let width1 = (width - 20)+'px'
         return(
-             <div style={show?{display:'none'}:{display:'block',background:'#f7f7f7',minHeight:'100vh'}}>
+             <div style={show?{display:'none'}:{display:'block',background:'#f7f7f7',minHeight:'100vh',paddingBottom:20}}>
                 <div style={{lineHeight:'48px',paddingLeft:'5px'}}>{this.state.name}</div>
-                <TextField
-                    hintText={___.search}
-                    onChange={this.search}
-                    style={{ width: '100%', background: '#fff' }}
-                    hintStyle={{ paddingLeft: 10 }}
-                    inputStyle={{ padding: '0px 10px 0px 10px' }}
-                    underlineStyle={{ bottom: '0px', borderBottomColor: '#f7f7f7' }}
-                    underlineFocusStyle={{ borderBottomColor: '#2196f3' }}
-                />
+                <div style={{width:'100%',background:'#fff'}}>
+                    <TextField
+                        hintText={___.search}
+                        onChange={this.search}
+                        style={{ width: width, background: '#fff' }}
+                        hintStyle={{ paddingLeft: 10 }}
+                        inputStyle={{ padding: '0px 10px 0px 10px' ,width:width1}}
+                        underlineStyle={{ bottom: '0px', borderBottomColor: '#f7f7f7' }}
+                        underlineFocusStyle={{ borderBottomColor: '#2196f3' }}
+                    />
+                </div>
                 {
                     item
                 }
@@ -2429,7 +2569,9 @@ class CsItem extends Component {
         super(props,context)
         this.state = {
             data:props.data,
-            qrD:null
+            qrD:null,
+            bind_num:null,
+            move_num:null
         }
         this.getNum = this.getNum.bind(this);
     }
@@ -2477,10 +2619,16 @@ class CsItem extends Component {
         Wapi.qrDistribution.list(res => {
             // this.setState({qrD:res.data})
             let sum = 0;
+            let bind_num = 0;
+            let move_num = 0;
             res.data.forEach(ele => {
-                sum += ele.num||0
+                sum += ele.num||0;
+                bind_num += ele.bind_num||0;
+                move_num += ele.move_num||0
             })
-            this.setState({qrD:sum})
+            this.setState({qrD:sum});
+            this.setState({bind_num:bind_num});
+            this.setState({move_num:move_num})
         },op)
     }
     // componentDidMount(){
@@ -2517,264 +2665,15 @@ class CsItem extends Component {
                     </div>
                     <div style={{fontSize:'12px',color:'#666'}}>
                         <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span style={{color:'#000'}}>{this.state.qrD||0}</span></span>
-                        <span style={{display:'inline-block',width:width}}>{'绑定'+'：'}<span style={{color:'#000'}}>{bind_num||0}</span></span>
-                        <span style={{display:'inline-block',width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{move_num||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'绑定'+'：'}<span style={{color:'#000'}}>{this.state.bind_num||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{this.state.move_num||0}</span></span>
                     </div>
                 </div>
             </div>
         )
     }
 }
-//新增授权
-class Authorizing extends Component {
-    constructor(props, context) {
-        super(props, context)
-        this._data = {
-            custTypeId: '1|5',
-            appId: WiStorm.config.objectId
-        }
-        this.state = {
-            company: [],
-            total: 0,
-            search: [],
-            addAuthorize: []
-        }
-        this.page = 1;
-        this.search = this.search.bind(this);
-        this.submit = this.submit.bind(this);
-        this.addAuthorize = [];
-    }
-    componentDidMount() {
-        Wapi.customer.list(res => {
-            this.setState({ company: res.data });
-            this.setState({ total: res.total })
-        }, this._data, { page_no: this.page })
 
-        window.addEventListener('addAutho', e => {
-            this.addAuthorize = e.params
-        })
-
-
-    }
-    search(e, val) {
-        // this.data=val;
-        this._data.name = "^" + val
-        // console.log(e,val,'dd')
-        Wapi.customer.list(res => {
-            console.log(res.data, 'res');
-            this.setState({ search: res.data });
-        }, this._data)
-    }
-    loadNextPage() {
-        let arr = this.state.company;
-        this.page++;
-        Wapi.customer.list(res => {
-            this.setState({ company: arr.concat(res.data) });
-        }, this._data, {
-                page_no: this.page
-            });
-    }
-
-    submit() {
-        console.log(2)
-        // this.watch()
-        console.log(this.addAuthorize, '授权')
-        var create_json = {
-            data: []
-        };
-        let getdata = this.addAuthorize;
-        // let data = [];
-        let auData = [];//存储已经存在在授权表但已暂停授权
-        this.props.data.forEach(ele => {
-            if (ele.status == 2) {
-                // console.log(ele,'elelee')
-                this.addAuthorize.forEach(e => {
-                    if (ele.applyCompanyId == e.objectId) {
-                        // console.log(e,'eeeeeeeee')
-                        getdata.splice(getdata.indexOf(e), 1)
-                        // console.log()
-                        // data.concat(this.addAuthorize.splice(getdata.indexOf(e),1))
-                        // data.push(e)
-                        auData.push(ele)
-                    }
-                })
-            }
-        })
-
-        // console.log(data,'customer信息')
-        console.log(auData, 'auData')
-        getdata.map(ele => {
-            var op = {
-                actProductId: this.props.type,
-                applyCompanyId: ele.objectId,
-                applyCompanyName: encodeURIComponent(ele.name),
-                applyUserName: encodeURIComponent(ele.contact),
-                authorizeType: 3,
-                status: 1
-            }
-            create_json.data.push(op)
-        })
-        console.log(create_json, 'addcreate')
-        // let type = ['营销推广','政企业务','平台运营','扫码移车']
-        if (auData.length > 0) {
-            let obj = [];
-            let auobj = [];
-            // data.forEach(ele => {
-            //     obj.push(ele.objectId)
-            // })
-            auData.forEach(ele => {
-                auobj.push(ele.objectId);
-                obj.push(ele.applyCompanyId)
-            })
-            console.log(obj, 'obje')
-            Wapi.authorize.update(res => {
-                // history.back();
-                Wapi.customer.update(res => {
-                    this.props.back()
-                    history.back();
-                }, {
-                        _objectId: obj.join('|'),
-                        Authorize: '+' + (this.props.type - 1) + ''
-                    })
-            }, { _objectId: auobj.join('|'), status: 1 })
-        }
-        if (this.addAuthorize.length) {
-            let cpdata = [];
-            this.addAuthorize.forEach(ele => {
-                cpdata.push(ele.objectId)
-            })
-
-            Wapi.authorize.addBatch(res => {
-                // history.back();
-                Wapi.customer.update(res => {
-                    this.props.back()
-                    history.back();
-                }, {
-                        _objectId: cpdata.join('|'),
-                        Authorize: '+' + (this.props.type - 1) + ''
-                    })
-            }, create_json)
-        }
-
-    }
-    render() {
-        // console.log(this.state.company,'当前的品牌/代理')
-        // console.log(this.state.search,'搜索的品/代')
-        console.log(this.props.type, '授权类型')
-        // console.log(this.props.data,'ddffss')
-        console.log(this.addAuthorize, '授权')
-        let listDis = {};
-        let searchList = null;
-
-        let addCompany = this.state.company
-        // if(this.state.search.length){
-
-        // }
-        // 筛选authorize表中是否有公司已授权
-        this.props.data.forEach(ele => {
-            if (ele.status == 1) {
-                addCompany.forEach((eles, index) => {
-                    if (eles.objectId == ele.applyCompanyId) {
-                        addCompany.splice(index, 1)
-                    }
-                })
-            }
-        })
-        // console.log(addCompany,'筛选过后')
-        if (this.state.search.length) {
-            let searchComp = this.state.search
-            this.props.data.forEach(ele => {
-                if (ele.status == 1) {
-                    searchComp.forEach((eles, index) => {
-                        if (eles.objectId == ele.applyCompanyId) {
-                            searchComp.splice(index, 1)
-                        }
-                    })
-                }
-            })
-            searchList = <NoAuItem data={searchComp} />;
-            listDis.display = 'none';
-        }
-        return (
-            <div >
-                <div style={{ background: '#fff' }}>
-                    <TextField
-                        hintText={___.search}
-                        onChange={this.search}
-                        style={{ width: '100%', background: '#fff' }}
-                        hintStyle={{ paddingLeft: 10 }}
-                        inputStyle={{ paddingLeft: 10 }}
-                        underlineStyle={{ bottom: '0px', borderBottomColor: '#f7f7f7' }}
-                        underlineFocusStyle={{ borderBottomColor: '#2196f3' }}
-                    />
-                    <div style={listDis}>
-                        <NoAulist
-                            max={this.state.total}
-                            limit={20}
-                            data={addCompany}
-                            next={this.loadNextPage}
-                        />
-                    </div>
-                    {searchList}
-                </div>
-                <div style={{ width: '100%', textAlign: 'center', marginTop: '20px', paddingBottom: 20 }}>
-                    <RaisedButton label="确认授权" onClick={this.submit} secondary={true} />
-                </div>
-            </div>
-        );
-    }
-}
-
-class NoAuItem extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            data: props.data
-        }
-        this.check = this.check.bind(this);
-        this.data = [];
-    }
-    componentWillReceiveProps(nextProps) {
-        this.setState({ data: nextProps.data })
-    }
-    check(e, val) {
-        if (val) {
-            this.data.push(JSON.parse(e.target.value))
-        } else {
-            let dele = null;
-            this.data.forEach((ele, index) => {
-                if (ele.objectId == JSON.parse(e.target.value).objectId) {
-                    dele = index;
-                }
-            })
-            console.log(dele);
-            this.data.splice(dele, 1)
-            // this.data.splice(this.data.indexOf(JSON.parse(e.target.value),1))
-        }
-        console.log(this.data, 'data')
-        W.emit(window, 'addAutho', this.data)
-    }
-    render() {
-        // console.log(this.state.data,'thi.pfr.d')
-        let items = this.state.data.map((ele, index) => {
-            // let data = [];
-            // data.push(ele)
-            return (<MenuItem
-                rightIcon={<Checkbox onCheck={this.check} value={JSON.stringify(ele)} style={{ float: 'right' }} />}
-                primaryText={ele.name}
-                key={index}
-                value={ele}
-                style={{ borderBottom: '1px solid #f7f7f7', background: '#fff' }}
-            />)
-        });
-        return (
-            <div >
-                {items}
-            </div>
-        )
-    }
-}
-let NoAulist = AutoList(NoAuItem);
 
 // 邀约注册
 class QrBox extends Component{
@@ -3051,7 +2950,9 @@ class Item extends Component{
         super(props,context)
         this.state = {
             data:props.data,
-            qrD:null
+            qrD:null,
+            bind_num:0,
+            move_num:0
         }
         this.getNum = this.getNum.bind(this);
     }
@@ -3099,10 +3000,16 @@ class Item extends Component{
         Wapi.qrDistribution.list(res => {
             // this.setState({qrD:res.data})
             let sum = 0;
+            let move_num = 0;
+            let bind_num = 0;
             res.data.forEach(ele => {
-                sum += ele.num||0
+                sum += ele.num||0;
+                move_num += ele.move_num||0;
+                bind_num += ele.bind_num ||0;
             })
-            this.setState({qrD:sum})
+            this.setState({qrD:sum});
+            this.setState({bind_num:bind_num})
+            this.setState({move_num:move_num})
         },op)
     }
     render(){
@@ -3116,8 +3023,10 @@ class Item extends Component{
         let custTypeId = this.state.data.custTypeId;
         let custType = this.state.data.custType;
         let subscribe = this.state.data.subscribe||0;
-        let bind_num = (this.state.data.car_bind + this.state.data.onecar_bind)||0;
-        let move_num = (this.state.data.car_move + this.state.data.onecar_move)||0
+        // let bind_num = (this.state.data.car_bind + this.state.data.onecar_bind)||0;
+        // let move_num = (this.state.data.car_move + this.state.data.onecar_move)||0
+        let bind_num = this.state.bind_num||0;
+        let move_num = this.state.move_num||0;
         return(
             <div>
                <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 10px',background:'#fff'}}>
@@ -3144,91 +3053,5 @@ class Item extends Component{
                 </div>
             </div>
         )
-    }
-}
-
-
-class CustomerTotal extends Component{
-    constructor(props,context){
-        super(props,context)
-        this.state = {
-            count:null,
-            bind_num:null,
-            move_num:null
-        }
-        let par={
-            "group":{
-                "_id":{"parentId":"$parentId"},
-                "count":{"$sum":1},
-                "onecar_bind":{"$sum":"$onecar_bind"},
-                "onecar_move":{"$sum":"$onecar_move"},
-                "car_bind":{"$sum":"$car_bind"},
-                "car_move":{"$sum":"$car_move"}
-            },
-            "sorts":"parentId",
-            parentId:this.props.parentId || _user.customer.objectId,
-        }
-        Wapi.customer.aggr(res=>{
-            console.log(res,'get customer car move total')
-            this.setState({count:res.data.count || 0})
-            this.setState({bind_num:(res.data.onecar_bind||0)+(res.data.car_bind||0)})
-            this.setState({move_num:(res.data.onecar_move||0)+(res.data.car_move||0)})           
-        },par);
-    }
-    componentWillReceiveProps(nextProps){
-
-    }
-
-    render(){
-        let item = null;
-        let width = (window.screen.width-32)/3+'px'
-        let count = this.state.count;
-        let bind_num = this.state.bind_num;
-        let move_num = this.state.move_num
-        return(
-            count !== null ? 
-            <div>
-               <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 16px',background:'#fff'}}>
-                    <div style={{fontSize:'12px',color:'#666'}}>
-                        <span style={{display:'inline-block',width:width}}>{'客户'+'：'+(count||0)}</span>
-                        <span style={{display:'inline-block',width:width}}>{'绑定'+'：'+(bind_num||0)}</span>
-                        <span style={{display:'inline-block',width:width}}>{'挪车'+'：'+(move_num||0)}</span>
-                    </div>
-                </div>
-            </div>:
-            null
-        )
-    }
-}
-
-//平台总览右上角的菜单
-class RightIconMenu extends Component{    
-    render() {
-        let item=[
-            <MenuItem key={0} onTouchTap={()=>this.props.onClick(0)}>配置公众号</MenuItem>,
-            // <MenuItem key={2} onTouchTap={()=>this.props.onClick(2)}>挪车贴管理</MenuItem>,
-            <MenuItem key={1} onTouchTap={()=>this.props.onClick(1)}>自定义菜单</MenuItem>
-        ];
-        let items=item;
-        return (
-            <IconMenu
-                iconButtonElement={
-                    <IconButton style={{
-                        width: 'auto',
-                        height: 'auto',
-                        padding: '11px 11px 0px 0px'
-                    }}>
-                        <MoreVertIcon/>
-                    </IconButton>
-                }
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                style={{
-                    float: 'right'
-                }}
-            >
-                {items}
-            </IconMenu>
-        );
     }
 }
