@@ -339,7 +339,7 @@ class DList extends Component{
         Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
             let linkUrl='';
             if(res.data){
-                linkUrl='http://autogps.cn/?s='+res.data.id;
+                linkUrl='http://t.autogps.cn/?s='+res.data.id;
                 // history.replaceState('home.html','home.html','home.html');
                 W.fixPath();
                 window.location=linkUrl;
@@ -347,7 +347,7 @@ class DList extends Component{
             }else{
                 Wapi.qrLink.add(re=>{
                     let _id=changeToLetter(re.autoId);
-                    linkUrl='http://autogps.cn/?s='+_id;
+                    linkUrl='http://t.autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
                         // history.replaceState('home.html','home.html','home.html');
                         W.fixPath();

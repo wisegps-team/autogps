@@ -43,7 +43,7 @@ let qrLinkData={
 let wx_app_id=W.getCookie('current_wx');
 let data=Object.assign({},qrLinkData);
 let custType=(_user.customer.custTypeId==1)?5:8;
-data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+wx_app_id;
+data.url=location.origin+'/?register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+WiStorm.config.wx_app_id;
 if(_user.employee){
     data.url=data.url+'&managerId='+_user.employee.objectId;
 }
@@ -85,7 +85,7 @@ Wapi.qrLink.add(res=>{
 // },qrLinkData);
 
 function setUrl(id){
-    sUrl='http://autogps.cn/?s='+id;
+    sUrl='https://t.autogps.cn/?s='+id;
     W.emit(thisView,'sUrlIsReady');//触发事件
 }
 
@@ -107,11 +107,17 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
-    // history.replaceState('home.html','home.html','home.html');
-    W.fixPath();
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
-    W.emit(thisView,'setShareOver');
+    // // history.replaceState('home.html','home.html','home.html');
+    // W.fixPath();
+    // wx.onMenuShareTimeline(op);
+    // wx.onMenuShareAppMessage(op);
+
+    let data = {};
+    data.op = op;
+    // data.share_url = sUrl;
+    W.setCookie('share_data',JSON.stringify(data));
+    top.location = WiStorm.root + "wx_share.html"
+    // W.emit(thisView,'setShareOver');
 }
 
 
@@ -275,9 +281,15 @@ class UserItem extends Component{
             let str=this.props.data.parentMng.find(ele=>ele.includes(_user.customer.objectId));
             if(str){
                 let managerId = str.split('in')[0];
+                // console.log(managerId,_managers)
                 manager=_managers.find(ele=>ele.objectId==managerId);
+                if(!manager){
+                    manager={name:___.no_select}
+                }
+                // console.log(manager,'manager')
             }
         }
+        // console.log(manager,'manager')
         let tr=(<div style={cust_item_sty.tab}>
                 <span style={{marginRight:'30px'}}>{___.business_namager}</span>
                 <span>{manager.name}</span>
@@ -403,6 +415,7 @@ class QrBox extends Component{
         if(W.native)
             askSetShare();
         else{
+            // askSetShare(); //测试
             W.toast(___.ready_url);
             window.addEventListener('nativeSdkReady',askSetShare);
         }

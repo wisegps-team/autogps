@@ -155,12 +155,12 @@ class ActivityList extends Component {
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
                 if(res.data){
-                    linkUrl='http://autogps.cn/?s='+res.data.id;
+                    linkUrl='https://t.autogps.cn/?s='+res.data.id;
                     setWxShare(linkUrl);
                 }else{
                     Wapi.qrLink.add(re=>{
                         let _id=changeToLetter(re.autoId);
-                        linkUrl='http://autogps.cn/?s='+_id;
+                        linkUrl='https://t.autogps.cn/?s='+_id;
                         Wapi.qrLink.update(json=>{
                             setWxShare(linkUrl);
                         },{
@@ -209,11 +209,16 @@ class ActivityList extends Component {
                     cancel: function(){}
                 }
                 // history.replaceState('home.html','home.html','home.html');
-                W.fixPath();
-                wx.onMenuShareTimeline(op);
-                wx.onMenuShareAppMessage(op);
-                setShare=null;
-                W.alert(___.share_activity);
+                let data = {};
+                data.op = op;
+                // data.share_url = sUrl;
+                W.setCookie('share_data',JSON.stringify(data));
+                top.location = WiStorm.root + "wx_share.html"
+                // W.fixPath();
+                // wx.onMenuShareTimeline(op);
+                // wx.onMenuShareAppMessage(op);
+                // setShare=null;
+                // W.alert(___.share_activity);
             }
         }
         if(W.native){

@@ -57,7 +57,7 @@ function AddQrLink(custT,callback){
 
 
 function setUrl(id){
-    sUrl='http://autogps.cn/?s='+id;
+    sUrl='https://t.autogps.cn/?s='+id;
     //测试用
     // sUrl='http://h5test.bibibaba.cn/url.php?s='+id
     W.emit(thisView,'sUrlIsReady');//触发事件
@@ -83,11 +83,16 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
-    // history.replaceState('home.html','home.html','home.html');
-    W.fixPath();
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
-    W.emit(thisView,'setShareOver');
+    // // history.replaceState('home.html','home.html','home.html');
+    // W.fixPath();
+    // wx.onMenuShareTimeline(op);
+    // wx.onMenuShareAppMessage(op);
+    let data = {};
+    data.op = op;
+    // data.share_url = sUrl;
+    W.setCookie('share_data',JSON.stringify(data));
+    top.location = WiStorm.root + "wx_share.html"
+    // W.emit(thisView,'setShareOver');
 }
 
 class App extends Component {

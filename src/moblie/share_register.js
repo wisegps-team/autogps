@@ -58,7 +58,7 @@ class App extends Component {
         Wapi.qrLink.add(res=>{
             Wapi.qrLink.get(r=>{
                 let id=changeToLetter(r.data.i);
-                this.data.sUrl='http://autogps.cn/?s='+id;
+                this.data.sUrl='https://t.autogps.cn/?s='+id;
                 Wapi.qrLink.update(()=>{
                     W.loading(false);
                     this.qrHide=false;
@@ -84,6 +84,7 @@ class App extends Component {
         if(W.native)
             this.setShare();
         else{
+            // this.setShare();
             this.setState({show:false});
             window.addEventListener('nativeSdkReady',e=>this.setShare());
         }
@@ -99,11 +100,16 @@ class App extends Component {
             success: function(){},
             cancel: function(){}
         }
-        // history.replaceState('home.html','home.html','home.html');
-        W.fixPath();
-        wx.onMenuShareTimeline(op);
-        wx.onMenuShareAppMessage(op);
-        this.setState({show:true});
+        // // history.replaceState('home.html','home.html','home.html');
+        // W.fixPath();
+        // wx.onMenuShareTimeline(op);
+        // wx.onMenuShareAppMessage(op);
+        let data = {};
+        data.op = op;
+        // data.share_url = this.data.sUrl;
+        W.setCookie('share_data',JSON.stringify(data));
+        top.location = WiStorm.root + "wx_share.html"
+        // this.setState({show:true});
     }
 
     render() {

@@ -55,7 +55,7 @@ Wapi.qrLink.add(res=>{
 },data);
 
 function setUrl(id){
-    sUrl='http://autogps.cn/?s='+id;
+    sUrl='https://t.autogps.cn/?s='+id;
     // sUrl='http://h5test.bibibaba.cn/url.php?s='+id;
     W.emit(thisView,'sUrlIsReady');//触发事件
 }
@@ -69,7 +69,7 @@ function askSetShare() {
 }
 
 function setShare(){
-    let name=_user.employee?_user.employee.name:_user.customer.contact;
+    let name=(_user.employee?_user.employee.name:_user.customer.contact)||_user.customer.name;
     var op={
         title: name+'的'+___.invite_regist, // xxx的邀约注册
         desc: _user.customer.name, // 分享描述
@@ -78,11 +78,17 @@ function setShare(){
         success: function(){},
         cancel: function(){}
     }
-    // history.replaceState('home.html','home.html','home.html');
-    W.fixPath();
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
-    W.emit(thisView,'setShareOver');
+    // // history.replaceState('home.html','home.html','home.html');
+    // W.fixPath();
+    // wx.onMenuShareTimeline(op);
+    // wx.onMenuShareAppMessage(op);
+
+    let data = {};
+    // data.share_url = sUrl;
+    data.op = op;
+    W.setCookie('share_data',JSON.stringify(data));
+    top.location = WiStorm.root + "wx_share.html"
+    // W.emit(thisView,'setShareOver');
 }
 
 class App extends Component {
@@ -1522,6 +1528,7 @@ class QrBox extends Component{
         if(W.native)
             askSetShare();
         else{
+            askSetShare()
             W.toast(___.ready_url);
             window.addEventListener('nativeSdkReady',askSetShare);
         }

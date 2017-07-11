@@ -115,13 +115,18 @@ class App extends Component {
             "sorts":"activityId",
             sellerId:_user.employee?_user.employee.objectId:_user.customer.objectId,
         }
+        // let op = {
+        //     objectId:
+        // }
+        let objectId = null;
+        _user.customer.parentId.length?(objectId = _user.customer.parentId.join('|')+'|'+_user.customer.objectId):(objectId=_user.customer.objectId)
         Wapi.booking.aggr(resAggr=>{
             this.booking=resAggr.data;
             Wapi.customer.list(res=>{
                 this._parents=res.data||[];
                 this.getData();
             },{
-                objectId:_user.customer.parentId.join('|')+'|'+_user.customer.objectId
+                objectId:objectId
             });
         },par);
         // this.getData();
@@ -387,7 +392,7 @@ class DList extends Component{
         Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
             let linkUrl='';
             if(res.data && res.data.id){
-                linkUrl='http://autogps.cn/?s='+res.data.id;
+                linkUrl='https://t.autogps.cn/?s='+res.data.id;
                 // history.replaceState('home.html','home.html','home.html');
                 W.fixPath();
                 window.location=linkUrl;
@@ -395,7 +400,7 @@ class DList extends Component{
             }else{
                 Wapi.qrLink.add(re=>{
                     let _id=changeToLetter(re.autoId);
-                    linkUrl='http://autogps.cn/?s='+_id;
+                    linkUrl='https://t.autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
                         // history.replaceState('home.html','home.html','home.html');
                         W.fixPath();
@@ -411,7 +416,7 @@ class DList extends Component{
                     sellerId:String(data._sellerId),
                     uid:String(data.uid),
                     type:3,
-                    url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                    url:WiStorm.root+'action.html?intent=logout'
                         +'&uid='+data.uid
                         +'&sellerId='+data._sellerId
                         +'&activityId='+data.objectId
@@ -471,13 +476,19 @@ class DList extends Component{
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
                 if(res.data && res.data.id){
-                    linkUrl='http://autogps.cn/?s='+res.data.id;
+                    linkUrl='https://t.autogps.cn/?s='+res.data.id;
+                    data.share_url = linkUrl;
+                    // W.setCookie('share_data',JSON.stringify(data));
+                    // top.location = WiStorm.root + "wx_share.html"
                     setWxShare(linkUrl);
                 }else{
                     Wapi.qrLink.add(re=>{
                         let _id=changeToLetter(re.autoId);
-                        linkUrl='http://autogps.cn/?s='+_id;
+                        linkUrl='https://t.autogps.cn/?s='+_id;
                         Wapi.qrLink.update(json=>{
+                            data.share_url = linkUrl;
+                            // W.setCookie('share_data',JSON.stringify(data));
+                            // top.location = WiStorm.root + "wx_share.html"
                             setWxShare(linkUrl);
                         },{
                             _objectId:re.objectId,
@@ -489,7 +500,7 @@ class DList extends Component{
                         sellerId:String(data._sellerId),
                         uid:String(data.uid),
                         type:3,
-                        url:WiStorm.root+'action.html?intent=logout&action='+encodeURIComponent(data.url)
+                        url:WiStorm.root+'action.html?intent=logout'
                             +'&uid='+data.uid
                             +'&sellerId='+data._sellerId
                             +'&activityId='+data.objectId
@@ -573,36 +584,51 @@ class DList extends Component{
                             console.log(pro);
                         },par);
                     }
-
-                    var opTimeLine={
-                        title: data.name, // 分享标题
-                        desc: data.offersDesc, // 分享描述
-                        link: url,
-                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                        success: function(){
-                            timelineSuccess();
-                        },
-                        cancel: function(){}
-                    }
-                    var opMessage={
-                        title: data.name, // 分享标题
-                        desc: data.offersDesc, // 分享描述
-                        link: url,
-                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                        success: function(){
-                            messageSuccess();
-                        },
-                        cancel: function(){}
-                    }
-                    // console.log(opTimeLine);
-                    // console.log(opMessage);
-                    // history.replaceState('home.html','home.html','home.html');
-                    W.fixPath();
-                    // window.location=url;
-                    wx.onMenuShareTimeline(opTimeLine);
-                    wx.onMenuShareAppMessage(opMessage);
+                    // console.log(params);
+                    // debugger;
+                    data.par = Object.assign({},params);
+                    // JSON.stringify(data.par)
+                    W.setCookie('share_data',JSON.stringify(data));
+                    top.location = WiStorm.root + "wx_share.html"
+                    // window.addEventListener('wx_shares',e=>{
+                    //     console.log(e,'1')
+                    //     if(e.params.type == 0){
+                    //         messageSuccess();
+                    //         console.log(1)
+                    //     }else if(e.params.type == 1){
+                    //         timelineSuccess();
+                    //         console.log(2)
+                    //     }
+                    // })
+                    // var opTimeLine={
+                    //     title: data.name, // 分享标题
+                    //     desc: data.offersDesc, // 分享描述
+                    //     link: url,
+                    //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    //     success: function(){
+                    //         timelineSuccess();
+                    //     },
+                    //     cancel: function(){}
+                    // }
+                    // var opMessage={
+                    //     title: data.name, // 分享标题
+                    //     desc: data.offersDesc, // 分享描述
+                    //     link: url,
+                    //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    //     success: function(){
+                    //         messageSuccess();
+                    //     },
+                    //     cancel: function(){}
+                    // }
+                    // // console.log(opTimeLine);
+                    // // console.log(opMessage);
+                    // // history.replaceState('home.html','home.html','home.html');
+                    // W.fixPath();
+                    // // window.location=url;
+                    // wx.onMenuShareTimeline(opTimeLine);
+                    // wx.onMenuShareAppMessage(opMessage);
                     // setShare=null;
-                    that.context.share(data);
+                    // that.context.share(data);
                 }
 
             }

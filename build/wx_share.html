@@ -1,0 +1,178 @@
+<!--
+	作者：小吴
+	时间：2016-08-01
+	描述：移动端应用主页
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+			
+		<!--<script>
+			var config={
+				src:'src',    //静态资源根目录
+				defaultModule:'home_seller.js',//主页面模块
+				loading:'<div class="loader"><div></div><div></div><div></div><span>正在加载</span></div>',//模块加载中显示的内容，可以是html
+				animation:0  //0：双动画模式（转场时两个模块均有动画） 1：单动画模式（只有入或者只有出的动画）
+			}
+		</script>-->
+		<script src="./wslib/WiStorm.js"></script>
+        <script src="./common.js"></script>
+        <script src="src/feedback.js"></script>
+        
+		<script>
+			document.write('<script src="./_WiStorm.js?r=' + Math.random() + '&u=..\/..\/"><\/script>');
+		</script>			
+		<!--<script src="../../common.js"></script>-->
+		<script src="https://lib.chease.cn/common.js"></script>
+		<script src="https://lib.chease.cn/lib.js"></script>	
+		<script>
+			document.write('<script src="../../_common.js?r=' + Math.random() + '&u=..\/..\/"><\/script>');
+		</script>
+		<!--<script src="../../wslib/launcher.js?v=1.2"></script>-->
+		<script src='wslib/toolkit/WxSdk.js' async="async"></script>
+        <!--<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
+		<script type="text/javascript">
+			document.write('<title>'+'分享'+'</title>');
+		</script>
+        <style>
+            body{
+                margin: 0;
+                /*display: flex;*/
+                /*align-items: center; 定义body的元素垂直居中*/
+                /*justify-content: center; 定义body的里的元素水平居中*/
+            }
+            .header{
+                /* margin-top: 146px; */
+                height: 100vh;
+                /* position: relative; */
+                /* top: 50%; */
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                /* margin-top: 50vh; */
+                padding-top: 25vh;
+            }
+            .img {
+                width: 100%;
+                display: block;
+            }
+            .back {
+                text-align: center;
+                display: block;
+                width: 100%;
+            }
+            .return {
+                width:100px;
+                height: 30px;
+                line-height: 30px;
+                border-radius:4px;
+                border:solid 1px #ff9900;
+                color:#ff9900;
+                position: relative;
+                left:50%;
+                margin-left: -50px
+            }
+        </style>
+	</head>
+	<body>
+        <div class="header">
+            <img src='./img/shareTo.jpg' class="img"/>
+                <br/>
+            <div class="back">
+                <div class="return" id="back">
+                    返回
+                </div>
+            </div>
+        </div>
+	</body>
+    <script>
+        window.onload = function(){
+            document.getElementById('back').addEventListener('click',() => {
+                // history.back();
+                top.location = 'https://wx.autogps.cn/autogps/src/moblie/home.html'
+            })
+            // console.log(WiStorm.config.wx_app_id)
+            // console.log(W.getCookie('current_wx'))
+            let data = JSON.parse(W.getCookie('share_data'));
+            console.log(data,'dat')
+            
+            function share(url){
+                function timelineSuccess(){
+                    let par=Object.assign({},data.par);
+                    par.type=1
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
+                function messageSuccess(){
+                    let par=Object.assign({},data.par);
+                    par.type=0;
+                    Wapi.promotion.add(pro=>{
+                        console.log(pro);
+                    },par);
+                }
+
+                var opTimeLine={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        timelineSuccess();
+                    },
+                    cancel: function(){}
+                }
+                var opMessage={
+                    title: data.name, // 分享标题
+                    desc: data.offersDesc, // 分享描述
+                    link: url,
+                    imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    success: function(){
+                        messageSuccess();
+                    },
+                    cancel: function(){}
+                }
+                console.log(opTimeLine);
+                console.log(opMessage);
+                wx.onMenuShareTimeline(opTimeLine);
+                wx.onMenuShareAppMessage(opMessage);
+            }
+
+            function iShare(url){
+                let op = Object.assign({},data.op);
+                op.success=function(){console.log('success')};
+                op.cancel = function(){};
+                
+                wx.ready(function () {
+                    wx.onMenuShareAppMessage(op);
+                    wx.onMenuShareTimeline(op);
+                })
+                
+            }
+            if(W.native){
+                if(data.par){
+                    share(data.share_url); 
+                }else{
+                    iShare(data.share_url); 
+                }
+                // share(data.share_url); 
+            }
+            else{
+                if(data.par){
+                    // share(data.share_url);//测试用
+                    // W.toast(___.ready_activity_url);
+                    window.addEventListener('nativeSdkReady',e=>{share(data.share_url)});
+                }else{
+                    // iShare(data.share_url);//测试用
+                    window.addEventListener('nativeSdkReady',e=>{iShare(data.share_url)});
+                }
+               
+            }
+        }
+    </script>
+</html>
