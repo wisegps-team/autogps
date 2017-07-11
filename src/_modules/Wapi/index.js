@@ -616,6 +616,7 @@ const Wapi={
 	authorize:new WAPI('authorize',_user?_user.access_token:null),
 	promotion:new WAPI('promotion',_user?_user.access_token:null),
 	serviceProject:new WAPI('serviceProject',_user?_user.access_token:null),
+	wxMenu:new WAPI('wxMenu',_user?_user.access_token:null)
 };
 
 function makeGetOp(name,fields,lop){
@@ -654,6 +655,7 @@ makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,br
 makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
 // makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
 makeGetOp('serviceProject','objectId,itemType,itemName,serverId');
+makeGetOp('wxMenu','objectId,wxAppKey,menuName,menuUrl,type');
 
 
 window.Wapi=Wapi;

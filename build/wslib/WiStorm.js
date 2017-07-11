@@ -592,7 +592,7 @@ W.wxLogin = function(s) {
         var url = WiStorm.config.wx_login; //测试使用
         url = url.replace(/\?\S*/, "");
         url = W.encoded(url);
-        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + wx_app_id + "&redirect_uri=http://h5.bibibaba.cn/jump.html&response_type=code&scope=snsapi_userinfo&state=" + url + "#wechat_redirect";
+        top.location = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + wx_app_id + "&redirect_uri=https://h5.bibibaba.cn/jump.html&response_type=code&scope=snsapi_userinfo&state=" + url + "#wechat_redirect";
     } else {
         W.setCookie("__login_redirect_uri__", location.href, -15);
         var u = encodeURIComponent(WiStorm.config.wx_login);
@@ -655,10 +655,35 @@ W.errorCode = function(json) {
         if (erKey.indexOf(json.status_code.toString()) != -1) {
             text = ___.error['000'];
         }
+        // var df = "error_code="+json.status_code+"&error_msg="+text
+        // if(_user){
+        //     if(_user.customer){
+        //         bodyfram(df)
+        //     }
+        // }
         W.alert("error_code：" + json.status_code + "；error_msg：" + text);
+        //  top.location = WiStorm.root + "err.html?error_code="+json.status_code+"&error_msg="+text;
+
     }
 }
-
+function bodyfram(text){
+    var ifs = document.getElementById('ssfra');
+    if(!ifs){
+        var i = document.createElement('iframe');
+        i.src = WiStorm.root+'err.html?'+text;
+        i.id = 'ssfra'
+        i.style.display = 'block';
+        i.style.height = '100vh';
+        i.style.width = '100%';
+        i.style.border = '0';
+        i.style.position = 'absolute';
+        i.style.top = '0' ;
+        i.style.zIndex = '9999';
+        document.body.appendChild(i);
+    }else{
+        return false
+    }
+}
 /**
  * 简单处理api返回错误信息
  */
@@ -683,7 +708,7 @@ W.err = function(fun) {
 
 W.checkIfLogin = function(callback){
     //http://wx.autogps.cn/server_api.php?openId=oV8WEwm3Iq_zl5YtDVkBvy8KJ2bM&method=checkIfLogin
-    var url = 'http://wx.autogps.cn/server_api.php?openId=' + W.getSetting('openId') +'&method=checkIfLogin';
+    var url = 'https://wx.autogps.cn/server_api.php?openId=' + W.getSetting('openId') +'&method=checkIfLogin';
     W.getJSON(url, {}, function(json){
         if(json.status_code === 1){
             var loginUrl = WiStorm.root + 'index.html?intent=logout&logout=true&wx_app_id=' + W.getSetting('wx_app_id')  +'&r=' + Math.random() + '&openid='+W.getSetting('openId')+'&state=getOpenId';
@@ -695,7 +720,7 @@ W.checkIfLogin = function(callback){
 
 W.activityTimeout = function(callback){
     //http://wx.autogps.cn/server_api.php?openId=oV8WEwm3Iq_zl5YtDVkBvy8KJ2bM&method=checkIfLogin
-    var url = 'http://wx.autogps.cn/server_api.php?activityId=' + _g.activityId +'&method=activityTimeout';
+    var url = 'https://wx.autogps.cn/server_api.php?activityId=' + _g.activityId +'&method=activityTimeout';
     W.getJSON(url, {}, function(json){
         if(!json.data || json.data.status_code === 0){
             var errorUrl = WiStorm.root + 'action_timeout.html';
@@ -804,6 +829,10 @@ W.fixPath = function () {
 window._g = W.getSearch();
 
 var WiStorm_root = "http://" + location.host + "/";
+if(location.protocol=="https:"){
+	WiStorm_root="https://"+location.host+"/";
+}
+
 if (location.host.indexOf('localhost') == -1 && !location.host.match(/(192\.|127\.)/))
     WiStorm_root += "autogps/";
 var u = navigator.userAgent;
@@ -819,7 +848,7 @@ window.WiStorm = {
         "update_url": WiStorm_root + "update/version.json",
         "home_url": "/autogps/src/moblie/home.html",
         "wx_ticket_url": location.origin + "/WX.TokenAndTicket.php?action=ticket",
-        "wx_sdk": "http://res.wx.qq.com/open/js/jweixin-1.0.0.js",
+        "wx_sdk": "https://res.wx.qq.com/open/js/jweixin-1.0.0.js",
         "wx_login": location.origin + "/oauth2.php",
         languages: ['zh-cn', 'en-us'],
         domain: {

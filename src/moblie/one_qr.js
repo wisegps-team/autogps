@@ -22,7 +22,7 @@ thisView.addEventListener('load',function(){
 
 });
 
-const S_URL='http://autogps.cn/?s=';
+const S_URL='http://t.autogps.cn/?s=';
 
 class App extends Component {
     constructor(props,context){

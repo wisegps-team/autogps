@@ -104,7 +104,7 @@ export function intTo(i,b){
 export function setTitle(title){
 	document.title = title;
 	var i = document.createElement('iframe');
-	i.src = 'http://m.baidu.com/favicon.ico';
+	i.src = 'https://m.baidu.com/favicon.ico';
 	i.style.display = 'none';
 	i.onload = function() {
 		setTimeout(function(){

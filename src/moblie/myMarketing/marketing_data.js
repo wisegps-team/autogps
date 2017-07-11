@@ -76,7 +76,7 @@ function combineStyle(arr){
 //     scanner:{
 //         start:function(callback){
 //             setTimeout(function(){
-//                 callback('http://autogps.cn/?s=274');
+//                 callback('http://t.autogps.cn/?s=274');
 //             },100);
 //         }
 //     }
@@ -187,8 +187,9 @@ class App extends Component {
             W.native.scanner.start(link=>{//扫码
                 console.log(link);
                 link=reCode(link);
-                let reg=/http:\/\/autogps\.cn\/\?s=.*/;
-                if(!reg.test(link)){//判断二维码是否是卫网平台创建的
+                let reg=/https*:\/\/autogps\.cn\/\?s=.*/;
+                let regs = /https*:\/\/t\.autogps\.cn\/\?s=.*/
+                if(!(reg.test(link)||regs.test(link))){//判断二维码是否是卫网平台创建的
                     W.alert(___.qrcode_unknown);
                     return;
                 }

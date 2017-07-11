@@ -33,7 +33,7 @@ thisView.addEventListener('load',function(){
 const EVENT={
     ADDED:randomStr()
 }
-const S_URL='http://autogps.cn/?s=';
+const S_URL='https://t.autogps.cn/?s=';
 
 const styles = {
     appBody:{paddingTop:'50px'},
@@ -117,7 +117,8 @@ class App extends Component {
             page_no:1
         };
         this._data={//筛选条件
-            uid:_user.customer.objectId
+            uid:_user.customer.objectId,
+            type: '0|1'
         };
 
         this.next = this.next.bind(this);

@@ -40,6 +40,7 @@ import AvEqualizer from 'material-ui/svg-icons/av/equalizer'
 import MapsDirectionsCar from 'material-ui/svg-icons/maps/directions-car'
 import ActionViewQuilt from 'material-ui/svg-icons/action/view-quilt'
 import ActionExtension from'material-ui/svg-icons/action/extension'
+// import NotificationWifi from'material-ui/svg-icons/notification/wifi'
 
 import AreaSelect from '../_component/base/areaSelect';
 import SexRadio from '../_component/base/sexRadio';
@@ -584,7 +585,7 @@ class DList extends Component{
         Wapi.qrLink.get(res=>{//获取与[当前活动和seller]对应的短码，如没有则新建
             let linkUrl='';
             if(res.data && res.data.id){
-                linkUrl='http://autogps.cn/?s='+res.data.id;
+                linkUrl='https://t.autogps.cn/?s='+res.data.id;
                 // history.replaceState('home.html','home.html','home.html');
                 W.fixPath();
                 window.location=linkUrl;
@@ -592,7 +593,7 @@ class DList extends Component{
             }else{
                 Wapi.qrLink.add(re=>{
                     let _id=changeToLetter(re.autoId);
-                    linkUrl='http://autogps.cn/?s='+_id;
+                    linkUrl='https://t.autogps.cn/?s='+_id;
                     Wapi.qrLink.update(json=>{
                         // history.replaceState('home.html','home.html','home.html');
                         W.fixPath();
@@ -644,12 +645,12 @@ class DList extends Component{
             Wapi.qrLink.get(res=>{//获取与当前活动和seller对应的短码，如没有则新建
                 let linkUrl='';
                 if(res.data && res.data.id){
-                    linkUrl='http://autogps.cn/?s='+res.data.id;
+                    linkUrl='https://t.autogps.cn/?s='+res.data.id;
                     setWxShare(linkUrl);
                 }else{
                     Wapi.qrLink.add(re=>{
                         let _id=changeToLetter(re.autoId);
-                        linkUrl='http://autogps.cn/?s='+_id;
+                        linkUrl='https://t.autogps.cn/?s='+_id;
                         Wapi.qrLink.update(json=>{
                             setWxShare(linkUrl);
                         },{
@@ -718,47 +719,52 @@ class DList extends Component{
                 }
                 // console.log(params);
                 function finalShare(){
-                    function timelineSuccess(){
-                        let par=Object.assign({},params);
-                        par.type=1
-                        Wapi.promotion.add(pro=>{
-                            console.log(pro);
-                        },par);
-                    }
-                    function messageSuccess(){
-                        let par=Object.assign({},params);
-                        par.type=0;
-                        Wapi.promotion.add(pro=>{
-                            console.log(pro);
-                        },par);
-                    }
 
-                    var opTimeLine={
-                        title: data.name, // 分享标题
-                        desc: data.offersDesc, // 分享描述
-                        link: url,
-                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                        success: function(){
-                            timelineSuccess();
-                        },
-                        cancel: function(){}
-                    }
-                    var opMessage={
-                        title: data.name, // 分享标题
-                        desc: data.offersDesc, // 分享描述
-                        link: url,
-                        imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
-                        success: function(){
-                            messageSuccess();
-                        },
-                        cancel: function(){}
-                    }
+                    data.par = Object.assign({},params);
+                    // JSON.stringify(data.par)
+                    W.setCookie('share_data',JSON.stringify(data));
+                    top.location = WiStorm.root + "wx_share.html"
+                    // function timelineSuccess(){
+                    //     let par=Object.assign({},params);
+                    //     par.type=1
+                    //     Wapi.promotion.add(pro=>{
+                    //         console.log(pro);
+                    //     },par);
+                    // }
+                    // function messageSuccess(){
+                    //     let par=Object.assign({},params);
+                    //     par.type=0;
+                    //     Wapi.promotion.add(pro=>{
+                    //         console.log(pro);
+                    //     },par);
+                    // }
+
+                    // var opTimeLine={
+                    //     title: data.name, // 分享标题
+                    //     desc: data.offersDesc, // 分享描述
+                    //     link: url,
+                    //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    //     success: function(){
+                    //         timelineSuccess();
+                    //     },
+                    //     cancel: function(){}
+                    // }
+                    // var opMessage={
+                    //     title: data.name, // 分享标题
+                    //     desc: data.offersDesc, // 分享描述
+                    //     link: url,
+                    //     imgUrl:'http://h5.bibibaba.cn/wo365/img/s.jpg', // 分享图标
+                    //     success: function(){
+                    //         messageSuccess();
+                    //     },
+                    //     cancel: function(){}
+                    // }
                     // console.log(opTimeLine);
                     // console.log(opMessage);
                     // history.replaceState('home.html','home.html','home.html');
-                    W.fixPath();
-                    wx.onMenuShareTimeline(opTimeLine);
-                    wx.onMenuShareAppMessage(opMessage);
+                    // W.fixPath();
+                    // wx.onMenuShareTimeline(opTimeLine);
+                    // wx.onMenuShareAppMessage(opMessage);
                     // setShare=null;
                     // that.context.share(data);
                     that.sharePage(data);

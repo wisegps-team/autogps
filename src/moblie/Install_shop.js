@@ -287,9 +287,14 @@ function setShare(){
         cancel: function(){}
     }
     // history.replaceState('home.html','home.html','home.html');
-    W.fixPath();
-    wx.onMenuShareTimeline(op);
-    wx.onMenuShareAppMessage(op);
+    // W.fixPath();
+    // wx.onMenuShareTimeline(op);
+    // wx.onMenuShareAppMessage(op);
+    let data = {};
+    // data.share_url = sUrl;
+    data.op = op;
+    W.setCookie('share_data',JSON.stringify(data));
+    top.location = WiStorm.root + "wx_share.html"
     setShare=null;
 }
 

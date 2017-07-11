@@ -225,7 +225,7 @@ class App extends Component {
             display: 'none'
         } : null;
         let actives = [ 
-            <Login onSuccess = { this.loginSuccess } style = { login_sty }ssoLoginFail = { this.showBind }/>, 
+            <Login onSuccess = { this.loginSuccess } style = { login_sty } ssoLoginFail = { this.showBind }/>, 
             <AgentShowBox success = { this.registerCallback } parentId = { _g.parentId } managerId = { _g.managerId || 'none' }/>, 
             <Forget onSuccess = { this.forgetSuccess } user = { this._res ? this._res.data : null }/>, 
             <BindBox onSuccess = { this.loginSuccess } openId = { _g.openid }/>, 

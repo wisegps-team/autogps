@@ -18,7 +18,7 @@ function WiStormAPI(name,token,key,secret,opt){
             // value: "http://o.bibibaba.cn/router/rest"
         },
         "safetyUrl": {
-            value: "http://h5.bibibaba.cn/baba/wx/wslib/api/safetyWapi.php"
+            value: "https://h5.bibibaba.cn/baba/wx/wslib/api/safetyWapi.php"
         },
         "appKey": {
             value: key

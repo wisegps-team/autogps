@@ -50,11 +50,11 @@ function AddQrLink(wxAppKey, callback) {
         if (!res.data.length) {
             Wapi.qrLink.add(res => {
                 Wapi.qrLink.get(r => {
-                    let type1 = 'http://autogps.cn/?s=' + r.data.id;
+                    let type1 = 'http://t.autogps.cn/?s=' + r.data.id;
                     op.type1 = type1
                     Wapi.qrLink.add(re => {
                         Wapi.qrLink.get(rs => {
-                            let type2 = 'http://autogps.cn/?s=' + rs.data.id;
+                            let type2 = 'http://t.autogps.cn/?s=' + rs.data.id;
                             op.type2 = type2
                             callback(op);
                         }, { objectId: re.objectId });
@@ -63,8 +63,8 @@ function AddQrLink(wxAppKey, callback) {
             }, qrLinkData);
         } else {
             let op = {
-                type1: 'http://autogps.cn/?s=' + res.data[0].id,
-                type2: 'http://autogps.cn/?s=' + res.data[1].id
+                type1: 'http://t.autogps.cn/?s=' + res.data[0].id,
+                type2: 'http://t.autogps.cn/?s=' + res.data[1].id
             }    
             callback(op)
         }
