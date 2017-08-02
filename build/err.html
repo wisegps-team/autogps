@@ -1,0 +1,109 @@
+<!--
+	作者：小阮
+	时间：2017-06-15
+	描述：错误内容页
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
+		<script src='wslib/WiStorm.js'></script>
+		<script>
+			// document.write('<script src="_WiStorm.js?r=' + Math.random() + '&u="><\/script>');
+		</script>		
+
+		<style type="text/css">
+			body{
+				margin: 0;
+				padding: 0;
+				/*font-size: 0;*/
+				background: #f7f7f7;
+				width: 100vw;
+				height: 100vh;
+			}
+            .respon {
+                text-align: center;
+                padding-top: 20px;
+                font-size: 16px;
+            }
+            .test {
+                text-align: center;
+                font-size: 12px;
+                color: #ccc;
+                margin-top: 20px;
+            }
+            .again {
+                text-align: center;
+                margin: 20px;
+            }
+            .tell {
+                text-align: center;
+            }
+            button {
+                height: 30px;
+                border: 1px solid #ccc;
+                background: #f7f7f7;
+                border-radius: 4px;
+                width: 80px;
+            }
+            .middles {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 50%;
+                margin: auto;
+            }
+		</style>
+		<script src='wslib/toolkit/WxSdk.js' async="async"></script>
+	</head>
+	<body>
+        <div style="position:'relative'">
+            <div class="middles">
+                <div style="text-align:center">
+                    <svg viewBox="0 0 24 24" style="display: inline-block; color: rgba(0, 0, 0, 0.87); fill: rgb(204,204,204); height: 100px; width: 100px; transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; user-select: none;">
+                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"></path>
+                    </svg>
+                </div>
+                <div class="respon" id='respon'></div>
+                <!--<div class="test">请检查您的手机是否联网</div>-->
+                <div class="again"><button onclick="again()">重新加载</button></div>
+                <div class="tell"><button onclick="resp()">我要报错</button></div>
+            </div>
+        </div>
+	</body>
+	<script>
+        window.onload = function(){
+            // document.getElementById('respon')
+            console.log(_g.e)
+            var text =  "error_code：" + _g.error_code + "；error_msg：" + _g.error_msg
+            document.getElementById('respon').innerHTML = text;   
+                
+        }
+        function again(){
+            // console.log(window.parent.document.getElementById('ss'))
+            // var ifr = window.parent.document.getElementById('ss')
+            // console.log(ifr)
+            // window.parent.document.body.removeChild(window.parent.document.getElementById('ss'))
+            // document.getElementById('ss').parentNode.removeChild(document.getElementById('ss'))
+            // odiv.parentNode.removeChild(odiv);
+            // window.parent.history.back();
+            // history.back();
+            top.location = WiStorm_root + 'index.html'
+            window.parent.document.body.removeChild(window.parent.document.getElementById('ss'));
+            
+        }   
+        function resp(){
+            // console.log(location.search)
+            // var text = 'error_code='+_g.error_code
+            top.location = WiStorm_root + 'feedback.html'+ location.search
+        }
+	</script>
+</html>

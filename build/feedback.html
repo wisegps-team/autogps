@@ -1,0 +1,355 @@
+<!--
+	作者：小吴
+	时间：2016-09-27
+	描述：分享内容页
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
+		<script>
+			document.write('<script src="_WiStorm.js?r=' + Math.random() + '&u="><\/script>');
+		</script>		
+		<script src="./common.js"></script>
+		<script src="https://lib.chease.cn/common.js"></script>
+		<script src="https://lib.chease.cn/lib.js"></script>		
+		<!--<script>
+			document.write('<title>'+___.service_booking+'</title>');
+			var config={
+				src:'src',    //静态资源根目录
+				defaultModule:'src/feedback.js?r=' + Math.random(),//主页面模块
+				loading:'<div class="loader"><div></div><div></div><div></div><span>正在加载</span></div>',//模块加载中显示的内容，可以是html
+				animation:0  //0：双动画模式（转场时两个模块均有动画） 1：单动画模式（只有入或者只有出的动画）
+			}
+		</script>-->
+		<script src="src/feedback.js"></script>
+		<!--<script src="wslib/launcher.js?v=1.2"></script>-->
+		<!--<script src="wslib/toolkit/WxSdk.js"></script>-->
+		<style type="text/css">
+			body{
+				margin: 0;
+				padding: 0;
+				/*font-size: 0;*/
+				background: #f7f7f7;
+				width: 100vw;
+				height: 100vh;
+			}
+			.header {
+				height: 20px;
+				width:auto;
+				padding:5px 10px
+			}
+			.header .lf{
+				float: left;
+    			font-size: 14px;
+			}
+			.header .ri{
+				float: right;
+				background: #f7f7f7;
+				border: none;
+				color: #2196f3;
+				font-size: 14px;
+				padding: 0
+			}
+			.nav {
+				height: 50px;
+				line-height: 50px;
+				background: #fff;
+				margin-top: 5px;
+				padding: 0 10px;
+			}
+			.nav h4{
+				font-weight: normal;
+				font-size: 14px;
+				display: inline-block;
+				padding: 0;
+				margin: 0;
+				float: left;
+			}
+			.nav span {
+				float: right;
+				font-size: 14px;
+				color: #ccc;
+			}
+			.content {
+				/*padding:0 10px;*/
+				margin-top: 5px;
+				background: #fff
+			}
+			.content h5 {
+				margin: 0;
+				background: #f7f7f7;
+				padding: 0 10px;
+				font-weight: normal;
+				line-height: 40px
+			}
+			.content .intext {
+				height: 30px;
+				width: 100%;
+				border: none;
+				outline: none;
+				border-bottom: 1px solid #f7f7f7;
+			}
+			.content textarea {
+				border:0;  
+				background-color:transparent;  
+				/*scrollbar-arrow-color:yellow;  
+				scrollbar-base-color:lightsalmon;  
+				overflow: hidden;*/  
+				color: #666464;  
+				height: auto;  
+				width: 100%;
+				outline: none;
+				resize:none;
+				margin: 0
+			}
+			.content .inputs {
+				padding: 0 10px;
+			}
+			.footer h4{
+				    margin: 0;
+					font-weight: normal;
+					font-size: 14px;
+					line-height: 40px;
+					padding: 0 10px;
+			}
+			.footer .imag{
+				background: #fff;
+				height: 49px;
+				padding: 10px 10px;
+			}
+			.file {  
+				position: relative;  
+				display: inline-block;  
+				background: #fff;  
+				border: 1px solid #99D3F5;  
+				border-radius: 4px;  
+				padding: 4px 13px;  
+				overflow: hidden;  
+				color: #99D3F5;  
+				text-decoration: none;  
+				text-indent: 0;  
+				line-height: 39px;  
+				font-size: 30px;
+				font-weight: 100
+			}  
+			.file input {  
+				position: absolute;  
+				font-size: 100px;  
+				right: 0;  
+				top: 0;  
+				opacity: 0;  
+			}  
+			.file:hover {  
+				background: #AADFFD;  
+				border-color: #78C3F3;  
+				color: #004974;  
+				text-decoration: none;  
+			}  
+			#showImage {
+				display: inline-block;
+				width: auto
+			}
+			.footer2 h4{
+				    margin: 0;
+					font-weight: normal;
+					font-size: 14px;
+					line-height: 40px;
+					padding: 0 10px;
+			}
+			.tel {
+				background: #fff;
+				padding: 10px
+			}
+			.telf {
+				display: inline-block;
+				width: 50px;
+				height: 50px;
+				background: #2196f3;
+				line-height: 50px;
+				text-align: center;
+			}
+			.phone {
+				    display: inline-block;
+					width: 32px;
+					height: 32px;
+					line-height: 32px;
+					border-radius: 16px;
+					background: #29ef3f;
+			}
+			.svgphone{
+				display: inline-block; 
+				color: rgba(0, 0, 0, 0.87); 
+				fill: rgb(256,256,256); 
+				height: 28px; 
+				width: 28px; 
+				transition: all 450ms 
+				cubic-bezier(0.23, 1, 0.32, 1) 0ms; 
+				user-select: none;
+				position: relative;
+				top: 2px;
+				left: 2px
+			}
+		</style>
+		<script src='wslib/toolkit/WxSdk.js' async="async"></script>
+		<script>
+			// document.write('<script src="src/feedback.js?v=' + W.version + '&u="><\/script>');
+		</script>
+		<!--<script src="wslib/launcher.js?v=1.2"></script>-->
+		<!--<script>
+			var config={
+				
+			}
+		</script>-->
+	</head>
+	<body>
+		<!--<h1>111111111</h1>-->
+		<div class='header'>
+			<span class='lf'>在线反馈</span>
+			<button class='ri' onclick="test()">提交</button>
+		</div>
+		<div class="nav">
+			<h4>问题类型</h4>
+			<span>意见和建议</span>
+		</div>
+		<div class="content">
+			<h5>问题描述</h5>
+			<div class="inputs">
+				<input type="text" placeholder="反馈" class="intext" id="titles"/>
+				<textarea wrap="physical" placeholder="请输入内容" rows="3" id="textare">1、2、3、
+				</textarea>
+			</div>
+		</div>
+		<div class="footer">
+			<h4>上传图片（最多三张）</h4>
+			<div class="imag">
+				<a href="javascript:;" class="file">+  
+					<input type="file" name="" id="file" multiple='multiple'>  
+				</a>  
+				<div id="showImage">
+				</div>
+			</div>
+		</div>
+		<div class="footer2">
+			<h4>联系电话</h4>
+			<div class="tel">
+				<div class="phone">
+					<svg viewBox="0 0 24 24" class="svgphone" >
+						<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path>
+					</svg>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		console.log(Wapi,'wapi')
+		function test(){
+			Wapi.customer.list(res => {console.log(res)},{objectId:_user.customer.objectId})
+		}
+	</script>
+	<script>
+		window.onload = function(){
+			// W.loading(false)
+			console.log(window.screen.height,'height')
+			W('#textare').style.height = window.screen.height-373+'px'
+			document.getElementById('titles').value='反馈'
+			var text = "错误类型：" + _g.error_code +"\n"+'错误信息：' + _g.error_msg 
+			document.getElementById('textare').innerHTML = text;
+		}
+		var op = [];
+		var img = [];
+		// alert(1)
+		document.getElementById('file').addEventListener('change',function(e){
+			console.log(e.target.files[0],'e.target')
+			var file = document.getElementById("file").files[0];
+			console.log(op,'opop')
+			alert(op,'op')
+			var child = document.getElementById('showImage').children;
+			if(child.length>=3){
+				alert('图片超出限制')
+			}else{
+				if(!/image\/\w+/.test(file.type)){
+					alert('请选择图片');
+					return false;
+				}else{
+					op.push(file);
+					var files = this.files;
+					var img = new Image();
+					var cln = this.files[0].name.toString();
+					console.log(this.files,'this.files');
+					var reader = new FileReader();
+					reader.readAsDataURL(files[0]);
+					reader.onload = function(e){
+						var mb = (e.total/1024)/1024;
+						if(mb>= 2){
+							alert('文件大小大于2M');
+							return;
+						}
+						console.log(e.target.result.substr(8,100),'etargetresult')
+						console.log(this.result.substr(8,100),'thisresult')
+						img.src = this.result;
+						img.style.width = "59px";
+						img.className = cln;
+						img.style.height = "49px";
+						img.style.marginRight = '10px';
+						document.getElementById('showImage').style.width="auto";
+						document.getElementById('showImage').style.height="49px";
+						document.getElementById('showImage').appendChild(img);
+						img.addEventListener('click',function(e){
+							console.log(this,'ee');
+							console.log(this.className,'classname')
+							console.log(op,'opopop')
+							op.forEach((e,ids) =>{
+								if(e.name == this.className){
+									op.splice(ids,1)
+								}
+								//console.log(e.name,'eess')
+							})
+							var imsname = document.getElementsByClassName(this.className);
+							if(imsname.length){
+								document.getElementById('showImage').removeChild(img);
+							}
+							console.log(op,'opopop')
+							
+						})
+					}
+				}
+			}
+		})
+
+		function submit(){
+			var text = W('#textare').value
+			// W()
+			var biaoti = W('#titles').value
+			console.log(text,biaoti,op,'op')
+		}
+		
+		function test(){
+			Wapi.file.upload(res=>{
+				// W.loading();
+				if (res && res.status_code) {
+					W.errorCode(res);
+					return;
+				}
+				console.log(res);
+				// this.data.imgUrl=res.image_file_url;
+				// this.forceUpdate();
+			},op[0],function(s){
+				// W.loading("正在上传文件，请稍等……"+parseInt(s*100)+'%');
+				console.log(s)
+			});
+		}
+	</script>
+	<!--<script src="src/feedback.js"></script>-->
+</html>
+
+<!--
+	作者：jianghai
+	时间：2016-11-21
+	描述：用户预定后选择安装网点
+-->
