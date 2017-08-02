@@ -83,65 +83,33 @@ class BindBox extends Component {
         }, data);
     }
     render() {
-        return ( <
-            div > {
-                /*<PhoneInput
-                                    name='account'
-                                    hintText={___.input_account}
-                                    floatingLabelText={___.account}
-                                    onChange={this.accountChange}
-                                    needExist={true}
-                                />
-                                <VerificationCode 
-                                    name='valid_code'
-                                    type={1}
-                                    account={this.state.mobile} 
-                                    onSuccess={this.change}
-                                />
-
-                                <RaisedButton label={___.ok} primary={true} style={sty.but} onClick={this.submit} labelColor='#eee'/>*/
-            }
-
-            <
-            div style = {
-                { backgroundColor: '#fff' }
-            } >
-            <
-            div style = { sty.r } >
-            <
-            input name = 'account'
-            type = 'tel'
-            placeholder = { ___.account }
-            style = { sty.input }
-            onChange = { this.accountChange }
-            /> < /
-            div > <
-            div style = {
-                { display: 'flex', alignItems: 'flex-end', padding: '3px 10px' }
-            } >
-            <
-            VerificationOrig name = 'valid_code'
-            type = { 1 }
-            account = { this.state.mobile }
-            onChange = { this.change }
-            onSuccess = { this.success }
-            style = {
-                { width: '100%' }
-            }
-            needExist = { true }
-            /> < /
-            div > <
-            /div> <
-            div style = { sty.b } >
-            <
-            RaisedButton disabled = {!this.codeRight }
-            onClick = { this.submit }
-            label = { ___.ok }
-            primary = { true }
-            labelColor = '#eee' / >
-            <
-            /div> < /
-            div >
+        return ( 
+            <div> 
+                <div style = {{ backgroundColor: '#fff' }} >
+                    <div style = { sty.r } >
+                        <input name = 'account' type = 'tel' placeholder = { ___.account } style = { sty.input } onChange = { this.accountChange }/> 
+                    </div >
+                    <div style = {{ display: 'flex', alignItems: 'flex-end', padding: '3px 10px' }} >
+                        <VerificationOrig 
+                            name = 'valid_code'
+                            type = { 1 }
+                            account = { this.state.mobile }
+                            onChange = { this.change }
+                            onSuccess = { this.success }
+                            style = {{ width: '100%' }}
+                            needExist = { true }
+                        /> 
+                    </div > 
+                </div> 
+                <div style = { sty.b } >
+                    <RaisedButton disabled = {!this.codeRight }
+                        onClick = { this.submit }
+                        label = { ___.ok }
+                        primary = { true }
+                        labelColor = '#eee' 
+                    />
+                </div> 
+            </div >
         );
     }
 }

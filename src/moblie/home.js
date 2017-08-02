@@ -245,17 +245,17 @@ let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
     let user_manage = null;
     // console.log(res)
     // if(_user.customer.custTypeId == 1 || _user.custoemr.custTypeId == 5){//品牌商代理商
-        if(_user.customer.Authorize){
-            _user.customer.Authorize.forEach(ele => {
-                if(ele == 0){ //营销推广
-                    plat = 1
-                }else if(ele == 3){ //扫码移车
-                    move = 3
-                }else if(ele == 1){ //政企客户
-                    user_manage = 1
-                }
-            })
-        }
+    if(_user.customer.Authorize){
+        _user.customer.Authorize.forEach(ele => {
+            if(ele == 0){ //营销推广
+                plat = 1
+            }else if(ele == 3){ //扫码移车
+                move = 3
+            }else if(ele == 1){ //政企客户
+                user_manage = 1
+            }
+        })
+    }
     // }
     if(plat == 1|| _user.customer.custTypeId == 5 || _user.customer.custTypeId == 8){
         pages.push({
@@ -265,13 +265,20 @@ let pages=_pages.filter(e=>_user.pages.find(p=>p.url.split('/').pop()==e.href));
         })
     }
     //平台/扫码客户/扫码移车可见
-    if(_user.customer.custTypeId == 9 || _user.customer.custTypeId == 10 || move == 3){
-        pages.push({
-            href:'carowner_platform',
-            name:'扫码挪车',
-            icon:<MapsDirectionsCar style={sty.icon}/>
-        })
-    }
+    // if(_user.customer.custTypeId == 9 || _user.customer.custTypeId == 10 || move == 3){
+    //     pages.push({
+    //         href:'carowner_platform',
+    //         name:'扫码挪车',
+    //         icon:<MapsDirectionsCar style={sty.icon}/>
+    //     })
+    // }
+
+    //全部可见
+    pages.push({
+        href:'carowner_platform',
+        name:'扫码挪车',
+        icon:<MapsDirectionsCar style={sty.icon}/>
+    })
     if(_user.customer.custTypeId == 9){
         pages.push({
             href:'platform_manage',
@@ -470,16 +477,23 @@ if(cards.length == 0){
 }
 
 class App extends Component {
+    
     getChildContext() {
         return {
             view:thisView
         };
+    }
+    componentDidMount() {
+        thisView.addEventListener('show',e => {
+            this.forceUpdate();
+        })
     }
     go(tab){
         thisView.goTo(tab.props.value+'.js');
     }
     personalInfo(){
         thisView.goTo('./myAccount/personal_info.js');
+        // this.forceUpdate();
     }
     companyInfo(){
         thisView.goTo('./company_info.js');
@@ -530,7 +544,7 @@ class App extends Component {
                         </div>
                     </div>
                     {
-                        _user.customer.custTypeId === 10?
+                        _user.customer.custTypeId === 10 ||_user.customer.custTypeId === 11?
                         <div style={sty.head_links}>
                             <div style={sty.head_link2} onClick={this.financialManage}>{'企业账户'}</div>
                             <div style={{display:'table-cell',width:'50%'}} onClick={this.companyInfo}>{'公司信息'}</div>

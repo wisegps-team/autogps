@@ -55,6 +55,10 @@ class App extends Component {
             uid:_user.customer.objectId,
             i:0
         }
+        // W.loading(false)
+        // this.data.sUrl = 'https://t.autogps.cn/?s=845';
+        // this.qrHide=false;
+        // this.forceUpdate();
         Wapi.qrLink.add(res=>{
             Wapi.qrLink.get(r=>{
                 let id=changeToLetter(r.data.i);
@@ -138,7 +142,8 @@ class App extends Component {
 class QrPage extends Component {    
     render() {
         let data=this.props.data;
-        let des=data.params.departId==0?___.employee_register:___.marketing_personnel_register;
+        // let des=data.params.departId==0?___.employee_register:___.marketing_personnel_register;
+        let des=data.params.departId==0?'无需加好友，扫码注册员工账号！':'无需加好友，扫码注册营销账号！';
         
         let sty=Object.assign({width:'100%',height:'100%',textAlign:'center'},this.props.style);
         let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128-100)/2+'px'};
@@ -146,15 +151,18 @@ class QrPage extends Component {
         
         return (
             <div style={sty} >
-                <div style={qrSty}>
-                    <h4>{data.params.name}</h4>
-                    <div>{des}</div>
-                    <QrImg data={data.sUrl} style={{display:'inline-block',marginTop:'10%'}}/>
-                </div>
-                <br/>
-                <div style={btnSty}>
-                    <RaisedButton label={___.return} onClick={this.props.back} secondary={true} style={{marginRight:'10px'}}/>
-                    <RaisedButton label={___.invite_regist} onClick={this.props.tip} primary={true}/>
+                <div style={{textAlign:'center',backgroundColor:'#f7f7f7',minHeight:'100vh' ,background:'url(../../img/device.jpg) no-repeat',backgroundSize:'100% 50%'}}>
+                    <div style={qrSty}>
+                        <h4>{data.params.name}</h4>
+                        {/* <div>{des}</div> */}
+                        <QrImg data={data.sUrl} style={{display:'inline-block',padding:10,backgroundColor:'#fff'}}/>
+                        <div style={{marginTop:5}}>{des}</div>
+                    </div>
+                    <br/>
+                    <div style={btnSty}>
+                        <RaisedButton label={___.return} onClick={this.props.back} secondary={true} style={{marginRight:'10px'}}/>
+                        <RaisedButton label={___.invite_regist} onClick={this.props.tip} primary={true}/>
+                    </div>
                 </div>
             </div>
         );
