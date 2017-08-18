@@ -265,22 +265,22 @@ class BussList extends Component {
                 }
             }
         },this._data)
-        Wapi.authorize.get(res => {
-            this.setState({move:res.data})
-        },{
-            applyCompanyId:_user.customer.objectId,
-            status:1,
-            authorizeType:3,
-            actProductId:4
-        })
-        Wapi.customer.list(res => {
-            if(res.data.length){
-                this.setState({customerTotal:res.total})
-            }
-        },{
-            parentId:_user.customer.objectId,
-            custTypeId:10
-        })
+        // Wapi.authorize.get(res => {
+        //     this.setState({move:res.data})
+        // },{
+        //     applyCompanyId:_user.customer.objectId,
+        //     status:1,
+        //     authorizeType:3,
+        //     actProductId:4
+        // })
+        // Wapi.customer.list(res => {
+        //     if(res.data.length){
+        //         this.setState({customerTotal:res.total})
+        //     }
+        // },{
+        //     parentId:_user.customer.objectId,
+        //     custTypeId:10
+        // })
     }
     onCheck(data){
         console.log(data,'传的参数')
@@ -293,7 +293,7 @@ class BussList extends Component {
         }
     }
     render() {
-        console.log(this.state.move,'move')
+        // console.log(this.state.move,'move')
         let item = this.state.actPro.map((ele,index) => {
             let name;
             if(ele.uid == _user.customer.objectId){

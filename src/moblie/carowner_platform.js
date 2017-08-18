@@ -25,6 +25,7 @@ import ActionReportProblem from 'material-ui/svg-icons/action/report-problem'
 import ActionPermIdentity from 'material-ui/svg-icons/action/perm-identity'
 import ActionExtension from'material-ui/svg-icons/action/extension'
 import ContentClear from 'material-ui/svg-icons/content/clear'
+import Advert_manage from '../_component/Advert_manage'
 
 import SonPage from '../_component/base/sonPage';
 import { getOpenIdKey, changeToLetter } from '../_modules/tool';
@@ -36,6 +37,7 @@ thisView.addEventListener('load', function () {
     // let qrView=thisView.prefetch('#qrlist',3);
     // ReactDOM.render(<ShowCar/>,qrView);
     // qrView.setTitle('一物一码');
+    thisView.prefetch('./carowner/show_carlist.js',2)
 });
 
 const domain = [
@@ -142,74 +144,68 @@ const sty = {
 let sUrl=''; //客户
 let sUrl2='';//代理
 function AddRegisterQrLink(custType,type,callback){
+    let op = {}
+    if(type == 2){
+        op = {
+            id:_user.customer.objectId+'D',
+            type:4
+        }
+    }else{
+       op = {
+            id:_user.customer.objectId+'K',
+            type:4
+        }
+    }
     Wapi.qrLink.list(res => {
         if(res.data.length){
-            // console.log(res.data,'resdatadddddddddddddddddddddddddddddddddd')
-            if(res.data[0].id == (_user.customer.objectId+'D')&&type==2){
-                setUrl(res.data[0].id, type);
-                callback(res.data[0].id);
-            }else {
-                setUrl(res.data[1].id, type);
-                callback(res.data[1].id);
-            }
+            console.log(res.data,'add qrLink');
+            let obj = res.data.map(ele => ele.objectId).join('|')
+            console.log(obj)
+            deleteUrl(obj,() => {
+                addUrl(custType,type,(id,ty) => {
+                    setUrl(id,ty);
+                    callback(id)
+                })
+            })
         }else {
-            let qrLinkData={
-                uid:_user.customer.objectId,
-                type:4,
-                i:0
-            };
-            let data=Object.assign({},qrLinkData);
-            // data.url=location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+WiStorm.config.wx_app_id;
-            data.url='http://'+WiStorm.config.domain.wx+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+WiStorm.config.wx_app_id;            
-            if(type === 2){
-                data.url = data.url + '&Authorize=3';
-                data.id = _user.customer.objectId + 'D'
-            }else if(type === 3){
-                data.id = _user.customer.objectId + 'K'
-            }
-            Wapi.qrLink.add(res=>{
-                // console.log(res,'AddRegisterQrLink')
-                // Wapi.qrLink.get(r=>{
-                    // let id=changeToLetter(r.data.i);
-                    // console.log(data.id,'ddid')
-                    setUrl(data.id, type);
-                    // Wapi.qrLink.update(res => {
-                    callback(data.id);
-                    // },{
-                        // _objectId:res.objectId,
-                        // id
-                    // });
-                // },{objectId:res.objectId});
-            },data);
+            addUrl(custType,type,(id,ty) => {
+                setUrl(id, ty);
+                callback(id);
+            })
         }
-    },{
-        id:_user.customer.objectId+'D'+'|'+_user.customer.objectId+'K',
-        type:4
+    },op,{
+        limit:-1
     })
-
-    // let qrLinkData={
-    //     uid:_user.customer.objectId,
-    //     type:4,
-    //     i:0
-    // };
-    // let data=Object.assign({},qrLinkData);
+}
+function addUrl(custType,type,callback){
+    let qrLinkData={
+        uid:_user.customer.objectId,
+        type:4,
+        i:0
+    };
+    let data=Object.assign({},qrLinkData);
     // data.url=location.origin+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+WiStorm.config.wx_app_id;
-    // if(type === 2){
-    //     data.url = data.url + '&Authorize=3';
-    // }
-    // Wapi.qrLink.add(res=>{
-    //     console.log(res,'AddRegisterQrLink')
-    //     Wapi.qrLink.get(r=>{
-    //         let id=changeToLetter(r.data.i);
-    //         setUrl(id, type);
-    //         Wapi.qrLink.update(res => {
-    //             callback(id);
-    //         },{
-    //             _objectId:res.objectId,
-    //             id
-    //         });
-    //     },{objectId:res.objectId});
-    // },data);
+    // data.url='http://'+WiStorm.config.domain.wx+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+WiStorm.config.wx_app_id;            
+    if(type === 2){
+        // data.url = data.url + '&Authorize=3';
+        data.url='http://'+WiStorm.config.domain.wx+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+'wx76f1169cbd4339c1';
+        data.id = _user.customer.objectId + 'D'
+    }else if(type === 3){
+        data.url='http://'+WiStorm.config.domain.wx+'/?intent=logout&register=true&parentId='+_user.customer.objectId+'&custType='+custType+'&name='+encodeURIComponent(_user.customer.name)+'&wx_app_id='+'wx76f1169cbd4339c1'; 
+        data.id = _user.customer.objectId + 'K'
+    }
+    Wapi.qrLink.add(res=>{
+        // setUrl(data.id, type);
+        // callback(data.id);
+        callback(data.id, type);
+    },data);
+}
+function deleteUrl(objectId,callback){
+    Wapi.qrLink.delete(res => {
+        callback();
+    },{
+        objectId:objectId
+    })
 }
 
 function setUrl(id, type){
@@ -257,7 +253,9 @@ function setShare(){
 class App extends Component {
     constructor(props, context) {
         super(props, context)
-        var type = _user.customer.custTypeId == 9 ? 2: (_user.customer.custTypeId === 10 && _user.customer.Authorize.indexOf('3') > -1) ? 3:0;
+        // var type = _user.customer.custTypeId == 9 ? 2: (_user.customer.custTypeId === 10 && _user.customer.Authorize.indexOf('3') > -1) ? 3:0;
+        var cId = _user.customer.custTypeId;
+        var type = cId == 9 ? 2 : (cId == 10 || cId == 1 || cId == 5) ? 0 : cId == 8 ? 1: cId == 11 ? 3 : 0
         this.state = {
             type: type,
             show_sonpage: false,
@@ -288,6 +286,7 @@ class App extends Component {
         this.hideAddQrDis = this.hideAddQrDis.bind(this);
         this.click = this.click.bind(this);    
         this.getwin = this.getwin.bind(this);
+        this.showAddAd = this.showAddAd.bind(this);
     }
     componentDidMount() {
         Wapi.weixin.list(res => {
@@ -300,11 +299,11 @@ class App extends Component {
         })
 
         // 产生注册短链
-        let custType = 10;
+        // let custType = 10;
         let that = this;
         // 产生客户和代理的注册短链
-        AddRegisterQrLink(custType, 2, function(id){console.log(id)});  
-        AddRegisterQrLink(custType, 3, function(id){console.log(id)});    
+        AddRegisterQrLink(11, 2, function(id){console.log(id)});  
+        AddRegisterQrLink(10, 3, function(id){console.log(id)});    
         this.getQrDistribution();       
     }
 
@@ -328,11 +327,11 @@ class App extends Component {
         Wapi.weixin.list(res => {
             this.setState({ data: res.data })
         }, {
-                uid: _user.customer.objectId,
-                type: 0
-            }, {
-                fields: 'objectId,uid,name,type,wxAppKey,wxAppSecret,menu,fileName'
-            })        
+            uid: _user.customer.objectId,
+            type: 0
+        }, {
+            fields: 'objectId,uid,name,type,wxAppKey,wxAppSecret,menu,fileName'
+        })        
         this.forceUpdate();
         this.getwin();
     }
@@ -435,25 +434,10 @@ class App extends Component {
     }
     //显示邀约注册二维码
     showQr(){
-        // let custType = 10;
-        // let that = this;
-        // AddRegisterQrLink(custType, function(id){
-        //     let sUrl='https://t.autogps.cn/?s='+id;
-            // that.setState({qrUrl: sUrl});
-            W.alert(this.state.type === 2 ? '代理注册链接：' + sUrl2: '客户注册链接：' + sUrl);
-            // that.setState({showQr: true});
-            // that.forceUpdate()
-        // });
-        // this._timeout=false;
-        // setTimeout(e=>this._timeout=true,500);
-        // thisView.setTitle(___.scan_regist);
+        W.alert(this.state.type === 2 ? '代理注册链接：' + sUrl2: '客户注册链接：' + sUrl);     
     }
     //隐藏邀约注册
     hideQr(){
-        // if(this._timeout){
-        //     this.setState({showQr: false});
-        //     thisView.setTitle("代理授权");
-        // }
         this.setState({showQr: false});
         this.forceUpdate()
     }   
@@ -482,9 +466,17 @@ class App extends Component {
             fields:'objectId,id,name,uid,type,num,max,min,bind_num,move_num,createdAt,wxAppKey'
         })
     } 
+
+    showAddAd(){
+        this.refs.show.showAdd();
+    }
     render() {
         console.log(sUrl,sUrl2,'dddffdfdfdfdfdfdfddddddddddddf')
         console.log(this.state.data, 'this.state.data')
+        let item = [];
+        let itC = _user.customer.custTypeId;
+        // if(its)
+
         return (
             <ThemeProvider style={{ background: '#f7f7f7', minHeight: '100vh' }}>
                 <div style={{ paddingLeft: '10px' }}>
@@ -493,22 +485,41 @@ class App extends Component {
                         <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
                             <MenuItem value={0} primaryText="平台总揽" /> 
                             <MenuItem value={1} primaryText="编码制卡" />
-                            <MenuItem value={2} primaryText="代理授权" />
+                            {/* <MenuItem value={2} primaryText="代理授权" /> */}
+                            <MenuItem value={2} primaryText="印刷合作" />
                             <MenuItem value={3} primaryText="客户管理" />
+                            <MenuItem value={4} primaryText="渠道统计" />
+                            <MenuItem value={5} primaryText="广告管理" />
                         </DropDownMenu>:
-                        _user.customer.custTypeId === 10 && _user.customer.Authorize.indexOf('3') > -1 ?
+                        itC === 10 || itC === 1 ||itC === 5?
+                        <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
+                            <MenuItem value={0} primaryText="平台总揽" /> 
+                            <MenuItem value={1} primaryText="编码制卡" />   
+                            <MenuItem value={5} primaryText="广告管理" />                     
+                        </DropDownMenu>: 
+                        itC === 8 ? 
+                        <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
+                            <MenuItem value={1} primaryText="编码制卡" />   
+                            <MenuItem value={5} primaryText="广告管理" />                    
+                        </DropDownMenu>: 
+                        itC === 11 ? 
+                        <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
+                            <MenuItem value={3} primaryText="客户管理" />    
+                        </DropDownMenu>:
+                        {/* _user.customer.custTypeId === 10 && _user.customer.Authorize.indexOf('3') > -1 ?
                         <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
                             <MenuItem value={3} primaryText="客户管理" />                         
                         </DropDownMenu>:      
                         <DropDownMenu value={this.state.type} onChange={this.typeChange} underlineStyle={{ borderTop: 0 }} labelStyle={{ padding: '0 20px 0 6px', lineHeight: '48px' }} iconStyle={{ top: 14, right: -2 }}>
                             <MenuItem value={0} primaryText="平台总揽" /> 
                             <MenuItem value={1} primaryText="编码制卡" />
-                        </DropDownMenu>
+                        </DropDownMenu> */}
                     }
                     {
                         this.state.type === 0 ? null:  
                         this.state.type === 1 ? <IconButton style={{ float: 'right' }} onClick={this.showAddQrDis}><ContentAdd color={blue500} /></IconButton>:                          
-                        this.state.type === 2 ? <IconButton style={{ float: 'right' }} onClick={this.showQr}><ContentAdd color={blue500} /></IconButton>:null  
+                        this.state.type === 2 ? <IconButton style={{ float: 'right' }} onClick={this.showQr}><ContentAdd color={blue500} /></IconButton>:
+                        this.state.type === 5 ? <IconButton style={{ float: 'right' }} onClick={this.showAddAd}><ContentAdd color={blue500} /></IconButton>:null
                     }
                 </div>
                 <div>
@@ -516,7 +527,9 @@ class App extends Component {
                         this.state.type === 0 ? <PlatAll showWxB={this.showWxBox}/>:
                         this.state.type === 1 ? <CarManage  data={Object.assign({},{oneqr:this.state.oneqr,normal_qr:this.state.normal_qr})}/>:
                         this.state.type === 2 ? <AuthorizeList />: 
-                        this.state.type === 3 ? <MoveCarList />: null
+                        this.state.type === 3 ? <MoveCarList />: 
+                        this.state.type === 4 ? <Subordinate />:
+                        this.state.type === 5 ? <Advert_manage ref="show"/>:null
                     }
                 </div>
                 <SonPage open={this.state.show_sonpage} back={this.showWxBox}>
@@ -738,9 +751,9 @@ class QrDis extends Component {
                         <span style={{width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{(move_num||0)}</span></span>
                     </div>
                 </div>
-                <SonPage open={this.state.showMenu} back={this.hideMenu}>
+                {/* <SonPage open={this.state.showMenu} back={this.hideMenu}>
                     <MenuBox data={this.state.wx}/>
-                </SonPage>
+                </SonPage> */}
             </div>
         )
     }
@@ -816,34 +829,6 @@ class CarManage extends Component {
         if(this.state.one_qr){
             oneqr = this.state.one_qr.map((ele,index) =>{
                return(<OneAndNorm data={ele} key={index}/>)
-                /*let data = W.dateToString(W.date(ele.createdAt))
-                // console.log(data,'datadaata')
-                let url = 'https://t.autogps.cn/?s='+ele.min+'-'+ele.max
-                return(
-                    <div style={{background:'#fff',padding:'0 7px'}} key={index}>
-                        <div style={sty.pd}>{ele.name}</div>
-                        <div style={sty.pdfs}>一物一码</div>
-                        <div style={sty.pdfs}>
-                            <span style={sty.cl6}>日期：</span><span>{data}</span>
-                        </div>
-                        <div style={sty.pdfs}> 
-                            <span style={sty.cl6}>链接：</span><span style={{color:'#2196f3'}}>{url}</span>
-                        </div>
-                        <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 0',background:'#fff'}}>
-                            <div style={sty.fs12}>
-                                <span style={sty.wid}>
-                                    <span style={sty.cl6}>{'数量：'}</span><span style={sty.c0}>{ele.num||0}</span>
-                                </span>
-                                <span style={sty.wid}>
-                                    <span style={sty.cl6}>{'绑定：'}</span><span style={sty.c0}>{ele.bind_num||0}</span>
-                                </span>
-                                <span style={sty.wid}>
-                                    <span style={sty.cl6}>{'挪车：'}</span><span style={sty.c0}>{ele.move_num||0}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                )*/
             })
         }
         console.log(this.state.normal_qr,'dddddddddddd')
@@ -1301,6 +1286,8 @@ class Wxbox extends Component {
                 Wapi.weixin.get(_wxin => {
                     if (_wxin.data) {
                         wx._objectId = _wxin.data.objectId;
+                        wx.menu = _wxin.data.menu;
+                        console.log(wx,'test wx')
                         Wapi.weixin.update(res => {
                             wx.objectId = _wxin.data.objectId
                             delete wx._objectId;
@@ -1326,9 +1313,8 @@ class Wxbox extends Component {
                                 // this.goMenu();
                                 this.setMenu(wxx.data);
                                 this.goPush(0,wxx.data);
-                                
                             },{
-                                objectId: _wxin.data.objectId
+                                objectId: wx.objectId
                             })
                         }, wx)
                     }
@@ -1357,31 +1343,6 @@ class Wxbox extends Component {
     }
     setMenu(datas){
         let data;
-        // if(!this.state.menus.length){
-        //     debugger;
-        //     if(this.state.name!==___.edit_name&&!this._url){
-        //         W.prompt({
-        //             text:'',
-        //             title:___.input_menu_url
-        //         },'',url=>{
-        //             this._url=url;
-        //             this.save();
-        //         });
-        //     }
-        //     data={
-        //         "type": "view",
-        //         "name": this.state.name,
-        //         "url": this._url
-        //     };
-        // }else{
-        //     data={
-        //         "name": this.state.name,
-        //         "sub_button": this.state.menus.map(m=>Object.assign({},m,{type:'view'}))
-        //     }
-        // }
-        // if(data.type&&!data.url)
-        data={none:true};
-
         let names = '车主服务'
         Wapi.weixin.update(res=>{
             Wapi.serverApi.setMenu(res=>{
@@ -1395,7 +1356,7 @@ class Wxbox extends Component {
             });
         },{
             _wxAppKey:datas.wxAppKey,
-            menu:data
+            menu:datas.menu
         });
     }
     // goMenu(){
@@ -1458,7 +1419,7 @@ class Wxbox extends Component {
                         <span style={sty.title}>第三步、配置公众号</span>
                         <p style={sty.subtitle}>打开左边菜单栏》设置》公众号设置》功能设置》网页授权域名》设置</p>
                         <p style={sty.content}>授权回调页面域名设置为<span style={sty.highlight}>{domain[this.props.type]}</span></p>
-                        <p style={sty.subtitle}>打开左边菜单栏》开发》基本配置，点击修改配置后相关字段按下列内容填写，提交后启用。</p>
+                        <p style={sty.subtitle}>打开左边菜单栏》开发》基本配置，点击修改配置后相关字段按下列内容填写，提交后<span style={{color:'red'}}>启用</span>。</p>
                         <p style={sty.content}>URL填入<span style={sty.highlight}>{text}
                             {/*&nbsp;&nbsp;<a style={{color: blue500}} className="copyToClip" data-clipboard-text={text}>复制</a>*/}
                         </span></p>
@@ -1485,691 +1446,7 @@ class Wxbox extends Component {
     }
 }
 //自定义菜单
-class MenuBox extends Component{
-    constructor(props, context) {
-        super(props, context);
-        this.state={
-            button:[],
-            showDilog:false,
-            wx:null,
-            edit:false,
-            name:null,
-            url:null,
-            showurl:false,
-            wxMenu:null,
-            value:0,
-            menuValue:0,
-            menuSort:false
-        }
-        // this.getDate = this.getDate.bind(this);
-        this.addFirstButton = this.addFirstButton.bind(this);
-        this.addSecondButton = this.addSecondButton.bind(this);
-        this.selectFirst = this.selectFirst.bind(this);
-        this.selectSecond = this.selectSecond.bind(this);
-        this.getValueName = this.getValueName.bind(this);
-        this.getValueUrl = this.getValueUrl.bind(this);
-        this.submit = this.submit.bind(this);
-        this.menuValue = this.menuValue.bind(this);
-        // this.test = this.test.bind(this);
-        this.close = this.close.bind(this);
-        this.finish = this.finish.bind(this);
-        this.delete = this.delete.bind(this);
-        this.firstBut = 0;
-        this.secondBut = null;
-        this.value = {};
-        this.flat = 0;
-        this.same = null;
-        
-    }
 
-    
-
-
-    componentDidMount(){
-        var item = {
-            "menu": {
-                "button": [
-                    {
-                        "type": "view", 
-                        "name": "车主平台", 
-                        "url": "https://user.autogps.cn", 
-                        "sub_button": [ ]
-                    }, 
-                    {
-                        "type": "view", 
-                        "name": "歌手简介", 
-                        "url": "http://www.soso.com/", 
-                        "sub_button": [ ]
-                    }, 
-                    {
-                        "name": "菜单", 
-                        "sub_button": [
-                            {
-                                "type": "view", 
-                                "name": "搜索", 
-                                "url": "http://www.soso.com/"
-                            }, 
-                            {
-                                "type": "view", 
-                                "name": "美图", 
-                                "url": "http://www.baidu.com/"
-                            }, 
-                            {
-                                "type": "view", 
-                                "name": "小沙皮", 
-                                "url": "http://www.xiezu.com/"
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-        console.log(item,'menu');
-        // this.setState({button:item.menu.button})
-        console.log(this.props.data,'this.opro.datl')
-    }
-
-    componentWillReceiveProps(nextProps){
-        console.log(nextProps,'nextpros.sjd')
-        this.setState({wx:nextProps.data});
-        // this.setState({button:nextProps.data.menu.button||[]})
-        // debugger;
-        if(nextProps&&nextProps.data){
-            Wapi.weixin.get(res => {
-                console.log(res,'resresres');
-                // this.setState({wx:res.data})
-                 this.setState({button:res.data.menu.button||[]})
-            },{
-                wxAppKey:nextProps.data.wxAppKey
-            },{
-                fields:'objectId,uid,name,type,wxAppKey,fileName,menu,wxAppSecret,template'
-            })
-            Wapi.wxMenu.list(res => {
-                // console.log(res,res)
-                this.setState({wxMenu:res.data})
-                if(res.data.length){
-                    this.setState({value:0})
-                    this.value.name = res.data[0].menuName;
-                    this.value.url = res.data[0].menuUrl;
-                }else{
-                    this.setState({value:1})
-                }
-            },{
-                wxAppKey:nextProps.data.wxAppKey
-            })
-        }
-        
-    }
-    addFirstButton(){
-        // console.log(12)
-        // this.state.menu.button.push([]);
-        // console.log(this.state.menu)
-        this.setState({showDilog:true})
-        this.state.button.forEach(ele => {
-            ele.isshow = false
-        })
-        let op = {
-            "type": "view", 
-            "name": "菜单名称", 
-            "url": "", 
-            "isshow":true,
-            "sub_button": [ ]
-        }
-        this.state.button.push(op)
-        this.firstBut = this.state.button.length-1;
-        console.log(this.state.button)
-        this.setState({button:this.state.button});
-        if(this.state.value === 0){
-            if(this.state.wxMenu.length){
-                this.value.name = this.state.wxMenu[0].menuName;
-                this.value.url = this.state.wxMenu[0].menuUrl;
-            }
-        }
-    }
-    addSecondButton(ele,index){
-        // console.log(ele,index);
-        if(ele.sub_button.length){
-            this.setState({showDilog:true})
-            ele.sub_button.forEach(eles => {
-                eles.isshow = false;
-            })
-            let op = {
-                "type": "view", 
-                "name": "二级菜单", 
-                "url": "", 
-                "isshow":true,
-            }
-            ele.sub_button.push(op);
-            this.secondBut = ele.sub_button.length-1
-            // console.log(this.secondBut,'thissecondbut')
-            this.state.button[index] = ele;
-            this.firstBut = index
-            this.setState({button:this.state.button});
-            if(this.state.value === 0){
-                if(this.state.wxMenu.length){
-                    this.value.name = this.state.wxMenu[0].menuName;
-                    this.value.url = this.state.wxMenu[0].menuUrl;
-                }
-            }
-        }else{
-            W.confirm('添加子菜单后，一级菜单的内容将被清除。确定添加子菜单？',e=>{
-                if(e){
-                    this.setState({showDilog:true})
-                    ele.sub_button.forEach(eles => {
-                        eles.isshow = false;
-                    })
-                    let op = {
-                        "type": "view", 
-                        "name": "二级菜单", 
-                        "url": "", 
-                        "isshow":true,
-                    }
-                    ele.sub_button.push(op);
-                    this.secondBut = ele.sub_button.length-1
-                    // console.log(this.secondBut,'thissecondbut')
-                    this.state.button[index] = ele;
-                    this.firstBut = index
-                    this.setState({button:this.state.button});
-                    if(this.state.value === 0){
-                        if(this.state.wxMenu.length){
-                            this.value.name = this.state.wxMenu[0].menuName;
-                            this.value.url = this.state.wxMenu[0].menuUrl;
-                        }
-                    }
-                }else{
-                    return false;
-                }
-            })
-        }
-    }
-    selectFirst(e,i){
-        // if(this.flat<1){
-            // this.flat?this.same == i?this.flat=1:this.flat=0:this.same = i
-            this.state.menuSort?null:this.state.button[i].isshow?this.setState({edit:true}):null;
-            this.state.button.forEach(ele => {
-                ele.isshow = false;
-                ele.sub_button.forEach(e=>{
-                    e.isshow = false;
-                })
-            })
-            this.state.menuSort?null:e.isshow = true;
-            this.state.button[i] = e;
-            this.setState({name:e.name});
-            this.value.name = e.name
-            if(e.sub_button.length){
-                // this.setState({url:'http://'})
-                this.value.url="http://"
-            }else{
-                this.value.url = e.url
-                this.setState({url:e.url});
-                this.setState({showurl:true})
-            }
-            if(this.state.value === 0){
-                if(this.state.wxMenu.length){
-                    this.value.name = this.state.wxMenu[0].menuName;
-                    this.value.url = this.state.wxMenu[0].menuUrl;
-                }
-            }
-            console.log(this.flat,'flat')
-            
-
-            this.setState({button:this.state.button})
-            console.log(e,i);
-            this.firstBut = i;
-            this.flat++;
-        // }
-        
-        
-    }
-    selectSecond(el,id,ele,index){
-        console.log('selectSecond');
-        console.log(el,id,ele,index)
-        ele.sub_button.forEach(e => {
-            e.isshow = false;
-        })
-        this.state.menuSort?null:el.isshow = true
-        ele.sub_button[id] = el;
-        this.state.button[index] = ele
-        this.setState({button:this.state.button})
-
-        this.state.menuSort?null:this.setState({edit:true});
-        this.setState({showurl:true})
-        this.secondBut = id;
-        this.firstBut = index;
-        this.setState({name:el.name})
-        this.setState({url:el.url})
-        this.value.name = el.name;
-        this.value.url = el.url;
-        if(this.state.value === 0){
-            if(this.state.wxMenu.length){
-                this.value.name = this.state.wxMenu[0].menuName;
-                this.value.url = this.state.wxMenu[0].menuUrl;
-            }
-        }
-        // if(this.state.edit){
-
-        // }
-        // this.firstBut = index;
-        // this.secondBut = id;    
-    }
-    getValueName(e,i){
-        this.value.name = i;
-        this.setState({name:i})
-        // console.log(this.value)
-        // if(this.state.edit){
-            
-        // }else{
-            // this.value.name = i;
-        // }
-    }
-    getValueUrl(e,i){
-        this.value.url = i;
-        this.setState({url:i})
-        console.log(this.value);
-    }
-    
-    submit(){
-        // if(this.state.showDilog){
-            if(!this.value.name){
-                W.alert('请输入菜单名称');
-                return;
-            }
-            var reg = /^[a-zA-z]+:\/\/[^\s]*/
-            // console.log(reg.test(this.value.url))
-            
-            if(!this.value.url){
-                W.alert('请输入跳转网址');
-                return
-            }
-            if(!reg.test(this.value.url)){
-                W.alert('请输入正确的网址');
-                return;
-            }
-        
-            console.log(this.firstBut,'flat');
-            let i = this.firstBut;
-            if(typeof this.secondBut == "number" && this.secondBut >= 0){
-                this.state.button[i].sub_button[this.secondBut].name = this.value.name;
-                this.state.button[i].sub_button[this.secondBut].url = this.value.url
-            }else{
-                console.log(this.secondBut);
-                console.log(this.state.button[i])
-                this.state.button[i].name = this.value.name;
-                this.state.button[i].url= this.value.url;
-            }
-        // }else if(this.state.edit){
-
-        // }
-            
-        this.setState({button:this.state.button})
-        // console.log(this.state.button)
-        this.setState({showDilog:false});
-        this.setState({edit:false});
-        this.setState({url:null});
-        this.setState({name:null});
-        this.setState({showurl:false})
-        this.state.wxMenu.length?this.setState({value:0}):this.setState({value:1})
-        this.setState({menuValue:0})
-        this.state.value?this.value = {}:null;
-        this.secondBut = null;
-        this.flat = 0;
-        // this.firstBut = 0;
-        // this.setState({showDilog:false})
-    }
-    close(){
-        if(this.state.showDilog){
-            if(typeof this.secondBut == "number" && this.secondBut >= 0){
-                this.state.button[this.firstBut].sub_button.splice(this.secondBut,1);
-            }else{
-                this.state.button.splice(this.firstBut,1)
-            }
-        }
-        this.setState({button:this.state.button})
-        // console.log(this.state.button,'btt')
-        this.setState({showDilog:false});
-        this.setState({edit:false});
-        this.setState({showurl:false})
-        this.setState({url:null});
-        this.setState({name:null});
-        this.state.wxMenu.length?this.setState({value:0}):this.setState({value:1})
-        this.setState({menuValue:0})
-        this.state.value?this.value = {}:null;
-        this.secondBut = null;
-        this.flat = 0;
-        // this.value = {};
-    }
-    finish(){
-        this.state.button.forEach((ele,index) => {
-            if(ele.sub_button.length){
-                delete ele.url;
-                delete ele.type;
-                ele.sub_button.forEach(e => {
-                    delete e.isshow
-                })
-            }else{
-                if(!ele.url){
-                    W.alert('第'+(index+1)+'个菜单'+ele.name+'未设置链接')
-                }
-            }
-            delete ele.isshow
-        })
-        W.loading(true,'正在更新')
-        Wapi.weixin.update(res => {
-            if(res.status_code == 0){
-                Wapi.serverApi.setMenu(re => {
-                    W.loading(false)
-                    if(!re.errcode){
-                        W.alert(___.update_su);
-                    }
-                    else{
-                        if(this.state.button.length){
-                            W.alert(___.menu_fail);
-                        }else{
-                            W.alert('菜单不能为空，'+___.menu_fail)
-                        }
-                    } 
-                },{
-                    wxAppKey:this.state.wx.wxAppKey
-                })
-            }
-        },{
-            _objectId:this.state.wx.objectId,
-            menu:{'button':this.state.button}
-        })
-        console.log(this.state.button,'this.button');
-        this.setState({button:this.state.button});
-        this.flat = 0;
-    }
-    delete(es,i,ess,j){
-        console.log(es,i,ess,j)
-        if(j >= 0){ //二级菜单
-            W.confirm('确定要删除该菜单？',e => {
-                if(e){
-                    es.sub_button.splice(j,1);
-                    this.state.button[i] = es;
-                    // this.setState({button:this.state.button});
-                    if(!es.sub_button.length){
-                        this.state.button[i].type = 'view';
-                    }
-                    this.setState({button:this.state.button});
-                }else{
-                    return;
-                }
-            })
-        }else{ //以及菜单
-            W.confirm('确定要删除该菜单？',e => {
-                if(e){
-                    this.state.button.splice(i,1)
-                    this.setState({button:this.state.button})
-                }else{
-                    return
-                }
-            })
-        }
-    }
-
-    // onmove(e){
-    //     let event = e||window.event
-    //     console.log(event.clientX,'thismove')
-    // }
-
-    changeValue(e,i,v){
-        this.setState({value:v})
-        if(v === 1){
-            this.value.name = this.state.name;
-            this.value.url = this.state.url
-        }else{
-            if(this.state.wxMenu.length){
-                this.value.name = this.state.wxMenu[0].menuName;
-                this.value.url = this.state.wxMenu[0].menuUrl;
-            }
-            
-        }
-    }
-    menuValue(e,i,v){
-        this.setState({menuValue:v})
-        this.value.name = this.state.wxMenu[v].menuName;
-        this.value.url = this.state.wxMenu[v].menuUrl;
-        console.log(this.value,'this.value')
-    }
-
-    menuSort(){
-        this.setState({menuSort:!this.state.menuSort});
-        this.state.button.forEach(ele =>{
-            ele.isshow = false;
-            ele.sub_button.forEach(e =>{
-                e.isshow = false
-            })
-        })
-        this.setState({button:this.state.button})
-    }
-
-    getPage(e){
-        e.preventDefault();
-        console.log(e.pageX,e.clientX)
-    }
-    getPages(e){
-        console.log(e.pageX,e.clientX)
-    }
-    render() {
-        // console.log()
-        console.log(this.state.menu,'wxzmenu')
-        const actions = [
-            <FlatButton
-                label="取消"
-                primary={true}
-                onTouchTap={this.close}
-            />,
-            <FlatButton
-                label="确定"
-                primary={true}
-                keyboardFocused={true}
-                onTouchTap={this.submit}
-            />,
-        ];
-        let dis=Object.assign({},stys.mi);
-        dis.color='#aaa';
-        let  menu = null;
-        let icon1 = {
-            bottom: '-5px',
-            display: 'inline-block',
-            width: 0,
-            height: 0,
-            borderWidth:'6px',
-            borderStyle: 'dashed',
-            borderColor: 'transparent',
-            borderBottomWidth: 0,
-            borderTopColor: '#fafafa',
-            borderTopStyle: 'solid',
-            position: 'absolute',
-            left: '50%',
-            marginLeft: '-6px',
-        }
-        let icon2 = {
-            bottom: '-6px',
-            display: 'inline-block',
-            width: 0,
-            height: 0,
-            borderWidth: '6px',
-            borderStyle: 'dashed',
-            borderColor: 'transparent',
-            borderBottomWidth: 0,
-            borderTopColor: '#d0d0d0',
-            borderTopStyle: 'solid',
-            position: 'absolute',
-            left: '50%',
-            marginLeft: '-6px',
-        }
-        let item = this.state.button.map((ele,index)=>{
-            let its = ele.sub_button.map((el,id) => {
-                return(
-                    <div style={el.isshow?{border:'1px solid #44b549',color:'#44b549',fontSize:14,position:'relative'}:{fontSize:14,position:'relative'}}  key={id} >
-                        <span onClick={() => this.selectSecond(el,id,ele,index)} style={id==4?{margin:'0 5px 0 5px',display:'block'}:{display:'block',margin:'0 5px 0 5px',borderBottom:'1px solid #ccc'}}>{this.state.menuSort?<span>☰</span>:null}{el.name}</span>
-                        {this.state.menuSort?null:<span onClick={() =>{this.delete(ele,index,el,id)}} style={{position:'absolute',top:0,right:3}}><ContentClear style={{height:15,width:15,position:'relative',top:3}}/></span>}
-                    </div>
-                )
-            })
-            this.state.menuSort?null:its.length < 5?its.push(<div key={6} onClick={() =>this.addSecondButton(ele,index)}><ContentAdd style={stys.add} /></div>):null
-            return(<div style={stys.mi} key={index}>
-                        <span  style={ele.isshow?{position:'relative',fontSize:14,border:'1px solid #44b549',color:'#44b549',display:'inline-block',width:'99%',height:'96%',whiteSpace: 'nowrap',textOverflow: 'ellipsis'}:{position:'relative',fontSize:14,display:'inline-block',width:'99%',height:'100%',whiteSpace: 'nowrap',textOverflow: 'ellipsis'}} onClick={()=>this.selectFirst(ele,index)} >
-                            {this.state.menuSort?<span>☰</span>:ele.sub_button.length?<span style={{background:'#44b549',borderRadius:'5px',width:'7px',height: '7px', verticalAlign: 'middle', display: "inline-block",marginRight: '2px',marginTop: '-2px'}}></span>:null}
-                            {ele.name}
-                        </span>
-                        {!this.state.menuSort?<span onClick={() =>{this.delete(ele,index)}} style={{position:'absolute',top:0,right:3}}><ContentClear style={{height:15,width:15,position:'relative',top:3}}/></span>:null}
-                            {/*{*/}
-                                {/*ele.isshow?*/}
-                                <div style={its.length?stys.son_menu:{}}>
-                                    {its}
-                                    {
-                                        !its.length?
-                                        null
-                                        :
-                                        <span>
-                                            <i style={icon2}></i>
-                                            <i style={icon1}></i>
-                                        </span>
-                                    }
-                                </div>
-                                {/*:*/}
-                                {/*null*/}
-                            {/*}*/}
-                    </div>)
-        })
-        console.log(this.state.button,'button')
-        let wxMenu = null;
-        if(this.state.wxMenu){
-            wxMenu = this.state.wxMenu.map((ele,index) => {
-                return(
-                     <MenuItem key={index} value={index} primaryText={ele.menuName} />
-                )
-            })            
-        }
-        let sorts = this.state.button.length>1?false:true
-        return (
-            <div>
-                <RaisedButton disabled={this.state.menuSort} label={___.submit} primary={true} style={stys.save} onClick={this.state.menuSort?()=>{}:this.finish}/>
-                {/*<RaisedButton disabled={sorts} label="排序" primary={true} style={{display:'block',marginTop:10,width:'40%',marginLeft:'30%'}} onClick={this.menuSort.bind(this)}/>*/}
-                <div style={stys.menu}>
-                    <div style={stys.k} onDoubleClick={() =>this.test()}>
-                        <HardwareKeyboard/>
-                    </div>
-                    {item}
-                    {
-                        !this.state.menuSort?(this.state.button.length<3?<div onClick={this.addFirstButton} style={stys.mi}>{this.state.button.length>0?<ContentAdd style={stys.add} />:<span><ContentAdd style={stys.add1}/>添加菜单</span>}</div>:null):null
-                    }
-                </div>
-                <Dialog
-                    title="请输入"
-                    titleStyle={{borderBottom:'none',lineHeight:'43px',height:43,padding:'5px 0',textAlign:'center',fontSize:'16px'}}
-                    actions={actions}
-                    modal={false}
-                    style={{zIndex:1499}}
-                    open={this.state.showDilog}
-                    contentStyle={{width:'85%',zIndex:1499}}
-                    onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
-                    bodyStyle={{padding:'0 24px'}}
-                    actionsContainerStyle={{textAlign:'center',fontSize:'14px',borderTop:0}}
-                    >
-                    <div>
-                        <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.changeValue.bind(this)} >
-                            {
-                                this.state.wxMenu?(
-                                this.state.wxMenu.length?
-                                <MenuItem value={0} primaryText="系统菜单" />
-                                :
-                                <MenuItem value={0} primaryText={null} />)
-                                :
-                                <MenuItem value={0} primaryText={null} />
-                            }
-                            <MenuItem value={1} primaryText="自定义菜单" />
-                        </SelectField>
-                       {
-                            this.state.value==0?
-                            <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.menuValue} >
-                                {wxMenu}
-                            </SelectField>
-                            :
-                            <div>
-                            <TextField
-                                hintText="名称"
-                                style={{ width: '100%' }}
-                                onChange={this.getValueName}
-                            />
-                            <TextField
-                                hintText="链接"
-                                style={{ width: '100%' }}
-                                onChange={this.getValueUrl}
-                            />
-                            </div>
-                       } 
-                    </div>
-                </Dialog>
-                <Dialog
-                    title="编辑"
-                    titleStyle={{borderBottom:'none',lineHeight:'43px',height:43,padding:'5px 0',textAlign:'center',fontSize:'16px'}}
-                    actions={actions}
-                    modal={false}
-                    style={{zIndex:1499}}
-                    open={this.state.edit}
-                    contentStyle={{width:'85%',zIndex:1499}}
-                    onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
-                    bodyStyle={{padding:'0 24px'}}
-                    actionsContainerStyle={{textAlign:'center',fontSize:'16px',borderTop:0}}
-                    >
-                    <div>
-                        {
-                            this.state.showurl?
-                            <div>
-                                <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.changeValue.bind(this)} >
-                                    {
-                                        this.state.wxMenu?(
-                                        this.state.wxMenu.length?
-                                        <MenuItem value={0} primaryText="系统菜单" />
-                                        :
-                                        <MenuItem value={0} primaryText={null} />)
-                                        :
-                                        <MenuItem value={0} primaryText={null} />
-                                    }
-                                    <MenuItem value={1} primaryText="自定义菜单" />
-                                </SelectField>
-                                {
-                                    this.state.value==0?
-                                    <SelectField value={this.state.value} style={{width:'100%'}} onChange={this.menuValue} >
-                                        {wxMenu}
-                                    </SelectField>
-                                    :
-                                    <div>
-                                        <TextField
-                                            hintText="菜单名称"
-                                            value={this.state.name}
-                                            style={{ width: '100%' }}
-                                            onChange={this.getValueName}
-                                        />
-                                        <TextField
-                                            hintText="跳转网页"
-                                            value={this.state.url}
-                                            style={{ width: '100%' }}
-                                            onChange={this.getValueUrl}
-                                        />
-                                    </div>
-                                }
-                            </div>
-                            :
-                            <TextField
-                                hintText="菜单名称"
-                                value={this.state.name}
-                                style={{ width: '100%' }}
-                                onChange={this.getValueName}
-                            />
-                        }
-                    </div>
-                </Dialog>
-            </div>
-        );
-    }
-}
 //创建一物一码挪车贴
 class MoveCar extends Component {
     constructor(props, context) {
@@ -2283,6 +1560,51 @@ class AuthorizeList extends Component {
     componentDidMount() {
         this.setState({ type: 4 });
         W.loading('加载中...');
+        // Wapi.customer.list(res => {
+        //     let ids = [];
+        //     res.data.map(function(e, i){
+        //         ids.push(e.objectId);
+        //     });
+
+        //     let par={
+        //         "group":{
+        //             "_id":{"parentId":"$parentId"},
+        //             "count":{"$sum":1},
+        //             "onecar_bind":{"$sum":"$onecar_bind"},
+        //             "onecar_move":{"$sum":"$onecar_move"},
+        //             "car_bind":{"$sum":"$car_bind"},
+        //             "car_move":{"$sum":"$car_move"}
+        //         },
+        //         "sorts":"parentId",
+        //         parentId: ids.join('|'),
+        //         custTypeId: 10
+        //     }
+        //     Wapi.customer.aggr(total=>{
+        //         console.log(total,'get customer car move total begin');
+        //         res.data.map(function(e, i){
+        //             for(let i = 0; i < total.data.length; i++){
+        //                 if(total.data[i]._id.parentId.indexOf(e.objectId.toString()) > -1){
+        //                     e.count = total.data[i].count;
+        //                     e.bind_num = total.data[i].car_bind + total.data[i].onecar_bind;
+        //                     e.move_num = total.data[i].car_move + total.data[i].onecar_move;
+        //                     break;
+        //                 }
+        //             }
+        //         });
+        //         this.setState({ data: res.data });
+        //         W.loading(false);
+        //         console.log(res.data, 'get customer car move total end.');
+        //     },par);            
+        // }, {
+        //     parentId: _user.customer.objectId,
+        //     custTypeId: 10,
+        //     Authorize: '3'
+        // }, {
+        //     sorts: '-createdAt',
+        //     page: '-createdAt',
+        //     limit: -1
+        // })
+
         Wapi.customer.list(res => {
             let ids = [];
             res.data.map(function(e, i){
@@ -2320,13 +1642,13 @@ class AuthorizeList extends Component {
             },par);            
         }, {
             parentId: _user.customer.objectId,
-            custTypeId: 10,
-            Authorize: '3'
+            custTypeId: 11
         }, {
             sorts: '-createdAt',
             page: '-createdAt',
             limit: -1
         })
+
     }
     showAuth(e, i, v) {
         this.setState({ showAuth: v })
@@ -2377,55 +1699,13 @@ class Authorized extends Component {
             })
             console.log(dele);
             this.data.splice(dele, 1)
-            // this.data.splice(this.data.indexOf(JSON.parse(e.target.value)),1)
         }
         console.log(this.data, 'data')
-        // console.log(JSON.parse(e.target.value),'dd')
     }
    search(e, val) {
-        // this.data=val;
-        // this._data.name = "^" + val
-        console.log(e,val,'search vehicle');
-        // Wapi.customer.list(res => {
-        //     console.log(res.data, 'res');
-        //     this.setState({ search: res.data });
-        // }, this._data)
         this.searchKey = val;
         this.forceUpdate();
     }
-    // submit() {
-    //     let custobj = [];
-    //     let auobj = [];
-    //     let that = this;
-    //     // let type = ['营销推广','政企业务','平台运营','扫码移车']
-    //     W.confirm(___.confirm_remove_authorize,function(b){
-    //     	if(b){
-    //             that.data.forEach(ele => {
-    //                 custobj.push(ele.applyCompanyId);
-    //                 auobj.push(ele.objectId);
-    //             })
-    //             Wapi.authorize.update(res => {
-    //                 // console.log(res,'ddddfdfdfd')
-    //                 // history.back();
-    //                 Wapi.customer.update(res => {
-    //                     // history.back();
-    //                     // this.props.back()
-    //                     Wapi.authorize.list(res => {
-    //                         console.log(res.data, 'refresh authorize list.')
-    //                         that.props.data = res.data;
-    //                         that.forceUpdate();
-    //                     }, {
-    //                         authorizeType: 3,
-    //                         actProductId: 4,
-    //                     })
-    //                 }, {
-    //                         _objectId: custobj.join('|'),
-    //                         Authorize: '-3'
-    //                     })
-    //             }, { _objectId: auobj.join('|'), status: 2 })
-    //     	}
-    //     });
-    // }
     showSC(obj){
         this.setState({obj:obj})
         this.setState({showSC:true});
@@ -2574,6 +1854,7 @@ class CsItem extends Component {
             move_num:null
         }
         this.getNum = this.getNum.bind(this);
+        this.showList = this.showList.bind(this);
     }
     componentDidMount(){
         // console.log(this.state.data,'itemtedata')
@@ -2637,6 +1918,9 @@ class CsItem extends Component {
     // componentWillReceiveProps(nextProps){
     //     this.setState({data:nextProps.data})
     // }
+    showList(data){
+        thisView.goTo('./carowner/show_carlist.js',data)
+    }
     render(){
         // console.log(this.props.data,'skycjsd')
         // console.log(this.state.data,'hello')
@@ -2664,7 +1948,7 @@ class CsItem extends Component {
                         <span>{contact}</span>&nbsp;&nbsp;<span>{tel}</span>
                     </div>
                     <div style={{fontSize:'12px',color:'#666'}}>
-                        <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span style={{color:'#000'}}>{this.state.qrD||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span onClick={() => {this.showList(this.state.data)}} style={{color:'#2196f3'}}>{this.state.qrD||0}</span></span>
                         <span style={{display:'inline-block',width:width}}>{'绑定'+'：'}<span style={{color:'#000'}}>{this.state.bind_num||0}</span></span>
                         <span style={{display:'inline-block',width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{this.state.move_num||0}</span></span>
                     </div>
@@ -2774,7 +2058,8 @@ class MoveCarList extends Component {
         }
         // this.change = this.change.bind(this);
         this._data = {
-            parentId:_user.customer.objectId
+            parentId:_user.customer.objectId,
+            custTypeId:10
         }
         this.loadNextPage = this.loadNextPage.bind(this)
         this.showQr = this.showQr.bind(this);
@@ -2955,6 +2240,7 @@ class Item extends Component{
             move_num:0
         }
         this.getNum = this.getNum.bind(this);
+        this.showList = this.showList.bind(this);
     }
     componentDidMount(){
         // console.log(this.state.data,'itemtedata')
@@ -3012,6 +2298,10 @@ class Item extends Component{
             this.setState({move_num:move_num})
         },op)
     }
+    showList(data){
+        console.log(data,'obj')
+        thisView.goTo('./carowner/show_carlist.js',data)
+    }
     render(){
         // console.log(this.props.data,'skycjsd')
         // console.log(this.state.data,'hello')
@@ -3046,9 +2336,175 @@ class Item extends Component{
                         <span>{contact}</span>&nbsp;&nbsp;<span>{tel}</span>
                     </div>
                     <div style={{fontSize:'12px',color:'#666'}}>
-                        <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span style={{color:'#000'}}>{this.state.qrD||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span onClick={() => {this.showList(this.state.data)}} style={{color:'#2196f3'}}>{this.state.qrD||0}</span></span>
                         <span style={{display:'inline-block',width:width}}>{'绑定'+'：'}<span style={{color:'#000'}}>{bind_num||0}</span></span>
                         <span style={{display:'inline-block',width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{move_num||0}</span></span>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+//渠道统计
+class Subordinate extends Component {
+    constructor(props,context){
+        super(props,context);
+        this.state = {
+            data: []
+        }
+        this.search = this.search.bind(this);
+        this.searchKey = '';
+    }
+    componentDidMount(){
+       Wapi.qrDistribution.list(res => {
+            let qrDis = res.data.map(ele => ele.uid);
+            console.log(qrDis,'allqrDis')
+            Wapi.customer.list(cus => {
+                console.log(cus.data,'all customer')
+                let customer = cus.data.filter(ele => ele.custTypeId === 1 || ele.custTypeId === 5 || ele.custTypeId === 8)
+                console.log(customer,'filter customer')
+                this.setState({data:customer})
+            },{
+                objectId:qrDis.join('|'),
+            },{
+                limit:-1
+            })
+       },{
+            objectId:'>0',
+            type:'2|3'
+       },{
+           limit:-1
+       })
+    }
+
+    search(e, val) {
+        console.log(e,val,'search customer');
+        this.searchKey = val;
+        this.forceUpdate();
+    }
+
+    render(){
+        console.log(this.searchKey,'console.log(this.searchkey)')
+        let item = null;
+        if(this.state.data.length){
+            let that = this;
+            item = this.state.data.filter(function(ele){
+                return (that.searchKey === '' || ele.name.indexOf(that.searchKey) > -1)
+            });
+            console.log(item,'this.item')
+            item = item.map((ele,index) => {
+                return(<MCust key={index} data={ele}/>)
+            })
+        }
+        return(
+            <ThemeProvider style={{background:'#f7f7f7'}}>
+                <div style={{display:'block',background:'#f7f7f7',minHeight:'100vh'}}>
+                    <TextField
+                        hintText={___.search}
+                        onChange={this.search}
+                        style={{ width: '100%', background: '#fff' }}
+                        hintStyle={{ paddingLeft: 10 }}
+                        inputStyle={{ padding: '0px 10px 0px 10px' }}
+                        underlineStyle={{ bottom: '0px', borderBottomColor: '#f7f7f7' }}
+                        underlineFocusStyle={{ borderBottomColor: '#2196f3' }}
+                    />
+                    {
+                        item
+                    }
+                </div>
+            </ThemeProvider>
+        )
+    }
+}
+//渠道统计下的列表
+class MCust extends Component {
+    constructor(props,context){
+        super(props,context)
+        this.state = {
+            data:props.data,
+            qrD:null,
+            bind_num:null,
+            move_num:null
+        }
+        this.getNum = this.getNum.bind(this);
+        this.showList = this.showList.bind(this);
+    }
+    componentDidMount(){
+
+        this.getNum(this.state.data.objectId)
+
+        
+    }
+    componentWillReceiveProps(nextProps){
+        this.setState({data:nextProps.data})
+        // console.log(nextProps.data,'itemdata')
+
+        this.getNum(nextProps.data.objectId)
+
+    }
+    getNum(objectId){
+        let op = {
+            uid:objectId,
+            type:'2|3'
+        }
+        console.log(op,'op')
+        Wapi.qrDistribution.list(res => {
+            // this.setState({qrD:res.data})
+            let sum = 0;
+            let bind_num = 0;
+            let move_num = 0;
+            res.data.forEach(ele => {
+                sum += ele.num||0;
+                bind_num += ele.bind_num||0;
+                move_num += ele.move_num||0
+            })
+            this.setState({qrD:sum});
+            this.setState({bind_num:bind_num});
+            this.setState({move_num:move_num})
+        },op)
+    }
+    showList(data){
+        console.log(data,'obj')
+        thisView.goTo('./carowner/show_carlist.js',data)
+    }
+    render(){
+        // console.log(this.props.data,'skycjsd')
+        console.log(this.state.data,'hello')
+        let item = null;
+        // let custTypeId = this.state.data.custTypeId;
+        let width = (window.screen.width-32)/3+'px'
+        let name = this.state.data.name;
+        let contact = this.state.data.contact;
+        let tel = this.state.data.tel;
+        let custTypeId = this.state.data.custTypeId;
+        let custType = this.state.data.custType;
+        let subscribe = this.state.data.subscribe||0;
+        let bind_num = (this.state.data.car_bind + this.state.data.onecar_bind)||0;
+        let move_num = (this.state.data.car_move + this.state.data.onecar_move)||0
+        return(
+            <div>
+               <div style={{borderBottom:'1px solid #f7f7f7',padding:'10px 10px',background:'#fff'}}>
+                    <div style={{marginBottom:'1em'}}>
+                        <span>
+                            {
+                                name
+                            }
+                        </span>
+                        <span style={{marginLeft:5,fontSize:12}}>
+                            {
+                                custTypeId == 1 ? '品牌商':
+                                custTypeId == 5 ? '代理商': '服务商'                 
+                            }
+                        </span>
+                    </div>
+                    <div style={{fontSize:'12px',marginBottom:'10px'}}>
+                        <span>{contact}</span>&nbsp;&nbsp;<span>{tel}</span>
+                    </div>
+                    <div style={{fontSize:'12px',color:'#666'}}>
+                        <span style={{display:'inline-block',width:width}}>{'数量'+'：'}<span onClick={() => {this.showList(this.state.data)}} style={{color:'#2196f3'}}>{this.state.qrD||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'绑定'+'：'}<span style={{color:'#000'}}>{this.state.bind_num||0}</span></span>
+                        <span style={{display:'inline-block',width:width}}>{'挪车'+'：'}<span style={{color:'#000'}}>{this.state.move_num||0}</span></span>
                     </div>
                 </div>
             </div>

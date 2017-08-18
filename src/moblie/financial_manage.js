@@ -19,6 +19,7 @@ import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import Input from '../_component/base/input';
 import MobileChecker from '../_component/base/mobileChecker';
+import VerificationOrig from '../_component/base/verificationOrig'
 
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.company_account);
@@ -118,6 +119,7 @@ class App extends Component {
     }
 
     render() {
+        console.log(this.data.balance,'test this data balance')
         return (
             <ThemeProvider>
             <div>
@@ -130,12 +132,16 @@ class App extends Component {
                     {/*<div style={styles.head_str}>{___.balance}</div>*/}
                     <div style={styles.head_num}>{toMoneyFormat(this.data.balance)}</div>
                     <div>
-                        <span style={{marginRight:'20px'}}>
+                        <span style={this.data.balance?{marginRight:'20px'}:{}}>
                             <a style={styles.a} onTouchTap={this.toRecharge}>{___.recharge}</a>
-                        </span>
-                        <span>
-                            <a style={styles.a} onTouchTap={this.toWithdraw}>{___.withdraw_cash}</a>
-                        </span>
+                         </span> 
+                         { 
+                             this.data.balance? 
+                            <span>
+                                <a style={styles.a} onTouchTap={this.toWithdraw}>{___.withdraw_cash}</a>
+                            </span>
+                             :null 
+                         } 
                     </div>
                 </div>
                 
@@ -214,6 +220,7 @@ class WithdrawPage extends Component {
         this.toCheckPhone = this.toCheckPhone.bind(this);
         this.success = this.success.bind(this);
         this.toWithdraw = this.toWithdraw.bind(this);
+        this.withdrawal = this.withdrawal.bind(this);
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
@@ -223,7 +230,10 @@ class WithdrawPage extends Component {
         })
     }
     withdrawChange(e,value){
-        this.amount=value;
+        // this.amount = value
+        this.amount=e.target.value;
+        this.forceUpdate();
+        // console.log(e.target.value,value)
     }
     toCheckPhone(){
         let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
@@ -239,6 +249,8 @@ class WithdrawPage extends Component {
     }
     success(val,name){
         this.code=val;
+        this.forceUpdate();
+        // console.log(val,'dd')
     }
     toWithdraw(){
         if(!this.code){
@@ -258,13 +270,67 @@ class WithdrawPage extends Component {
             // isCust:1,
         },'wxPay_withdraw',location.href);
     }
+    withdrawal(){
+        let reg = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+        console.log(this.amount,'prince')
+        if(!reg.test(this.amount)||this.amount==0){
+            W.alert(___.amount_error);
+            return;
+        }
+        if(this.amount>Balance){
+            W.alert(___.balance_not_enough);
+            return;
+        }
+        if(!this.code){
+            W.alert(___.code_err);
+            return;
+        }
+        // history.replaceState('home','home','home.html');
+        W.fixPath();
+        Wapi.pay.wxPay({
+            uid:companyBillUid,
+            order_type:3,
+            remark:'提现',
+            amount:this.amount,
+            title:'提现',
+            psw:this.psw,
+            uidType:1,
+            // isCust:1,
+        },'wxPay_withdraw',location.href);
+    }
     render() {
+        let sty={
+            r:{display:'flex',alignItems:'flex-end',padding:'3px 10px',borderBottom:'1px solid #dddddd',background:'#fff'},
+            input:{width:'100%',height:'40px',fontSize:'16px',border:'none',outline:'none'}
+        }
+        let mobile=_user.customer.tel.replace(_user.customer.tel.slice(-8,-4),'****');
+        let show = this.amount&&this.code?false:true
+        console.log(this.amount,this.code)
         return (
             <ThemeProvider>
             <div>
                 {/*<AppBar title={___.withdraw_cash}/>*/}
-
-                <div style={this.state.isInputAmount ? vmiddle(180,styles.sonpage_main) : {display:'none'}}>
+                <div style={{height:'100vh',background:'#f7f7f7'}}>
+                    <div style={{paddingTop:'30px'}}>
+                        <div style = { sty.r } >
+                            <input name = 'withdraw'  placeholder = { '请输入提现金额' } style = { sty.input } onChange = { this.withdrawChange }/> 
+                        </div >
+                        <div style = {{ display: 'flex', alignItems: 'flex-end', padding: '3px 10px', background:'#fff' }} >
+                            <VerificationOrig 
+                                name='valid_code'
+                                type={1}
+                                account={_user.customer.tel} 
+                                style = {{ width: '100%' }}
+                                onSuccess={this.success}
+                            />
+                        </div >
+                        <p style={{fontSize:'0.8em',textIndent:'2em',padding:'0 4px',lineHeight:'20px'}}>{'按照微信支付账户管理规定，提现需扣除0.6%手续费，为确保你的账户资金安全，需通过您账号'}{mobile}{'验证身份。'}</p>
+                        <div style={{textAlign:'center'}}>
+                            <RaisedButton disabled={show} style={{marginTop:'1em'}} onClick={this.withdrawal} label={'提现'} primary={true}/>
+                        </div>
+                    </div> 
+                </div>
+                {/* <div style={this.state.isInputAmount ? vmiddle(180,styles.sonpage_main) : {display:'none'}}>
                     <div style={styles.inputGroup}>
                         <span>{___.input_withdraw_amount}</span>
                         <span style={{paddingLeft:'1em'}}>
@@ -281,7 +347,7 @@ class WithdrawPage extends Component {
                         <MobileChecker mobile={_user.customer.tel} onSuccess={this.success}/>
                     </div>
                     <RaisedButton style={{marginTop:'1em'}} onClick={this.toWithdraw} label={___.ok} primary={true}/>
-                </div>
+                </div> */}
 
             </div>
             </ThemeProvider>
