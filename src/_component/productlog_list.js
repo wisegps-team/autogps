@@ -126,10 +126,90 @@ class ProductLogList extends Component {
         this.props.thisView.goTo('pushPopCount.js',paramsPop);
     }
     toStockPage(product){
+        console.log(product,'product')
+        Wapi.deviceLog.list(res => {
+            let deviceIn = [];
+            let deviceOut = [];
+            let sumIn = 0;
+            let sumOut = 0;
+            res.data.forEach(ele => {
+                deviceIn = deviceIn.concat(ele.did);
+                sumIn += ele.inCount;
+            })
+            Wapi.deviceLog.list(out => {
+                console.log(res.data,'devicein');
+                console.log(out.data,'deviceout')
+                out.data.forEach(ele => {
+                    deviceOut = deviceOut.concat(ele.did);
+                    sumOut += ele.outCount;
+                });
+                console.log(sumIn,'deviceIn')
+                console.log(sumOut,'deviceOut');
+                let dIn = [];
+                let dOut = [];
+                if(deviceIn.length >= deviceOut.length){
+                    deviceIn.forEach((In,i) => {
+                        var isExist = false;
+                        deviceOut.forEach((Out,j) => {
+                            if(In == Out){
+                                isExist = true;
+                            }
+                        })
+                        if(!isExist){
+                            dIn.push(In)
+                        }
+                    })
+                }else{
+                    deviceOut.forEach((Out,i) => {
+                        var isExist = false;
+                        deviceIn.forEach((In,j) => {
+                            if(Out == In){
+                                isExist = true;
+                            }
+                        })
+                        if(!isExist){
+                            dIn.push(Out)
+                        }
+                    })
+                }
+                console.log(dIn,'different');
+                if(dIn.length === sumIn-sumOut){
+                    this.stock = dIn;
+                    this.showStock = true;
+                    this.forceUpdate();
+                }else{
+                    Wapi.device.list(res=>{
+                        console.log(res.data,'stockpage')
+                        this.stock=res.data.map(ele=>ele.did);
+                        this.showStock=true;
+                        this.forceUpdate();
+                    },{
+                        uid:_user.customer.objectId,
+                        modelId:product._id.modelId
+                    },{
+                        fields:'did,objectId'
+                    })
+                }
+            },{
+                uid:_user.customer.objectId,
+                modelId:product._id.modelId,
+                type:0
+            },{
+                limit:-1
+            })
+        },{
+            uid:_user.customer.objectId,
+            modelId:product._id.modelId,
+            type:1
+        },{
+            limit:-1
+        })
+
         Wapi.device.list(res=>{
-            this.stock=res.data.map(ele=>ele.did);
-            this.showStock=true;
-            this.forceUpdate();
+            console.log(res.data,'stockpage')
+            // this.stock=res.data.map(ele=>ele.did);
+            // this.showStock=true;
+            // this.forceUpdate();
         },{
             uid:_user.customer.objectId,
             modelId:product._id.modelId

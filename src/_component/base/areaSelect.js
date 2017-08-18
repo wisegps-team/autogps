@@ -208,7 +208,7 @@ export default class AreaSelect extends Component{
             area_options=this.state.areas.map(ele=><MenuItem innerDivStyle={styles.menuItem} value={ele.id} key={ele.id} primaryText={ele.name} />);
         area_options.unshift(<MenuItem innerDivStyle={styles.menuItem} value={-1} key={-1} primaryText={___.area} />);
         return(
-            <div>
+            <div {...this.props}>
                 <SelectField
                     value={this.state.provinceId}
                     onChange={this.provinceChange.bind(this)}

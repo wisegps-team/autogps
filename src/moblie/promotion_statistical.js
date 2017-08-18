@@ -25,6 +25,7 @@ class App extends Component {
             marAct:"0",
             busMan:'0',
             marType:'0',
+            actMarTypes:'0',
             mType:true,
             subordinate:null,
             submarcount:null,
@@ -48,9 +49,10 @@ class App extends Component {
         this.submarcountChange = this.submarcountChange.bind(this);
         this.markPersonChange = this.markPersonChange.bind(this);
         this.marcountChange = this.marcountChange.bind(this);
+        this.actMarType = this.actMarType.bind(this);
 
-        this.display = {display:'block'};
-        this.display1 = {display:'block'};
+        this.display = {display:'none'};
+        this.display1 = {display:'none'};
         this.display2 = {display:'none'};
         this.display3 = {display:'none'};
         this.display4 = {display:'none'};
@@ -83,7 +85,10 @@ class App extends Component {
             this.display2 = {display:'block'}
             this.setState({statiType:'1'})
         }
-
+        if(_user.customer.custTypeId !== 9){
+            this.display = {display:'block'};
+            this.display1 = {display:'block'}
+        }
         //判断是否为顶级账号
         if(_user.customer.custTypeId!==9){
             //当前公司的营销活动
@@ -140,6 +145,7 @@ class App extends Component {
         this.setState({statiType:adminId});
         this.setState({busMan:'0'})//恢复业务经理默认值
         this.setState({marAct:'0'});//恢复营销活动默认值
+        this.setState({actMarTypes:'0'})
         
         if(v == 1){
             this.display1={display:'none'}
@@ -159,16 +165,37 @@ class App extends Component {
             count:null,
         }
     }
+    //活动类型 营销类别ID（集团营销、车主营销、渠道营销）
+    actMarType(e,v,a){
+        console.log(e,v,a)
+        this.setState({actMarTypes:a});
+        let type = null
+        if(a == 1) type = 3
+        else if(a == 2) type = 1
+        else if(a == 3) type = 0
+        // else type = null
+        this.mar_act_type = type;
+        this.data = {
+            topuid:_user.customer.custTypeId==9?uid:_user.customer.objectId,
+            marke_act:null,
+            busmanageId:null,
+            marType:type,
+            marcompanyId:null,
+            pertypeId:null,
+            count:null,
+        }
+    }
     //营销活动
     marActChange(e,v,adminId){
+        console.log(e,v,adminId)
         this.setState({marAct:adminId})
         if(v>0){
-            activityId = this.state.marke_act[v-1].objectId,  //活动
+            activityId = adminId,  //活动
             this.data = {
                 topuid:_user.customer.custTypeId==9?uid:_user.customer.objectId,
                 marke_act:activityId,
                 busmanageId:null,
-                marType:null,
+                marType:this.mar_act_type,
                 marcompanyId:null,
                 pertypeId:null,
                 count:null,
@@ -178,6 +205,8 @@ class App extends Component {
         }
         
     }
+    
+
     //业务经理
     busManChange(e,v,adminId){
         this.setState({busMan:adminId})
@@ -404,11 +433,30 @@ class App extends Component {
     render() {
         // console.log(this.data,'arrBook1')
         // console.log(this.state.managelen,'rf')
+        console.log(this.state.marke_act,'activity data')
+        console.log(this.state.marType,'martype')
+        console.log(this.data,'test data')
         //平台总览
         let top = this.state.topAccount.map((ele,index) => (<MenuItem key={index+1} value={index} primaryText={ele.name}/>))
         top.push(<MenuItem key={0} value={null} primaryText=' '/>)
         //营销活动
-        let marke_act = this.state.marke_act.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
+        let marke_act = [];
+        let marke_act1 = null;
+        this.state.marke_act.forEach((ele,index) => {
+            if(ele.type == this.data.marType){
+                marke_act.push(ele)
+            }
+        })
+        if(marke_act.length){
+            marke_act1 = marke_act.map((ele,index) => {
+                return(<MenuItem key={index+1} value={ele.objectId} primaryText={ele.name}/>)
+            })
+        }
+
+
+        
+
+        
         //业务经理
         let bus_manage = this.state.bus_manage.map((ele,index) => (<MenuItem key={index+2} value={index+1} primaryText={ele.name}/>))
         //集团营销
@@ -459,6 +507,8 @@ class App extends Component {
                 </div>
             </div>
         )
+       console.log(this.state.marAct,'test marAct')
+    //    console.log(marke_act,'test marke_act')
         return (
             <ThemeProvider>
                 <div style={{padding:'0 10px',marginBottom:30,marginTop:5}}>
@@ -485,12 +535,42 @@ class App extends Component {
                                 <MenuItem key="2" value="1" primaryText="按营销渠道统计"/>
                             </SelectField>
                         }
-                        <div style={this.display1}>
-                            <SelectField floatingLabelText="营销活动" value={this.state.marAct} onChange={this.marActChange} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
+                        {
+                            _user.employee?null:
+                            <div style={this.display1}>
+                                <SelectField floatingLabelText="活动类型" value={this.state.actMarTypes} onChange={this.actMarType} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
+                                    <MenuItem key={1} value={0} primaryText="全部"/>
+                                    <MenuItem key={2} value={1} primaryText="渠道营销"/>
+                                    <MenuItem key={3} value={2} primaryText="集团营销"/>
+                                    <MenuItem key={4} value={3} primaryText="车主营销"/>
+                                </SelectField>
+                                {
+                                    this.state.actMarTypes !=0 ?
+                                    <SelectField floatingLabelText="营销活动" value={this.state.marAct} onChange={this.marActChange} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
+                                        <MenuItem key={0} value={0} primaryText="全部"/> 
+                                         {/* {marke_act1}   */}
+                                         {marke_act1?marke_act1:<MenuItem key={1} value={1} primaryText=""/>}
+                                    </SelectField>:null
+                                }
+                                
+                            </div>
+                        }
+                        {/* <div style={this.display1}>
+                            <SelectField floatingLabelText="活动类型" value={this.state.actMarTypes} onChange={this.actMarType} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
                                 <MenuItem key="1" value="0" primaryText="全部"/>
-                                {marke_act}
+                                <MenuItem key="2" value="1" primaryText="渠道营销"/>
+                                <MenuItem key="3" value="2" primaryText="集团营销"/>
+                                <MenuItem key="4" value="3" primaryText="车主营销"/>
                             </SelectField>
-                        </div>
+                            {
+                                this.state.actMarTypes!=0?
+                                <SelectField floatingLabelText="营销活动" value={this.state.marAct} onChange={this.marActChange} style={{width:'100%',textAlign:'left',height:46,fontSize:12}} floatingLabelStyle={{top: 22,lineHeight:'12px'}} menuStyle={{marginTop: 0}} labelStyle={{lineHeight:'50px',top:0}} iconStyle={{top: 15}} maxHeight={500}>
+                                     <MenuItem key="0" value="0" primaryText="全部"/> 
+                                     {marke_act1} 
+                                </SelectField>:null
+                            }
+                            
+                        </div> */}
                         <div style={this.display2}>
                             {
                                 _user.employee ?
@@ -514,7 +594,7 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-                    <Static data={Object.assign({},this.data,{type:this.state.statiType})}/>
+                    <Static data={Object.assign({},this.data,{type:this.state.statiType})}/> 
                 </div>
             </ThemeProvider>
         );
@@ -530,7 +610,7 @@ let styles = {
     liborder3:{float:'right',padding:'0 5px',minWidth:32,textAlign:'center',color:'#999',fontSize:'14px',lineHeight:'24px'},
     // liborder:{float:'right',padding: '0 4px',minWidth:32,textAlign:'center',color:'#333'},
     list:{listStyle:'none',margin:0},
-    left:{display:'inlineBlock',float:'left',fontSize:'14px',lineHeight:'24px'},
+    left:{display:'inlineBlock',float:'left',fontSize:'14px',lineHeight:'24px',width:95,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'},
     right:{display:'inlineBlock',float:'right',fontSize:'14px',lineHeight:'24px'},
     listright:{listStyle:'none',paddingRight:24,height:24},
     color:{height:20,color:'#ccc'}
@@ -561,7 +641,10 @@ class Static extends Component {
     }
    
     componentWillReceiveProps(nextProps){
+        console.log(nextProps.data,'data')
         if(nextProps&&nextProps.data){
+            console.log(nextProps.data,'data')
+            // let type = nextProps.data.marType == 4?0:nextProps.data.marType
             let op = {
                 uid:nextProps.data.topuid,             
                 activityId: nextProps.data.marke_act,  
@@ -582,6 +665,7 @@ class Static extends Component {
                 marpersonId: nextProps.data.count,
             }
             Wapi.booking.list(res=>{
+                console.log(res.data,'booking data')
                 let arr = res.data
                 arr.map(ele => {
                     ele.createdAt = this.getTimes(ele.createdAt)
@@ -591,6 +675,7 @@ class Static extends Component {
             },op,{limit:-1})
 
             Wapi.promotion.list(res => {
+                console.log(res.data,'promotion data')
                 let arr = res.data;
                 arr.map(ele => {
                     ele.createdAt = this.getTimes(ele.createdAt)
@@ -601,8 +686,10 @@ class Static extends Component {
 
             //获取所有的产品型号
             Wapi.promotion.list(res => {
+                console.log(res.data,'customer all promotion data')
                 // let arr = res.data;
                 let newArr = this.only(res.data) //去掉相同的marproductId
+                console.log(newArr,'only promotion data')
                 var that = this;
                 if(res.data.length == 0){ //没有数据恢复默认值
                     that.setState({product:[]}); 
@@ -611,6 +698,7 @@ class Static extends Component {
                         ele.name='';
                         if(ele.marproductId){
                             Wapi.activityProduct.get(res => {
+                                // console.log(res.data,'activityProduct data')
                                 let name = res.data.brand+res.data.name
                                 ele.name = name;
                                 that.setState({product:newArr}); //Wapi是异步加载
@@ -733,17 +821,8 @@ class Static extends Component {
         //筛选预订
         this.state.arrBook.forEach(ele => {
             if(this.props.data.type != 0){//判断统计类别/按营销渠道统计
-                if(ele.activityType==1||ele.activityType==3){//按营销渠道统计中的渠道营销和集团营销
+                if(ele.activityType==1||ele.activityType==3){//按营销渠道统计中的渠道营销3和集团营销1
                     if(ele.status0 == 1){
-                        // status0.push(ele)
-                        // if(ele.status1 == 1){
-                        //     status1.push(ele);
-                        //     if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
-                        //         H10.push(ele)
-                        //     }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
-                        //         G9.push(ele)
-                        //     }
-                        // }
                         if(ele.type == 0){
                             stype0.push(ele)
                             if(ele.payStatus == 0){
@@ -763,15 +842,6 @@ class Static extends Component {
                 }
             }else {//按营销活动统计
                 if(ele.status0 == 1){
-                    // status0.push(ele)
-                    // if(ele.status1 == 1){
-                    //     status1.push(ele);
-                    //     if(ele.product.brand == "自由者"&&ele.product.name == "H10"){
-                    //         H10.push(ele)
-                    //     }else if(ele.product.brand == "自由者"&&ele.product.name == "G9"){
-                    //         G9.push(ele)
-                    //     }
-                    // }
                     if(ele.type == 0){
                         stype0.push(ele)
                         if(ele.payStatus == 0){
@@ -822,23 +892,25 @@ class Static extends Component {
                     }    
                 })
             });
-            
+            console.log(this.state.product,'product data')
             var products = this.state.product.map((ele,index) => {
-                sum += ele.data.length;
-                sum1 += this.date(ele.data,3);
-                sum2 += this.date(ele.data,2);
-                sum3 += this.date(ele.data,1)
-                return (
-                    <div style={styles.height20} key={index}>
-                        <span style={styles.left}>{ele.name}</span>
-                        <ul style={styles.listright}>
-                            <li style={styles.liborder2}>{ele.data.length}</li>
-                            <li style={styles.liborder2}>{this.date(ele.data,3)}</li>
-                            <li style={styles.liborder2}>{this.date(ele.data,2)}</li>
-                            <li style={styles.liborder2}>{this.date(ele.data,1)}</li>
-                        </ul>
-                </div>
-                )
+                if(ele.marproductId){
+                    sum += ele.data.length;
+                    sum1 += this.date(ele.data,3);
+                    sum2 += this.date(ele.data,2);
+                    sum3 += this.date(ele.data,1)
+                    return (
+                        <div style={styles.height20} key={index}>
+                            <span style={styles.left}>{ele.name}</span>
+                            <ul style={styles.listright}>
+                                <li style={styles.liborder2}>{ele.data.length}</li>
+                                <li style={styles.liborder2}>{this.date(ele.data,3)}</li>
+                                <li style={styles.liborder2}>{this.date(ele.data,2)}</li>
+                                <li style={styles.liborder2}>{this.date(ele.data,1)}</li>
+                            </ul>
+                    </div>)
+                }
+                
             })
         }    
         
@@ -1030,24 +1102,7 @@ class Static extends Component {
 
         let regis = (
             <div style={{padding:'0 5px'}}>
-                {/*<div style={styles.height20}>
-                    <span style={styles.left}>自由者H10</span>
-                    <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{H10.length}</li>
-                        <li style={styles.liborder2}>{this.date(H10,3)}</li>
-                        <li style={styles.liborder2}>{this.date(H10,2)}</li>
-                        <li style={styles.liborder2}>{this.date(H10,1)}</li>
-                    </ul>
-                </div>
-                <div style={styles.height20}>
-                    <span style={styles.left}>自由者G9</span>
-                    <ul style={styles.listright}>
-                        <li style={styles.liborder2}>{G9.length}</li>
-                        <li style={styles.liborder2}>{this.date(G9,3)}</li>
-                        <li style={styles.liborder2}>{this.date(G9,2)}</li>
-                        <li style={styles.liborder2}>{this.date(G9,1)}</li>
-                    </ul>
-                </div>*/}
+                
                 {products}
             </div>
         );
@@ -1092,16 +1147,6 @@ class Static extends Component {
                     </ul>
                 </div>
                 {this.state.bshow?'':booking}
-                {/*<div style={styles.hebgc} onClick={this.regisshow}>
-                    <span style={styles.left}>注册</span>
-                    <span style={styles.right}>{this.state.zshow?'▼':'▲'}</span>
-                    <ul style={styles.list}>
-                        <li style={styles.liborder1}>{H10.length+G9.length}</li>
-                        <li style={styles.liborder1}>{this.date(H10,3)+this.date(G9,3)}</li>
-                        <li style={styles.liborder1}>{this.date(H10,2)+this.date(G9,2)}</li>
-                        <li style={styles.liborder1}>{this.date(H10,1)+this.date(G9,1)}</li>
-                    </ul>
-                </div>*/}
                  <div style={styles.hebgc} onClick={this.regisshow}>
                     <span style={styles.left}>注册</span>
                     <span style={styles.right}>{this.state.zshow?<HardwareKeyboardArrowDown />:<HardwareKeyboardArrowUp />}</span>

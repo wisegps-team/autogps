@@ -29,6 +29,19 @@ import EditEmployee from'../_component/EditEmployee';
 import {randomStr,getDepart} from '../_modules/tool';
 import AutoList from '../_component/base/autoList';
 
+
+import {List, ListItem} from 'material-ui/List';
+import ActionInfo from 'material-ui/svg-icons/action/info';
+import Avatar from 'material-ui/Avatar';
+import ActionAssignment from 'material-ui/svg-icons/action/assignment';
+import {blue500, yellow600} from 'material-ui/styles/colors';
+import HardwareKeyboardArrowRight from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+
+
+
+
+
 const thisView=window.LAUNCHER.getView();//第一句必然是获取view
 thisView.setTitle(___.employee);
 thisView.addEventListener('load',function(){
@@ -162,39 +175,73 @@ class App extends React.Component {
 
                     let parDelete={
                         _objectId:this.state.edit_employee.roleId,
-                        users:'-"'+params._uid+'"'
+                        users:'-'+params._uid
                     };//从之前的角色的users中删除所选人员
-                    Wapi.role.update(reDelete=>{
-                        console.log('reDelete');
-                    },parDelete);
+                    Wapi.role.get(re => {
+                        if(re.data){
+                            Wapi.role.update(reDelete=>{
+                                console.log('reDelete');
+                            },parDelete);
+                        }
+                    },{
+                        objectId: this.state.edit_employee.roleId,
+                        users: params._uid
+                    })
+                    
 
                     let parAdd={
                         _objectId:params.roleId,
-                        users:'+"'+params._uid+'"'
+                        users:'+'+params._uid
                     };//在当前的角色的users中添加所选人员
-                    Wapi.role.update(reAdd=>{
-                        console.log('reAdd');
-                    },parAdd);
+                    Wapi.role.get(rad => {
+                        // debugger;
+                        if(!rad.data){
+                            Wapi.role.update(reAdd=>{
+                                console.log('reAdd');
+                            },parAdd);
+                        }
+                    },{
+                        objectId: params.roleId,
+                        users: params._uid
+                    })
+                    
 
                 }
-
-                let arr=this.state.employees;
-                arr.map(ele=>{
-                    if(ele.uid==data.uid){
-                        ele.name=params.name;
-                        ele.tel=params.tel;
-                        ele.sex=params.sex;
-                        ele.departId=params.departId;
-                        ele.roleId=params.roleId;
-                        ele.role=params.role;
-                        ele.isQuit=params.isQuit;
-                    }
-                });
-                arr=arr.filter(ele=>!ele.isQuit);
-                this.setState({employees:arr});//修改完成后更新该条人员数据
-
+                
+                if(this.state.search.length){
+                    let arr = this.state.search;
+                    arr.map(ele=>{
+                        if(ele.uid==data.uid){
+                            ele.name=params.name;
+                            ele.tel=params.tel;
+                            ele.sex=params.sex;
+                            ele.departId=params.departId;
+                            ele.roleId=params.roleId;
+                            ele.role=params.role;
+                            ele.isQuit=params.isQuit;
+                        }
+                    });
+                    arr=arr.filter(ele=>!ele.isQuit);
+                    this.setState({search:arr});//修改完成后更新该条人员数据
+                }else{
+                    let arr=this.state.employees;
+                    arr.map(ele=>{
+                        if(ele.uid==data.uid){
+                            ele.name=params.name;
+                            ele.tel=params.tel;
+                            ele.sex=params.sex;
+                            ele.departId=params.departId;
+                            ele.roleId=params.roleId;
+                            ele.role=params.role;
+                            ele.isQuit=params.isQuit;
+                        }
+                    });
+                    arr=arr.filter(ele=>!ele.isQuit);
+                    this.setState({employees:arr});//修改完成后更新该条人员数据
+                }
+                history.back();
                 callBack();//回调函数，重置人员编辑页面各组件的值
-                history.back();//更新数据后返回
+                // history.back();//更新数据后返回
 
             },params);
 
@@ -352,46 +399,88 @@ App.childContextTypes={
     showDetails:React.PropTypes.func
 }
 
-class DumbList extends React.Component{
+// class DumbList extends React.Component{
+//     constructor(props,context){
+//         super(props,context);
+//     }
+//     render() {
+//         let items=this.props.data.map((ele,index)=>
+//             <Card style={styles.card} key={index}>
+//                 <table >
+//                     <tbody >
+//                         <tr style={styles.table_tr}>
+//                             <td style={styles.td_left}>{___.person_name}</td>
+//                             <td style={styles.td_right}>{ele.name+(ele.isQuit?'/已离职':'')}</td>
+//                         </tr>
+//                         <tr style={styles.table_tr}>
+//                             <td style={styles.td_left}>{___.sex}</td>
+//                             <td style={styles.td_right}>{_sex[ele.sex]}</td>
+//                         </tr>
+//                         <tr style={styles.table_tr}>
+//                             <td style={styles.td_left}>{___.department}</td>
+//                             <td style={styles.td_right}>{getDepart(ele.departId)}</td>
+//                         </tr>
+//                         <tr style={styles.table_tr}>
+//                             <td style={styles.td_left}>{___.role}</td>
+//                             <td style={styles.td_right}>{ele.role}</td>
+//                         </tr>
+//                         <tr style={styles.table_tr}>
+//                             <td style={styles.td_left}>{___.phone}</td>
+//                             <td style={styles.td_right}>{ele.tel}</td>
+//                         </tr>
+//                     </tbody>
+//                 </table>
+//                 <Divider />
+//                 <div style={styles.bottom_btn_right}>
+//                     <FlatButton label={'设置'} primary={true} onClick={()=>this.context.showDetails(ele)} />
+//                 </div>
+//             </Card>
+//         );
+//         return(
+//             <div style={styles.main}>
+//                 {items}
+//             </div>
+//         )
+//     }
+// }
+
+class DumbList extends React.Component {
     constructor(props,context){
-        super(props,context);
+        super(props,context)
+        this.state = {
+            data:props.data
+        }
     }
-    render() {
-        let items=this.props.data.map((ele,index)=>
-            <Card style={styles.card} key={index}>
-                <table >
-                    <tbody >
-                        <tr style={styles.table_tr}>
-                            <td style={styles.td_left}>{___.person_name}</td>
-                            <td style={styles.td_right}>{ele.name+(ele.isQuit?'/已离职':'')}</td>
-                        </tr>
-                        <tr style={styles.table_tr}>
-                            <td style={styles.td_left}>{___.sex}</td>
-                            <td style={styles.td_right}>{_sex[ele.sex]}</td>
-                        </tr>
-                        <tr style={styles.table_tr}>
-                            <td style={styles.td_left}>{___.department}</td>
-                            <td style={styles.td_right}>{getDepart(ele.departId)}</td>
-                        </tr>
-                        <tr style={styles.table_tr}>
-                            <td style={styles.td_left}>{___.role}</td>
-                            <td style={styles.td_right}>{ele.role}</td>
-                        </tr>
-                        <tr style={styles.table_tr}>
-                            <td style={styles.td_left}>{___.phone}</td>
-                            <td style={styles.td_right}>{ele.tel}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <Divider />
-                <div style={styles.bottom_btn_right}>
-                    <FlatButton label={___.details} primary={true} onClick={()=>this.context.showDetails(ele)} />
-                </div>
-            </Card>
-        );
+    render(){
+        console.log(this.state.data,'dfd')
+        let item = this.state.data.map((ele,index) => {
+            return(
+                <ListItem
+                    key={index}
+                    innerDivStyle={{paddingLeft:'60px'}}
+                    leftAvatar={<Avatar icon={<ActionAccountCircle />} style={{left:10}} backgroundColor={blue500} />}
+                    rightIcon={(<span style={{width:50,fontSize:'14px',marginRight:8}} onClick={()=>this.context.showDetails(ele)}>
+                        <span style={{position:'absolute',top:3}}>{'设置'}</span>
+                        <HardwareKeyboardArrowRight style={{float:'right'}}/>
+                    </span>)}
+                    primaryText={(<div style={{fontSize:14}}>
+                        <span>{ele.name}</span>
+                        <span style={{padding:'0 10px'}}>{ele.sex?'男':'女'}</span>
+                        <span>{ele.tel}</span>
+                    </div>)}
+                    secondaryText={(<div style={{fontSize:12}}>
+                        <span>{getDepart(ele.departId)}</span>
+                        <span style={{padding:'0 5px'}}>{ele.role}</span>
+                        <span>{ele.isQuit?'离职':'在职'}</span>
+                    </div>)}
+                />
+            )
+        })
         return(
-            <div style={styles.main}>
-                {items}
+            <div>
+                <List>
+                    {item}
+                </List>
             </div>
         )
     }

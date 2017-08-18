@@ -805,7 +805,15 @@ class MenuBox extends Component{
             let its = ele.sub_button.map((el,id) => {
                 return(
                     <div id={'s'+id} style={el.isshow?{border:'1px solid #44b549',color:'#44b549',fontSize:14,position:'relative'}:{fontSize:14,position:'relative'}}  key={id} >
-                        <span onClick={() => this.selectSecond(el,id,ele,index)} style={id==4?{margin:'0 5px 0 5px',display:'block'}:{display:'block',margin:'0 5px 0 5px',borderBottom:'1px solid #ccc'}}>{this.state.menuSort?<span>☰</span>:null}{el.name}</span>
+                        <span onClick={() => this.selectSecond(el,id,ele,index)} 
+                            style={
+                                id==4?
+                                {margin:'0 5px 0 5px',display:'block',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}
+                                :
+                                {display:'block',margin:'0 5px 0 5px',borderBottom:'1px solid #ccc',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}
+                        >
+                            {this.state.menuSort?<span>☰</span>:null}{el.name}
+                        </span>
                         {this.state.menuSort?null:<span onClick={() =>{this.delete(ele,index,el,id)}} style={{position:'absolute',top:0,right:3}}><ContentClear style={{height:15,width:15,position:'relative',top:3}}/></span>}
                     </div>
                 )
@@ -847,6 +855,7 @@ class MenuBox extends Component{
             })            
         }
         let sorts = this.state.button.length>1?false:true
+        console.log(this.firstBut,this.secondBut,'test first second')
         return (
             <div>
                 <RaisedButton disabled={this.state.menuSort} label={___.submit} primary={true} style={stys.save} onClick={this.state.menuSort?()=>{}:this.finish}/>
@@ -896,7 +905,7 @@ class MenuBox extends Component{
                             :
                             <div>
                             <TextField
-                                hintText="名称"
+                                hintText={this.secondBut != null ?"名称(字数不超过8个汉字或16个字母)":"名称(字数不超过4个汉字或8个字母)"}
                                 style={{ width: '100%' }}
                                 onChange={this.getValueName}
                             />

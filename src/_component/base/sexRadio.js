@@ -33,6 +33,7 @@ class SexRadio extends Component {
                 <RadioButton
                     value='1'
                     label={___.man}
+                    disabled={this.props.disabled}
                     labelStyle={sty.label}
                     iconStyle={sty.icon}
                     style={sty.main}
@@ -40,6 +41,7 @@ class SexRadio extends Component {
                 <RadioButton
                     value='0'
                     label={___.woman}
+                    disabled={this.props.disabled}
                     labelStyle={sty.label}
                     iconStyle={sty.icon}
                     style={sty.main}

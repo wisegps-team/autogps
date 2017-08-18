@@ -18,6 +18,7 @@ import SonPage from '../_component/base/sonPage';
 import AutoList from '../_component/base/autoList';
 import Input from '../_component/base/input';
 import {makeRandomEvent} from '../_modules/tool';
+import ImageAdjust from 'material-ui/svg-icons/image/adjust'
 
 
 const styles = {
@@ -262,16 +263,29 @@ class TypeItem extends Component{
         if(admin){
             adminName=_emply.find(ele=>ele.objectId==this.props.data.adminId).name||'';
         }
+        // console.log(this.props.data,'there props data')
         return (
             <div style={styles.box}>
-                <div style={{marginBottom:'1em'}}>
+                <div style={{marginBottom:'8px'}}>
                     {this.props.data.name}
                     <RightIconMenu onClick={this.click}/>
                 </div>
-                <div style={{fontSize:'12px',color:'#666'}}>
+                {/* <div style={{fontSize:'12px',color:'#666'}}>
                     <span style={{marginRight:'15px'}}>{___.business_namager+'：'+adminName}</span>
                     <span>{___.register_num+'：'}</span>
                     <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
+                </div> */}
+                <div style={{position:'relative',fontSize:'12px',marginBottom:'8px'}}>
+                    <ImageAdjust style={{width:'12px',height:12,position:'absolute',top:3}}/>
+                    <span style={{marginLeft:'15px'}}>{adminName}</span>
+                </div>
+                <div style={{fontSize:'12px',color:'#666'}}>
+                    <span>{'账号'+'：'}</span>
+                    <a onClick={this.getPerson} style={styles.a}>{this.props.data.total||0}</a>
+                    <span>{'推广'+'：'}</span>
+                    <a style={{marginRight:'2em'}}>{this.props.data.promTotal||0}</a>
+                    <span>{'预订'+'：'}</span>
+                    <a>{this.props.data.bookTotal||0}</a>
                 </div>
             </div>
         );
@@ -317,26 +331,81 @@ class TypePage extends Component {
     constructor(props, context) {
         super(props, context);
         this.state={
-            data:this.props.data
+            data:this.props.data,
+            promTotal:0,
+            bookTotal:0
         }
         this.state.data.forEach(d=>d.total=___.loading);
     }
     
     componentDidMount() {
         let data=this.state.data.concat();
+        //注册
         let totals={};
         data.forEach(d=>totals[d.objectId]=0);
         let depId=data.map(d=>d.objectId).join('|');
-        
+        //推广
+        let promTotal = {};
+        data.forEach(d => promTotal[d.objectId]=0)
+        //预订
+        let bookTotal = {};
+        data.forEach(d => bookTotal[d.objectId]=0);
+
         Wapi.employee.list(res=>{
             res.data.forEach(e=>totals[e.departId]++);
+            // console.log(totals,'totals')
+            // console.log(res.data,'employee res data')
             data.forEach(d=>d.total=totals[d.objectId]);
-            this.setState({data});
+            // console.log(data,'com data')
+            Wapi.promotion.list(pro => {
+                // console.log(pro.data,'promotion data')
+                pro.data.forEach(e => promTotal[e.pertypeId]++);
+                data.forEach(d => d.promTotal = promTotal[d.objectId])
+                // this.setState
+                
+
+
+                Wapi.activity.list(act => {
+                    let actId = act.data.map(ac => ac.objectId).join('|')
+                    let activity = {};
+                    act.data.forEach(ac => activity[ac.objectId]=0);
+
+                    Wapi.booking.list(bo => {
+                        bo.data.forEach(b => activity[b.activityId]++);
+                        act.data.forEach(a => a.bookTotal = activity[a.objectId]);
+                        act.data.forEach(a => bookTotal[a.sellerTypeId] = a.bookTotal);
+                        data.forEach(d => d.bookTotal = bookTotal[d.objectId]);
+                        this.setState({data});
+
+                    },{
+                        uid: _user.customer.objectId,
+                        activityType: 1,
+                        activityId: actId
+                    },{
+                        limit: -1
+                    })
+                },{
+                    sellerTypeId:depId
+                },{
+                    limit: -1
+                })
+
+
+            },{
+                maractcompanyId:_user.customer.objectId,
+                martypeId:1,
+                pertypeId:depId
+            },{
+                limit:-1
+            })
         },{
             departId:depId
         },{
             limit:-1
         });
+
+
+        
     }
     componentWillReceiveProps(nextProps) {
         this.setState({data:nextProps.data});
@@ -460,14 +529,45 @@ class AddBox extends Component{
                 adminId:'0'
             });
         }
-        Wapi.employee.list(res=>{
-            this.managers=res.data;
-            this.forceUpdate();
+        // Wapi.employee.list(res=>{
+        //     console.log(res.data,'test marketing employee data')
+        //     this.managers=res.data;
+        //     this.forceUpdate();
+        // },{
+        //     companyId:_user.customer.objectId,
+        //     departId:'>0',
+        //     isQuit:false
+        // });
+
+        Wapi.page.get(res => {
+            let op = []
+            res.data.ACL.forEach(ele => {
+                op.push(ele.replace('role:', ''));
+
+            })
+            Wapi.role.list(re => {
+                console.log(re.data)
+                let obj = [];
+                re.data.forEach(ele => {
+                    obj.push(ele.objectId)
+                })
+                Wapi.employee.list(ress => {
+                    // console.log(ress.data)
+                    this.managers=ress.data;
+                    this.forceUpdate();
+                },{
+                    roleId:obj.join('|'),
+                    companyId:_user.customer.objectId
+                })
+            },{
+                objectId:op.join('|'),
+                uid:_user.customer.objectId
+            })
         },{
-            companyId:_user.customer.objectId,
-            departId:'>0',
-            isQuit:false
-        });
+            name:'集团营销'
+        },{
+            fields:'ACL'
+        })
     }
     
     change(e,name){

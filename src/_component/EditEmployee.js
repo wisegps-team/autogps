@@ -105,6 +105,7 @@ class EditEmployee extends React.Component{
     }
     roleChange(e,k,value){
         this.data.roleId=value;
+        // console.log(this.roles.find(ele=>ele.objectId==value))
         this.data.role=this.roles.find(ele=>ele.objectId==value).name;
         this.forceUpdate();
     }
@@ -152,12 +153,12 @@ class EditEmployee extends React.Component{
         roleItems.unshift(<MenuItem key={0} value={0} primaryText={___.please_select_role} />);
         return(
             <div style={styles.sonpage_main}>
-                <Input floatingLabelText={___.person_name} value={this.data.name} onChange={this.nameChange} />
+                <Input disabled={true} floatingLabelText={___.person_name} value={this.data.name} onChange={this.nameChange} />
                 
                 <p style={{fontSize:'0.75em', color:'rgba(0, 0, 0, 0.498039)',marginBottom:'0px'}}>{___.sex}</p>
-                <SexRadio style={{paddingTop:'10px'}} value={this.data.sex} onChange={this.sexChange}/>
+                <SexRadio disabled={true} style={{paddingTop:'10px'}} value={this.data.sex} onChange={this.sexChange}/>
                 
-                <PhoneInput floatingLabelText={___.phone} value={this.data.tel} onChange={this.telChange} />
+                <PhoneInput disabled={true} floatingLabelText={___.phone} value={this.data.tel} onChange={this.telChange} />
                 
                 <p style={{fontSize:'0.75em', color:'rgba(0, 0, 0, 0.498039)'}}>{___.department}</p>
                 <DepartmentSelcet value={this.data.departId} onChange={this.deparChange}/>
