@@ -152,7 +152,7 @@ class App extends Component {
             this.setState({ active: 1 });
             return;
         }
-        this.setState({ active: 3 });
+        this.setState({ active: 3 }); //微信端登录  
     }
 
     loginSuccess(res) {
@@ -224,6 +224,7 @@ class App extends Component {
         let login_sty = WiStorm.agent.weixin ? {
             display: 'none'
         } : null;
+        {/* console.log(this.state.active,'what is the active') */}
         let actives = [ 
             <Login onSuccess = { this.loginSuccess } style = { login_sty } ssoLoginFail = { this.showBind }/>, 
             <AgentShowBox success = { this.registerCallback } parentId = { _g.parentId } managerId = { _g.managerId || 'none' }/>, 

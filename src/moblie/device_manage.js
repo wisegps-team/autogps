@@ -464,29 +464,20 @@ class DeviceOut extends Component{
                 return;
             }
             Wapi.device.get((dev) => {
-                if(!dev.data){//无效设备
-                    W.alert(___.device_invalid);
-                    return;
-                }
-                if(dev.data.uid != _user.customer.objectId){//此设备不属于当前用户
-                    W.alert(___.device_others);
-                    return;
-                }
-                if(ids.length != 0){
-                    if(dev.data.modelId != _this.product.objectId){//设备型号与之前不同
-                        W.alert(___.device_type_err.replace('type',(_this.product.brand + _this.product.name)));
+                Wapi.customer.get(cus => {
+                    if(!dev.data){//无效设备
+                        W.alert(___.device_invalid);
                         return;
                     }
-                    ids=ids.concat(res);
-                    _this.setState({product_ids:ids});
-                    if(isWxSdk){
-                        W.native.scanner.start(get);
-                    }else{
-                        W.alert(___.please_wait);
+                    if(dev.data.uid != _user.customer.objectId){//此设备不属于当前用户
+                        W.alert('此设备属于'+(cus.data.contact||cus.data.name)+'，无法出库！');
+                        return;
                     }
-                }else{
-                    Wapi.product.get((pro)=>{
-                        _this.product = pro.data;
+                    if(ids.length != 0){
+                        if(dev.data.modelId != _this.product.objectId){//设备型号与之前不同
+                            W.alert(___.device_type_err.replace('type',(_this.product.brand + _this.product.name)));
+                            return;
+                        }
                         ids=ids.concat(res);
                         _this.setState({product_ids:ids});
                         if(isWxSdk){
@@ -494,8 +485,22 @@ class DeviceOut extends Component{
                         }else{
                             W.alert(___.please_wait);
                         }
-                    },{objectId: dev.data.modelId})
-                }
+                    }else{
+                        Wapi.product.get((pro)=>{
+                            _this.product = pro.data;
+                            ids=ids.concat(res);
+                            _this.setState({product_ids:ids});
+                            if(isWxSdk){
+                                W.native.scanner.start(get);
+                            }else{
+                                W.alert(___.please_wait);
+                            }
+                        },{objectId: dev.data.modelId})
+                    }
+                },{
+                    objectId:dev.data.uid
+                })
+                
             },{did:res})
             
         }
@@ -726,54 +731,58 @@ class DeviceReturn extends Component {
                 return;
             }
             Wapi.device.get((dev) => {
-                if(!dev.data){//无效设备
-                    W.alert(___.device_invalid);
-                    return;
-                }
-                if(dev.data.uid != _user.customer.objectId){//不属于当前用户
-                    W.alert(___.device_others);
-                    return;
-                }
+                Wapi.customer.get(cus => {
+                    if(!dev.data){//无效设备
+                        W.alert(___.device_invalid);
+                        return;
+                    }
+                    if(dev.data.uid != _user.customer.objectId){//不属于当前用户
+                        // W.alert(___.device_others);
+                        W.alert('此设备属于'+(cus.data.contact||cus.data.name)+'，无法出库！');
+                        return;
+                    }
 
-                if(ids.length != 0){
-                    if(dev.data.modelId != _this.product.objectId){//设备型号不同
-                        W.alert(___.device_type_err.replace('type',(_this.product.brand + _this.product.name)));
-                        return;
-                    }
-                    if(!_this.inLog.did.includes(res)){//设备不是同一批
-                        W.alert(___.device_not_batch);
-                        return;
-                    }
-                    ids=ids.concat(res);
-                    _this.setState({product_ids:ids});
-                }else{
-                    Wapi.deviceLog.list(logs=>{
-                        if(!logs.data){
-                            W.alert(___.device_no_log);
+                    if(ids.length != 0){
+                        if(dev.data.modelId != _this.product.objectId){//设备型号不同
+                            W.alert(___.device_type_err.replace('type',(_this.product.brand + _this.product.name)));
                             return;
                         }
-                        let inLog=logs.data.find(ele=>ele.type==1);
-                        let outLog=logs.data.find(ele=>ele.type==0);
-                        _this.inLog=inLog;
-                        _this.outLog=outLog;
-                        _this.product={
-                            brand:inLog.brand,
-                            brandId:inLog.brandId,
-                            name:inLog.model,
-                            objectId:inLog.modelId
-                        };
-                        _this.refs.user.receiveUser({
-                            objectId:inLog.from,
-                            name:inLog.fromName
-                        });
+                        if(!_this.inLog.did.includes(res)){//设备不是同一批
+                            W.alert(___.device_not_batch);
+                            return;
+                        }
                         ids=ids.concat(res);
                         _this.setState({product_ids:ids});
-                    },{
-                        did:res,
-                        to:_user.customer.objectId
-                    });
-                }
-
+                    }else{
+                        Wapi.deviceLog.list(logs=>{
+                            if(!logs.data){
+                                W.alert(___.device_no_log);
+                                return;
+                            }
+                            let inLog=logs.data.find(ele=>ele.type==1);
+                            let outLog=logs.data.find(ele=>ele.type==0);
+                            _this.inLog=inLog;
+                            _this.outLog=outLog;
+                            _this.product={
+                                brand:inLog.brand,
+                                brandId:inLog.brandId,
+                                name:inLog.model,
+                                objectId:inLog.modelId
+                            };
+                            _this.refs.user.receiveUser({
+                                objectId:inLog.from,
+                                name:inLog.fromName
+                            });
+                            ids=ids.concat(res);
+                            _this.setState({product_ids:ids});
+                        },{
+                            did:res,
+                            to:_user.customer.objectId
+                        });
+                    }
+                },{
+                    objectId:dev.data.uid
+                })
             },{did:res})
             
         }

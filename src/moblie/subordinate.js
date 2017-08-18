@@ -23,6 +23,7 @@ import SonPage from '../_component/base/sonPage';
 import {CustListHC,cust_item_sty} from '../_component/cust_list';
 import {changeToLetter} from '../_modules/tool';
 
+import ImageAdjust from 'material-ui/svg-icons/image/adjust'
 
 
 
@@ -144,6 +145,7 @@ class App extends Component{
 
         this.showQr = this.showQr.bind(this);
         this.hideQr = this.hideQr.bind(this);
+        
     }
     getChildContext(){
         return{
@@ -152,13 +154,48 @@ class App extends Component{
         }
     }
     componentDidMount() {
-        Wapi.employee.list(res=>{
-            _managers=res.data;
-            W.emit(window,'cust_list_update',this._data);
-        },{companyId:_user.customer.objectId,type:'<>1',isQuit:false})
+        // var dd = new Set([1,3,4])
+        // console.log(dd,'dd')
+        // Wapi.employee.list(res=>{
+        //     _managers=res.data;
+        //     console.log(res.data,'sum customer manager data')
+        //     W.emit(window,'cust_list_update',this._data);
+        // },{companyId:_user.customer.objectId,type:'<>1',isQuit:false})
+
+        var that = this;
+        Wapi.page.get(res => {
+            let op = []
+            res.data.ACL.forEach(ele => {
+                op.push(ele.replace('role:', ''));
+
+            })
+            Wapi.role.list(re => {
+                let obj = [];
+                re.data.forEach(ele => {
+                    obj.push(ele.objectId)
+                })
+                Wapi.employee.list(ress => {
+                    // console.log(ress.data)
+                    _managers=ress.data;
+                    console.log(ress.data,'sum customer manager data')
+                    W.emit(window,'cust_list_update',that._data);
+                },{
+                    roleId:obj.join('|'),
+                    companyId:_user.customer.objectId
+                })
+            },{
+                objectId:op.join('|'),
+                uid:_user.customer.objectId
+            })
+        },{
+            name:'集团营销'
+        },{
+            fields:'ACL'
+        })
+
     }
-    
     changeManager(cust){
+        console.log(cust,'test changemanager button')
         this.cust=cust;
         this.showManager=true;
         this.forceUpdate();
@@ -182,6 +219,7 @@ class App extends Component{
     render() {
         let show=this.state.active==1;
         let dis=show?{display:'none'}:null;
+        console.log(this._data,'custList data')
         return (
             <ThemeProvider>
                 <div style={dis}>
@@ -197,7 +235,7 @@ class App extends Component{
 }
 App.childContextTypes={
     VIEW:React.PropTypes.object,
-    changeManager:React.PropTypes.func,
+    changeManager:React.PropTypes.func
 }
 
 const _strVa=[___.group_marketing,___.distribution,___.enterprises,___.carowner_seller];
@@ -267,7 +305,10 @@ class UserItem extends Component{
         }
     }
     render() {
+        // console.log(this.state.data,'what is useritem data')
+        // console.log(STORE,'what is store')
         if(!this.props.data.custType){
+            // console.log(STORE,'')
             let types=STORE.getState().custType;
             let type=types.find(type=>this.props.data.custTypeId==type.id);
             this.props.data.custType=type?type.name:this.props.data.custType;
@@ -315,17 +356,39 @@ class UserItem extends Component{
         }
         let strContact=(this.props.data.contact||'')+' '+(this.props.data.tel||'');
         let strAddress=(this.props.data.province+this.props.data.city+this.props.data.area) || ' ';
-        let title=(<span>
-            {this.props.data.name}
-            <small style={cust_item_sty.sm}>{cType+' '+strContact}</small>
-            <small style={cust_item_sty.sm}>{strVa}</small>
-            <small style={cust_item_sty.sm}>{strAddress}</small>
-        </span>);
+        // let title=(<span>
+            // {this.props.data.name}
+            // <small style={cust_item_sty.sm}>{cType+' '+strContact}</small>
+            // <small style={cust_item_sty.sm}>{strVa}</small>
+            // <small style={cust_item_sty.sm}>{strAddress}</small>
+        // </span>);
+        
+        let title = (
+            <div style={{position:'relative',paddingLeft:65}}>
+                <div style={{position:'absolute',width:60,height:'100%',left:0,top:0}}>
+                    <img src="../../img/head.png" style={{width:'100%',height:'100%'}}/>
+                </div>
+                <span style={{display:'block',width:'175px',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>{this.props.data.name}</span>
+                <small style={cust_item_sty.sm}>{cType+' '+strContact}</small>
+                <small style={cust_item_sty.sm}>{strVa}</small>
+                <small style={cust_item_sty.sm}>{strAddress}</small>
+                <div style={{position:'absolute',right:'-15px',top:0,fontSize:'12px',height:20,lineHeight:'20px',color:'#2196f3'}}>
+                    <ImageAdjust style={{width:12,height:12,position:'relative',top:1}} color='#2196f3'/>
+                    <span style={{paddingLeft:3}}>{manager.name}</span>
+                </div>
+            </div>
+        )
+
         return (
+            // <ListItem
+            //     rightIcon={<RightIconMenu openCS={openCS} setIS={setIS} onClick={this.operation}/>}
+            //     primaryText={title}
+            //     secondaryText={tr}
+            //     style={cust_item_sty.item}
+            // />
             <ListItem
                 rightIcon={<RightIconMenu openCS={openCS} setIS={setIS} onClick={this.operation}/>}
                 primaryText={title}
-                secondaryText={tr}
                 style={cust_item_sty.item}
             />
         );
@@ -335,7 +398,7 @@ UserItem.contextTypes ={
     VIEW:React.PropTypes.object,
     delete:React.PropTypes.func,
     showCount:React.PropTypes.func,
-    changeManager:React.PropTypes.func,
+    changeManager:React.PropTypes.func
 }
 
 class RightIconMenu extends Component{    
@@ -352,14 +415,16 @@ class RightIconMenu extends Component{
         let stySetIS=this.props.setIS.canSet ? null : {display:'none'};//设置经销商 菜单是否显示
         let strSetIS=this.props.setIS.isSetted ? ___.cancel_install_shop : ___.set_install_shop;//设置经销商菜单字符 [取消/设置]经销商
         let menu=[
-            <MenuItem key={0} onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>,
+            // <MenuItem key={0} onTouchTap={()=>this.props.onClick(3)}>{___.business_statistics}</MenuItem>,
             <MenuItem key={1} onTouchTap={()=>this.props.onClick(6)}>{___.change_manager}</MenuItem>,
             // <MenuItem style={styOpenCS} onTouchTap={()=>this.props.onClick(4)}>{strOpenCS}</MenuItem>,
-            <MenuItem key={2} style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>
+            // <MenuItem key={2} style={stySetIS} onTouchTap={()=>this.props.onClick(5)}>{strSetIS}</MenuItem>,
         ];
-        let showMenu=[menu[0],menu[1],menu[2]];
+        // let showMenu=[menu[0],menu[1],menu[2]];
+        let showMenu=[menu[0]]
         if(_user.employee){
-            showMenu=[menu[0]];
+            // showMenu=[menu[0]];
+            showMenu=[];
         }
         return (
             <IconMenu
@@ -432,15 +497,16 @@ class QrBox extends Component{
         dis.textAlign='center';
         let qrSty={display:'inline-block',marginTop:(window.innerHeight-50-128-100)/2+'px'};
         let btnSty={position:'fixed',bottom:'50px',textAlign:'center',display:'block',width:'100%'};
-        let imgSty={};
+        let imgSty={textAlign:'center',backgroundColor:'#f7f7f7',minHeight:'100vh' ,background:'url(../../img/device.jpg) no-repeat',backgroundSize:'100% 50%'};
         if(this.state.active)imgSty.display='none';
         return (
             <div style={dis}>
                 <div style={imgSty}>
                     <div style={qrSty}>
                         <h4>{_user.customer.name}</h4>
-                        <div>{___.subordinate_register}</div>
-                        <QrImg data={this.state.url} style={{display:'inline-block',marginTop:'10%'}}/>
+                        {/* <div>{___.subordinate_register}</div> */}
+                        <QrImg data={this.state.url} style={{display:'inline-block',padding:10,backgroundColor:'#fff'}}/>
+                        <div style={{marginTop:5}}>{'无需加好友，扫码注册渠道账号！'}</div>
                     </div>
                     <br/>
                     {/*<span style={{color:'#ccc'}}>{___.touch_back}</span><br/><br/>*/}
@@ -541,7 +607,7 @@ class Manager extends Component {
     }
 }
 
-
+//没用
 function setRole(cust,callback,add){
     let rid='795552341104398300';
     let i='3';
@@ -560,7 +626,7 @@ function setRole(cust,callback,add){
         fields:'objectId,name,users'
     });
 }
-
+//没用
 function custUpdate(cust,i,callback,add){
     let VA=(cust.other&&cust.other.va)?cust.other.va.split(','):[];
     if(add==VA.includes(i.toString())){

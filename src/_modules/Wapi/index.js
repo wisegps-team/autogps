@@ -616,7 +616,8 @@ const Wapi={
 	authorize:new WAPI('authorize',_user?_user.access_token:null),
 	promotion:new WAPI('promotion',_user?_user.access_token:null),
 	serviceProject:new WAPI('serviceProject',_user?_user.access_token:null),
-	wxMenu:new WAPI('wxMenu',_user?_user.access_token:null)
+	wxMenu:new WAPI('wxMenu',_user?_user.access_token:null),
+	advertisement:new WAPI('advertisement',_user?_user.access_token:null)
 };
 
 function makeGetOp(name,fields,lop){
@@ -639,7 +640,7 @@ makeGetOp('alert','objectId,did,alertType,speedLimit,poild,lon,lat,speed,direct,
 makeGetOp('stat','did,day,distance,duration,fuel,avgSpeed,alertTotal,createdAt,day');
 makeGetOp('department','objectId,name,uid,parentId,treePath,adminId,type',{limit:-1,sorts:'objectId',page:'objectId'});
 makeGetOp('employee','objectId,uid,companyId,departId,type,name,sex,idcard,tel,email,wechat,licenseType,firstGetLicense,licenseExpireIn,isQuit,role,roleId');
-makeGetOp('weixin','objectId,uid,name,type,wxAppKey,fileName');
+makeGetOp('weixin','objectId,uid,name,type,wxAppKey,fileName,menu');
 makeGetOp('activityProduct','objectId,uid,productId,name,brandId,brand,price,installationFee,reward,productUrl,channel');
 
 makeGetOp('custType','id,name,appId,useType,userType,role,roleId',{limit:-1,sorts:'id',page:'id'});
@@ -654,9 +655,9 @@ makeGetOp('qrLink','objectId,id,uid,url,act,sellerId,i,type,batchId,batchName,st
 makeGetOp('authorize','objectId,id,actProductId,productId,productName,brandId,brandName,applyCompanyId,applyCompanyName,applyUserId,applyUserName,applyDate,approveCompanyId,approveCompanyName,approveUserName,approveDate,cancelUserId,cancelDate,status,authorizeType');
 makeGetOp('promotion','objectId,createdAt,id,time,type,qrcodeId,marpersonId,maractivityId,publiceId,readerId,marcompanyId,maractcompanyId,martypeId,pertypeId,commission,busmanageId,marproductId,brandId,productId');
 // makeGetOp('qrDistribution','objectId,id,name,uid,type,num,max,min');
-makeGetOp('serviceProject','objectId,itemType,itemName,serverId');
+makeGetOp('serviceProject','objectId,itemType,itemName,serverId,uid');
 makeGetOp('wxMenu','objectId,wxAppKey,menuName,menuUrl,type');
-
+makeGetOp('advertisement','objectId,uid,ad_name,approveDate,status,applyDate,ad_time,small_img,big_img');
 
 window.Wapi=Wapi;
 export default Wapi;

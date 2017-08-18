@@ -19,10 +19,14 @@ const sty={
     tem:{
         padding:'10px',
         borderBottom: '1px solid #ccc',
-        lineHeight:'30px'
+        lineHeight:'30px',
+        position:'relative',
+        paddingLeft:'45px'
     },
     s:{
-        marginRight:'2em'
+        marginRight:'2em',
+        fontSize:'12px',
+        color:'#666666'
     },
     p:{
         padding:'10px'
@@ -61,6 +65,7 @@ class App extends Component{
     }
     componentDidMount() {
         thisView.addEventListener('show',e=>{
+            console.log(e.params,'e.params')
             if(e.params){
                 this.setState({
                     depId:e.params.objectId,
@@ -93,9 +98,18 @@ class PersonBox extends Component{
         this.edit = this.edit.bind(this);
     }
     componentDidMount() {
+        console.log(this.props.depId)
         Wapi.booking.aggr(res=>{
             this.aggr=res.data;
-            this.getData();
+            Wapi.promotion.list(pro => {
+                console.log(pro.data,'promotion data')
+                this.promotion = pro.data;
+                this.getData();
+            },{
+                maractcompanyId:_user.customer.objectId,
+            },{
+                limit: -1
+            })
         },{
             "group":{
                 "_id":{
@@ -125,17 +139,45 @@ class PersonBox extends Component{
         }
     }
     getData(depId){
+        let departId = depId||this.props.depId;
+        console.log(departId,'this.departId')
         this.setState({data:[]});
         Wapi.employee.list(res=>{
             let data=res.data;
+            let proTotal = {};
+            let proData = [];
+            // data.forEach(e => e.proTotal = 0)
             data.forEach(e=>{
+                // e.proTotal = {};
+                // console.log(this.aggr,'this aggr')
+                // console.log(this.promotion,'this promotion')
                 let a=this.aggr.find(a=>a._id.sellerId==e.objectId);
+                // let b = this.promotion.find(b => b.marpersonId == e.objectId);
+                let b = []
+                this.promotion.forEach(p => {
+                    if(p.marpersonId == e.objectId&&p.pertypeId == departId){
+                        b.push(p)
+                    }
+                })
+                e.proTotal = b.length;
+                // console.log(b,'this.same data promotion b')
+                // if(b){
+                //     // if(e.proTotal[b.marpersonId]){
+                //     //     e.proTotal[b.marpersonId]=1;
+                //     // }else{
+                //     //     e.proTotal[b.marpersonId]++;
+                //     // }
+                //     if(b.marpersonId == e.objectId){
+                //         e.proTotal++;
+                //     }
+                // }
                 Object.assign(e,{
                     status0:0,
                     status1:0,
                     status2:0,
                     status3:0
                 },a);
+                // console.log(e)
             });
             this.setState({data});
         },{
@@ -189,14 +231,19 @@ class PersonBox extends Component{
         }
     }
     render() {
+        console.log(this.state.data,'know this state data')
         let emp=this.state.data.map(e=>(
             <div key={e.objectId} style={sty.tem}>
+                <div style={{position:'absolute',width:40,height:40,left:0,top:20}}>
+                    <img src='../../img/head.png' style={{width:40,height:40}}/>
+                </div>
                 <div>
-                    <span style={sty.s}>{e.name}</span>
+                    <span style={{marginRight:'2em'}}>{e.name}</span>
                     <span>{e.tel}</span>
                     <RightIconMenu onClick={i=>this.click(i,e)}/>
                 </div>
                 <div>
+                    <span style={sty.s}>{'推广'+'：'+e.proTotal}</span>
                     <span style={sty.s}>{___.booking_status[0]+'：'+e.status0}</span>
                     <span style={sty.s}>{___.booking_status[1]+'：'+e.status1}</span>
                 </div>

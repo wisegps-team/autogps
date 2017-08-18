@@ -202,7 +202,7 @@ class AgentRegisterBox extends Component{
 
 class AgentShowBox extends Component{
     render(){
-        let box=_user && _g.custType !== '10'?
+        let box=(_user && (_g.custType !== '10'))||(_user && (_g.custType !== '11'))?
             <JoinBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId}/>:
             <AgentRegisterBox success={this.props.success} parentId={this.props.parentId} managerId={this.props.managerId} key='register' />;
         return (
@@ -211,7 +211,8 @@ class AgentShowBox extends Component{
                 <p style={{textAlign:'center'}}>
                     {
                         _g.Authorize === '3'? ___.movecar_agent_register: 
-                        _g.custType === '10' ? ___.movecar_customer_register: ___.agent_register
+                        _g.custType === '10' ? ___.movecar_customer_register: 
+                        _g.custType === '11'?'扫码印刷注册':___.agent_register
                     }
                 </p>
                 {box}
@@ -281,6 +282,7 @@ function customerCheck(user,that,nullCallback){
                     W.loading();
                     user._code=3;
                     that.props.success(user);  
+                    //没有父级或者不包含该邀约注册的父级时
                 }else if(!user.customer.parentId||!user.customer.parentId.includes(that.props.parentId.toString())){
                     let params={
                         access_token:user.access_token,
@@ -292,46 +294,49 @@ function customerCheck(user,that,nullCallback){
                     }
                     Wapi.customer.update(res=>{
                         W.loading();
+                        //给代理商经销商品牌商发送印刷客户邀约添加扫码挪车权限
                         if(_g.custType === '10' && (user.user_type === 5 || user.user_type === 2 || user.user_type === 4)){
-                        Wapi.authorize.add(auth => {
-                            // console.log('印刷客户授权') 
-                                Wapi.customer.update(cus => {
-                                },{
-                                    _objectId:user.customer.objectId,
-                                    Authorize:'+3'
-                                })  
-                            },{
-                                access_token:user.token,
-                                authorizeType:3,
-                                applyCompanyId:user.customer.objectId,
-                                applyCompanyName:user.customer.name,
-                                applyUserName:user.customer.contact,
-                                actProductId: 4,
-                                status:1
-                            })               
+                            // Wapi.authorize.add(auth => {
+                            // // console.log('印刷客户授权') 
+                            //     Wapi.customer.update(cus => {
+                            //     },{
+                            //         _objectId:user.customer.objectId,
+                            //         Authorize:'+3'
+                            //     })  
+                            // },{
+                            //     access_token:user.token,
+                            //     authorizeType:3,
+                            //     applyCompanyId:user.customer.objectId,
+                            //     applyCompanyName:user.customer.name,
+                            //     applyUserName:user.customer.contact,
+                            //     actProductId: 4,
+                            //     status:1
+                            // })        
+                                   
                         }
                         user._code=0;
                         that.props.success(user);
                     },params);
                 }else{
                     W.loading();
+                    //给代理商经销商品牌商发送印刷客户邀约添加扫码挪车权限
                     if (_g.custType === '10' && (user.user_type === 5 || user.user_type === 2 || user.user_type === 4)) {
-                        Wapi.authorize.add(auth => {
-                            // console.log('印刷客户授权') 
-                            Wapi.customer.update(cus => {
-                            }, {
-                                    _objectId: user.customer.objectId,
-                                    Authorize: '+3'
-                                })
-                        }, {
-                                access_token: user.token,
-                                authorizeType: 3,
-                                applyCompanyId: user.customer.objectId,
-                                applyCompanyName: user.customer.name,
-                                applyUserName: user.customer.contact,
-                                actProductId: 4,
-                                status: 1
-                            })
+                        // Wapi.authorize.add(auth => {
+                        //     // console.log('印刷客户授权') 
+                        //     Wapi.customer.update(cus => {
+                        //     }, {
+                        //             _objectId: user.customer.objectId,
+                        //             Authorize: '+3'
+                        //         })
+                        // }, {
+                        //     access_token: user.token,
+                        //     authorizeType: 3,
+                        //     applyCompanyId: user.customer.objectId,
+                        //     applyCompanyName: user.customer.name,
+                        //     applyUserName: user.customer.contact,
+                        //     actProductId: 4,
+                        //     status: 1
+                        // })
                     }                    
                     user._code=0;
                     that.props.success(user);
@@ -353,7 +358,7 @@ function customerCheck(user,that,nullCallback){
 
 function getCustType(){
     let t=parseInt(_g.custType);
-    let type=[1,5,8,10];
+    let type=[1,5,8,10,11];
     if(type.includes(t))
         return t;
     else
